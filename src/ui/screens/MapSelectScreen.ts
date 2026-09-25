@@ -23,7 +23,7 @@ export function mapSelectScreen(host: UiHost): Screen {
           onclick: () => host.startLevel(m.id, i),
           title: l.name,
         },
-        `${open ? '' : '🔒 '}${m.levels.length > 1 ? `${i + 1}. ` : ''}${l.name}`,
+        open ? `${m.levels.length > 1 ? `${i + 1}. ` : ''}${l.name}` : '🔒 Bloqueado',
         el('span', { class: 'lv-stars' }, stars),
       );
     });
@@ -44,7 +44,7 @@ export function mapSelectScreen(host: UiHost): Screen {
   }
   const e = el(
     'div',
-    { class: 'screen solid' },
+    { class: 'screen dim' },
     el('h2', {}, 'ESCOLHA O MAPA'),
     grid,
     el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, 'Voltar'),

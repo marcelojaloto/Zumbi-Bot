@@ -17,6 +17,7 @@ import { bossRig } from './rig/bossRigs';
 import { BOSSES } from '../data/bosses';
 import type { PropKind } from '../data/types';
 import { PickupView } from './views/PickupView';
+import { CosmeticRig } from './views/Attachments';
 
 interface SimpleView {
   object: Object3D;
@@ -30,6 +31,7 @@ export class SceneView {
   readonly chars = new Map<EntityId, CharacterView>();
   private simple = new Map<EntityId, SimpleView>();
   readonly blobs: BlobShadows;
+  private cosmetics = new Map<EntityId, CosmeticRig>();
   private time = 0;
   /** Extensões: outras camadas (projéteis, perigos) registram sincronizadores. */
   extraSync: ((w: World, alpha: number, dt: number) => void)[] = [];
@@ -57,6 +59,16 @@ export class SceneView {
         case 'enemy':
         case 'boss':
           this.syncChar(e, alpha, dt, w.tick);
+          if (e.player) {
+            let cr = this.cosmetics.get(e.id);
+            const v = this.chars.get(e.id);
+            if (!cr && v) this.cosmetics.set(e.id, (cr = new CosmeticRig(v)));
+            const lo = w.loadouts.find((l) => l.slot === e.player!.slot);
+            if (cr && lo) {
+              cr.set(lo.cosmetics);
+              cr.update(dt, e.t.vx, e.t.vy, e.t.facing);
+            }
+          }
           break;
         case 'prop':
         case 'pickup': {
@@ -73,6 +85,12 @@ export class SceneView {
         }
         default:
           break;
+      }
+    }
+    for (const [id, cr] of this.cosmetics) {
+      if (!seen.has(id)) {
+        cr.dispose();
+        this.cosmetics.delete(id);
       }
     }
     for (const [id, v] of this.chars) {
@@ -181,6 +199,8 @@ export class SceneView {
   }
 
   dispose(): void {
+    for (const c of this.cosmetics.values()) c.dispose();
+    this.cosmetics.clear();
     for (const v of this.chars.values()) v.dispose();
     for (const v of this.simple.values()) v.dispose();
     this.chars.clear();
