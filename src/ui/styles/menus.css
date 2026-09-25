@@ -349,3 +349,144 @@
 .profile-chip b {
   color: #ffd24a;
 }
+.screen.wardrobe {
+  align-items: flex-end;
+  justify-content: stretch;
+  padding: 16px;
+  background: linear-gradient(90deg, transparent 35%, rgba(4, 5, 10, 0.6));
+}
+.wr-panel {
+  width: min(600px, 56vw);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(10, 12, 20, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 16px;
+  overflow: hidden;
+}
+.wr-panel h2 {
+  text-align: left;
+}
+.wr-panel .tabs {
+  justify-content: flex-start;
+}
+.wr-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.wr-body h3 {
+  font-family: var(--title-font);
+  letter-spacing: 1px;
+  margin: 12px 0 6px;
+  font-weight: normal;
+  opacity: 0.85;
+}
+.scrap {
+  color: #ffd24a;
+  font-weight: 700;
+}
+.cos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+.cos-card {
+  --rc: #c8c8c8;
+  position: relative;
+  text-align: left;
+  font: inherit;
+  color: var(--fg);
+  background: linear-gradient(160deg, #1e2432, #11141c);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid var(--rc);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: pointer;
+}
+.cos-card b {
+  font-size: 13px;
+}
+.cos-card span {
+  font-size: 11px;
+}
+.cos-card .price {
+  color: #ffd24a;
+  font-weight: 700;
+}
+.cos-card.on {
+  border-color: var(--cyan);
+  box-shadow: 0 0 10px rgba(57, 230, 255, 0.35);
+}
+.cos-card.unowned {
+  opacity: 0.92;
+}
+.cos-card:hover,
+.cos-card:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.cos-card .eq {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  font-style: normal;
+  font-size: 9px;
+  color: var(--cyan);
+}
+.arsenal {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ars {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(20, 24, 34, 0.9);
+  border-left: 4px solid #ffb02a;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+.ars.locked {
+  opacity: 0.55;
+}
+@media (max-width: 800px) {
+  .screen.wardrobe {
+    align-items: stretch;
+  }
+  .wr-panel {
+    width: 100%;
+    height: 62%;
+    margin-top: auto;
+  }
+}
+.screen.menu-screen {
+  align-items: flex-end;
+  padding-right: max(24px, 7vw);
+  background: linear-gradient(90deg, transparent 30%, rgba(4, 5, 10, 0.72) 62%);
+}
+.menu-screen h1,
+.menu-screen .subtitle {
+  text-align: right;
+}
+.menu-screen .menu-footer {
+  text-align: center;
+}
+.screen.splash-screen {
+  background: radial-gradient(circle at 50% 45%, rgba(4, 5, 10, 0.2), rgba(4, 5, 10, 0.85));
+}
+@media (max-width: 800px) {
+  .screen.menu-screen {
+    align-items: center;
+    padding-right: 24px;
+    background: rgba(4, 5, 10, 0.6);
+  }
+}

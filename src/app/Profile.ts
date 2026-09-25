@@ -1,7 +1,9 @@
 import { PLAYER, xpToNext } from '../data/balance';
 import { getMap, MAPS } from '../data/maps';
 import { STAFFS } from '../data/staffs';
-import type { StaffId, WeaponId } from '../data/types';
+import type { CosmeticId, CosmeticSlot, StaffId, WeaponId } from '../data/types';
+import { COSMETICS, SELL_VALUE } from '../data/cosmetics';
+import { Rng } from '../core/rng';
 import { insertRank } from '../save/ranking';
 import type { RankingV1, SaveV1, SettingsV1 } from '../save/schema';
 import { Storage } from '../save/storage';
@@ -149,9 +151,60 @@ export class Profile {
     return pos;
   }
 
+  // ------------------------------------------------------------ cosméticos
+  equip(slot: CosmeticSlot, id: CosmeticId | null): void {
+    const eq = this.save.cosmetics.equipped;
+    if (id === null) delete eq[slot];
+    else if (this.save.cosmetics.owned.includes(id) && COSMETICS[id]?.slot === slot) eq[slot] = id;
+    this.persistSoon();
+  }
+
+  owns(id: CosmeticId): boolean {
+    return this.save.cosmetics.owned.includes(id);
+  }
+
+  /** Preço atual (ofertas do dia têm 20% de desconto). */
+  priceOf(id: CosmeticId): number | null {
+    const c = COSMETICS[id];
+    if (!c || c.price === null) return null;
+    return dailyDeals().includes(id) ? Math.round(c.price * 0.8) : c.price;
+  }
+
+  buy(id: CosmeticId): boolean {
+    const price = this.priceOf(id);
+    if (price === null || this.owns(id) || this.save.profile.scrap < price) return false;
+    this.save.profile.scrap -= price;
+    this.save.cosmetics.owned.push(id);
+    this.persist();
+    return true;
+  }
+
+  sell(id: CosmeticId): boolean {
+    const c = COSMETICS[id];
+    if (!c || !this.owns(id)) return false;
+    const eq = this.save.cosmetics.equipped;
+    if (eq[c.slot] === id) delete eq[c.slot];
+    this.save.cosmetics.owned = this.save.cosmetics.owned.filter((x) => x !== id);
+    this.save.profile.scrap += SELL_VALUE[c.rarity];
+    this.persist();
+    return true;
+  }
+
   wipe(): void {
     this.storage.wipeProgress();
     this.save = this.storage.loadSave().data;
     this.persist();
   }
+}
+
+/** Ofertas do dia: 6 itens sorteados pela data (mesmas para o dia inteiro). */
+export function dailyDeals(day = Math.floor(Date.now() / 864e5)): CosmeticId[] {
+  const rng = new Rng(day * 7919 + 13);
+  const pool = Object.values(COSMETICS)
+    .filter((c) => c.price !== null)
+    .map((c) => c.id)
+    .sort();
+  const out: CosmeticId[] = [];
+  while (out.length < 6 && pool.length) out.push(pool.splice(rng.int(0, pool.length - 1), 1)[0]!);
+  return out;
 }

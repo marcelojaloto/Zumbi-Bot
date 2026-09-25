@@ -12,7 +12,9 @@ import { WorldOverlay } from '../ui/hud/WorldOverlay';
 import { Hud } from '../ui/hud/Hud';
 import { ScreenManager } from '../ui/ScreenManager';
 import { Profile } from './Profile';
-import type { UiHost } from '../ui/screens/host';
+import { MenuScene } from '../render/MenuScene';
+import { shopScreen, wardrobeScreen, type WardrobeHost } from '../ui/screens/WardrobeScreen';
+import type { CosmeticId, CosmeticSlot } from '../data/types';
 import { pauseScreen } from '../ui/screens/PauseScreen';
 import { settingsScreen } from '../ui/screens/SettingsScreen';
 import { controlsScreen } from '../ui/screens/ControlsScreen';
@@ -27,7 +29,7 @@ import { xpToNext } from '../data/balance';
 export type Screen = 'boot' | 'splash' | 'menu' | 'loading' | 'playing' | 'paused' | 'gameover' | 'victory';
 
 /** Aplicação: renderer único, entrada, perfil salvo, telas, HUD e a partida em andamento. */
-export class App implements UiHost {
+export class App implements WardrobeHost {
   readonly renderer: Renderer;
   readonly input: InputManager;
   readonly flags: UrlFlags;
@@ -36,6 +38,7 @@ export class App implements UiHost {
   readonly profile: Profile;
   readonly screens: ScreenManager;
   session: GameSession | null = null;
+  menuScene: MenuScene | null = null;
   hud: Hud | null = null;
   private overlay: WorldOverlay | null = null;
   screen: Screen = 'boot';
@@ -127,13 +130,14 @@ export class App implements UiHost {
   // ------------------------------------------------------------------ telas
   showSplash(): void {
     this.screens.clear();
+    this.ensureMenuScene();
     const start = () => {
       this.audio.unlock();
       this.showMainMenu();
     };
     const e = el(
       'div',
-      { class: 'screen solid splash-screen' },
+      { class: 'screen dim splash-screen' },
       el('h1', {}, 'ZUMBI BOT'),
       el('div', { class: 'subtitle' }, 'A revolução dos robôs no apocalipse zumbi'),
       el('button', { class: 'btn primary', onclick: start, data: { nav: '', autofocus: '' } }, 'Jogar'),
@@ -143,9 +147,24 @@ export class App implements UiHost {
     for (const n of this.profile.notices) setTimeout(() => this.hud?.toast(n, '#ffb02a'), 500);
   }
 
+  private ensureMenuScene(): void {
+    if (this.session || this.menuScene) return;
+    this.menuScene = new MenuScene(this.renderer);
+    this.menuScene.setCosmetics(this.profile.save.cosmetics.equipped);
+  }
+
+  previewCosmetics(eq: Partial<Record<CosmeticSlot, CosmeticId>>): void {
+    this.menuScene?.setCosmetics(eq);
+  }
+
+  setMenuFocus(f: number): void {
+    if (this.menuScene) this.menuScene.focus = f;
+  }
+
   showMainMenu(): void {
     this.screen = 'menu';
     this.screens.clear();
+    this.ensureMenuScene();
     const b = (label: string, fn: () => void, cls = 'btn') =>
       el('button', { class: cls, onclick: fn, data: { nav: '' } }, label);
     const s = this.profile.save;
@@ -153,7 +172,7 @@ export class App implements UiHost {
     const contMap = getMap(cont.mapId);
     const e = el(
       'div',
-      { class: 'screen solid' },
+      { class: 'screen menu-screen' },
       el('h1', {}, 'ZUMBI BOT'),
       el('div', { class: 'subtitle' }, 'A revolução dos robôs no apocalipse zumbi'),
       el(
@@ -173,6 +192,8 @@ export class App implements UiHost {
           'btn primary',
         ),
         b('Mapas', () => this.screens.push(mapSelectScreen(this))),
+        b('Guarda-roupa', () => this.screens.push(wardrobeScreen(this))),
+        b('Loja', () => this.screens.push(shopScreen(this))),
         b('Configurações', () => this.openSettings()),
         b('Controles', () => this.openControls()),
       ),
@@ -259,6 +280,8 @@ export class App implements UiHost {
 
   async startLevel(mapId: string, levelIdx = 0): Promise<void> {
     this.endSession();
+    this.menuScene?.dispose();
+    this.menuScene = null;
     this.screens.clear();
     this.screen = 'loading';
     this.lastLevel = { mapId, levelIdx };
@@ -307,7 +330,10 @@ export class App implements UiHost {
     // pré-compila shaders para evitar travadas na primeira aparição de efeitos
     try {
       session.frame(0);
-      await this.renderer.gl.compileAsync(this.renderer.scene, this.renderer.cam.camera);
+      const gl = this.renderer.gl;
+      if (gl.extensions.has('KHR_parallel_shader_compile'))
+        await gl.compileAsync(this.renderer.scene, this.renderer.cam.camera);
+      else gl.compile(this.renderer.scene, this.renderer.cam.camera);
     } catch {
       /* navegador sem suporte: compila sob demanda */
     }
@@ -434,6 +460,10 @@ export class App implements UiHost {
     }
     this.screens.pollGamepad(dt);
     this.renderer.gl.info.reset();
+    if (!this.session && this.menuScene) {
+      this.menuScene.frame(dt);
+      this.renderer.render(dt);
+    }
     if (this.session) {
       this.session.frame(dt);
       this.renderer.render(dt);
