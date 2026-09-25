@@ -20,6 +20,7 @@ export interface ResultInfo {
   newRecord: boolean;
   next: { mapId: string; levelIdx: number } | null;
   unlockedNext: string | null;
+  ngPlusUnlocked?: boolean;
 }
 
 /** Tela de vitória ("MAPA CONCLUÍDO!") ou derrota ("VOCÊ FOI DESATIVADO"). */
@@ -93,6 +94,16 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     );
   }
 
+  if (r.ngPlusUnlocked)
+    rewards.appendChild(
+      el(
+        'div',
+        { class: 'reward', style: 'border-color:#ff3a5a' },
+        el('b', { style: 'color:#ff3a5a' }, 'Novo Jogo+ desbloqueado!'),
+        el('span', {}, 'Ative na tela de mapas'),
+      ),
+    );
+
   // ranking
   const rankBox = el('div', { class: 'rank-entry' });
   const pos = rankPosition(host.profile.ranking, s.score);
@@ -146,7 +157,11 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
       { style: win ? '' : 'color:#ff4a3a;text-shadow:0 0 24px rgba(255,60,40,.6),0 5px 0 #400' },
       win ? 'MAPA CONCLUÍDO!' : 'VOCÊ FOI DESATIVADO',
     ),
-    el('div', { class: 'subtitle' }, `${map.index + 1}. ${map.name}${r.newRecord ? ' • NOVO RECORDE!' : ''}`),
+    el(
+      'div',
+      { class: 'subtitle' },
+      `${map.index + 1}. ${map.name}${s.ngPlus ? ' • NG+' : ''}${r.newRecord ? ' • NOVO RECORDE!' : ''}${win && !r.next ? ' • CAMPANHA CONCLUÍDA!' : ''}`,
+    ),
     win ? stars : null,
     el('div', { class: 'panel', style: 'max-width:520px' }, stats),
     rewards.childElementCount ? rewards : null,

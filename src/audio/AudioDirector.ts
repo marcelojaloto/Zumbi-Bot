@@ -4,10 +4,14 @@ import { FIREARMS } from '../data/weapons';
 import type { GameEvent } from '../sim/events';
 import type { World } from '../sim/World';
 import type { AudioEngine } from './AudioEngine';
+import type { MusicPlayer } from './music';
 
 /** Mapeia eventos do sim em efeitos sonoros posicionados. */
 export class AudioDirector {
-  constructor(private a: AudioEngine) {}
+  constructor(
+    private a: AudioEngine,
+    private music?: MusicPlayer,
+  ) {}
 
   onEvents(events: GameEvent[], w: World): void {
     const a = this.a;
@@ -138,7 +142,11 @@ export class AudioDirector {
         case 'go':
           a.play('go', { bus: 'ui', vol: 0.8 });
           break;
+        case 'segment':
+          this.music?.setIntensity(ev.phase === 'locked' ? 1 : 0);
+          break;
         case 'bossIntro':
+          this.music?.setIntensity(2);
           a.play('roar', { vol: 1 });
           a.duck(0.3, 1.5);
           break;
@@ -147,6 +155,7 @@ export class AudioDirector {
           a.play('roar', { vol: 0.8, rate: 0.8 });
           break;
         case 'bossDefeated':
+          this.music?.stop(2.5);
           a.play('roar', { vol: 1, rate: 0.6 });
           a.play('explosion', {});
           break;
@@ -157,9 +166,11 @@ export class AudioDirector {
           a.play(ev.id, { x: ev.x, vol: ev.vol ?? 0.8 });
           break;
         case 'victory':
+          this.music?.stop(1);
           a.play('victory', { bus: 'ui' });
           break;
         case 'gameOver':
+          this.music?.stop(1.2);
           a.play('gameover', { bus: 'ui' });
           break;
         case 'meleeBreak':

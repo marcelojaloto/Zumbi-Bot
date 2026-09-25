@@ -8,6 +8,7 @@ import { pantanoExtra } from './pantano';
 import { mechaExtra } from './mecha';
 import { incandescenteExtra } from './incandescente';
 import { criotanqueExtra } from './criotanque';
+import { omegaExtra } from './omega';
 
 /** Acessórios exclusivos por chefe (chave = def.rig.boss). */
 export const BOSS_EXTRAS: Record<string, BossExtra> = {
@@ -20,4 +21,5 @@ export const BOSS_EXTRAS: Record<string, BossExtra> = {
   mecha: mechaExtra,
   incandescente: incandescenteExtra,
   criotanque: criotanqueExtra,
+  omega: omegaExtra,
 };

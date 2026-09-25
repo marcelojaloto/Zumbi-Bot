@@ -20,7 +20,13 @@ export function loadout(over: Partial<PlayerLoadout> = {}): PlayerLoadout {
 }
 
 export function makeWorld(
-  opts: { map?: MapDef; seed?: number; noLevel?: boolean; loadout?: Partial<PlayerLoadout> } = {},
+  opts: {
+    map?: MapDef;
+    seed?: number;
+    noLevel?: boolean;
+    loadout?: Partial<PlayerLoadout>;
+    ngPlus?: boolean;
+  } = {},
 ): World {
   return new World({
     seed: opts.seed ?? 42,
@@ -30,6 +36,7 @@ export function makeWorld(
     difficulty: 'normal',
     enemyCap: 14,
     noLevel: opts.noLevel ?? true,
+    ngPlus: opts.ngPlus,
   });
 }
 

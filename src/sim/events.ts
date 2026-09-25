@@ -29,6 +29,8 @@ export interface RunStats {
   unlockedStaff?: StaffId;
   unlockedGuns: WeaponId[];
   victory: boolean;
+  /** Partida no Novo Jogo+. */
+  ngPlus?: boolean;
 }
 
 /**

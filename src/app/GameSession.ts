@@ -23,6 +23,7 @@ export interface SessionOptions {
   loadout: PlayerLoadout;
   difficulty: Difficulty;
   noLevel?: boolean;
+  ngPlus?: boolean;
 }
 
 export interface SessionHooks {
@@ -67,6 +68,7 @@ export class GameSession {
       difficulty: opts.difficulty,
       enemyCap: r.quality.enemyCap,
       noLevel: opts.noLevel,
+      ngPlus: opts.ngPlus,
     });
     const level = this.world.level;
     for (const p of level.props) spawnProp(this.world, p);
@@ -147,6 +149,12 @@ export class GameSession {
       pz /= ps.length;
     }
     const rdt = this.paused ? 0 : dt;
+    // chefes muito altos: a câmera recua para caber o corpo inteiro
+    let zoom = 1;
+    for (const e of w.entities)
+      if (e.kind === 'boss' && e.body && e.fighter?.state !== 'dead')
+        zoom = Math.max(zoom, Math.min(1.45, 1 + (e.body.height - 4.3) * 0.16));
+    if (rdt > 0) r.cam.zoom += (zoom - r.cam.zoom) * Math.min(1, rdt * 1.5);
     r.cam.update(w.camX, py * 0.35, pz * 0.3, Math.max(rdt, 1e-4));
     this.view.sync(w, alpha, rdt);
     this.projectiles.sync(w, alpha, rdt, this.lighting);

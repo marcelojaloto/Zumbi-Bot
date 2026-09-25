@@ -88,6 +88,10 @@ export class Profile {
   ): {
     newRecord: boolean;
     unlockedNext: string | null;
+    /** Novo Jogo+ acabou de ser desbloqueado. */
+    ngPlusUnlocked: boolean;
+    /** Venceu o último nível da campanha. */
+    finalBoss: boolean;
   } {
     const s = this.save;
     s.profile.level = Math.max(1, Math.min(PLAYER.maxLevel, final.level));
@@ -105,6 +109,8 @@ export class Profile {
     s.stats.runs++;
     let newRecord = false;
     let unlockedNext: string | null = null;
+    let ngPlusUnlocked = false;
+    let finalBoss = false;
     if (stats.victory) {
       const lp = (s.progress.levels[stats.levelId] ??= {
         completed: false,
@@ -128,10 +134,14 @@ export class Profile {
           s.progress.unlockedLevels.push(id);
           unlockedNext = id;
         }
-      } else s.flags.ngPlus = true;
+      } else {
+        finalBoss = true;
+        ngPlusUnlocked = !s.flags.ngPlus;
+        s.flags.ngPlus = true;
+      }
     }
     this.persist();
-    return { newRecord, unlockedNext };
+    return { newRecord, unlockedNext, ngPlusUnlocked, finalBoss };
   }
 
   /** Posição no ranking (0-based) se entrar. */
@@ -146,6 +156,7 @@ export class Profile {
       playerLevel,
       date: Date.now(),
       victory: stats.victory,
+      ...(stats.ngPlus ? { ngPlus: true } : {}),
     });
     if (pos >= 0) this.storage.writeRanking(this.ranking);
     return pos;

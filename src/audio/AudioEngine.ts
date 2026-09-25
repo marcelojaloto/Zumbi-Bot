@@ -201,6 +201,11 @@ export class AudioEngine {
     return this.ctx ? this.buses.music : null;
   }
 
+  /** Entrada do reverb (envio da música). */
+  reverbInput(): GainNode | null {
+    return this.ctx ? this.reverbSend : null;
+  }
+
   suspend(): void {
     void this.ctx?.suspend();
   }

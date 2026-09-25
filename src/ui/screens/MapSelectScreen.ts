@@ -42,10 +42,35 @@ export function mapSelectScreen(host: UiHost): Screen {
     );
     grid.appendChild(card);
   }
+  let ng: HTMLElement | null = null;
+  if (prof.save.flags.ngPlus) {
+    const label = () => (prof.save.flags.ngPlusOn ? 'Novo Jogo+: LIGADO' : 'Novo Jogo+: desligado');
+    const btn = el(
+      'button',
+      {
+        class: `btn small ng-toggle ${prof.save.flags.ngPlusOn ? 'on' : ''}`,
+        data: { nav: '' },
+        onclick: () => {
+          prof.save.flags.ngPlusOn = !prof.save.flags.ngPlusOn;
+          prof.persist();
+          btn.textContent = label();
+          btn.classList.toggle('on', prof.save.flags.ngPlusOn);
+        },
+      },
+      label(),
+    );
+    ng = el(
+      'div',
+      { class: 'ng-row' },
+      btn,
+      el('span', { class: 'muted' }, 'Inimigos +50% vida e +30% dano • pontos e sucata ×1,5'),
+    );
+  }
   const e = el(
     'div',
     { class: 'screen dim' },
     el('h2', {}, 'ESCOLHA O MAPA'),
+    ng,
     grid,
     el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, 'Voltar'),
   );

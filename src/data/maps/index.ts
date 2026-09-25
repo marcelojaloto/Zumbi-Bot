@@ -10,9 +10,10 @@ import { floresta } from './06-floresta';
 import { centro } from './07-centro';
 import { chamas } from './08-chamas';
 import { guerra } from './09-guerra';
+import { arena } from './10-arena';
 
 /** Mapas jogáveis em ordem (o sandbox fica fora da campanha). */
-export const MAPS: MapDef[] = [vila, torre, banco, castelo, toxica, floresta, centro, chamas, guerra];
+export const MAPS: MapDef[] = [vila, torre, banco, castelo, toxica, floresta, centro, chamas, guerra, arena];
 
 export const ALL_MAPS: MapDef[] = [sandbox, ...MAPS];
 

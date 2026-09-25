@@ -1,5 +1,5 @@
 import { secToTicks } from '../../core/time';
-import { coopScaling, xpToNext } from '../../data/balance';
+import { NG_PLUS, coopScaling, xpToNext } from '../../data/balance';
 import { getBoss } from '../../data/bosses';
 import type { SegmentDef, SpawnFrom, StaffId, WaveDef, WeaponId } from '../../data/types';
 import type { RunStats } from '../events';
@@ -265,6 +265,10 @@ export function finishRun(w: World, victory: boolean): void {
   const star = { completed: victory, livesLost: p.livesLost, timeS, parTimeS: w.level.parTimeS };
   const bonus = levelEndBonus(star);
   p.score += bonus;
+  if (w.ngPlus) {
+    p.score = Math.round(p.score * NG_PLUS.score);
+    p.scrap = Math.round(p.scrap * NG_PLUS.scrap);
+  }
   const stats: RunStats = {
     mapId: w.map.id,
     levelId: w.level.id,
@@ -282,6 +286,7 @@ export function finishRun(w: World, victory: boolean): void {
     unlockedStaff: ls.unlockedStaff ?? undefined,
     unlockedGuns: p.guns.filter((g) => !ls.startGuns.includes(g)),
     victory,
+    ngPlus: w.ngPlus || undefined,
   };
   w.emit(victory ? { t: 'victory', stats } : { t: 'gameOver', stats });
 }

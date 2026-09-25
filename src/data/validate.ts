@@ -4,6 +4,7 @@ import { ENEMIES } from './enemies';
 import { ITEMS, LOOT_TABLES } from './items';
 import { ALL_MAPS } from './maps';
 import { MOVES } from './melee';
+import { MUSIC } from './music';
 import { STAFFS } from './staffs';
 import type { BossStep } from './types';
 
@@ -16,6 +17,7 @@ export function validateData(): string[] {
   for (const m of ALL_MAPS) {
     if (mapIds.has(m.id)) errs.push(`mapa duplicado: ${m.id}`);
     mapIds.add(m.id);
+    if (!MUSIC[m.music]) errs.push(`${m.id}: música desconhecida ${m.music}`);
     if (m.index >= 0) {
       if (indices.has(m.index)) errs.push(`índice de mapa duplicado: ${m.index}`);
       indices.add(m.index);
@@ -50,6 +52,7 @@ export function validateData(): string[] {
     });
   }
   for (const b of Object.values(BOSSES)) {
+    if (!MUSIC[b.music]) errs.push(`${b.id}: música desconhecida ${b.music}`);
     if (b.phases.length === 0) errs.push(`chefe ${b.id}: sem fases`);
     let last = 2;
     for (const ph of b.phases) {

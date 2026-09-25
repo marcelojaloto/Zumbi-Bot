@@ -3,7 +3,20 @@ import { DT, secToTicks } from '../../core/time';
 import { coopScaling } from '../../data/balance';
 import { getBoss } from '../../data/bosses';
 import { MOVES } from '../../data/melee';
-import type { BossDef, BossPattern, BossPhaseDef, BossStep, TelegraphShape } from '../../data/types';
+import type {
+  BossDef,
+  BossPattern,
+  BossPhaseDef,
+  BossStep,
+  DamageType,
+  Element,
+  FxId,
+  HitSpec,
+  ProjVisual,
+  ProjectileSpec,
+  StatusApply,
+  TelegraphShape,
+} from '../../data/types';
 import {
   isCharacter,
   isHostile,
@@ -155,13 +168,43 @@ function targetPoint(w: World, e: Entity, t: string): { x: number; z: number } {
   }
 }
 
-function hitScaled(
-  e: Entity,
-  hit: import('../../data/types').HitSpec,
-  def: BossDef,
-): import('../../data/types').HitSpec {
+/** Conversão de ataques na fase de elemento rotativo (tipo de dano, status, visual e efeito de zona). */
+const ELEMENTAL: Partial<
+  Record<Element, { dtype: DamageType; status?: StatusApply; visual: ProjVisual; fx: FxId }>
+> = {
+  fire: { dtype: 'fire', status: { id: 'burn', chance: 0.5 }, visual: 'fireball', fx: 'magma' },
+  ice: { dtype: 'ice', status: { id: 'chill', chance: 0.6 }, visual: 'iceball', fx: 'frost' },
+  electric: { dtype: 'electric', status: { id: 'stun', chance: 0.2 }, visual: 'spark', fx: 'electric' },
+  toxic: { dtype: 'toxic', status: { id: 'poison', chance: 0.6 }, visual: 'glob_toxic', fx: 'poisonCloud' },
+  necro: { dtype: 'necro', status: { id: 'slow', chance: 0.5 }, visual: 'skull_necro', fx: 'necro' },
+  water: { dtype: 'water', status: { id: 'wet', chance: 0.8 }, visual: 'jet_water', fx: 'water' },
+  earth: { dtype: 'earth', status: { id: 'root', chance: 0.3 }, visual: 'rock', fx: 'debris' },
+};
+
+function elemental(e: Entity, def: BossDef): (typeof ELEMENTAL)[Element] | undefined {
   const ph = phaseDef(def, e);
-  return { ...hit, damage: hit.damage * ph.damageMult };
+  return ph.elementCycle ? ELEMENTAL[e.boss!.element] : undefined;
+}
+
+function hitScaled(e: Entity, hit: HitSpec, def: BossDef): HitSpec {
+  const ph = phaseDef(def, e);
+  const el = elemental(e, def);
+  const out = { ...hit, damage: hit.damage * ph.damageMult };
+  if (el) {
+    out.dtype = el.dtype;
+    if (el.status) out.status = el.status;
+  }
+  return out;
+}
+
+function elementalSpec(e: Entity, def: BossDef, spec: ProjectileSpec): ProjectileSpec {
+  const el = elemental(e, def);
+  const out: ProjectileSpec = { ...spec, hit: hitScaled(e, spec.hit, def) };
+  if (!el) return out;
+  out.visual = el.visual;
+  const ex = spec.onImpact?.explosion;
+  if (ex) out.onImpact = { ...spec.onImpact, explosion: { ...ex, dtype: el.dtype, status: el.status } };
+  return out;
 }
 
 /** Executa um passo; retorna true quando termina. */
@@ -394,7 +437,7 @@ function runStep(w: World, e: Entity, def: BossDef, s: BossStep): boolean {
             delay,
             active: secToTicks(z.durationS),
             tickEvery: secToTicks(z.tickS),
-            fx: z.fx,
+            fx: elemental(e, def)?.fx ?? z.fx,
             height: 2.5,
             slow: z.slow,
             telegraph: { k: 'circle', r: z.radius },
@@ -625,7 +668,7 @@ function bossShoot(
 ): void {
   const b = e.boss!;
   const tgt = nearestPlayer(w, e);
-  const spec = { ...s.spec, hit: hitScaled(e, s.spec.hit, def) };
+  const spec = elementalSpec(e, def, s.spec);
   const sc = e.scale ?? 1;
   let x = e.t.x + e.t.facing * def.radius * 0.8;
   let y = e.t.y + (s.spec.y ?? 1.4) * sc;

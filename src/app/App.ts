@@ -8,6 +8,7 @@ import { readFlags, type UrlFlags } from './urlFlags';
 import { installDebug } from './debug';
 import { AudioEngine } from '../audio/AudioEngine';
 import { AudioDirector } from '../audio/AudioDirector';
+import { MusicPlayer } from '../audio/music';
 import { WorldOverlay } from '../ui/hud/WorldOverlay';
 import { Hud } from '../ui/hud/Hud';
 import { ScreenManager } from '../ui/ScreenManager';
@@ -22,6 +23,8 @@ import { el, fmtInt } from '../ui/dom';
 import { Autopilot } from '../sim/autopilot';
 import { resultScreen } from '../ui/screens/ResultScreen';
 import { mapSelectScreen } from '../ui/screens/MapSelectScreen';
+import { creditsScreen } from '../ui/screens/CreditsScreen';
+import { rankingScreen } from '../ui/screens/RankingScreen';
 import type { RunStats } from '../sim/events';
 import { MAPS, getMap } from '../data/maps';
 import { xpToNext } from '../data/balance';
@@ -35,6 +38,7 @@ export class App implements WardrobeHost {
   readonly flags: UrlFlags;
   readonly ui: HTMLElement;
   readonly audio: AudioEngine;
+  readonly music: MusicPlayer;
   readonly profile: Profile;
   readonly screens: ScreenManager;
   session: GameSession | null = null;
@@ -64,10 +68,14 @@ export class App implements WardrobeHost {
     this.input.onPause = () => this.togglePause();
     this.input.onMap = () => this.hud?.minimap.toggle();
     this.audio = new AudioEngine(this.flags.mute);
+    this.music = new MusicPlayer(this.audio);
     this.screens = new ScreenManager(ui);
     this.screens.onNavSound = (k) =>
       this.playUi(k === 'hover' ? 'ui_hover' : k === 'back' ? 'ui_back' : 'ui_click');
-    const unlock = () => this.audio.unlock();
+    const unlock = () => {
+      this.audio.unlock();
+      this.music.resume();
+    };
     addEventListener('pointerdown', unlock);
     addEventListener('keydown', unlock);
     document.addEventListener('visibilitychange', () => {
@@ -135,6 +143,7 @@ export class App implements WardrobeHost {
       this.audio.unlock();
       this.showMainMenu();
     };
+    this.music.play('menu');
     const e = el(
       'div',
       { class: 'screen dim splash-screen' },
@@ -165,6 +174,7 @@ export class App implements WardrobeHost {
     this.screen = 'menu';
     this.screens.clear();
     this.ensureMenuScene();
+    this.music.play('menu');
     const b = (label: string, fn: () => void, cls = 'btn') =>
       el('button', { class: cls, onclick: fn, data: { nav: '' } }, label);
     const s = this.profile.save;
@@ -194,8 +204,10 @@ export class App implements WardrobeHost {
         b('Mapas', () => this.screens.push(mapSelectScreen(this))),
         b('Guarda-roupa', () => this.screens.push(wardrobeScreen(this))),
         b('Loja', () => this.screens.push(shopScreen(this))),
+        b('Ranking', () => this.screens.push(rankingScreen(this))),
         b('Configurações', () => this.openSettings()),
         b('Controles', () => this.openControls()),
+        b('Créditos', () => this.screens.push(creditsScreen(this))),
       ),
       ...this.profile.notices.map((n) => el('p', { class: 'muted', style: 'color:#ffb02a' }, n)),
       el(
@@ -244,6 +256,7 @@ export class App implements WardrobeHost {
     this.audio.applyVolumes();
     this.input.sensitivity = s.controls.mouseSensitivity;
     this.renderer.cam.shakeScale = s.graphics.screenShake;
+    this.renderer.post.flashScale = s.graphics.reduceFlashes ? 0.3 : 1;
     this.renderer.renderScale = s.graphics.renderScale;
     this.renderer.resize();
     if (this.hud) this.hud.showFps = s.graphics.showFps || this.flags.fps;
@@ -297,10 +310,12 @@ export class App implements WardrobeHost {
       loadout: this.profile.loadout(),
       difficulty: this.profile.settings.gameplay.difficulty,
       noLevel: mapId === 'sandbox',
+      ngPlus: mapId !== 'sandbox' && this.profile.save.flags.ngPlusOn,
     });
     this.session = session;
     if (this.flags.god) session.world.get(1)!.player!.god = true;
-    const director = new AudioDirector(this.audio);
+    const director = new AudioDirector(this.audio, this.music);
+    this.music.play(map.music, 0);
     this.overlay = new WorldOverlay(this.ui);
     this.hud = new Hud(this.ui);
     this.ui.appendChild(this.screens.root);
@@ -351,7 +366,7 @@ export class App implements WardrobeHost {
     const beforeLevel = this.profile.save.profile.level;
     const res =
       s.world.map.id === 'sandbox'
-        ? { newRecord: false, unlockedNext: null }
+        ? { newRecord: false, unlockedNext: null, ngPlusUnlocked: false, finalBoss: false }
         : this.profile.applyRun(stats, {
             level: p.level,
             xp: p.xp,
@@ -372,8 +387,16 @@ export class App implements WardrobeHost {
         newRecord: res.newRecord,
         next: victory ? this.profile.nextLevel(s.world.map.id, idx) : null,
         unlockedNext: res.unlockedNext,
+        ngPlusUnlocked: res.ngPlusUnlocked,
       }),
     );
+    // primeira vitória sobre o chefe final: créditos por cima do resultado
+    const fl = this.profile.save.flags;
+    if (victory && res.finalBoss && !fl.credits) {
+      fl.credits = true;
+      this.profile.persist();
+      this.screens.push(creditsScreen(this, { final: true, ngPlusUnlocked: res.ngPlusUnlocked }));
+    }
   }
 
   /** Sair no meio da fase preserva XP, sucata e loot obtidos. */
@@ -417,6 +440,7 @@ export class App implements WardrobeHost {
     this.screen = 'paused';
     this.input.enabled = false;
     this.input.exitPointerLock();
+    this.music.muffle(true);
     this.screens.push(pauseScreen(this));
   }
 
@@ -424,6 +448,7 @@ export class App implements WardrobeHost {
     if (!this.session) return;
     this.screens.clear();
     this.session.paused = false;
+    this.music.muffle(false);
     this.screen = 'playing';
     this.input.enabled = true;
     if (!this.flags.nopointerlock && this.profile.settings.controls.pointerLock)
@@ -459,6 +484,7 @@ export class App implements WardrobeHost {
       this.fpsFrames = 0;
     }
     this.screens.pollGamepad(dt);
+    this.screens.update(dt);
     this.renderer.gl.info.reset();
     if (!this.session && this.menuScene) {
       this.menuScene.frame(dt);

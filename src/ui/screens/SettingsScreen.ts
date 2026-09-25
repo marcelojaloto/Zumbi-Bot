@@ -159,6 +159,11 @@ export function settingsScreen(host: UiHost): Screen {
       () => st().graphics.showFps,
       (v) => ((st().graphics.showFps = v), apply()),
     ),
+    check(
+      'Reduzir clarões (acessibilidade)',
+      () => st().graphics.reduceFlashes,
+      (v) => ((st().graphics.reduceFlashes = v), apply()),
+    ),
   ]);
   const confirmBox = el('div', { class: 'row-btns' });
   const wipeBtn = el(
