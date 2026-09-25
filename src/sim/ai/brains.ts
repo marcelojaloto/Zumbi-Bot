@@ -297,7 +297,8 @@ function tickAttack(w: World, e: Entity, def: EnemyDef): void {
 function fireAt(w: World, e: Entity, a: EnemyAttackDef, tgt: Entity, sweep: number): void {
   const spec = a.projectile;
   if (!spec) return;
-  const y = e.t.y + (spec.y ?? 1.3) * (e.scale ?? 1);
+  const def = getEnemy(e.defId);
+  const y = def.fly ? e.t.y + 0.1 : e.t.y + (spec.y ?? 1.3) * (e.scale ?? 1);
   const sx = e.t.x + e.t.facing * 0.5 * (e.scale ?? 1);
   let yaw = Math.atan2(tgt.t.z - e.t.z, tgt.t.x - sx);
   yaw += sweep;
@@ -311,6 +312,7 @@ function fireAt(w: World, e: Entity, a: EnemyAttackDef, tgt: Entity, sweep: numb
     yaw,
     spec: { ...spec, hit: scaledHit },
     target: spec.lob ? { x: tgt.t.x + tgt.t.vx * 0.4, z: tgt.t.z + tgt.t.vz * 0.4 } : undefined,
+    aimAt: { x: tgt.t.x, y: tgt.t.y + (tgt.body?.height ?? 1.6) * 0.6, z: tgt.t.z },
   });
   w.emit({
     t: 'shot',

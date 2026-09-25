@@ -135,7 +135,7 @@ export class SceneView {
     }
     const def = ENEMIES[e.defId]!;
     const rig = enemyRig(def.id, def.rig, e.id);
-    return new CharacterView(
+    const v = new CharacterView(
       rig,
       std,
       {
@@ -145,6 +145,8 @@ export class SceneView {
       },
       def.rig.scale,
     );
+    if (def.archetype === 'soldier') v.setHeld('gun:rifle', recipeMesh('gun:rifle', FIREARMS.rifle.mesh));
+    return v;
   }
 
   /** Arma/cajado na mão do robô e camada de mira. */
