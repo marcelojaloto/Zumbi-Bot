@@ -19,7 +19,7 @@ interface Walker {
   speed: number;
 }
 
-/** Cenário 3D atrás dos menus: o robô na névoa da vila, zumbis vagando e prévia do guarda-roupa. */
+/** Cenário 3D atrás dos menus: o robô no mapa atual do jogador, zumbis vagando e prévia do guarda-roupa. */
 export class MenuScene {
   private env: BuiltEnv;
   private lighting: Lighting;
@@ -35,9 +35,20 @@ export class MenuScene {
   private focusV = 0;
   private tmp = new Vector3();
 
-  constructor(private r: Renderer) {
-    const map = getMap('vila');
-    const level = { ...map.levels[0]!, length: 40, props: [], pickups: [], segments: [] };
+  constructor(
+    private r: Renderer,
+    mapId = 'vila',
+  ) {
+    const map = getMap(mapId);
+    const level = {
+      ...map.levels[0]!,
+      length: 40,
+      props: [],
+      pickups: [],
+      segments: [],
+      hazards: [],
+      boss: undefined,
+    };
     this.env = buildEnvironment(r.scene, map, level, r.quality);
     this.lighting = new Lighting(r.scene, r.gl, r.quality);
     this.lighting.applyEnv(map.env);

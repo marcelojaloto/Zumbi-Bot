@@ -158,7 +158,7 @@ export class App implements WardrobeHost {
 
   private ensureMenuScene(): void {
     if (this.session || this.menuScene) return;
-    this.menuScene = new MenuScene(this.renderer);
+    this.menuScene = new MenuScene(this.renderer, this.continueTarget().mapId);
     this.menuScene.setCosmetics(this.profile.save.cosmetics.equipped);
   }
 
