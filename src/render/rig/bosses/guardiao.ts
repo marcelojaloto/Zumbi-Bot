@@ -25,15 +25,43 @@ export const guardiaoExtra: BossExtra = (_s, d) => {
   const R = 0.5;
   parts.push(
     { j: J.chest, shape: 'cyl', size: [R, R, 1.0, 18], at: [0, cy, 0], rot: [0, 0, H], color: d.rig.skin },
-    { j: J.chest, shape: 'cyl', size: [R - 0.04, R - 0.04, 0.05, 18], at: [-0.52, cy, 0], rot: [0, 0, H], color: STEEL_L },
-    { j: J.chest, shape: 'torus', size: [R - 0.08, 0.04, 5, 24], at: [-0.55, cy, 0], rot: [0, H, 0], color: BRASS },
+    {
+      j: J.chest,
+      shape: 'cyl',
+      size: [R - 0.04, R - 0.04, 0.05, 18],
+      at: [-0.52, cy, 0],
+      rot: [0, 0, H],
+      color: STEEL_L,
+    },
+    {
+      j: J.chest,
+      shape: 'torus',
+      size: [R - 0.08, 0.04, 5, 24],
+      at: [-0.55, cy, 0],
+      rot: [0, H, 0],
+      color: BRASS,
+    },
     { j: J.chest, shape: 'torus', size: [R, 0.05, 5, 24], at: [-0.5, cy, 0], rot: [0, H, 0], color: stripe },
     { j: J.chest, shape: 'torus', size: [R, 0.05, 5, 24], at: [0.5, cy, 0], rot: [0, H, 0], color: dark },
     // pescoço até o elmo (o elmo fica acima do tambor)
     { j: J.head, shape: 'cyl', size: [0.1, 0.12, 0.3, 8], at: [0, 0.14, 0.02], color: dark },
     // volante
-    { j: J.chest, shape: 'cyl', size: [0.09, 0.09, 0.1, 10], at: [-0.6, cy, 0], rot: [0, 0, H], color: BRASS },
-    { j: J.chest, shape: 'torus', size: [0.26, 0.028, 4, 16], at: [-0.63, cy, 0], rot: [0, H, 0], color: BRASS },
+    {
+      j: J.chest,
+      shape: 'cyl',
+      size: [0.09, 0.09, 0.1, 10],
+      at: [-0.6, cy, 0],
+      rot: [0, 0, H],
+      color: BRASS,
+    },
+    {
+      j: J.chest,
+      shape: 'torus',
+      size: [0.26, 0.028, 4, 16],
+      at: [-0.63, cy, 0],
+      rot: [0, H, 0],
+      color: BRASS,
+    },
   );
   for (let k = 0; k < 3; k++)
     parts.push({
@@ -73,11 +101,35 @@ export const guardiaoExtra: BossExtra = (_s, d) => {
   // --- elmo antimotim com viseira e sirene ---
   parts.push(
     { j: J.head, shape: 'box', size: [0.4, 0.26, 0.4], at: [0, 0.36, 0.08], color: dark },
-    { j: J.head, shape: 'box', size: [0.32, 0.07, 0.02], at: [0, 0.36, 0.285], color: warn, glow: true, glowI: 3.5 },
-    { j: J.head, shape: 'box', size: [0.02, 0.07, 0.24], at: [-0.205, 0.36, 0.14], color: warn, glow: true, glowI: 3.5 },
+    {
+      j: J.head,
+      shape: 'box',
+      size: [0.32, 0.07, 0.02],
+      at: [0, 0.36, 0.285],
+      color: warn,
+      glow: true,
+      glowI: 3.5,
+    },
+    {
+      j: J.head,
+      shape: 'box',
+      size: [0.02, 0.07, 0.24],
+      at: [-0.205, 0.36, 0.14],
+      color: warn,
+      glow: true,
+      glowI: 3.5,
+    },
     { j: J.head, shape: 'box', size: [0.42, 0.04, 0.42], at: [0, 0.5, 0.08], color: stripe },
     { j: J.head, shape: 'cyl', size: [0.08, 0.1, 0.06, 8], at: [0, 0.55, 0.06], color: dark },
-    { j: J.head, shape: 'sphere', size: [0.09, 8, 6], at: [0, 0.61, 0.06], color: warn, glow: true, glowI: 4.5 },
+    {
+      j: J.head,
+      shape: 'sphere',
+      size: [0.09, 8, 6],
+      at: [0, 0.61, 0.06],
+      color: warn,
+      glow: true,
+      glowI: 4.5,
+    },
   );
 
   // --- giroflexes nos ombros e faixas de perigo ---
@@ -99,28 +151,57 @@ export const guardiaoExtra: BossExtra = (_s, d) => {
   const armR = J.upperArmR;
   parts.push({ j: armR, shape: 'box', size: [0.05, 0.32, 0.38], at: [-0.23, 0, 0], color: stripe });
   for (const y of [-0.1, 0.02, 0.14])
-    parts.push({ j: armR, shape: 'box', size: [0.055, 0.05, 0.42], at: [-0.235, y, 0], rot: [0.7, 0, 0], color: BLACK });
+    parts.push({
+      j: armR,
+      shape: 'box',
+      size: [0.055, 0.05, 0.42],
+      at: [-0.235, y, 0],
+      rot: [0.7, 0, 0],
+      color: BLACK,
+    });
   for (const [j, x] of [
     [J.shinR, -0.15],
     [J.shinL, 0.15],
   ] as const) {
     parts.push({ j, shape: 'box', size: [0.02, 0.34, 0.3], at: [x, -0.26, 0], color: stripe });
     for (const y of [-0.16, -0.3])
-      parts.push({ j, shape: 'box', size: [0.025, 0.05, 0.36], at: [x * 1.04, y, 0], rot: [0.7, 0, 0], color: BLACK });
+      parts.push({
+        j,
+        shape: 'box',
+        size: [0.025, 0.05, 0.36],
+        at: [x * 1.04, y, 0],
+        rot: [0.7, 0, 0],
+        color: BLACK,
+      });
   }
   parts.push({ j: J.hips, shape: 'box', size: [0.64, 0.1, 0.44], at: [0, 0.12, 0], color: stripe });
 
   // --- escudo antimotim no antebraço esquerdo ---
   parts.push(
     { j: J.foreArmL, shape: 'box', size: [0.06, 1.0, 0.72], at: [0.2, -0.2, 0.12], color: 0x2a3848 },
-    { j: J.foreArmL, shape: 'box', size: [0.065, 0.14, 0.5], at: [0.2, 0.05, 0.12], color: 0x9fd8ff, glow: true, glowI: 1.4 },
+    {
+      j: J.foreArmL,
+      shape: 'box',
+      size: [0.065, 0.14, 0.5],
+      at: [0.2, 0.05, 0.12],
+      color: 0x9fd8ff,
+      glow: true,
+      glowI: 1.4,
+    },
     { j: J.foreArmL, shape: 'box', size: [0.065, 0.06, 0.72], at: [0.2, -0.45, 0.12], color: stripe },
   );
 
   // --- cassetete elétrico na mão direita ---
   parts.push(
     { j: J.handR, shape: 'box', size: [0.28, 0.24, 0.28], at: [0, -0.1, 0.02], color: dark },
-    { j: J.handR, shape: 'box', size: [0.08, 0.95, 0.08], at: [0, -0.12, 0.36], rot: [H * 0.9, 0, 0], color: BLACK },
+    {
+      j: J.handR,
+      shape: 'box',
+      size: [0.08, 0.95, 0.08],
+      at: [0, -0.12, 0.36],
+      rot: [H * 0.9, 0, 0],
+      color: BLACK,
+    },
     {
       j: J.handR,
       shape: 'box',
@@ -138,7 +219,15 @@ export const guardiaoExtra: BossExtra = (_s, d) => {
   for (const x of [-0.16, 0.16]) {
     parts.push(
       { j: J.chest, shape: 'cyl', size: [0.015, 0.02, 0.8, 4], at: [x, 0.75, -0.42], color: dark },
-      { j: J.chest, shape: 'sphere', size: [0.04, 5, 4], at: [x, 1.16, -0.42], color: warn, glow: true, glowI: 4 },
+      {
+        j: J.chest,
+        shape: 'sphere',
+        size: [0.04, 5, 4],
+        at: [x, 1.16, -0.42],
+        color: warn,
+        glow: true,
+        glowI: 4,
+      },
     );
   }
   return parts;

@@ -19,7 +19,14 @@ export const sentinelaExtra: BossExtra = (_s, d) => {
   // --- rotor nas costas (plano YZ, visto de frente pela câmera) ---
   const rc: [number, number, number] = [0, 0.3, -1.0];
   parts.push(
-    { j: J.chest, shape: 'cyl', size: [0.07, 0.07, 0.55, 6], at: [0, 0.3, -0.72], rot: [H, 0, 0], color: dark },
+    {
+      j: J.chest,
+      shape: 'cyl',
+      size: [0.07, 0.07, 0.55, 6],
+      at: [0, 0.3, -0.72],
+      rot: [H, 0, 0],
+      color: dark,
+    },
     { j: J.chest, shape: 'cyl', size: [0.17, 0.17, 0.16, 10], at: rc, rot: [0, 0, H], color: BRASS_DARK },
     {
       j: J.chest,
@@ -29,9 +36,16 @@ export const sentinelaExtra: BossExtra = (_s, d) => {
       rot: [0, 0, H],
       color: glow,
       glow: true,
-      glowI: 3,
+      glowI: 1.4,
     },
-    { j: J.chest, shape: 'torus', size: [0.82, 0.07, 6, 28], at: [0.03, rc[1], rc[2]], rot: [0, H, 0], color: dark },
+    {
+      j: J.chest,
+      shape: 'torus',
+      size: [0.82, 0.07, 6, 28],
+      at: [0.03, rc[1], rc[2]],
+      rot: [0, H, 0],
+      color: dark,
+    },
     {
       j: J.chest,
       shape: 'torus',
@@ -40,7 +54,7 @@ export const sentinelaExtra: BossExtra = (_s, d) => {
       rot: [0, H, 0],
       color: glow,
       glow: true,
-      glowI: 1.3,
+      glowI: 0.75,
     },
   );
   for (let k = 0; k < 3; k++) {
@@ -88,10 +102,24 @@ export const sentinelaExtra: BossExtra = (_s, d) => {
         rot: [0, 0, H],
         color: glow,
         glow: true,
-        glowI: 1.2,
+        glowI: 0.7,
       },
-      { j, shape: 'box', size: [0.25, 0.04, 0.4], at: [x, 0.06, 0], rot: [Math.PI / 4, 0, 0], color: BRASS_DARK },
-      { j, shape: 'box', size: [0.25, 0.04, 0.4], at: [x, 0.06, 0], rot: [-Math.PI / 4, 0, 0], color: BRASS_DARK },
+      {
+        j,
+        shape: 'box',
+        size: [0.25, 0.04, 0.4],
+        at: [x, 0.06, 0],
+        rot: [Math.PI / 4, 0, 0],
+        color: BRASS_DARK,
+      },
+      {
+        j,
+        shape: 'box',
+        size: [0.25, 0.04, 0.4],
+        at: [x, 0.06, 0],
+        rot: [-Math.PI / 4, 0, 0],
+        color: BRASS_DARK,
+      },
     );
   }
 
@@ -136,7 +164,15 @@ export const sentinelaExtra: BossExtra = (_s, d) => {
     [J.shinL, 0.15],
   ] as const) {
     for (const y of [-0.12, -0.24, -0.36]) {
-      parts.push({ j, shape: 'box', size: [0.02, 0.035, 0.14], at: [x, y, 0], color: 0x2e8a96, glow: true, glowI: 1 });
+      parts.push({
+        j,
+        shape: 'box',
+        size: [0.02, 0.035, 0.14],
+        at: [x, y, 0],
+        color: 0x2e8a96,
+        glow: true,
+        glowI: 1,
+      });
     }
   }
   return parts;

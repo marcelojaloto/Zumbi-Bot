@@ -44,7 +44,7 @@ const helice: ProjectileSpec = {
 
 /** Vento do rotor: dano baixo por tique, empurrão forte. */
 const rajada: HitSpec = {
-  damage: 4,
+  damage: 7,
   dtype: 'wind',
   knockback: 8,
   launch: 1.5,

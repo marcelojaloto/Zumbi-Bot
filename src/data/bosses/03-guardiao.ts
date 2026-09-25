@@ -49,7 +49,7 @@ const descarga: ZoneSpec = {
 };
 
 const laser: HitSpec = {
-  damage: 5,
+  damage: 7,
   dtype: 'electric',
   knockback: 3,
   hitstun: 8,
