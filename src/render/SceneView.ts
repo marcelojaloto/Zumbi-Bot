@@ -193,7 +193,12 @@ export class SceneView {
       if (v.heldKey !== key) obj = recipeMesh(key, FIREARMS[g].mesh);
     }
     if (v.heldKey !== key) v.setHeld(key, obj, socket);
-    v.aim = p.mode === 'gun' && !(p.melee && !(firing || aiming)) && (firing || aiming) ? p.aimYaw : null;
+    v.aim =
+      p.mode === 'gun' && !(p.melee && !(firing || aiming)) && (firing || aiming)
+        ? e.t.facing >= 0
+          ? 0
+          : Math.PI
+        : null;
   }
 
   flash(id: EntityId, amount = 1): void {

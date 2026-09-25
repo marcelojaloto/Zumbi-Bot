@@ -255,6 +255,7 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
         () => st().gameplay.difficulty,
         (v) => ((st().gameplay.difficulty = v), apply()),
         [
+          ['veryEasy', t('Muito fácil')],
           ['easy', t('Fácil')],
           ['normal', t('Normal')],
           ['hard', t('Difícil')],
