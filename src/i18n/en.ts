@@ -108,6 +108,7 @@ export const EN: Record<string, string> = {
   PULAR: 'JUMP',
   'Pulo; toque de novo no ar para o pulo duplo': 'Jump; tap again in the air to double jump',
   ATIRAR: 'SHOOT',
+  CONJURAR: 'CAST',
   'Atira ou conjura o cajado, mirando sozinho no inimigo à frente':
     'Shoots or casts the staff, auto-aiming at the enemy ahead',
   ESPECIAL: 'SPECIAL',
