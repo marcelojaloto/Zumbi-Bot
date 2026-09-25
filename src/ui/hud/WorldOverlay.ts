@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import type { Renderer } from '../../render/Renderer';
 import { ENEMIES } from '../../data/enemies';
 import type { DamageType } from '../../data/types';
@@ -85,7 +86,7 @@ export class WorldOverlay {
         }
         if (!this.showNumbers) continue;
         if (ev.blocked) {
-          this.spawnNum('IMUNE', '#9aa4b8', ev.x, ev.y + 0.3, ev.z, false);
+          this.spawnNum(t('IMUNE'), '#9aa4b8', ev.x, ev.y + 0.3, ev.z, false);
           continue;
         }
         if (ev.amount <= 0) continue;

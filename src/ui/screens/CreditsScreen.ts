@@ -1,6 +1,7 @@
 import { BOSSES } from '../../data/bosses';
 import { MAPS } from '../../data/maps';
 import { el } from '../dom';
+import { t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
 
@@ -14,44 +15,45 @@ export function creditsScreen(
   const bosses = MAPS.map((m) => {
     const id = m.levels[m.levels.length - 1]?.boss?.id;
     const b = id ? BOSSES[id] : undefined;
-    return b ? `${m.index + 1}. ${m.name} — ${b.name}, ${b.title}` : `${m.index + 1}. ${m.name}`;
+    return b ? `${m.index + 1}. ${t(m.name)} — ${t(b.name)}, ${t(b.title)}` : `${m.index + 1}. ${t(m.name)}`;
   });
   const roll = el(
     'div',
     { class: 'cr-roll' },
     el('h1', {}, 'ZUMBI BOT'),
-    el('div', { class: 'subtitle' }, 'A revolução dos robôs no apocalipse zumbi'),
+    el('div', { class: 'subtitle' }, t('A revolução dos robôs no apocalipse zumbi')),
     opts.final
       ? el(
           'p',
           { class: 'cr-story' },
-          'O núcleo do OMEGA-Z se apagou. Pela primeira vez desde o apocalipse, o silêncio tomou as ruas. ' +
-            'Os robôs ainda vigiam as cidades em ruínas — mas agora, quem manda é a revolução.',
+          t(
+            'O núcleo do OMEGA-Z se apagou. Pela primeira vez desde o apocalipse, o silêncio tomou as ruas. Os robôs ainda vigiam as cidades em ruínas — mas agora, quem manda é a revolução.',
+          ),
         )
       : null,
-    block('Ideia e direção', 'marcelojaloto'),
-    block('Desenvolvimento', 'Criado com Claude Code'),
+    block(t('Ideia e direção'), 'marcelojaloto'),
+    block(t('Desenvolvimento'), t('Criado com Claude Code')),
     block(
-      'Tecnologia',
-      'Three.js — renderização 3D',
-      'postprocessing (pmndrs) e N8AO — bloom, cor e oclusão',
-      'Vite, TypeScript, Vitest e Playwright',
+      t('Tecnologia'),
+      t('Three.js — renderização 3D'),
+      t('postprocessing (pmndrs) e N8AO — bloom, cor e oclusão'),
+      t('Vite, TypeScript, Vitest e Playwright'),
     ),
     block(
-      'Tudo feito em código',
-      'Modelos low-poly montados com primitivas',
-      'Texturas pintadas em canvas',
-      'Efeitos sonoros e música sintetizados com Web Audio',
+      t('Tudo feito em código'),
+      t('Modelos low-poly montados com primitivas'),
+      t('Texturas pintadas em canvas'),
+      t('Efeitos sonoros e música sintetizados com Web Audio'),
     ),
-    block('Mapas e chefes', ...bosses),
-    block('Agradecimentos', 'A você, que jogou até o fim.'),
+    block(t('Mapas e chefes'), ...bosses),
+    block(t('Agradecimentos'), t('A você, que jogou até o fim.')),
     opts.ngPlusUnlocked
       ? block(
-          'Novo Jogo+ desbloqueado!',
-          'Ative-o na tela de mapas: inimigos mais fortes, mais pontos e sucata.',
+          t('Novo Jogo+ desbloqueado!'),
+          t('Ative-o na tela de mapas: inimigos mais fortes, mais pontos e sucata.'),
         )
       : null,
-    el('h2', { class: 'cr-end' }, 'Obrigado por jogar!'),
+    el('h2', { class: 'cr-end' }, t('Obrigado por jogar!')),
   );
   const viewport = el('div', { class: 'cr-viewport' }, roll);
   let y = 0;
@@ -67,7 +69,11 @@ export function creditsScreen(
     'div',
     { class: 'screen credits' },
     viewport,
-    el('button', { class: 'btn small cr-skip', data: { nav: '', autofocus: '' }, onclick: close }, 'Fechar'),
+    el(
+      'button',
+      { class: 'btn small cr-skip', data: { nav: '', autofocus: '' }, onclick: close },
+      t('Fechar'),
+    ),
   );
   viewport.addEventListener('wheel', (ev) => {
     boost += Math.sign(ev.deltaY) * 60;
