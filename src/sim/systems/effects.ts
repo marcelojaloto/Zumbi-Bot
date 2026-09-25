@@ -13,6 +13,18 @@ import type { World } from '../World';
 import { applyHit } from '../combat/applyHit';
 
 /** Explosão em área (granadas, barris, zumbi bomba, bosses). */
+const ELEMENTAL_DTYPES = new Set<string>([
+  'fire',
+  'water',
+  'ice',
+  'electric',
+  'toxic',
+  'cyber',
+  'wind',
+  'earth',
+  'necro',
+]);
+
 export function explode(
   w: World,
   x: number,
@@ -23,7 +35,9 @@ export function explode(
   team: Team,
   element?: Element,
 ): void {
-  w.emit({ t: 'explosion', x, y, z, r: spec.radius, element: element ?? 'explosive' });
+  // sem elemento explícito, o tipo de dano elemental da explosão define a cor do efeito
+  const el = element ?? (ELEMENTAL_DTYPES.has(spec.dtype) ? (spec.dtype as Element) : 'explosive');
+  w.emit({ t: 'explosion', x, y, z, r: spec.radius, element: el });
   w.emit({ t: 'shake', trauma: Math.min(0.7, 0.2 + spec.radius * 0.12) });
   const ownerEnt = w.get(owner);
   // cópia: explosões encadeadas podem alterar a lista

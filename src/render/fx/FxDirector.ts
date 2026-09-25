@@ -246,6 +246,12 @@ export class FxDirector {
         case 'explosion': {
           const el = ev.element;
           const color = el && el !== 'explosive' ? ELEMENT_COLORS[el as Element] : 0xff7a2a;
+          const colorEnd =
+            el && el !== 'explosive'
+              ? (((((color >> 16) & 255) * 0.3) | 0) << 16) |
+                (((((color >> 8) & 255) * 0.3) | 0) << 8) |
+                (((color & 255) * 0.3) | 0)
+              : 0x8a1a00;
           const r = ev.r;
           for (let i = 0; i < 26; i++) {
             const a = this.rnd() * Math.PI * 2;
@@ -262,7 +268,7 @@ export class FxDirector {
                 size: r * 0.5,
                 sizeEnd: r * 0.1,
                 color,
-                colorEnd: 0x8a1a00,
+                colorEnd,
                 intensity: 3,
                 drag: 4,
               },

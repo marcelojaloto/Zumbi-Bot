@@ -51,9 +51,9 @@ export function hazardSystem(w: World): void {
     if (envActive) {
       let doTick = true;
       if (hz.tickEvery > 0) {
+        // acerta no primeiro quadro ativo e depois a cada `tickEvery` quadros
+        doTick = hz.tickAcc % hz.tickEvery === 0;
         hz.tickAcc++;
-        doTick = hz.tickAcc >= hz.tickEvery || hz.tickAcc === 1;
-        if (hz.tickAcc >= hz.tickEvery) hz.tickAcc = 0;
       }
       const owner = w.get(hz.owner);
       for (const e of w.entities) {
