@@ -100,7 +100,12 @@ export class World {
     this.ngPlus = !!opts.ngPlus;
     const d = DIFFICULTY[opts.difficulty];
     this.diff = this.ngPlus
-      ? { ...d, enemyHp: d.enemyHp * NG_PLUS.enemyHp, enemyDmg: d.enemyDmg * NG_PLUS.enemyDmg }
+      ? {
+          ...d,
+          enemyHp: d.enemyHp * NG_PLUS.enemyHp,
+          bossHp: d.bossHp * NG_PLUS.enemyHp,
+          enemyDmg: d.enemyDmg * NG_PLUS.enemyDmg,
+        }
       : d;
     this.enemyCap = opts.enemyCap;
     this.loadouts = opts.loadouts;

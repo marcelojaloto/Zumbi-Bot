@@ -4,6 +4,7 @@ import { ENEMIES } from '../../data/enemies';
 import type { Element } from '../../data/types';
 import type { GameEvent } from '../../sim/events';
 import type { World } from '../../sim/World';
+import { resolveAim } from '../../sim/systems/weapons';
 import type { CameraRig } from '../CameraRig';
 import type { Lighting } from '../Lighting';
 import type { PostFX } from '../PostFX';
@@ -623,7 +624,7 @@ export class FxDirector {
       }
       // mira laser ao segurar o botão de mirar
       if (e.player && e.player.mode === 'gun' && (e.player.buttons & 32) !== 0 && e.player.respawn <= 0) {
-        const yaw = e.player.aimYaw;
+        const yaw = resolveAim(w, e, 14);
         const x0 = e.t.x + Math.cos(yaw) * 0.6;
         const z0 = e.t.z + Math.sin(yaw) * 0.3;
         const y0 = e.t.y + 1.3;

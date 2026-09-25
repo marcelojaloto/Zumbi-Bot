@@ -6,6 +6,7 @@ import { rankPosition } from '../../save/ranking';
 import type { RunStats } from '../../sim/events';
 import { el, fmtInt, hexColor } from '../dom';
 import { ordinal, t } from '../../i18n';
+import { difficultyName, easierThan } from '../difficulty';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
 
@@ -160,6 +161,26 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
   );
   btns.appendChild(b(t('Menu principal'), () => host.quitToMenu()));
 
+  // derrota: oferece tentar de novo numa dificuldade menor
+  let easier: HTMLElement | null = null;
+  const lower = win ? null : easierThan(host.profile.settings.gameplay.difficulty);
+  if (lower)
+    easier = el(
+      'div',
+      { class: 'easier' },
+      el('span', { class: 'muted' }, t('Difícil demais? Tente de novo numa dificuldade menor.')),
+      b(
+        t('Tentar no {d}', { d: difficultyName(lower) }),
+        () => {
+          host.profile.settings.gameplay.difficulty = lower;
+          host.profile.persistSettings();
+          host.applySettings();
+          host.restartLevel();
+        },
+        'btn small primary',
+      ),
+    );
+
   const e = el(
     'div',
     { class: `screen dim result ${win ? 'win' : 'lose'}` },
@@ -177,6 +198,7 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     el('div', { class: 'panel', style: 'max-width:520px' }, stats),
     rewards.childElementCount ? rewards : null,
     rankBox,
+    easier,
     btns,
   );
   return { el: e, id: win ? 'victory' : 'gameover', onBack: () => false };

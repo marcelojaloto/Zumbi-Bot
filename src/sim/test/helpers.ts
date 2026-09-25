@@ -1,5 +1,5 @@
 import { sandbox } from '../../data/maps/00-sandbox';
-import type { MapDef } from '../../data/types';
+import type { Difficulty, MapDef } from '../../data/types';
 import type { PlayerSlot } from '../Entity';
 import { emptyFrame, type InputFrame } from '../InputFrame';
 import { World, type PlayerLoadout } from '../World';
@@ -26,6 +26,7 @@ export function makeWorld(
     noLevel?: boolean;
     loadout?: Partial<PlayerLoadout>;
     ngPlus?: boolean;
+    difficulty?: Difficulty;
   } = {},
 ): World {
   return new World({
@@ -33,7 +34,7 @@ export function makeWorld(
     map: opts.map ?? sandbox,
     levelIdx: 0,
     loadouts: [loadout(opts.loadout)],
-    difficulty: 'normal',
+    difficulty: opts.difficulty ?? 'normal',
     enemyCap: 14,
     noLevel: opts.noLevel ?? true,
     ngPlus: opts.ngPlus,

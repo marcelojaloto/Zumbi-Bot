@@ -177,7 +177,9 @@ export function sanitizeSettings(raw: unknown): SettingsV1 {
       reduceFlashes: bool(g.reduceFlashes, false),
     },
     gameplay: {
-      difficulty: (diff === 'easy' || diff === 'normal' || diff === 'hard' ? diff : 'normal') as Difficulty,
+      difficulty: (diff === 'veryEasy' || diff === 'easy' || diff === 'normal' || diff === 'hard'
+        ? diff
+        : 'normal') as Difficulty,
     },
     language: d.language === 'pt' || d.language === 'en' ? d.language : 'auto',
   };

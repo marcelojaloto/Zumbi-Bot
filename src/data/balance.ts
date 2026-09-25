@@ -33,14 +33,28 @@ export const PLAYER = {
   juggleCap: 3,
 } as const;
 
+/**
+ * Dificuldade: multiplicadores de dano e vida dos inimigos, vida dos chefes, fichas de ataque simultâneo e
+ * ritmo dos chefes (pausa entre ataques; maior = mais tempo para reagir e revidar).
+ */
 export const DIFFICULTY: Record<
   Difficulty,
-  { enemyDmg: number; enemyHp: number; meleeTokens: number; rangedTokens: number }
+  {
+    enemyDmg: number;
+    enemyHp: number;
+    bossHp: number;
+    bossPace: number;
+    meleeTokens: number;
+    rangedTokens: number;
+  }
 > = {
-  easy: { enemyDmg: 0.7, enemyHp: 0.85, meleeTokens: 1, rangedTokens: 1 },
-  normal: { enemyDmg: 1, enemyHp: 1, meleeTokens: 2, rangedTokens: 2 },
-  hard: { enemyDmg: 1.3, enemyHp: 1.2, meleeTokens: 3, rangedTokens: 2 },
+  veryEasy: { enemyDmg: 0.45, enemyHp: 0.65, bossHp: 0.5, bossPace: 1.6, meleeTokens: 1, rangedTokens: 1 },
+  easy: { enemyDmg: 0.7, enemyHp: 0.85, bossHp: 0.75, bossPace: 1.25, meleeTokens: 1, rangedTokens: 1 },
+  normal: { enemyDmg: 1, enemyHp: 1, bossHp: 1, bossPace: 1, meleeTokens: 2, rangedTokens: 2 },
+  hard: { enemyDmg: 1.3, enemyHp: 1.2, bossHp: 1.2, bossPace: 0.9, meleeTokens: 3, rangedTokens: 2 },
 };
+
+export const DIFFICULTY_ORDER: Difficulty[] = ['veryEasy', 'easy', 'normal', 'hard'];
 
 /** Novo Jogo+: inimigos mais resistentes e fortes, pontuação e sucata maiores. */
 export const NG_PLUS = { enemyHp: 1.5, enemyDmg: 1.3, score: 1.5, scrap: 1.5 };
