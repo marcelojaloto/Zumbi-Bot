@@ -2,6 +2,8 @@ import {
   AdditiveBlending,
   CircleGeometry,
   Color,
+  CylinderGeometry,
+  MeshStandardMaterial,
   DoubleSide,
   Group,
   Mesh,
@@ -77,13 +79,40 @@ interface HzView {
   shapeKey: string;
   mat: MeshBasicMaterial;
   fillMat: MeshBasicMaterial | null;
+  /** Lâmina pendular (perigo "pendulum"): pivô no alto, balança em profundidade. */
+  blade: Group | null;
 }
+
+const PEND_TOP = 4.4;
 
 /** Decalques de perigos: aviso vermelho pulsante (telegraph) e zona ativa colorida por elemento. */
 export class HazardRenderer {
   private views = new Map<EntityId, HzView>();
   private t = 0;
   private glowTex = radialTexture('glow', 64);
+  private bladeKit: { arm: CylinderGeometry; blade: CylinderGeometry; mat: MeshStandardMaterial } | null =
+    null;
+
+  private makeBlade(): Group {
+    this.bladeKit ??= {
+      arm: new CylinderGeometry(0.04, 0.04, 1, 6).translate(0, -0.5, 0),
+      blade: new CylinderGeometry(0.75, 0.75, 0.07, 18, 1, false, Math.PI / 2, Math.PI),
+      mat: new MeshStandardMaterial({ color: 0xb8bcc4, metalness: 0.35, roughness: 0.35 }),
+    };
+    const k = this.bladeKit;
+    const pivot = new Group();
+    const arm = new Mesh(k.arm, k.mat);
+    arm.scale.y = PEND_TOP - 1.1;
+    arm.castShadow = true;
+    pivot.add(arm);
+    // meia-lua de aço no fim do braço, com o gume para baixo
+    const blade = new Mesh(k.blade, k.mat);
+    blade.rotation.set(0, 0.45, Math.PI / 2);
+    blade.position.y = -(PEND_TOP - 1.1);
+    blade.castShadow = true;
+    pivot.add(blade);
+    return pivot;
+  }
 
   constructor(private scene: Scene) {}
 
@@ -135,8 +164,22 @@ export class HazardRenderer {
       fill.position.y = 0.01;
       group.add(fill);
     }
+    let blade: Group | null = null;
+    if (hz.fx === 'pendulum') {
+      blade = this.makeBlade();
+      this.scene.add(blade);
+    }
     this.scene.add(group);
-    return { group, base, fill, maxDelay: Math.max(1, hz.delay), shapeKey: this.key(hz.shape), mat, fillMat };
+    return {
+      group,
+      base,
+      fill,
+      maxDelay: Math.max(1, hz.delay),
+      shapeKey: this.key(hz.shape),
+      mat,
+      fillMat,
+      blade,
+    };
   }
 
   sync(w: World, dt: number): void {
@@ -167,6 +210,12 @@ export class HazardRenderer {
         const sc = r0 > 0 ? s.r / r0 : 1;
         v.base.scale.set(sc, sc, 1);
       }
+      if (v.blade) {
+        const zc = (w.zBand[0] + w.zBand[1]) / 2;
+        const len = PEND_TOP - 1.1;
+        v.blade.position.set(e.t.x, PEND_TOP, zc);
+        v.blade.rotation.x = Math.asin(Math.max(-0.95, Math.min(0.95, (e.t.z - zc) / (len + 0.4))));
+      }
       const telegraph = hz.delay > 0;
       const envInactive = !!hz.env && hz.phase === 0;
       if (telegraph) {
@@ -190,6 +239,7 @@ export class HazardRenderer {
     const v = this.views.get(id);
     if (!v) return;
     this.scene.remove(v.group);
+    if (v.blade) this.scene.remove(v.blade);
     v.base.geometry.dispose();
     v.fill?.geometry.dispose();
     v.mat.dispose();
@@ -199,5 +249,11 @@ export class HazardRenderer {
 
   dispose(): void {
     for (const id of [...this.views.keys()]) this.remove(id);
+    if (this.bladeKit) {
+      this.bladeKit.arm.dispose();
+      this.bladeKit.blade.dispose();
+      this.bladeKit.mat.dispose();
+      this.bladeKit = null;
+    }
   }
 }

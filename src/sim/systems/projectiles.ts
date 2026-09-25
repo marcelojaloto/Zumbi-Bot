@@ -98,6 +98,45 @@ export function spawnProjectile(w: World, o: ProjOpts): Entity {
   return e;
 }
 
+/** Projétil destrutível abatido: estoura sem causar dano. */
+export function shootDown(w: World, p: Entity, dmg: number): boolean {
+  const pc = p.projectile!;
+  pc.hp -= dmg;
+  w.emit({ t: 'impact', x: p.t.x, y: p.t.y, z: p.t.z, visual: pc.visual, element: undefined });
+  if (pc.hp > 0) return false;
+  w.emit({ t: 'explosion', x: p.t.x, y: p.t.y, z: p.t.z, r: 0.7, element: pc.element ?? 'explosive' });
+  w.remove(p.id);
+  return true;
+}
+
+/** Projétil inimigo destrutível no caminho do segmento (tiros do jogador podem abatê-lo). */
+function shootableOnPath(
+  w: World,
+  p: Entity,
+  x0: number,
+  y0: number,
+  z0: number,
+  x1: number,
+  z1: number,
+): Entity | undefined {
+  const dx = x1 - x0;
+  const dz = z1 - z0;
+  const len2 = dx * dx + dz * dz;
+  for (const o of w.entities) {
+    const oc = o.projectile;
+    if (!oc || o === p || oc.hp <= 0 || !o.alive || !isHostile(p.team, o.team)) continue;
+    let tt = len2 > 0 ? ((o.t.x - x0) * dx + (o.t.z - z0) * dz) / len2 : 0;
+    tt = Math.max(0, Math.min(1, tt));
+    const ex = o.t.x - (x0 + dx * tt);
+    const ez = o.t.z - (z0 + dz * tt);
+    const r = oc.radius + p.projectile!.radius + 0.25;
+    if (ex * ex + ez * ez > r * r) continue;
+    if (Math.abs(o.t.y - y0) > 0.9) continue;
+    return o;
+  }
+  return undefined;
+}
+
 function impact(w: World, p: Entity, x: number, y: number, z: number): void {
   const pc = p.projectile!;
   w.emit({ t: 'impact', x, y, z, visual: pc.visual, element: undefined });
@@ -201,6 +240,19 @@ export function projectileSystem(w: World): void {
       break;
     }
     if (hitSomething || !p.alive) continue;
+
+    // tiros do jogador abatem mísseis, caveiras e afins
+    if (p.team === 'players' && !pc.gravity) {
+      const o = shootableOnPath(w, p, x0, y0, z0, x1, z1);
+      if (o) {
+        shootDown(w, o, pc.hit.damage);
+        if (pc.pierce > 0) pc.pierce--;
+        else {
+          w.remove(p.id);
+          continue;
+        }
+      }
+    }
 
     t.x = x1;
     t.y = y1;

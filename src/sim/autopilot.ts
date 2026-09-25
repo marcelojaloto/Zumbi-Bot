@@ -12,6 +12,10 @@ export class Autopilot implements InputSource {
   private t = 0;
   private stuck = 0;
   private lastX = 0;
+  /** Itens que não deu para pegar (ex.: vida cheia): ignorados depois de algumas tentativas. */
+  private skip = new Set<number>();
+  private tryId = 0;
+  private tries = 0;
 
   constructor(private getWorld: () => World | null) {}
 
@@ -99,12 +103,23 @@ export class Autopilot implements InputSource {
       f.moveX = 1;
       let best: Entity | undefined;
       for (const e of w.entities) {
-        if (e.kind !== 'pickup') continue;
+        if (e.kind !== 'pickup' || this.skip.has(e.id)) continue;
         if (Math.abs(e.t.x - p.t.x) < 4 && e.t.x > p.t.x - 1) best = e;
       }
       if (best) {
-        f.moveZ = Math.abs(best.t.z - p.t.z) > 0.3 ? Math.sign(best.t.z - p.t.z) : 0;
-        if (!best.pickup?.auto && Math.abs(best.t.x - p.t.x) < 0.8 && this.t % 6 === 0) b |= Btn.Punch;
+        const dz = best.t.z - p.t.z;
+        f.moveZ = Math.abs(dz) > 0.3 ? Math.sign(dz) : 0;
+        if (!best.pickup?.auto && Math.abs(best.t.x - p.t.x) < 0.8) {
+          f.moveX = 0;
+          if (Math.abs(dz) < 0.45 && this.t % 12 === 0) {
+            b |= Btn.Punch;
+            if (this.tryId !== best.id) {
+              this.tryId = best.id;
+              this.tries = 0;
+            }
+            if (++this.tries > 6) this.skip.add(best.id);
+          }
+        }
       } else f.moveZ = p.t.z > 0.2 ? -0.5 : p.t.z < -0.2 ? 0.5 : 0;
       if (this.t % 90 < 45) b |= Btn.Run;
     }

@@ -56,7 +56,8 @@ export function aiSystem(w: World): void {
     }
     if (!canAct(e)) continue;
     if (fi.state === 'land' || fi.state === 'fall' || fi.state === 'jump') {
-      if (!e.body!.grounded) continue;
+      if (e.body!.fly !== undefined) fi.state = 'idle';
+      else if (!e.body!.grounded) continue;
     }
 
     // alvo
@@ -526,8 +527,15 @@ function mechBrain(w: World, e: Entity, def: EnemyDef, tgt: Entity): void {
       return;
     }
   }
-  const side = dx > 0 ? -1 : 1;
-  moveTo(e, tgt.t.x + side * 3.5, tgt.t.z, sp, 0.4);
+  // fica a 3,5 m do alvo, dentro da área visível (senão atira de fora da tela)
+  let side = dx > 0 ? -1 : 1;
+  let tx = tgt.t.x + side * 3.5;
+  if (tx < w.bounds.minX + 1.2 || tx > w.bounds.maxX - 1.2) {
+    side = -side;
+    tx = tgt.t.x + side * 3.5;
+  }
+  tx = clamp(tx, w.bounds.minX + 1.2, w.bounds.maxX - 1.2);
+  moveTo(e, tx, tgt.t.z, sp, 0.4);
 }
 
 /** Aura de dano (zumbi em chamas). */
