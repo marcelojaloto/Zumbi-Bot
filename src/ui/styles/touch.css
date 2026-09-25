@@ -171,6 +171,8 @@
 }
 .t-btn.b-fire.staff {
   border-color: rgba(57, 230, 255, 0.9);
+  font-size: calc(10px * var(--ts));
+  letter-spacing: 0;
 }
 .t-btn.b-special {
   border-color: rgba(200, 120, 255, 0.85);
