@@ -183,6 +183,10 @@ export class ScreenManager {
         if (typing && e.code === 'Backspace') return;
         this.back();
         break;
+      case 'KeyQ':
+      case 'KeyE':
+        if (typing || !this.cycleTab(e.code === 'KeyQ' ? -1 : 1)) return;
+        break;
       case 'Enter':
       case 'Space':
       case 'KeyJ':
@@ -196,6 +200,25 @@ export class ScreenManager {
     e.preventDefault();
     e.stopPropagation();
   };
+
+  /** Atualização por quadro da tela do topo (animações de telas como os créditos). */
+  update(dt: number): void {
+    this.top?.update?.(dt);
+  }
+
+  /** Troca a aba ativa (LB/RB no gamepad, Q/E no teclado) em telas com `.tabs`. */
+  cycleTab(dir: number): boolean {
+    const tabs = this.top?.el.querySelector('.tabs');
+    if (!tabs) return false;
+    const btns = [...tabs.querySelectorAll<HTMLElement>('button:not([disabled])')];
+    if (btns.length < 2) return false;
+    const cur = btns.findIndex((b) => b.classList.contains('on'));
+    const next = btns[(Math.max(0, cur) + dir + btns.length) % btns.length]!;
+    next.click();
+    next.focus({ preventScroll: true });
+    this.onNavSound?.('hover');
+    return true;
+  }
 
   /** Navegação por gamepad (chamada a cada quadro). */
   pollGamepad(dt: number): void {
@@ -214,12 +237,18 @@ export class ScreenManager {
       if (dirX && a?.type === 'range') {
         a.value = String(Number(a.value) + dirX * Number(a.step || 0.05));
         a.dispatchEvent(new Event('input', { bubbles: true }));
+      } else if (dirX && a instanceof HTMLSelectElement) {
+        const n = a.options.length;
+        a.selectedIndex = (a.selectedIndex + dirX + n) % n;
+        a.dispatchEvent(new Event('change', { bubbles: true }));
       } else this.move(dirX, dirY);
       this.gpRepeat = 0.18;
     }
     if (!dirX && !dirY) this.gpRepeat = 0;
     if (edge(0)) (document.activeElement as HTMLElement | null)?.click();
     if (edge(1)) this.back();
+    if (edge(4)) this.cycleTab(-1);
+    if (edge(5)) this.cycleTab(1);
     this.gpPrev = gp.buttons.map((b) => b.pressed);
   }
 }

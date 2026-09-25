@@ -8,3 +8,4 @@ import './06-pantano';
 import './07-mecha';
 import './08-incandescente';
 import './09-criotanque';
+import './10-omega';

@@ -104,8 +104,11 @@ export class PostFX {
     }
   }
 
+  /** Multiplicador de clarões/pulsos (acessibilidade: "Reduzir clarões"). */
+  flashScale = 1;
+
   setDamagePulse(v: number): void {
-    if (this.grade) this.grade.u('damagePulse').value = v;
+    if (this.grade) this.grade.u('damagePulse').value = v * this.flashScale;
   }
 
   setDesat(v: number): void {
@@ -114,12 +117,12 @@ export class PostFX {
 
   setFlash(v: number, r = 1, g = 1, b = 1): void {
     if (!this.grade) return;
-    this.grade.u('flash').value = v;
+    this.grade.u('flash').value = v * this.flashScale;
     this.grade.u('flashColor').value.set(r, g, b);
   }
 
   pulseChroma(v: number): void {
-    this.chromaPulse = Math.max(this.chromaPulse, v);
+    this.chromaPulse = Math.max(this.chromaPulse, v * this.flashScale);
   }
 
   setSize(w: number, h: number): void {

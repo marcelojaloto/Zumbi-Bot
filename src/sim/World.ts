@@ -1,5 +1,5 @@
 import { Rng } from '../core/rng';
-import { DIFFICULTY, VIEW_HALF_WIDTH } from '../data/balance';
+import { DIFFICULTY, NG_PLUS, VIEW_HALF_WIDTH } from '../data/balance';
 import type {
   CosmeticId,
   CosmeticSlot,
@@ -39,6 +39,8 @@ export interface WorldOptions {
   enemyCap: number;
   /** Sem ondas/boss (sandbox / testes). */
   noLevel?: boolean;
+  /** Novo Jogo+ (desbloqueado ao derrotar o OMEGA-Z). */
+  ngPlus?: boolean;
 }
 
 export interface Bounds {
@@ -63,6 +65,7 @@ export class World {
   readonly enemyCap: number;
   readonly loadouts: PlayerLoadout[];
   readonly noLevel: boolean;
+  readonly ngPlus: boolean;
 
   entities: Entity[] = [];
   byId = new Map<EntityId, Entity>();
@@ -94,7 +97,11 @@ export class World {
     this.levelIdx = opts.levelIdx;
     this.level = opts.map.levels[opts.levelIdx]!;
     this.difficulty = opts.difficulty;
-    this.diff = DIFFICULTY[opts.difficulty];
+    this.ngPlus = !!opts.ngPlus;
+    const d = DIFFICULTY[opts.difficulty];
+    this.diff = this.ngPlus
+      ? { ...d, enemyHp: d.enemyHp * NG_PLUS.enemyHp, enemyDmg: d.enemyDmg * NG_PLUS.enemyDmg }
+      : d;
     this.enemyCap = opts.enemyCap;
     this.loadouts = opts.loadouts;
     this.noLevel = !!opts.noLevel;

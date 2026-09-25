@@ -42,6 +42,9 @@ export const DIFFICULTY: Record<
   hard: { enemyDmg: 1.3, enemyHp: 1.2, meleeTokens: 3, rangedTokens: 2 },
 };
 
+/** Novo Jogo+: inimigos mais resistentes e fortes, pontuação e sucata maiores. */
+export const NG_PLUS = { enemyHp: 1.5, enemyDmg: 1.3, score: 1.5, scrap: 1.5 };
+
 /** Largura visível (m) aproximada no plano do jogador; o sim usa metade dela para limitar a câmera. */
 export const VIEW_HALF_WIDTH = 6.8;
 export const GRAVITY = 26;

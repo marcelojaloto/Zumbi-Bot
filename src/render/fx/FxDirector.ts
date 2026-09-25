@@ -1,4 +1,5 @@
 import type { Scene } from 'three';
+import { BOSSES } from '../../data/bosses';
 import { ENEMIES } from '../../data/enemies';
 import type { Element } from '../../data/types';
 import type { GameEvent } from '../../sim/events';
@@ -32,6 +33,7 @@ const ZOMBIE_GORE = 0x4a2a1a;
 
 /** Traduz eventos do sim em efeitos visuais: partículas, detritos, traços, luzes, tremor e flashes. */
 export class FxDirector {
+  private clock = 0;
   readonly add: ParticlePool;
   readonly norm: ParticlePool;
   readonly debris: Debris;
@@ -515,6 +517,7 @@ export class FxDirector {
   update(w: World, dt: number): void {
     this.t += dt;
     const every = (hz: number) => this.rnd() < hz * dt;
+    this.clock += dt;
     for (const e of w.entities) {
       if (e.statuses && e.statuses.length) {
         for (const s of e.statuses) {
@@ -679,6 +682,40 @@ export class FxDirector {
           distance: 10,
           priority: 2,
         });
+        // núcleo do ciborgue pulsa na cor do elemento atual
+        if (
+          e.boss &&
+          e.boss.element !== 'cyber' &&
+          e.fighter?.state !== 'dead' &&
+          BOSSES[e.defId]?.family === 'cyborg'
+        ) {
+          const col = ELEMENT_COLORS[e.boss.element];
+          this.lighting.request({
+            x: e.t.x + e.t.facing * 0.6,
+            y: e.body.height * 0.6,
+            z: e.t.z + 1.2,
+            color: col,
+            intensity: 10 + Math.sin(this.clock * 6) * 4,
+            distance: 7,
+            priority: 2,
+          });
+          if (every(4))
+            this.add.emit(
+              {
+                x: e.t.x + (this.rnd() - 0.5) * e.body.radius * 2,
+                y: this.rnd() * e.body.height,
+                z: e.t.z + (this.rnd() - 0.5) * 1.2,
+                vy: 1.2,
+                spread: 0.3,
+                life: 0.7,
+                size: 0.18,
+                sizeEnd: 0.02,
+                color: col,
+                intensity: 3,
+              },
+              this.rnd,
+            );
+        }
       }
       const hz = e.hazard;
       if (hz && hz.delay <= 0 && (!hz.env || hz.phase === 1)) this.hazardParticles(e.t.x, e.t.z, hz, every);

@@ -119,6 +119,9 @@ export class SceneView {
       this.root.add(v.group);
     }
     if (e.player) this.syncPlayerHeld(e, v, tick);
+    // chefes que crescem (OMEGA-Z fase 3): escala acompanha o sim suavemente
+    if (e.kind === 'boss' && e.scale && Math.abs(v.scale - e.scale) > 1e-3)
+      v.scale += (e.scale - v.scale) * Math.min(1, dt * 2.5);
     v.sync(e, alpha, dt, animInfoFor(e, tick));
     // afundar corpos
     if (e.fighter?.state === 'dead' && e.kind === 'enemy') {

@@ -166,8 +166,21 @@ export function cameraSystem(w: World): void {
   if (ps.length > 0) {
     let sx = 0;
     for (const p of ps) sx += p.t.x;
-    const target = sx / ps.length + 1.5;
-    if (target > w.camX) w.camX = Math.min(target, w.camX + 12 * DT);
+    const px = sx / ps.length;
+    const boss =
+      w.levelState.bossSpawned && !w.levelState.bossDead
+        ? w.entities.find((e) => e.kind === 'boss')
+        : undefined;
+    if (boss && w.lock) {
+      // luta de chefe: a câmera enquadra jogador e chefe e pode voltar dentro da arena
+      const m = VIEW_HALF_WIDTH - 1.8;
+      const target = Math.max(px - m, Math.min(px + m, px * 0.6 + boss.t.x * 0.4));
+      const d = target - w.camX;
+      w.camX += Math.sign(d) * Math.min(Math.abs(d), 8 * DT);
+    } else {
+      const target = px + 1.5;
+      if (target > w.camX) w.camX = Math.min(target, w.camX + 12 * DT);
+    }
   }
   const half = VIEW_HALF_WIDTH;
   if (w.lock) {

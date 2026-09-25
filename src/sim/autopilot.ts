@@ -82,6 +82,8 @@ export class Autopilot implements InputSource {
         // combo de socos (aperta e solta)
         if (this.t % 7 === 0) b |= Btn.Punch;
         if (tgt.fighter?.state === 'windup' && big && this.t % 20 === 0) b |= Btn.Jump;
+        // Giro Turbo contra chefes quando sobra mana (guarda para a cura)
+        else if (big && pc.mana > 70 && this.t % 45 === 0) b |= Btn.Special;
       }
       f.aimYaw = Math.atan2(dz, dx);
       f.aimMode = 0;

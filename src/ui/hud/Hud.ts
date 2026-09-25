@@ -12,6 +12,20 @@ import type { Entity } from '../../sim/Entity';
 import { ELEMENT_COLORS } from '../../render/views/staffRecipe';
 import { el, fmtInt, hexColor } from '../dom';
 import { Minimap } from './Minimap';
+import type { Element } from '../../data/types';
+
+const ELEMENT_NAMES: Record<Element, string> = {
+  heal: 'Cura',
+  fire: 'Fogo',
+  water: 'Água',
+  ice: 'Gelo',
+  electric: 'Eletricidade',
+  toxic: 'Tóxico',
+  cyber: 'Cibernético',
+  wind: 'Vento',
+  earth: 'Terra',
+  necro: 'Necromancia',
+};
 
 const POWER_INFO = {
   doubleDamage: { icon: '✖2', name: 'Dano Duplo', color: '#ff4a3a' },
@@ -220,9 +234,19 @@ export class Hud {
           if (b) this.showBanner(b.name.toUpperCase(), b.title, 3000, 'boss');
           break;
         }
-        case 'bossPhase':
-          this.showBanner(`FASE ${ev.phase + 1}`, '', 1500, 'boss');
+        case 'bossPhase': {
+          const be = w.get(ev.id);
+          const name = be ? BOSSES[be.defId]?.phases[ev.phase]?.name : undefined;
+          this.showBanner(`FASE ${ev.phase + 1}`, name ?? '', 1800, 'boss');
           break;
+        }
+        case 'bossElement': {
+          const be = w.get(ev.id);
+          const def = be ? BOSSES[be.defId] : undefined;
+          if (def && be?.boss && def.phases[be.boss.phase]?.elementCycle)
+            this.toast(`${def.name}: ${ELEMENT_NAMES[ev.element]}`, hexColor(ELEMENT_COLORS[ev.element]));
+          break;
+        }
         case 'bossDefeated':
           this.showBanner('CHEFE DERROTADO!', '', 2500, 'win');
           break;
@@ -280,7 +304,8 @@ export class Hud {
         this.combo.classList.add('pop', 'show');
       } else this.combo.classList.remove('show');
     }
-    this.mapName.textContent = w.map.index >= 0 ? `${w.map.index + 1}. ${w.map.name}` : w.map.name;
+    this.mapName.textContent =
+      (w.map.index >= 0 ? `${w.map.index + 1}. ${w.map.name}` : w.map.name) + (w.ngPlus ? ' • NG+' : '');
     const segs = w.level.segments.filter((s) => s.lock);
     const pipKey = `${segs.length}:${w.levelState.cleared.join(',')}:${w.levelState.segmentIdx}:${w.levelState.active}`;
     if (this.pips.dataset.k !== pipKey) {

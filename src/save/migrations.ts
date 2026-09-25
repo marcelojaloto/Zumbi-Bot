@@ -128,7 +128,12 @@ export function sanitizeSave(raw: unknown): SaveV1 {
       playTimeMs: num(stats.playTimeMs, 0, 0),
       runs: num(stats.runs, 0, 0),
     },
-    flags: { ngPlus: bool(flags.ngPlus, false), tutorialDone: bool(flags.tutorialDone, false) },
+    flags: {
+      ngPlus: bool(flags.ngPlus, false),
+      ngPlusOn: bool(flags.ngPlus, false) && bool(flags.ngPlusOn, false),
+      tutorialDone: bool(flags.tutorialDone, false),
+      credits: bool(flags.credits, false),
+    },
   };
 }
 
@@ -162,6 +167,7 @@ export function sanitizeSettings(raw: unknown): SettingsV1 {
       screenShake: num(g.screenShake, 1, 0, 1.5),
       damageNumbers: bool(g.damageNumbers, true),
       showFps: bool(g.showFps, false),
+      reduceFlashes: bool(g.reduceFlashes, false),
     },
     gameplay: {
       difficulty: (diff === 'easy' || diff === 'normal' || diff === 'hard' ? diff : 'normal') as Difficulty,
@@ -185,6 +191,7 @@ export function sanitizeRanking(raw: unknown): RankingV1 {
       playerLevel: num(r.playerLevel, 1, 1, 50),
       date: num(r.date, 0, 0),
       victory: bool(r.victory, false),
+      ...(r.ngPlus === true ? { ngPlus: true } : {}),
     });
   }
   return { version: 1, entries: entries.sort((a, b) => b.score - a.score).slice(0, 20) };

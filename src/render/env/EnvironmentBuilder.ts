@@ -58,7 +58,7 @@ export function buildEnvironment(scene: Scene, map: MapDef, level: LevelDef, q: 
     ? new MeshStandardMaterial({
         map: tex,
         roughness: 0.92,
-        metalness: env.ground.pattern === 'metal' ? 0.4 : 0.02,
+        metalness: env.ground.pattern === 'metal' ? 0.12 : 0.02,
       })
     : new MeshLambertMaterial({ map: tex });
   materials.push(groundMat);

@@ -29,7 +29,7 @@ describe('campanha (piloto automático)', () => {
         w.get(1)!.player!.god = true;
         const ap = new Autopilot(() => w);
         let t = 0;
-        for (; t < 60 * 60 * 20 && !w.finished; t++) {
+        for (; t < 60 * 60 * 30 && !w.finished; t++) {
           w.step(new Map([[0 as PlayerSlot, ap.sample(w.tick)]]));
           w.drainEvents();
         }

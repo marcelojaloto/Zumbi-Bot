@@ -25,7 +25,8 @@ export interface SaveV1 {
     pity: number;
   };
   stats: { kills: number; deaths: number; bosses: number; playTimeMs: number; runs: number };
-  flags: { ngPlus: boolean; tutorialDone: boolean };
+  /** ngPlus = Novo Jogo+ desbloqueado; ngPlusOn = ativo nas próximas partidas; credits = créditos já vistos. */
+  flags: { ngPlus: boolean; ngPlusOn: boolean; tutorialDone: boolean; credits: boolean };
 }
 
 export type QualityChoice = 'auto' | 'low' | 'medium' | 'high';
@@ -45,6 +46,8 @@ export interface SettingsV1 {
     screenShake: number;
     damageNumbers: boolean;
     showFps: boolean;
+    /** Acessibilidade: atenua clarões de tela, pulso de dano e aberração cromática. */
+    reduceFlashes: boolean;
   };
   gameplay: { difficulty: Difficulty };
 }
@@ -59,6 +62,7 @@ export interface RankEntry {
   playerLevel: number;
   date: number;
   victory: boolean;
+  ngPlus?: boolean;
 }
 
 export interface RankingV1 {
@@ -76,7 +80,7 @@ export function defaultSave(now = 0): SaveV1 {
     unlocks: { firearms: ['pistol'], staffs: ['heal'] },
     cosmetics: { owned: [], equipped: {}, seen: [], pity: 0 },
     stats: { kills: 0, deaths: 0, bosses: 0, playTimeMs: 0, runs: 0 },
-    flags: { ngPlus: false, tutorialDone: false },
+    flags: { ngPlus: false, ngPlusOn: false, tutorialDone: false, credits: false },
   };
 }
 
@@ -85,7 +89,14 @@ export function defaultSettings(): SettingsV1 {
     version: 1,
     audio: { master: 0.8, music: 0.55, sfx: 0.85, muted: false },
     controls: { mouseSensitivity: 1, pointerLock: true, aimAssist: 'low', hints: true },
-    graphics: { quality: 'auto', renderScale: 1, screenShake: 1, damageNumbers: true, showFps: false },
+    graphics: {
+      quality: 'auto',
+      renderScale: 1,
+      screenShake: 1,
+      damageNumbers: true,
+      showFps: false,
+      reduceFlashes: false,
+    },
     gameplay: { difficulty: 'normal' },
   };
 }

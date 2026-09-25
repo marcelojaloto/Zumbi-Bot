@@ -175,9 +175,28 @@ export function installDebug(app: App): void {
       app.renderer.cam.snap(x, 0, 0);
       app.session!.stepTicks(2);
     },
+    /** Salta para X (segmentos anteriores contam como concluídos; o próximo dispara normalmente). */
     teleport(x: number) {
-      const p = app.session?.world.get(1);
-      if (p) p.t.x = p.t.px = x;
+      const w = app.session?.world;
+      const p = w?.get(1);
+      if (!w || !p) return;
+      const ls = w.levelState;
+      const segs = w.level.segments;
+      let n = 0;
+      while (n < segs.length && segs[n]!.triggerX < x) {
+        ls.cleared[n] = true;
+        n++;
+      }
+      ls.segmentIdx = n;
+      ls.active = false;
+      w.lock = null;
+      for (const e of [...w.entities]) if (e.kind === 'enemy') w.remove(e.id);
+      p.t.x = p.t.px = x;
+      w.camX = x;
+      w.limitX = segs[n] ? segs[n]!.triggerX + 20 : (w.level.boss?.lock[1] ?? w.level.length);
+      w.updateBounds();
+      app.renderer.cam.snap(x, 0, 0);
+      app.session!.stepTicks(2);
     },
     captureFrame: () => app.renderer.captureFrame(),
     app,
