@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0d14" />
+    <meta
+      name="description"
+      content="Como instalar e rodar o Zumbi Bot no seu computador — How to install and run Zumbi Bot locally."
+    />
+    <link rel="icon" href="../icons/icon-192.png" />
+    <title>Zumbi Bot — Manual de instalação</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0d14;
+        --panel: #131722;
+        --panel-2: #1a1f2d;
+        --line: #2a3142;
+        --fg: #e8ecf4;
+        --muted: #9aa3b8;
+        --accent: #ff8c1a;
+        --accent-deep: #5a2600;
+        --cyan: #39e6ff;
+        --ok: #5aff9a;
+        --title: Impact, 'Arial Black', 'Haettenschweiler', system-ui, sans-serif;
+        --ui: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        --mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--ui);
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      body {
+        padding-inline: max(16px, env(safe-area-inset-left, 0px));
+        padding-block: 0 48px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      a {
+        color: var(--cyan);
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+      header.top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 18px 0 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: var(--fg);
+      }
+      .brand img {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+      }
+      .brand b {
+        font-family: var(--title);
+        font-weight: 400;
+        font-size: 26px;
+        letter-spacing: 3px;
+        color: var(--accent);
+        text-shadow: 0 3px 0 var(--accent-deep);
+      }
+      .lang {
+        display: flex;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .lang button {
+        font: 600 13px var(--ui);
+        letter-spacing: 0.08em;
+        padding: 7px 14px;
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+      }
+      .lang button[aria-pressed='true'] {
+        background: var(--accent);
+        color: #1a0c00;
+      }
+      h1 {
+        font-family: var(--title);
+        font-weight: 400;
+        letter-spacing: 2px;
+        font-size: clamp(34px, 6vw, 52px);
+        line-height: 1.1;
+        margin: 28px 0 8px;
+        text-wrap: balance;
+      }
+      .lead {
+        color: var(--muted);
+        max-width: 62ch;
+        margin: 0 0 20px;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .btn {
+        display: inline-block;
+        font-family: var(--title);
+        letter-spacing: 2px;
+        font-size: 18px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--fg);
+        border: 2px solid var(--line);
+        background: linear-gradient(180deg, #2a3142, #161a24);
+      }
+      .btn.primary {
+        color: #1a0c00;
+        border-color: #ffc27a;
+        background: linear-gradient(180deg, #ffa53d, #d8660a);
+      }
+      .btn:focus-visible,
+      .lang button:focus-visible,
+      .os button:focus-visible,
+      .copy:focus-visible {
+        outline: 2px solid var(--cyan);
+        outline-offset: 2px;
+      }
+      h2 {
+        font-family: var(--title);
+        font-weight: 400;
+        letter-spacing: 1.5px;
+        font-size: 26px;
+        margin: 40px 0 10px;
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        text-wrap: balance;
+      }
+      h2 .n {
+        color: var(--accent);
+        font-size: 20px;
+      }
+      h3 {
+        font-size: 15px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cyan);
+        margin: 22px 0 6px;
+      }
+      p,
+      li {
+        max-width: 68ch;
+      }
+      ul,
+      ol {
+        padding-left: 22px;
+      }
+      li + li {
+        margin-top: 4px;
+      }
+      code {
+        font-family: var(--mono);
+        font-size: 0.92em;
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        padding: 1px 6px;
+      }
+      .cmd {
+        position: relative;
+        margin: 10px 0 14px;
+        background: #07090e;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--accent);
+        border-radius: 8px;
+        overflow-x: auto;
+      }
+      .cmd pre {
+        margin: 0;
+        padding: 14px 92px 14px 16px;
+        font: 14px/1.7 var(--mono);
+        color: #d8e0ee;
+        white-space: pre;
+      }
+      .cmd pre .c {
+        color: #6c7690;
+      }
+      .copy {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font: 600 12px var(--ui);
+        letter-spacing: 0.06em;
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: var(--panel-2);
+        color: var(--fg);
+        cursor: pointer;
+      }
+      .copy.done {
+        color: var(--ok);
+        border-color: var(--ok);
+      }
+      .os {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin: 14px 0 4px;
+      }
+      .os button {
+        font: 600 14px var(--ui);
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--muted);
+        cursor: pointer;
+      }
+      .os button[aria-selected='true'] {
+        color: var(--fg);
+        border-color: var(--accent);
+        box-shadow: inset 0 -3px 0 var(--accent);
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 6px 18px 12px;
+      }
+      .req {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 10px;
+        margin: 12px 0;
+      }
+      .req div {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+      .req b {
+        display: block;
+        color: var(--accent);
+      }
+      .req span {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .note {
+        border-left: 3px solid var(--cyan);
+        background: rgba(57, 230, 255, 0.06);
+        padding: 10px 14px;
+        border-radius: 0 8px 8px 0;
+        margin: 14px 0;
+      }
+      dl.faq dt {
+        font-weight: 700;
+        margin-top: 16px;
+      }
+      dl.faq dd {
+        margin: 4px 0 0;
+        color: var(--muted);
+        max-width: 68ch;
+      }
+      .params {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+      }
+      .params-wrap {
+        overflow-x: auto;
+      }
+      .params td {
+        padding: 8px 10px;
+        border-top: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .params td:first-child {
+        white-space: nowrap;
+      }
+      footer {
+        margin-top: 48px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <a class="brand" href="../"><img src="../icons/icon-192.png" alt="" /><b>ZUMBI BOT</b></a>
+        <div class="lang" role="group" aria-label="Idioma / Language">
+          <button type="button" data-set-lang="pt" aria-pressed="true">PT</button>
+          <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </header>
+
+      <!-- ========================================================== PORTUGUÊS -->
+      <main data-lang="pt">
+        <h1>Manual de instalação local</h1>
+        <p class="lead">
+          Como baixar o Zumbi Bot e rodar no seu computador. São uns 5 minutos: instalar duas ferramentas,
+          copiar quatro comandos e abrir o jogo no navegador.
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="../">Jogar agora no navegador</a>
+          <a class="btn" href="https://github.com/marcelojaloto/Zumbi-Bot" target="_blank" rel="noopener"
+            >Código no GitHub</a
+          >
+        </div>
+
+        <h2><span class="n">1</span>Quer só jogar?</h2>
+        <p>
+          Não precisa instalar nada: o jogo roda direto em
+          <a href="https://marcelojaloto.github.io/Zumbi-Bot/">marcelojaloto.github.io/Zumbi-Bot</a>, no
+          computador, no celular ou no tablet. Esta página é para quem quer rodar o jogo na própria máquina
+          (para testar, estudar ou mexer no código).
+        </p>
+        <div class="note">
+          <b>No celular:</b> deite o aparelho. Os controles de toque aparecem sozinhos — direcional à esquerda
+          e botões à direita. Para jogar em tela cheia, use "Adicionar à tela inicial" no menu do navegador e
+          abra pelo ícone.
+        </div>
+
+        <h2><span class="n">2</span>O que você precisa</h2>
+        <div class="req">
+          <div><b>Node.js 22 LTS</b><span>Versão mínima 20.19 (exigida pelo Vite 8).</span></div>
+          <div><b>Git</b><span>Para baixar o código.</span></div>
+          <div><b>Navegador com WebGL</b><span>Chrome, Edge, Firefox ou Safari atualizados.</span></div>
+        </div>
+
+        <h2><span class="n">3</span>Instalar as ferramentas</h2>
+        <div class="os" role="tablist" aria-label="Sistema">
+          <button type="button" role="tab" data-os="win">Windows</button>
+          <button type="button" role="tab" data-os="mac">macOS</button>
+          <button type="button" role="tab" data-os="linux">Linux</button>
+        </div>
+        <div class="panel" data-os-panel="win">
+          <ol>
+            <li>
+              Baixe e instale o <b>Node.js 22 LTS</b> em
+              <a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a> (instalador .msi;
+              pode aceitar as opções padrão).
+            </li>
+            <li>
+              Baixe e instale o <b>Git for Windows</b> em
+              <a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com</a>.
+            </li>
+            <li>
+              Feche e abra de novo o <b>PowerShell</b> (menu Iniciar → "PowerShell") para ele enxergar os
+              programas.
+            </li>
+          </ol>
+        </div>
+        <div class="panel" data-os-panel="mac" hidden>
+          <ol>
+            <li>
+              Baixe e instale o <b>Node.js 22 LTS</b> em
+              <a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a> (instalador .pkg).
+              Quem usa Homebrew pode rodar <code>brew install node git</code>.
+            </li>
+            <li>
+              O Git costuma vir com o macOS: se o Terminal pedir as "ferramentas de linha de comando" na
+              primeira vez, aceite a instalação.
+            </li>
+            <li>Abra o <b>Terminal</b> (Spotlight → "Terminal").</li>
+          </ol>
+        </div>
+        <div class="panel" data-os-panel="linux" hidden>
+          <ol>
+            <li>
+              Instale o Git pelo gerenciador da sua distribuição, por exemplo
+              <code>sudo apt install git</code> (Debian/Ubuntu) ou <code>sudo dnf install git</code> (Fedora).
+            </li>
+            <li>
+              Instale o <b>Node.js 22</b> seguindo
+              <a href="https://nodejs.org/en/download" target="_blank" rel="noopener"
+                >nodejs.org/en/download</a
+              >
+              (recomendado: pelo gerenciador de versões nvm). O Node dos repositórios antigos costuma ser
+              velho demais.
+            </li>
+            <li>Abra um terminal.</li>
+          </ol>
+        </div>
+        <p>Confira se deu certo (o Node deve mostrar <code>v22</code>, ou pelo menos <code>v20.19</code>):</p>
+        <div class="cmd">
+          <pre>
+node --version
+git --version</pre>
+        </div>
+
+        <h2><span class="n">4</span>Baixar e rodar o jogo</h2>
+        <p>No terminal, copie e rode estes comandos, um de cada vez:</p>
+        <div class="cmd">
+          <pre>
+git clone https://github.com/marcelojaloto/Zumbi-Bot.git
+cd Zumbi-Bot
+npm install
+npm run dev</pre>
+        </div>
+        <p>
+          Quando aparecer <code>Local: http://localhost:5173/Zumbi-Bot/</code>, abra esse endereço no
+          navegador:
+          <a href="http://localhost:5173/Zumbi-Bot/">http://localhost:5173/Zumbi-Bot/</a>
+        </p>
+        <div class="note">
+          <b>Deixe o terminal aberto</b> enquanto joga: ele é o servidor do jogo. Para parar, volte ao
+          terminal e aperte <code>Ctrl</code> + <code>C</code>. Da próxima vez, basta entrar na pasta (<code
+            >cd Zumbi-Bot</code
+          >) e rodar <code>npm run dev</code> de novo.
+        </div>
+
+        <h3>Jogar no celular pela mesma rede Wi-Fi</h3>
+        <p>
+          Rode com <code>--host</code> e abra no celular o endereço "Network" que aparecer no terminal (algo
+          como <code>http://192.168.0.10:5173/Zumbi-Bot/</code>):
+        </p>
+        <div class="cmd"><pre>npm run dev -- --host</pre></div>
+
+        <h3>Versão de produção (igual à do site)</h3>
+        <div class="cmd">
+          <pre>
+npm run build
+npm run preview</pre>
+        </div>
+        <p>Depois abra <a href="http://localhost:4173/Zumbi-Bot/">http://localhost:4173/Zumbi-Bot/</a>.</p>
+
+        <h3>Atualizar para a versão mais nova</h3>
+        <div class="cmd">
+          <pre>
+cd Zumbi-Bot
+git pull
+npm install</pre>
+        </div>
+
+        <h2><span class="n">5</span>Atalhos para testar</h2>
+        <p>
+          Acrescente ao endereço do jogo (por exemplo
+          <code>http://localhost:5173/Zumbi-Bot/?map=arena&amp;god=1</code>):
+        </p>
+        <div class="params-wrap">
+          <table class="params">
+            <tr>
+              <td><code>?map=vila</code></td>
+              <td>
+                Abre direto um mapa: vila, torre, banco, castelo, toxica, floresta, centro, chamas, guerra,
+                arena.
+              </td>
+            </tr>
+            <tr>
+              <td><code>&amp;god=1</code></td>
+              <td>Modo invencível.</td>
+            </tr>
+            <tr>
+              <td><code>&amp;quality=low</code></td>
+              <td>Força a qualidade gráfica: low, medium ou high.</td>
+            </tr>
+            <tr>
+              <td><code>&amp;debug=1</code></td>
+              <td>Ferramentas de teste; F1–F8 criam inimigos na hora.</td>
+            </tr>
+            <tr>
+              <td><code>&amp;mute=1</code></td>
+              <td>Sem som.</td>
+            </tr>
+          </table>
+        </div>
+
+        <h2><span class="n">6</span>Problemas comuns</h2>
+        <dl class="faq">
+          <dt>"node", "npm" ou "git" não é reconhecido como comando</dt>
+          <dd>
+            O programa não foi instalado ou o terminal foi aberto antes da instalação. Instale e abra um
+            terminal novo.
+          </dd>
+          <dt>Erro de versão do Node ao rodar <code>npm run dev</code></dt>
+          <dd>Seu Node é antigo. Instale o Node.js 22 LTS e confira com <code>node --version</code>.</dd>
+          <dt>"Não é possível acessar esse site" em localhost:5173</dt>
+          <dd>
+            O servidor não está rodando: o terminal foi fechado ou o <code>npm run dev</code> parou com erro.
+            Rode <code>npm run dev</code> de novo dentro da pasta <code>Zumbi-Bot</code>. O endereço localhost
+            só funciona no computador onde o comando está rodando.
+          </dd>
+          <dt>"Port 5173 is already in use"</dt>
+          <dd>
+            Outro servidor já está usando a porta. Feche o outro terminal ou use o endereço com a porta que o
+            Vite sugerir.
+          </dd>
+          <dt>Tela preta ou erro de WebGL</dt>
+          <dd>
+            Ative a aceleração de hardware do navegador (no Chrome: Configurações → Sistema → "Usar aceleração
+            de gráficos quando disponível") e reinicie o navegador.
+          </dd>
+          <dt>Sem som</dt>
+          <dd>Os navegadores só liberam o áudio depois do primeiro clique ou toque: clique em "Jogar".</dd>
+        </dl>
+      </main>
+
+      <!-- ========================================================== ENGLISH -->
+      <main data-lang="en" hidden>
+        <h1>Local installation manual</h1>
+        <p class="lead">
+          How to download Zumbi Bot and run it on your computer. It takes about 5 minutes: install two tools,
+          copy four commands and open the game in your browser.
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="../">Play now in the browser</a>
+          <a class="btn" href="https://github.com/marcelojaloto/Zumbi-Bot" target="_blank" rel="noopener"
+            >Code on GitHub</a
+          >
+        </div>
+
+        <h2><span class="n">1</span>Just want to play?</h2>
+        <p>
+          No install needed: the game runs at
+          <a href="https://marcelojaloto.github.io/Zumbi-Bot/">marcelojaloto.github.io/Zumbi-Bot</a> on
+          computers, phones and tablets. This page is for running the game on your own machine (to test it,
+          study it or change the code).
+        </p>
+        <div class="note">
+          <b>On a phone:</b> turn the device sideways. The touch controls appear on their own — D-pad on the
+          left and buttons on the right. For full screen, use "Add to Home Screen" in the browser menu and
+          open the game from the icon.
+        </div>
+
+        <h2><span class="n">2</span>What you need</h2>
+        <div class="req">
+          <div><b>Node.js 22 LTS</b><span>Minimum version 20.19 (required by Vite 8).</span></div>
+          <div><b>Git</b><span>To download the code.</span></div>
+          <div><b>A WebGL browser</b><span>Up-to-date Chrome, Edge, Firefox or Safari.</span></div>
+        </div>
+
+        <h2><span class="n">3</span>Install the tools</h2>
+        <div class="os" role="tablist" aria-label="System">
+          <button type="button" role="tab" data-os="win">Windows</button>
+          <button type="button" role="tab" data-os="mac">macOS</button>
+          <button type="button" role="tab" data-os="linux">Linux</button>
+        </div>
+        <div class="panel" data-os-panel="win">
+          <ol>
+            <li>
+              Download and install <b>Node.js 22 LTS</b> from
+              <a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a> (.msi installer; the
+              default options are fine).
+            </li>
+            <li>
+              Download and install <b>Git for Windows</b> from
+              <a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com</a>.
+            </li>
+            <li>
+              Close and reopen <b>PowerShell</b> (Start menu → "PowerShell") so it can find the new programs.
+            </li>
+          </ol>
+        </div>
+        <div class="panel" data-os-panel="mac" hidden>
+          <ol>
+            <li>
+              Download and install <b>Node.js 22 LTS</b> from
+              <a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a> (.pkg installer).
+              Homebrew users can run <code>brew install node git</code>.
+            </li>
+            <li>
+              Git usually ships with macOS: if Terminal asks to install the "command line developer tools" the
+              first time, accept it.
+            </li>
+            <li>Open <b>Terminal</b> (Spotlight → "Terminal").</li>
+          </ol>
+        </div>
+        <div class="panel" data-os-panel="linux" hidden>
+          <ol>
+            <li>
+              Install Git with your distribution's package manager, for example
+              <code>sudo apt install git</code> (Debian/Ubuntu) or <code>sudo dnf install git</code> (Fedora).
+            </li>
+            <li>
+              Install <b>Node.js 22</b> following
+              <a href="https://nodejs.org/en/download" target="_blank" rel="noopener"
+                >nodejs.org/en/download</a
+              >
+              (recommended: the nvm version manager). The Node in older repositories is usually too old.
+            </li>
+            <li>Open a terminal.</li>
+          </ol>
+        </div>
+        <p>Check that it worked (Node should print <code>v22</code>, or at least <code>v20.19</code>):</p>
+        <div class="cmd">
+          <pre>
+node --version
+git --version</pre>
+        </div>
+
+        <h2><span class="n">4</span>Download and run the game</h2>
+        <p>In the terminal, copy and run these commands one at a time:</p>
+        <div class="cmd">
+          <pre>
+git clone https://github.com/marcelojaloto/Zumbi-Bot.git
+cd Zumbi-Bot
+npm install
+npm run dev</pre>
+        </div>
+        <p>
+          When <code>Local: http://localhost:5173/Zumbi-Bot/</code> appears, open that address in your
+          browser:
+          <a href="http://localhost:5173/Zumbi-Bot/">http://localhost:5173/Zumbi-Bot/</a>
+        </p>
+        <div class="note">
+          <b>Keep the terminal open</b> while you play: it is the game's server. To stop it, go back to the
+          terminal and press <code>Ctrl</code> + <code>C</code>. Next time, just go into the folder (<code
+            >cd Zumbi-Bot</code
+          >) and run <code>npm run dev</code> again.
+        </div>
+
+        <h3>Play on your phone over the same Wi-Fi</h3>
+        <p>
+          Run it with <code>--host</code> and open the "Network" address shown in the terminal on your phone
+          (something like <code>http://192.168.0.10:5173/Zumbi-Bot/</code>):
+        </p>
+        <div class="cmd"><pre>npm run dev -- --host</pre></div>
+
+        <h3>Production build (same as the website)</h3>
+        <div class="cmd">
+          <pre>
+npm run build
+npm run preview</pre>
+        </div>
+        <p>Then open <a href="http://localhost:4173/Zumbi-Bot/">http://localhost:4173/Zumbi-Bot/</a>.</p>
+
+        <h3>Update to the latest version</h3>
+        <div class="cmd">
+          <pre>
+cd Zumbi-Bot
+git pull
+npm install</pre>
+        </div>
+
+        <h2><span class="n">5</span>Testing shortcuts</h2>
+        <p>
+          Add these to the game address (for example
+          <code>http://localhost:5173/Zumbi-Bot/?map=arena&amp;god=1</code>):
+        </p>
+        <div class="params-wrap">
+          <table class="params">
+            <tr>
+              <td><code>?map=vila</code></td>
+              <td>
+                Opens a map directly: vila, torre, banco, castelo, toxica, floresta, centro, chamas, guerra,
+                arena.
+              </td>
+            </tr>
+            <tr>
+              <td><code>&amp;god=1</code></td>
+              <td>God mode.</td>
+            </tr>
+            <tr>
+              <td><code>&amp;quality=low</code></td>
+              <td>Forces the graphics quality: low, medium or high.</td>
+            </tr>
+            <tr>
+              <td><code>&amp;debug=1</code></td>
+              <td>Testing tools; F1–F8 spawn enemies on the spot.</td>
+            </tr>
+            <tr>
+              <td><code>&amp;mute=1</code></td>
+              <td>No sound.</td>
+            </tr>
+          </table>
+        </div>
+
+        <h2><span class="n">6</span>Common problems</h2>
+        <dl class="faq">
+          <dt>"node", "npm" or "git" is not recognized as a command</dt>
+          <dd>
+            The program is not installed, or the terminal was opened before installing it. Install it and open
+            a new terminal.
+          </dd>
+          <dt>Node version error when running <code>npm run dev</code></dt>
+          <dd>Your Node is too old. Install Node.js 22 LTS and check with <code>node --version</code>.</dd>
+          <dt>"This site can't be reached" at localhost:5173</dt>
+          <dd>
+            The server is not running: the terminal was closed or <code>npm run dev</code> stopped with an
+            error. Run <code>npm run dev</code> again inside the <code>Zumbi-Bot</code> folder. The localhost
+            address only works on the computer where the command is running.
+          </dd>
+          <dt>"Port 5173 is already in use"</dt>
+          <dd>
+            Another server is using the port. Close the other terminal or use the address with the port Vite
+            suggests.
+          </dd>
+          <dt>Black screen or WebGL error</dt>
+          <dd>
+            Turn on hardware acceleration in your browser (in Chrome: Settings → System → "Use graphics
+            acceleration when available") and restart the browser.
+          </dd>
+          <dt>No sound</dt>
+          <dd>Browsers only allow audio after the first click or tap: click "Play".</dd>
+        </dl>
+      </main>
+
+      <footer>
+        <span data-lang="pt"
+          >Zumbi Bot — A revolução dos robôs no apocalipse zumbi. Código aberto sob CC0.</span
+        >
+        <span data-lang="en" hidden
+          >Zumbi Bot — The robot revolution in the zombie apocalypse. Open source under CC0.</span
+        >
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        var KEY = 'zumbi-bot:manual-lang';
+        function read() {
+          try {
+            return localStorage.getItem(KEY);
+          } catch (e) {
+            return null;
+          }
+        }
+        function save(v) {
+          try {
+            localStorage.setItem(KEY, v);
+          } catch (e) {
+            /* sem armazenamento */
+          }
+        }
+        function setLang(l) {
+          document.documentElement.lang = l === 'pt' ? 'pt-BR' : 'en';
+          document.title =
+            l === 'pt' ? 'Zumbi Bot — Manual de instalação' : 'Zumbi Bot — Installation manual';
+          document.querySelectorAll('[data-lang]').forEach(function (el) {
+            el.hidden = el.getAttribute('data-lang') !== l;
+          });
+          document.querySelectorAll('[data-set-lang]').forEach(function (b) {
+            b.setAttribute('aria-pressed', String(b.getAttribute('data-set-lang') === l));
+          });
+        }
+        function setOs(os) {
+          document.querySelectorAll('[data-os]').forEach(function (b) {
+            b.setAttribute('aria-selected', String(b.getAttribute('data-os') === os));
+          });
+          document.querySelectorAll('[data-os-panel]').forEach(function (p) {
+            p.hidden = p.getAttribute('data-os-panel') !== os;
+          });
+        }
+        var stored = read();
+        var nav = (navigator.language || '').toLowerCase();
+        setLang(stored === 'pt' || stored === 'en' ? stored : nav.indexOf('pt') === 0 ? 'pt' : 'en');
+        var ua = navigator.userAgent;
+        setOs(
+          /Windows/i.test(ua)
+            ? 'win'
+            : /Mac|iPhone|iPad/i.test(ua)
+              ? 'mac'
+              : /Linux|Android/i.test(ua)
+                ? 'linux'
+                : 'win',
+        );
+        document.querySelectorAll('[data-set-lang]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            var l = b.getAttribute('data-set-lang');
+            save(l);
+            setLang(l);
+          });
+        });
+        document.querySelectorAll('[data-os]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            setOs(b.getAttribute('data-os'));
+          });
+        });
+        // botão "Copiar" em cada bloco de comandos
+        document.querySelectorAll('.cmd').forEach(function (box) {
+          var pre = box.querySelector('pre');
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'copy';
+          var label = function () {
+            return document.documentElement.lang === 'en' ? 'Copy' : 'Copiar';
+          };
+          btn.textContent = label();
+          btn.addEventListener('click', function () {
+            var text = pre.textContent;
+            var ok = function () {
+              btn.textContent = document.documentElement.lang === 'en' ? 'Copied' : 'Copiado';
+              btn.classList.add('done');
+              setTimeout(function () {
+                btn.textContent = label();
+                btn.classList.remove('done');
+              }, 1600);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(text).then(ok, function () {
+                select(pre);
+              });
+            } else select(pre);
+          });
+          box.appendChild(btn);
+          document.querySelectorAll('[data-set-lang]').forEach(function (b) {
+            b.addEventListener('click', function () {
+              btn.textContent = label();
+            });
+          });
+        });
+        function select(el) {
+          var r = document.createRange();
+          r.selectNodeContents(el);
+          var s = getSelection();
+          s.removeAllRanges();
+          s.addRange(r);
+        }
+      })();
+    </script>
+  </body>
+</html>
