@@ -72,6 +72,9 @@ topo. Tamanho, opacidade e vibração dos controles ficam em Configurações →
 - **No navegador:** https://marcelojaloto.github.io/Zumbi-Bot/ — computador, celular ou tablet.
 - **No celular e no tablet:** deite o aparelho; os controles de toque aparecem sozinhos (direcional com setas à
   esquerda, botões de ação à direita). Em "Adicionar à tela inicial", o jogo abre em tela cheia e deitado.
+- **App para Android:** baixe o [zumbi-bot.apk](https://github.com/marcelojaloto/Zumbi-Bot/releases/latest/download/zumbi-bot.apk)
+  no celular e instale (o Android pede para permitir apps dessa fonte). Como publicar na Play Store:
+  [docs/PLAY_STORE.md](docs/PLAY_STORE.md).
 - **Idiomas:** português e inglês, escolhidos pelo idioma do navegador e trocáveis em Configurações → Jogo.
 - **Dificuldade:** Muito fácil, Fácil, Normal (padrão) e Difícil — escolha na tela de mapas ou em Configurações →
   Jogo. Nas mais fáceis os chefes têm menos vida e atacam com mais pausa; ao perder, o jogo oferece tentar de
@@ -102,6 +105,8 @@ npm run preview    # serve o build em http://localhost:4173/Zumbi-Bot/
 npm test           # testes unitários (Vitest), incluindo a campanha inteira com piloto automático
 npm run e2e        # testes ponta a ponta (Playwright + Chromium)
 npm run check      # typecheck + testes + build
+npm run build:app  # build do jogo para o app Android em dist-app/
+npm run android:sync # build do app + cópia para o projeto android/ (Capacitor)
 ```
 
 Parâmetros de URL úteis para testar: `?debug=1` (expõe `window.__game`), `map=<id>` e `level=<n>` (abre direto
@@ -131,6 +136,13 @@ contador de FPS também são configuráveis.
 O workflow `.github/workflows/deploy.yml` publica o jogo a cada push na `main`.
 Para ativar: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 O jogo fica em `https://<usuario>.github.io/Zumbi-Bot/`.
+
+## App Android
+
+O workflow `.github/workflows/android.yml` gera o app com o mesmo jogo (projeto em `android/`, Capacitor): APK de
+teste em todo PR e, na `main`, a release "Android" com o `zumbi-bot.apk`. Com os segredos da chave de upload, gera
+também o AAB assinado para a Play Store. O passo a passo da publicação está em [docs/PLAY_STORE.md](docs/PLAY_STORE.md)
+e os textos e imagens da loja em [store/android/](store/android/).
 
 ## Licença
 

@@ -99,7 +99,7 @@ export class TouchControls {
       return b;
     };
     mk('t-pause', '⏸', () => this.hooks.onPause());
-    mk('t-fs', '⛶', () => this.hooks.onFullscreen());
+    if (!__NATIVE__) mk('t-fs', '⛶', () => this.hooks.onFullscreen());
     this.root.append(this.zone, this.pad, top);
     parent.appendChild(this.root);
     this.relabel();
