@@ -7,6 +7,7 @@ import {
   type InputSource,
 } from '../sim/InputFrame';
 import type { PlayerSlot } from '../sim/Entity';
+import type { TouchControls } from './TouchControls';
 
 export type Action =
   | 'left'
@@ -102,6 +103,10 @@ export class InputManager implements InputSource {
   onMap: (() => void) | null = null;
   /** Ações de interface (tecla pressionada) ouvidas pelo menu. */
   onKeyDown: ((code: string, e: KeyboardEvent) => void) | null = null;
+  /** Controles de toque ativos (celular/tablet). */
+  touch: TouchControls | null = null;
+  /** Último toque na tela: eventos de mouse "de compatibilidade" logo depois são ignorados. */
+  private lastTouch = -1e9;
 
   constructor(private readonly target: HTMLElement) {
     addEventListener('keydown', this.kd);
@@ -113,6 +118,7 @@ export class InputManager implements InputSource {
     target.addEventListener('wheel', this.wh, { passive: true });
     target.addEventListener('contextmenu', (e) => e.preventDefault());
     document.addEventListener('pointerlockchange', this.plc);
+    addEventListener('touchstart', this.ts, { passive: true, capture: true });
     addEventListener('gamepadconnected', () => (this.gamepadConnected = true));
     addEventListener('gamepaddisconnected', () => (this.gamepadConnected = false));
   }
@@ -125,6 +131,15 @@ export class InputManager implements InputSource {
     removeEventListener('mouseup', this.mu);
     removeEventListener('mousemove', this.mm);
     document.removeEventListener('pointerlockchange', this.plc);
+    removeEventListener('touchstart', this.ts, { capture: true });
+  }
+
+  private ts = (): void => {
+    this.lastTouch = performance.now();
+  };
+
+  private fromTouch(): boolean {
+    return performance.now() - this.lastTouch < 1200;
   }
 
   private kd = (e: KeyboardEvent): void => {
@@ -148,6 +163,7 @@ export class InputManager implements InputSource {
   };
 
   private md = (e: MouseEvent): void => {
+    if (this.fromTouch()) return;
     this.mouseButtons |= 1 << e.button;
     this.mouseActive = true;
   };
@@ -157,6 +173,7 @@ export class InputManager implements InputSource {
   };
 
   private mm = (e: MouseEvent): void => {
+    if (this.fromTouch()) return;
     if (this.pointerLocked) {
       this.lockedX = Math.max(0, Math.min(innerWidth, this.lockedX + e.movementX * this.sensitivity));
       this.lockedY = Math.max(0, Math.min(innerHeight, this.lockedY + e.movementY * this.sensitivity));
@@ -232,6 +249,14 @@ export class InputManager implements InputSource {
     if (this.tapped('modeStaff')) b |= Btn.ModeStaff;
     this.wheel = 0;
     this.pressedOnce.clear();
+
+    // toque (celular/tablet): mesmo papel do gamepad
+    if (this.touch) {
+      const tc = this.touch.read();
+      if (Math.abs(tc.mx) > Math.abs(mx)) mx = tc.mx;
+      if (Math.abs(tc.mz) > Math.abs(mz)) mz = tc.mz;
+      b |= tc.buttons;
+    }
 
     // gamepad
     const gp = this.readGamepad();

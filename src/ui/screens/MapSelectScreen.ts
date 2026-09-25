@@ -1,6 +1,7 @@
 import { BOSSES } from '../../data/bosses';
 import { MAPS } from '../../data/maps';
 import { el, fmtInt, hexColor } from '../dom';
+import { t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
 
@@ -21,9 +22,9 @@ export function mapSelectScreen(host: UiHost): Screen {
           disabled: !open,
           data: { nav: '' },
           onclick: () => host.startLevel(m.id, i),
-          title: l.name,
+          title: t(l.name),
         },
-        open ? `${m.levels.length > 1 ? `${i + 1}. ` : ''}${l.name}` : '🔒 Bloqueado',
+        open ? `${m.levels.length > 1 ? `${i + 1}. ` : ''}${t(l.name)}` : `🔒 ${t('Bloqueado')}`,
         el('span', { class: 'lv-stars' }, stars),
       );
     });
@@ -34,17 +35,17 @@ export function mapSelectScreen(host: UiHost): Screen {
       'div',
       { class: `map-card ${unlocked ? '' : 'locked'}`, style: `--mc:${hexColor(m.color)}` },
       el('div', { class: 'mc-num' }, String(m.index + 1)),
-      el('div', { class: 'mc-name' }, unlocked ? m.name : '???'),
-      el('div', { class: 'mc-sub' }, unlocked ? m.subtitle : 'Conclua o mapa anterior'),
-      el('div', { class: 'mc-boss' }, unlocked && boss ? `Chefe: ${boss.name}` : ''),
-      el('div', { class: 'mc-best' }, best > 0 ? `Recorde: ${fmtInt(best)}` : ''),
+      el('div', { class: 'mc-name' }, unlocked ? t(m.name) : '???'),
+      el('div', { class: 'mc-sub' }, unlocked ? t(m.subtitle) : t('Conclua o mapa anterior')),
+      el('div', { class: 'mc-boss' }, unlocked && boss ? t('Chefe: {name}', { name: t(boss.name) }) : ''),
+      el('div', { class: 'mc-best' }, best > 0 ? t('Recorde: {n}', { n: fmtInt(best) }) : ''),
       el('div', { class: 'mc-levels' }, ...levels),
     );
     grid.appendChild(card);
   }
   let ng: HTMLElement | null = null;
   if (prof.save.flags.ngPlus) {
-    const label = () => (prof.save.flags.ngPlusOn ? 'Novo Jogo+: LIGADO' : 'Novo Jogo+: desligado');
+    const label = () => (prof.save.flags.ngPlusOn ? t('Novo Jogo+: LIGADO') : t('Novo Jogo+: desligado'));
     const btn = el(
       'button',
       {
@@ -63,16 +64,16 @@ export function mapSelectScreen(host: UiHost): Screen {
       'div',
       { class: 'ng-row' },
       btn,
-      el('span', { class: 'muted' }, 'Inimigos +50% vida e +30% dano • pontos e sucata ×1,5'),
+      el('span', { class: 'muted' }, t('Inimigos +50% vida e +30% dano • pontos e sucata ×1,5')),
     );
   }
   const e = el(
     'div',
     { class: 'screen dim' },
-    el('h2', {}, 'ESCOLHA O MAPA'),
+    el('h2', {}, t('ESCOLHA O MAPA')),
     ng,
     grid,
-    el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, 'Voltar'),
+    el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, t('Voltar')),
   );
   return {
     el: e,
