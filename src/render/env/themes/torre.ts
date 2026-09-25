@@ -102,7 +102,14 @@ export function torreTheme(ctx: EnvCtx): void {
   // teto rachado: pilhas de entulho e poeira de pedra onde caem destroços
   for (const dx of debris) {
     for (let i = 0; i < ctx.dense(7); i++)
-      rock(p, rng, dx + rng.range(-6, 6), rng.chance(0.6) ? rng.range(-5.4, z0 - 0.9) : rng.range(z1 + 1, z1 + 2.6), 0.55, STONE);
+      rock(
+        p,
+        rng,
+        dx + rng.range(-6, 6),
+        rng.chance(0.6) ? rng.range(-5.4, z0 - 0.9) : rng.range(z1 + 1, z1 + 2.6),
+        0.55,
+        STONE,
+      );
     chain(p, dx + rng.range(-2, 2), -4.3, 6, 3.2, 1);
   }
 
@@ -114,7 +121,8 @@ export function torreTheme(ctx: EnvCtx): void {
   }
 
   // velas no chão junto à parede
-  for (let i = 0; i < ctx.dense(16); i++) candles(p, rng.range(ctx.x0, ctx.x1), rng.range(-5.9, -4.2), rng.int(2, 4), rng.next());
+  for (let i = 0; i < ctx.dense(16); i++)
+    candles(p, rng.range(ctx.x0, ctx.x1), rng.range(-5.9, -4.2), rng.int(2, 4), rng.next());
 
   // pedras soltas e entulho baixo nas bordas da pista
   for (let i = 0; i < ctx.dense(26); i++) {
@@ -124,7 +132,7 @@ export function torreTheme(ctx: EnvCtx): void {
   }
 
   // primeiro plano: balaustrada baixa de pedra com vãos (não cobre os pés dos personagens)
-  for (let bx = ctx.x0; bx < ctx.x1; ) {
+  for (let bx = ctx.x0; bx < ctx.x1;) {
     const len = rng.range(4, 9);
     if (rng.chance(0.6)) balustrade(p, bx, bx + len, z1 + 1.7);
     bx += len + rng.range(3, 7);
@@ -187,7 +195,9 @@ function gear(p: Pieces, cx: number, cy: number, z: number, r: number, color: nu
   const n = Math.max(8, Math.round(r * 9));
   for (let i = 0; i < n; i++) {
     const a = (i / n) * Math.PI * 2;
-    p.box(cx + Math.cos(a) * (r + 0.17), cy + Math.sin(a) * (r + 0.17), z, 0.24, 0.2, 0.2, color, { rot: [0, 0, a] });
+    p.box(cx + Math.cos(a) * (r + 0.17), cy + Math.sin(a) * (r + 0.17), z, 0.24, 0.2, 0.2, color, {
+      rot: [0, 0, a],
+    });
   }
   for (let i = 0; i < 3; i++)
     p.box(cx, cy, z - 0.02, 0.12, r * 2, 0.1, BRONZE_D, { rot: [0, 0, (i * Math.PI) / 3 + 0.3] });

@@ -123,10 +123,20 @@ export function bancoTheme(ctx: EnvCtx): void {
     const z = rng.chance(0.5) ? rng.range(z0 - 1.2, z0 + 0.6) : rng.range(z1 - 0.6, z1 + 1.8);
     for (let j = 0; j < 4; j++) {
       const r = j === 0 ? rng.range(0.25, 0.45) : rng.range(0.05, 0.14);
-      p.cyl(x + rng.range(-0.5, 0.5) * (j ? 1 : 0), 0.004 + j * 0.001, z + rng.range(-0.3, 0.3) * (j ? 1 : 0), r, r, 0.006, 0x5a0c0c, 7, {
-        noShadow: true,
-        rot: [0, rng.range(0, Math.PI), 0],
-      });
+      p.cyl(
+        x + rng.range(-0.5, 0.5) * (j ? 1 : 0),
+        0.004 + j * 0.001,
+        z + rng.range(-0.3, 0.3) * (j ? 1 : 0),
+        r,
+        r,
+        0.006,
+        0x5a0c0c,
+        7,
+        {
+          noShadow: true,
+          rot: [0, rng.range(0, Math.PI), 0],
+        },
+      );
     }
   }
   for (let i = 0; i < ctx.dense(8); i++) {
@@ -135,10 +145,18 @@ export function bancoTheme(ctx: EnvCtx): void {
     chair(p, x, rng.range(-4.6, -3.9), rng.range(0, Math.PI * 2));
   }
   for (let i = 0; i < ctx.dense(30); i++)
-    p.part('tet', [rng.range(0.04, 0.09), 0], rng.range(ctx.x0, ctx.x1), 0.03, rng.range(-5, z1 + 1.5), GLASS, {
-      glow: 0.8,
-      rot: [rng.next() * 3, rng.next() * 3, rng.next() * 3],
-    });
+    p.part(
+      'tet',
+      [rng.range(0.04, 0.09), 0],
+      rng.range(ctx.x0, ctx.x1),
+      0.03,
+      rng.range(-5, z1 + 1.5),
+      GLASS,
+      {
+        glow: 0.8,
+        rot: [rng.next() * 3, rng.next() * 3, rng.next() * 3],
+      },
+    );
 
   // dinheiro espalhado, papéis e cacos de vidro
   for (let i = 0; i < ctx.dense(140); i++) {
@@ -375,7 +393,15 @@ function vault(ctx: EnvCtx, cx: number): void {
   p.box(cx - r - 0.9, 1.5, WALL_Z + 0.3, 0.45, 0.65, 0.12, 0x22262a);
   p.box(cx - r - 0.9, 1.62, WALL_Z + 0.37, 0.34, 0.22, 0.02, ALARM, { glow: 1.6 });
   for (let i = 0; i < 6; i++)
-    p.box(cx - r - 1.0 + (i % 3) * 0.1, 1.35 - Math.floor(i / 3) * 0.1, WALL_Z + 0.37, 0.06, 0.06, 0.02, 0xc8ccd0);
+    p.box(
+      cx - r - 1.0 + (i % 3) * 0.1,
+      1.35 - Math.floor(i / 3) * 0.1,
+      WALL_Z + 0.37,
+      0.06,
+      0.06,
+      0.02,
+      0xc8ccd0,
+    );
   // pilhas de ouro e dinheiro nas laterais
   for (const sx of [-1, 1]) {
     const gx = cx + sx * 5.5;
@@ -419,9 +445,16 @@ function ropes(p: Pieces, x0: number, x1: number, z: number): void {
 function plant(p: Pieces, rng: Rng, x: number, z: number, s: number): void {
   p.cyl(x, 0.3 * s, z, 0.28 * s, 0.22 * s, 0.6 * s, 0x8a6a4a, 8);
   for (let i = 0; i < 5; i++)
-    p.ico(x + rng.range(-0.25, 0.25) * s, (0.8 + rng.next() * 0.5) * s, z + rng.range(-0.2, 0.2) * s, 0.28 * s, 0x2a6a3a, {
-      jitter: 0.2,
-    });
+    p.ico(
+      x + rng.range(-0.25, 0.25) * s,
+      (0.8 + rng.next() * 0.5) * s,
+      z + rng.range(-0.2, 0.2) * s,
+      0.28 * s,
+      0x2a6a3a,
+      {
+        jitter: 0.2,
+      },
+    );
 }
 
 function moneyBag(p: Pieces, rng: Rng, x: number, z: number): void {
@@ -450,7 +483,8 @@ function signText(p: Pieces, text: string, x: number, y: number, z: number, px: 
     const rows = FONT[c] ?? [];
     rows.forEach((row, r) => {
       [...row].forEach((bit, col) => {
-        if (bit === '1') p.box(cx + (col + 0.5) * px, y + (2 - r) * px, z, px * 0.9, px * 0.9, 0.03, color, { glow: 2.2 });
+        if (bit === '1')
+          p.box(cx + (col + 0.5) * px, y + (2 - r) * px, z, px * 0.9, px * 0.9, 0.03, color, { glow: 2.2 });
       });
     });
     cx += widths[i]! * px;
