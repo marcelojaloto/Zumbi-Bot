@@ -97,8 +97,13 @@ export const QUALITY: Record<QualityLevel, QualityPreset> = {
   },
 };
 
-export function resolveQuality(q: QualitySetting): QualityLevel {
-  return q === 'auto' ? 'medium' : q;
+/** "Automática" começa na Média (Baixa em celulares); a queda por desempenho continua valendo. */
+export function resolveQuality(
+  q: QualitySetting,
+  device: 'phone' | 'tablet' | 'desktop' = 'desktop',
+): QualityLevel {
+  if (q !== 'auto') return q;
+  return device === 'phone' ? 'low' : 'medium';
 }
 
 export function downgrade(q: QualityLevel): QualityLevel {

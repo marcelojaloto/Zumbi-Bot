@@ -1,6 +1,7 @@
 import './ui/styles/base.css';
 import './ui/styles/hud.css';
 import './ui/styles/menus.css';
+import './ui/styles/touch.css';
 import { App } from './app/App';
 import { el } from './ui/dom';
 import { t } from './i18n';

@@ -31,7 +31,13 @@ export function creditsScreen(
           ),
         )
       : null,
-    block(t('Ideia e direção'), 'marcelojaloto'),
+    block(
+      t('Ideia e direção'),
+      'Marcelo Jaloto',
+      'Nathan Jaloto',
+      'Pedro Henrique dos Passos Gomes',
+      'Leo Becker',
+    ),
     block(t('Desenvolvimento'), t('Criado com Claude Code')),
     block(
       t('Tecnologia'),
