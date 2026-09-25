@@ -1,0 +1,182 @@
+import type { DamageType, StatusEffectDef, StatusId } from './types';
+
+export const STATUS: Record<StatusId, StatusEffectDef> = {
+  burn: {
+    id: 'burn',
+    name: 'Queimando',
+    color: 0xff6a1a,
+    icon: '🔥',
+    durationS: 3,
+    stacking: 'refresh',
+    maxStacks: 1,
+    tick: { everyS: 1, damage: 4, dtype: 'fire', perStack: false },
+    bossDurationMult: 0.5,
+    tint: 0xff5a10,
+  },
+  wet: {
+    id: 'wet',
+    name: 'Molhado',
+    color: 0x3a9cff,
+    icon: '💧',
+    durationS: 5,
+    stacking: 'refresh',
+    maxStacks: 1,
+    bossDurationMult: 1,
+    tint: 0x2a6cff,
+  },
+  chill: {
+    id: 'chill',
+    name: 'Resfriado',
+    color: 0x9fe8ff,
+    icon: '❄',
+    durationS: 3,
+    stacking: 'stack',
+    maxStacks: 3,
+    mods: { perStackMoveMult: 0.8 },
+    onMaxStacks: 'freeze',
+    bossDurationMult: 0.5,
+    tint: 0x88ddff,
+  },
+  freeze: {
+    id: 'freeze',
+    name: 'Congelado',
+    color: 0xcff6ff,
+    icon: '🧊',
+    durationS: 2,
+    stacking: 'ignore',
+    maxStacks: 1,
+    mods: { canMove: false, canAct: false },
+    bossDurationMult: 0,
+    bossFallback: 'chill',
+    tint: 0xbfefff,
+  },
+  stun: {
+    id: 'stun',
+    name: 'Atordoado',
+    color: 0xfff15a,
+    icon: '⚡',
+    durationS: 0.8,
+    stacking: 'refresh',
+    maxStacks: 1,
+    mods: { canMove: false, canAct: false },
+    bossDurationMult: 0.3,
+    tint: 0xfff4a0,
+  },
+  poison: {
+    id: 'poison',
+    name: 'Envenenado',
+    color: 0x8cff3a,
+    icon: '☠',
+    durationS: 5,
+    stacking: 'stack',
+    maxStacks: 3,
+    tick: { everyS: 1, damage: 3, dtype: 'toxic', perStack: true },
+    mods: { regenBlocked: true },
+    bossDurationMult: 0.7,
+    tint: 0x6cff2a,
+  },
+  root: {
+    id: 'root',
+    name: 'Enraizado',
+    color: 0x9a6a3a,
+    icon: '🌿',
+    durationS: 2,
+    stacking: 'refresh',
+    maxStacks: 1,
+    mods: { canMove: false },
+    bossDurationMult: 0.3,
+    tint: 0x8a5a2a,
+  },
+  hacked: {
+    id: 'hacked',
+    name: 'Hackeado',
+    color: 0x39e6ff,
+    icon: '⌁',
+    durationS: 10,
+    stacking: 'ignore',
+    maxStacks: 1,
+    teamSwitch: true,
+    bossDurationMult: 0,
+    bossFallback: 'stun',
+    tint: 0x39e6ff,
+  },
+  raised: {
+    id: 'raised',
+    name: 'Controlado',
+    color: 0xb05aff,
+    icon: '💀',
+    durationS: 12,
+    stacking: 'ignore',
+    maxStacks: 1,
+    teamSwitch: true,
+    bossDurationMult: 0,
+    tint: 0xa040ff,
+  },
+  regen: {
+    id: 'regen',
+    name: 'Regenerando',
+    color: 0x5aff9a,
+    icon: '✚',
+    durationS: 4,
+    stacking: 'refresh',
+    maxStacks: 1,
+    heal: 5,
+    bossDurationMult: 1,
+    tint: 0x5aff9a,
+  },
+  slow: {
+    id: 'slow',
+    name: 'Lento',
+    color: 0x7a7aa0,
+    icon: '🐌',
+    durationS: 2,
+    stacking: 'refresh',
+    maxStacks: 1,
+    mods: { moveMult: 0.6 },
+    bossDurationMult: 0.5,
+  },
+  glitch: {
+    id: 'glitch',
+    name: 'Pane',
+    color: 0xff3ad7,
+    icon: '⚠',
+    durationS: 3,
+    stacking: 'refresh',
+    maxStacks: 1,
+    mods: { invertMove: true },
+    bossDurationMult: 0,
+    tint: 0xff3ad7,
+  },
+};
+
+export type InteractionId = 'conduct' | 'flashFreeze' | 'steam' | 'spread' | 'shatter' | 'ignite' | 'thaw';
+
+export interface InteractionRule {
+  id: InteractionId;
+  /** Status existente no alvo. */
+  has: StatusId;
+  /** Tipos de dano que disparam a interação. */
+  incoming: DamageType[];
+  dmgMult: number;
+  bonus?: number;
+  remove?: boolean;
+  add?: { id: StatusId; durationS?: number };
+}
+
+/** Tabela de interações elementais (ordem importa: a primeira que casar vence por status). */
+export const INTERACTIONS: InteractionRule[] = [
+  {
+    id: 'conduct',
+    has: 'wet',
+    incoming: ['electric'],
+    dmgMult: 1.6,
+    remove: true,
+    add: { id: 'stun', durationS: 0.5 },
+  },
+  { id: 'flashFreeze', has: 'wet', incoming: ['ice'], dmgMult: 1.2, remove: true, add: { id: 'freeze' } },
+  { id: 'steam', has: 'burn', incoming: ['water'], dmgMult: 1, bonus: 5, remove: true },
+  { id: 'spread', has: 'burn', incoming: ['wind'], dmgMult: 1.2 },
+  { id: 'shatter', has: 'freeze', incoming: ['blunt', 'explosive', 'earth'], dmgMult: 1.5, remove: true },
+  { id: 'thaw', has: 'freeze', incoming: ['fire'], dmgMult: 1.3, remove: true },
+  { id: 'thaw', has: 'chill', incoming: ['fire'], dmgMult: 1, remove: true },
+];
