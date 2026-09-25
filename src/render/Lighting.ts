@@ -112,7 +112,8 @@ export class Lighting {
     this.fill.position.set(cx - 3, 6, camZ + 14);
     if (this.q.shadows && this.q.shadowEveryOther) {
       this.shadowFrame++;
-      this.renderer.shadowMap.needsUpdate = this.shadowFrame % 2 === 0;
+      // nos primeiros quadros o mapa precisa existir (evita amostrar textura inválida)
+      this.renderer.shadowMap.needsUpdate = this.shadowFrame < 4 || this.shadowFrame % 2 === 0;
     }
 
     // candidatos: pedidos do frame + luzes estáticas próximas

@@ -12,6 +12,9 @@ import type { InputSource } from '../sim/InputFrame';
 import { World, type PlayerLoadout } from '../sim/World';
 import { spawnProp } from '../sim/systems/props';
 import { spawnPickup } from '../sim/systems/pickups';
+import { FxDirector } from '../render/fx/FxDirector';
+import { ProjectileRenderer } from '../render/views/ProjectileRenderer';
+import { HazardRenderer } from '../render/views/HazardRenderer';
 
 export interface SessionOptions {
   mapId: string;
@@ -40,6 +43,9 @@ export class GameSession {
   readonly env: BuiltEnv;
   readonly lighting: Lighting;
   readonly loop: FixedStepLoop;
+  readonly fx: FxDirector;
+  readonly projectiles: ProjectileRenderer;
+  readonly hazards: HazardRenderer;
   paused = false;
   ended = false;
   frameEvents: GameEvent[] = [];
@@ -74,6 +80,9 @@ export class GameSession {
     this.lighting.setStaticLights(this.env.lights);
     r.post.applyEnv(map.env);
     this.view = new SceneView(r.scene, r.quality);
+    this.fx = new FxDirector(r.scene, r.quality, this.view, r.cam, this.lighting, r.post);
+    this.projectiles = new ProjectileRenderer(r.scene);
+    this.hazards = new HazardRenderer(r.scene);
 
     this.loop = new FixedStepLoop({
       step: () => this.step(),
@@ -121,6 +130,7 @@ export class GameSession {
     if (this.frameEvents.length) {
       const ev = this.frameEvents;
       this.frameEvents = [];
+      this.fx.onEvents(ev, w);
       for (const h of this.hooks) h.onEvents?.(ev, this);
     }
 
@@ -139,6 +149,9 @@ export class GameSession {
     const rdt = this.paused ? 0 : dt;
     r.cam.update(w.camX, py * 0.35, pz * 0.3, Math.max(rdt, 1e-4));
     this.view.sync(w, alpha, rdt);
+    this.projectiles.sync(w, alpha, rdt, this.lighting);
+    this.hazards.sync(w, rdt);
+    this.fx.update(w, rdt);
     this.lighting.update(r.cam.x, 0, rdt);
     this.env.update(r.cam.x, this.time);
     for (const h of this.hooks) h.onFrame?.(rdt, alpha, this);
@@ -151,6 +164,9 @@ export class GameSession {
   }
 
   dispose(): void {
+    this.fx.dispose();
+    this.projectiles.dispose();
+    this.hazards.dispose();
     this.view.dispose();
     this.env.dispose();
     this.lighting.dispose();

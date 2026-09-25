@@ -114,7 +114,7 @@ export class SceneView {
       this.blobs.add(
         v.group.position.x,
         v.group.position.z,
-        (e.body?.radius ?? 0.4) * (e.scale ?? 1),
+        e.body?.radius ?? 0.4,
         e.fighter?.state === 'dead' ? 0 : y,
       );
     }

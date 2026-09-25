@@ -1,0 +1,45 @@
+.world-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none !important;
+  overflow: hidden;
+}
+.dmg-num {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--title-font);
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-shadow:
+    0 2px 0 #000,
+    0 0 6px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
+.ebar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.ebar-fill,
+.ebar-lag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+.ebar-lag {
+  background: #ffe08a;
+}
+.ebar-fill {
+  background: linear-gradient(180deg, #ff5a4a, #b01a1a);
+}
+.ebar.ally .ebar-fill {
+  background: linear-gradient(180deg, #5ae8ff, #1a7ab0);
+}

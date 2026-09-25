@@ -259,6 +259,7 @@ export interface ProjectileComp {
   special?: 'charmRobot' | 'charmZombie';
   hp: number;
   boomerang: boolean;
+  turnAt: number;
   age: number;
   staff?: StaffId;
   weapon?: WeaponId;
