@@ -113,7 +113,13 @@ export class App implements WardrobeHost {
     addEventListener('keydown', unlock);
     document.addEventListener('visibilitychange', () => {
       if (document.hidden && this.screen === 'playing') this.pause();
+      // app Android: sem som com o app em segundo plano
+      if (__NATIVE__) {
+        if (document.hidden) this.audio.suspend();
+        else this.audio.resume();
+      }
     });
+    this.installNativeBack();
     this.renderer.onContextLost = () => {
       this.ui.appendChild(
         el(
@@ -144,8 +150,28 @@ export class App implements WardrobeHost {
     if (on) this.input.exitPointerLock();
   }
 
+  /**
+   * App Android: o botão Voltar do sistema chama `window.zbBack()`. Na partida pausa; nas telas volta como o Esc;
+   * no menu principal devolve false e o app vai para segundo plano.
+   */
+  private installNativeBack(): void {
+    if (!__NATIVE__) return;
+    (window as unknown as { zbBack: () => boolean }).zbBack = () => {
+      if (this.screen === 'playing') {
+        this.pause();
+        return true;
+      }
+      if (!this.session && this.screens.depth <= 1) return false;
+      const init = { key: 'Escape', code: 'Escape', bubbles: true, cancelable: true };
+      document.dispatchEvent(new KeyboardEvent('keydown', init));
+      document.dispatchEvent(new KeyboardEvent('keyup', init));
+      return true;
+    };
+  }
+
   /** Tela cheia + paisagem travada (Android); no iPhone a API não existe e o aviso de girar resolve. */
   toggleFullscreen(force?: boolean): void {
+    if (__NATIVE__) return; // o app já abre em tela cheia e deitado
     const d = document as Document & { webkitFullscreenElement?: Element };
     const on = force ?? !(document.fullscreenElement || d.webkitFullscreenElement);
     try {
@@ -295,11 +321,19 @@ export class App implements WardrobeHost {
         b(t('Configurações'), () => this.openSettings()),
         b(t('Controles'), () => this.openControls()),
         b(t('Créditos'), () => this.screens.push(creditsScreen(this))),
-        el(
-          'a',
-          { class: 'btn', href: 'manual/index.html', target: '_blank', rel: 'noopener', data: { nav: '' } },
-          t('Manual'),
-        ),
+        __NATIVE__
+          ? null
+          : el(
+              'a',
+              {
+                class: 'btn',
+                href: 'manual/index.html',
+                target: '_blank',
+                rel: 'noopener',
+                data: { nav: '' },
+              },
+              t('Manual'),
+            ),
       ),
       ...this.profile.notices.map((n) => el('p', { class: 'muted', style: 'color:#ffb02a' }, t(n))),
       el(

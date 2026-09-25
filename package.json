@@ -9,6 +9,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --port 4173 --strictPort",
+    "build:app": "tsc --noEmit && vite build --mode app",
+    "android:sync": "npm run build:app && cap sync android",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -22,6 +24,9 @@
     "three": "0.186.1"
   },
   "devDependencies": {
+    "@capacitor/android": "8.5.2",
+    "@capacitor/cli": "8.5.2",
+    "@capacitor/core": "8.5.2",
     "@playwright/test": "1.56.1",
     "@types/node": "^22.20.4",
     "@types/three": "0.186.0",

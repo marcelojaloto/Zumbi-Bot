@@ -1,0 +1,90 @@
+name: Android
+
+# Gera o app Android (Capacitor) a partir do mesmo jogo web. O site no GitHub Pages não muda.
+# - Sempre: APK instalável (artefato "zumbi-bot-apk").
+# - Com os segredos da chave de upload: APK e AAB de lançamento assinados (o AAB é o que vai para a Play Store).
+# - Na main: publica/atualiza a release "Android" com o APK (link fixo: releases/latest/download/zumbi-bot.apk).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      VERSION_CODE: ${{ github.run_number }}
+      HAS_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+      - run: npm ci
+      - name: Versão
+        run: echo "VERSION_NAME=$(node -p "require('./package.json').version").${{ github.run_number }}" >> "$GITHUB_ENV"
+      - name: Build do jogo para o app e cópia para o projeto Android
+        run: npm run android:sync
+      - name: APK de teste (debug)
+        working-directory: android
+        run: ./gradlew --no-daemon assembleDebug
+      - name: Chave de upload
+        if: env.HAS_KEY == 'true'
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+      - name: APK e AAB de lançamento (assinados)
+        if: env.HAS_KEY == 'true'
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ./gradlew --no-daemon assembleRelease bundleRelease
+      - name: Organizar arquivos
+        run: |
+          mkdir -p out
+          if [ "$HAS_KEY" = "true" ]; then
+            cp android/app/build/outputs/apk/release/app-release.apk out/zumbi-bot.apk
+            cp android/app/build/outputs/bundle/release/app-release.aab out/zumbi-bot.aab
+          else
+            cp android/app/build/outputs/apk/debug/app-debug.apk out/zumbi-bot.apk
+          fi
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zumbi-bot-apk
+          path: out/zumbi-bot.apk
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: env.HAS_KEY == 'true'
+        with:
+          name: zumbi-bot-aab-play-store
+          path: out/zumbi-bot.aab
+          retention-days: 30
+      - name: Release "Android" com o APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete android --cleanup-tag --yes || true
+          gh release create android out/zumbi-bot.apk \
+            --target "$GITHUB_SHA" \
+            --title "Zumbi Bot para Android ($VERSION_NAME)" \
+            --notes "APK do Zumbi Bot para Android. Baixe **zumbi-bot.apk** no celular e abra para instalar (permita instalar apps desta fonte quando o Android pedir). Jogo no navegador: https://marcelojaloto.github.io/Zumbi-Bot/"
