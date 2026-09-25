@@ -38,7 +38,8 @@ jobs:
           cache: gradle
       - run: npm ci
       - name: Versão
-        run: echo "VERSION_NAME=$(node -p "require('./package.json').version").${{ github.run_number }}" >> "$GITHUB_ENV"
+        # 1.0.<número da execução>, a partir da versão do package.json
+        run: echo "VERSION_NAME=$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')").${{ github.run_number }}" >> "$GITHUB_ENV"
       - name: Build do jogo para o app e cópia para o projeto Android
         run: npm run android:sync
       - name: APK de teste (debug)
