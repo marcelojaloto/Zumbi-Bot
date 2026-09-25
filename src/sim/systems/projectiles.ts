@@ -25,6 +25,8 @@ export interface ProjOpts {
   spec: ProjectileSpec;
   /** Ponto alvo para lançamento em arco. */
   target?: { x: number; z: number };
+  /** Altura alvo para tiros retos (inclina o disparo para acertar o peito do alvo). */
+  aimAt?: { x: number; y: number; z: number };
   crit?: number;
   falloff?: { start: number; end: number; minMult: number };
   fuseS?: number;
@@ -54,6 +56,10 @@ export function spawnProjectile(w: World, o: ProjOpts): Entity {
     t.vx = Math.cos(o.yaw) * speed;
     t.vz = Math.sin(o.yaw) * speed;
     t.vy = 0;
+    if (o.aimAt && !s.gravity) {
+      const d = Math.max(0.5, Math.hypot(o.aimAt.x - o.x, o.aimAt.z - o.z));
+      t.vy = ((o.aimAt.y - o.y) * speed) / d;
+    }
   }
   const e = w.add({
     kind: 'projectile',
@@ -168,7 +174,9 @@ export function projectileSystem(w: World): void {
       const ez = (e.t.z - cz) * 1.2;
       if (ex * ex + ez * ez > r * r) continue;
       const cy = y0 + (y1 - y0) * tt;
-      if (cy < e.t.y - pc.radius || cy > e.t.y + h + pc.radius) continue;
+      // tiros retos do jogador têm tolerância vertical (acertam drones no mesmo plano)
+      const vtol = !pc.gravity && p.team === 'players' ? 1.0 : pc.radius;
+      if (cy < e.t.y - vtol || cy > e.t.y + h + pc.radius) continue;
       pc.hitSet.push(e.id);
       const owner = w.get(pc.owner);
       const dist = Math.hypot(cx - pc.ox, cz - pc.oz);

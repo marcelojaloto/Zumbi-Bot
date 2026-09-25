@@ -612,6 +612,24 @@ export class FxDirector {
             );
         }
       }
+      // mira laser ao segurar o botão de mirar
+      if (e.player && e.player.mode === 'gun' && (e.player.buttons & 32) !== 0 && e.player.respawn <= 0) {
+        const yaw = e.player.aimYaw;
+        const x0 = e.t.x + Math.cos(yaw) * 0.6;
+        const z0 = e.t.z + Math.sin(yaw) * 0.3;
+        const y0 = e.t.y + 1.3;
+        this.tracers.add(
+          x0,
+          y0,
+          z0,
+          x0 + Math.cos(yaw) * 14,
+          y0,
+          z0 + Math.sin(yaw) * 14,
+          0xff2a2a,
+          Math.max(dt, 0.016) * 1.01,
+          1.4,
+        );
+      }
       const pc = e.projectile;
       if (pc) {
         if ((pc.visual === 'fireball' || pc.visual === 'orb_fire') && every(40))

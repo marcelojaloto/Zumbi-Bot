@@ -2,6 +2,7 @@ import { PLAYER, maxHpForLevel, maxManaForLevel } from '../data/balance';
 import type { AmmoType } from '../data/types';
 import { makeFighter, makeHealth, makeTransform, type Entity, type PlayerComp } from './Entity';
 import type { PlayerLoadout, World } from './World';
+import { initAmmo } from './systems/weapons';
 
 export function emptyAmmo(): Record<AmmoType, number> {
   return { light: 0, shell: 0, rifle: 0, sniper: 0, grenade: 0 };
@@ -91,5 +92,6 @@ export function spawnPlayer(w: World, lo: PlayerLoadout): Entity {
     statuses: [],
     player: makePlayerComp(lo),
   });
+  initAmmo(e.player!);
   return e;
 }

@@ -116,3 +116,15 @@ describe('combate corpo a corpo', () => {
     expect(b.health!.hp).toBeLessThan(b.health!.max);
   });
 });
+
+describe('inimigos à distância', () => {
+  for (const id of ['soldier', 'drone', 'spitter', 'mech']) {
+    it(`${id} causa dano à distância`, () => {
+      const w = makeWorld({ seed: 11 });
+      const p = player(w);
+      spawnEnemy(w, id, p.t.x + 7, p.t.z, 'right');
+      run(w, 900);
+      expect(p.health!.hp).toBeLessThan(p.health!.max);
+    });
+  }
+});

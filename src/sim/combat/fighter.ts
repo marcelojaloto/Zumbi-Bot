@@ -193,7 +193,8 @@ function updateAttack(w: World, e: Entity): void {
   const fi = e.fighter!;
   const m = getMoveDef(fi.moveId);
   if (!m) {
-    toIdle(e);
+    // ataques contínuos da IA (rajadas, lança-chamas) não usam golpe: a IA encerra
+    if (!e.ai) toIdle(e);
     return;
   }
   const st = fi.st;
