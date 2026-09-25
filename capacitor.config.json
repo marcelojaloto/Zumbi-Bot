@@ -1,0 +1,9 @@
+{
+  "appId": "io.github.marcelojaloto.zumbibot",
+  "appName": "Zumbi Bot",
+  "webDir": "dist-app",
+  "backgroundColor": "#0b0d14",
+  "android": {
+    "backgroundColor": "#0b0d14"
+  }
+}

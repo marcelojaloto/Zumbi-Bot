@@ -6,3 +6,7 @@ blob-report/
 *.log
 .DS_Store
 .vite/
+dist-app/
+*.keystore
+*.jks
+!android/app/debug.keystore
