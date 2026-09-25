@@ -20,7 +20,7 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
   c = mix(vec3(l), c, saturation * (1.0 - desat));
   c = (c - 0.5) * contrast + 0.5;
   float d = distance(uv, vec2(0.5));
-  c = mix(c, vec3(0.55, 0.0, 0.02), clamp(damagePulse, 0.0, 1.0) * smoothstep(0.3, 0.78, d));
+  c = mix(c, vec3(0.5, 0.0, 0.02), clamp(damagePulse, 0.0, 1.0) * 0.65 * smoothstep(0.42, 0.85, d));
   c = mix(c, flashColor, clamp(flash, 0.0, 1.0));
   outputColor = vec4(max(c, vec3(0.0)), inputColor.a);
 }

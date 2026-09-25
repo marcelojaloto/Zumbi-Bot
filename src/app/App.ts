@@ -7,6 +7,9 @@ import { GameSession } from './GameSession';
 import { readFlags, type UrlFlags } from './urlFlags';
 import { installDebug } from './debug';
 import type { PlayerLoadout } from '../sim/World';
+import { AudioEngine } from '../audio/AudioEngine';
+import { AudioDirector } from '../audio/AudioDirector';
+import { WorldOverlay } from '../ui/hud/WorldOverlay';
 
 export type Screen = 'boot' | 'splash' | 'menu' | 'loading' | 'playing' | 'paused' | 'gameover' | 'victory';
 
@@ -21,6 +24,8 @@ export class App {
   ready = false;
   fps = 60;
   autopilotSource: InputSource | null = null;
+  readonly audio: AudioEngine;
+  private overlay: WorldOverlay | null = null;
   private last = -1;
   private fpsAcc = 0;
   private fpsFrames = 0;
@@ -31,6 +36,32 @@ export class App {
     this.renderer = new Renderer(canvas, resolveQuality(this.flags.quality ?? 'auto'));
     this.input = new InputManager(canvas);
     this.input.onPause = () => this.togglePause();
+    this.audio = new AudioEngine(this.flags.mute);
+    const unlock = () => this.audio.unlock();
+    addEventListener('pointerdown', unlock);
+    addEventListener('keydown', unlock);
+    if (this.flags.debug) {
+      const spawnKeys: Record<string, string> = {
+        F1: 'walker',
+        F2: 'runner',
+        F3: 'brute',
+        F4: 'spitter',
+        F5: 'exploder',
+        F6: 'drone',
+        F7: 'soldier',
+        F8: 'mech',
+      };
+      this.input.onKeyDown = (code, e) => {
+        const id = spawnKeys[code];
+        if (id && this.session) {
+          e.preventDefault();
+          (window as unknown as { __game: { spawn(id: string, x?: number): number } }).__game.spawn(
+            id,
+            this.session.world.get(1)!.t.x + 5,
+          );
+        }
+      };
+    }
     if (this.flags.debug) installDebug(this);
   }
 
@@ -85,12 +116,28 @@ export class App {
       noLevel: mapId === 'sandbox',
     });
     if (this.flags.god) this.session.world.get(1)!.player!.god = true;
+    const director = new AudioDirector(this.audio);
+    this.overlay = new WorldOverlay(this.ui);
+    const overlay = this.overlay;
+    this.session.hooks.push({
+      onEvents: (ev, s) => {
+        director.onEvents(ev, s.world);
+        overlay.onEvents(ev, s.world);
+      },
+      onFrame: (dt, _a, s) => {
+        this.audio.listenerX = this.renderer.cam.x;
+        overlay.update(s.world, this.renderer, dt);
+      },
+    });
+    this.audio.setReverb(this.session.world.map.env.reverb);
     this.session.setInputOverride(this.autopilotSource);
     this.screen = 'playing';
     if (!this.flags.nopointerlock) this.input.requestPointerLock();
   }
 
   endSession(): void {
+    this.overlay?.dispose();
+    this.overlay = null;
     this.session?.dispose();
     this.session = null;
   }

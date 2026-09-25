@@ -1,4 +1,5 @@
 import './ui/styles/base.css';
+import './ui/styles/hud.css';
 import { App } from './app/App';
 
 const canvas = document.getElementById('game') as HTMLCanvasElement;
