@@ -1,4 +1,4 @@
-import { DEG, wrapAngle } from '../../core/math';
+import { DEG } from '../../core/math';
 import { DT, secToTicks } from '../../core/time';
 import { FIREARMS } from '../../data/weapons';
 import type { FirearmDef, HitSpec, WeaponId } from '../../data/types';
@@ -114,32 +114,32 @@ function tickReload(w: World, e: Entity, d: FirearmDef): void {
   }
 }
 
-/** Mira: modo ponteiro usa o mouse (com magnetismo); modo direcional usa auto-mira em cone. */
+/**
+ * Direção do tiro: sempre para a frente, no plano do jogador (em 2.5D um tiro na diagonal atravessa as faixas
+ * e erra). O mouse só escolhe o lado; a assistência inclina de leve para o inimigo mais próximo à frente que
+ * esteja na mesma faixa de profundidade, para o tiro conectar.
+ */
 export function resolveAim(w: World, e: Entity, range: number): number {
   const p = e.player!;
-  if (p.aimMode === 1) {
-    const mag = magnet(w, e, p.aimYaw, 4 * DEG, range);
-    return mag ?? p.aimYaw;
-  }
-  const want = e.t.facing > 0 ? p.moveZ * 0.35 : Math.PI - p.moveZ * 0.35;
-  const assist = magnet(w, e, want, 20 * DEG, Math.min(range, 20));
-  return assist ?? want;
+  const dir = p.aimMode === 1 ? (Math.cos(p.aimYaw) >= 0 ? 1 : -1) : e.t.facing >= 0 ? 1 : -1;
+  return laneTarget(w, e, dir, range) ?? (dir > 0 ? 0 : Math.PI);
 }
 
-function magnet(w: World, e: Entity, yaw: number, cone: number, range: number): number | null {
+/** Tolerância de profundidade (m) para considerar um inimigo "na mesma faixa". */
+const LANE_TOL = 1.1;
+
+function laneTarget(w: World, e: Entity, dir: number, range: number): number | null {
   let best: number | null = null;
-  let bestErr = cone;
+  let bd = Infinity;
   for (const o of w.entities) {
     if (!isCharacter(o) || !isHostile(e.team, o.team) || o.fighter?.state === 'dead' || o.body?.low) continue;
     const dx = o.t.x - e.t.x;
     const dz = o.t.z - e.t.z;
-    const d = Math.hypot(dx, dz);
-    if (d > range || d < 0.3) continue;
-    const a = Math.atan2(dz, dx);
-    const err = Math.abs(wrapAngle(a - yaw));
-    if (err < bestErr) {
-      bestErr = err;
-      best = a;
+    if (dx * dir < 0.2 || Math.abs(dx) > range || Math.abs(dz) > LANE_TOL) continue;
+    const d = Math.abs(dx) + Math.abs(dz) * 3;
+    if (d < bd) {
+      bd = d;
+      best = Math.atan2(dz, dx);
     }
   }
   return best;

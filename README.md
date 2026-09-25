@@ -60,6 +60,9 @@ Web Audio.
 Combos: J, J, J, J termina em uppercut • J, J, K faz o chute giratório • correndo + K é a voadora • no ar,
 J e K atacam.
 
+Os tiros sempre saem para a frente, na faixa de profundidade do robô (o mouse escolhe o lado): alinhe-se com o
+inimigo usando W/S e a mira ajusta sozinha para acertar quem estiver à frente, na mesma faixa.
+
 No celular e no tablet: direcional à esquerda (empurrar até a borda corre) e botões Soco, Pular, Chute,
 Atirar/Conjurar (mira sozinho), Especial, Recarregar, Próxima arma e Arma ⇄ Cajado à direita; pausa e tela cheia no
 topo. Tamanho, opacidade e vibração dos controles ficam em Configurações → Controles.
@@ -70,6 +73,9 @@ topo. Tamanho, opacidade e vibração dos controles ficam em Configurações →
 - **No celular e no tablet:** deite o aparelho; os controles de toque aparecem sozinhos (direcional com setas à
   esquerda, botões de ação à direita). Em "Adicionar à tela inicial", o jogo abre em tela cheia e deitado.
 - **Idiomas:** português e inglês, escolhidos pelo idioma do navegador e trocáveis em Configurações → Jogo.
+- **Dificuldade:** Muito fácil, Fácil, Normal (padrão) e Difícil — escolha na tela de mapas ou em Configurações →
+  Jogo. Nas mais fáceis os chefes têm menos vida e atacam com mais pausa; ao perder, o jogo oferece tentar de
+  novo numa dificuldade menor.
 
 ## Instalação local
 
