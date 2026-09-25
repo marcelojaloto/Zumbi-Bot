@@ -138,7 +138,7 @@ export class FxDirector {
     for (const ev of events) {
       switch (ev.t) {
         case 'hit': {
-          this.view.flash(ev.dst, ev.amount > 0 ? 1 : 0.4);
+          this.view.flash(ev.dst, ev.amount > 0 ? 0.55 : 0.25);
           const dst = w.get(ev.dst);
           const kind: string | undefined = dst?.kind;
           const fam: string | undefined =
@@ -627,7 +627,8 @@ export class FxDirector {
           z0 + Math.sin(yaw) * 14,
           0xff2a2a,
           Math.max(dt, 0.016) * 1.01,
-          1.4,
+          1.6,
+          0.025,
         );
       }
       const pc = e.projectile;

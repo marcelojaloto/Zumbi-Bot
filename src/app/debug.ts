@@ -3,7 +3,9 @@ import { ITEMS } from '../data/items';
 import type { PlayerSlot } from '../sim/Entity';
 import { emptyFrame, type InputFrame, type InputSource } from '../sim/InputFrame';
 import { spawnEnemy } from '../sim/ai/spawnEnemy';
-import { applyItem } from '../sim/systems/pickups';
+import { applyItem, giveFirearm } from '../sim/systems/pickups';
+import { STAFF_ORDER } from '../data/staffs';
+import { WEAPON_ORDER } from '../data/weapons';
 import { killEntity } from '../sim/combat/applyHit';
 import type { App } from './App';
 
@@ -126,6 +128,33 @@ export function installDebug(app: App): void {
       if (!w) return;
       for (const e of [...w.entities])
         if ((e.kind === 'enemy' || e.kind === 'boss') && e.fighter?.state !== 'dead') killEntity(w, e, 1);
+    },
+    unlockAll() {
+      const w = app.session?.world;
+      const p = w?.get(1);
+      if (!w || !p?.player) return;
+      p.player.staffs = [...STAFF_ORDER];
+      for (const g of WEAPON_ORDER) if (!p.player.guns.includes(g)) giveFirearm(w, p, g);
+      for (const k of Object.keys(p.player.ammo) as (keyof typeof p.player.ammo)[]) p.player.ammo[k] = 999;
+      p.player.gunIdx = 0;
+    },
+    setStaff(id: string) {
+      const p = app.session?.world.get(1);
+      if (!p?.player) return;
+      const i = p.player.staffs.indexOf(id as never);
+      if (i >= 0) {
+        p.player.staffIdx = i;
+        p.player.mode = 'staff';
+      }
+    },
+    setGun(id: string) {
+      const p = app.session?.world.get(1);
+      if (!p?.player) return;
+      const i = p.player.guns.indexOf(id as never);
+      if (i >= 0) {
+        p.player.gunIdx = i;
+        p.player.mode = 'gun';
+      }
     },
     teleport(x: number) {
       const p = app.session?.world.get(1);
