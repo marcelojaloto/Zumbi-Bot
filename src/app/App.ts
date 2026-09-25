@@ -297,7 +297,7 @@ export class App implements WardrobeHost {
         b(t('Créditos'), () => this.screens.push(creditsScreen(this))),
         el(
           'a',
-          { class: 'btn', href: 'manual/', target: '_blank', rel: 'noopener', data: { nav: '' } },
+          { class: 'btn', href: 'manual/index.html', target: '_blank', rel: 'noopener', data: { nav: '' } },
           t('Manual'),
         ),
       ),
