@@ -156,6 +156,25 @@ export function installDebug(app: App): void {
         p.player.mode = 'gun';
       }
     },
+    /** Pula direto para a arena do chefe (segmentos marcados como concluídos). */
+    teleportToBoss() {
+      const w = app.session?.world;
+      const p = w?.get(1);
+      if (!w || !p || !w.level.boss) return;
+      const ls = w.levelState;
+      ls.cleared = ls.cleared.map(() => true);
+      ls.segmentIdx = w.level.segments.length;
+      ls.active = false;
+      w.lock = null;
+      for (const e of [...w.entities]) if (e.kind === 'enemy') w.remove(e.id);
+      const x = w.level.boss.triggerX + 0.5;
+      p.t.x = p.t.px = x;
+      w.camX = x;
+      w.limitX = w.level.boss.lock[1];
+      w.updateBounds();
+      app.renderer.cam.snap(x, 0, 0);
+      app.session!.stepTicks(2);
+    },
     teleport(x: number) {
       const p = app.session?.world.get(1);
       if (p) p.t.x = p.t.px = x;

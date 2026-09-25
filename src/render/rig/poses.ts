@@ -530,6 +530,73 @@ const K: Record<string, [Key, Key]> = {
       p.y = -0.12;
     },
   ],
+  roar: [
+    (p) =>
+      p.set(J.spine, 0.3).set(J.neck, 0.3).set(J.upperArmL, -0.3, 0, 0.3).set(J.upperArmR, -0.3, 0, -0.3),
+    (p) =>
+      p
+        .set(J.spine, -0.35)
+        .set(J.neck, -0.6)
+        .set(J.chest, -0.2)
+        .set(J.upperArmL, -0.8, 0, 1.3)
+        .set(J.upperArmR, -0.8, 0, -1.3)
+        .set(J.foreArmL, -0.8)
+        .set(J.foreArmR, -0.8),
+  ],
+  windup: [
+    (p) =>
+      p
+        .set(J.upperArmR, -2.8, 0.3)
+        .set(J.upperArmL, -2.6, -0.3)
+        .set(J.foreArmR, -0.6)
+        .set(J.foreArmL, -0.6)
+        .set(J.spine, -0.25)
+        .set(J.chest, 0, 0.3),
+    (p) =>
+      p
+        .set(J.upperArmR, -3.0, 0.3)
+        .set(J.upperArmL, -2.9, -0.3)
+        .set(J.foreArmR, -0.4)
+        .set(J.foreArmL, -0.4)
+        .set(J.spine, -0.35)
+        .set(J.chest, 0, 0.4),
+  ],
+  jump: [
+    (p) => {
+      p.set(J.thighL, -1.0)
+        .set(J.shinL, 1.6)
+        .set(J.thighR, -1.0)
+        .set(J.shinR, 1.6)
+        .set(J.spine, 0.5)
+        .set(J.upperArmL, 0.6)
+        .set(J.upperArmR, 0.6);
+      p.y = -0.3;
+    },
+    (p) =>
+      p
+        .set(J.thighL, -1.2)
+        .set(J.shinL, 1.8)
+        .set(J.thighR, -1.2)
+        .set(J.shinR, 1.8)
+        .set(J.spine, 0.2)
+        .set(J.upperArmL, -2.8)
+        .set(J.upperArmR, -2.8),
+  ],
+  stagger: [
+    (p) =>
+      p.set(J.spine, -0.4).set(J.neck, -0.5).set(J.upperArmL, 0.4, 0, 0.6).set(J.upperArmR, 0.4, 0, -0.6),
+    (p) => {
+      p.set(J.spine, 0.5)
+        .set(J.neck, 0.4)
+        .set(J.upperArmL, 0.2, 0, 0.3)
+        .set(J.upperArmR, 0.2, 0, -0.3)
+        .set(J.thighL, -0.7)
+        .set(J.shinL, 1.2)
+        .set(J.thighR, -0.3)
+        .set(J.shinR, 0.8);
+      p.y = -0.2;
+    },
+  ],
   cast: [
     (p) =>
       p

@@ -176,8 +176,9 @@ export function cameraSystem(w: World): void {
     if (w.camX < lo) w.camX = Math.min(lo, w.camX + 14 * DT);
     if (w.camX > hi) w.camX = hi;
   }
-  w.camX = Math.max(half, Math.min(w.level.length - half, w.camX));
+  w.camX = Math.max(half, Math.min(w.level.length - half, w.camX, w.limitX - half));
   w.updateBounds();
+  w.bounds.maxX = Math.min(w.bounds.maxX, w.limitX);
   if (w.lock) {
     w.bounds.minX = Math.max(w.bounds.minX, w.lock.minX);
     w.bounds.maxX = Math.min(w.bounds.maxX, w.lock.maxX);

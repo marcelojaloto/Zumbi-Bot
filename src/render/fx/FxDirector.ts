@@ -668,6 +668,18 @@ export class FxDirector {
           );
         else if (pc.visual === 'grenade' && every(20)) this.smoke(e.t.x, e.t.y, e.t.z, 1, 0.2, 0x8a8a8a, 0.4);
       }
+      // luz de destaque para chefes e elites (legibilidade no escuro)
+      if (e.kind === 'boss' && e.body) {
+        this.lighting.request({
+          x: e.t.x - 1,
+          y: e.body.height * 0.7,
+          z: e.t.z + 3,
+          color: 0xffd8a8,
+          intensity: 18,
+          distance: 10,
+          priority: 2,
+        });
+      }
       const hz = e.hazard;
       if (hz && hz.delay <= 0 && (!hz.env || hz.phase === 1)) this.hazardParticles(e.t.x, e.t.z, hz, every);
       // zumbi bomba pisca antes de explodir

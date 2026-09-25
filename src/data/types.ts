@@ -423,7 +423,7 @@ export type TelegraphShape =
   | { k: 'cone'; angleDeg: number; range: number }
   | { k: 'ring'; r: number };
 
-export type BossTarget = 'player' | 'center' | 'edgeNear' | 'edgeFar' | 'random' | 'self';
+export type BossTarget = 'player' | 'center' | 'edgeNear' | 'edgeFar' | 'random' | 'self' | 'marked';
 
 export type BossStep =
   | { t: 'wait'; s: number }

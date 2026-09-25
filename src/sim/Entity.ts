@@ -237,6 +237,15 @@ export interface BossComp {
   intro: number;
   defeated: boolean;
   lastPattern: string | null;
+  /** Pose de animação atual do chefe e sua duração (ticks). */
+  pose: string | null;
+  poseTicks: number;
+  poseStart: number;
+  /** Posição marcada por um aviso (usada pelo passo seguinte). */
+  markX: number;
+  markZ: number;
+  /** Alvos já atingidos na investida atual. */
+  chargeHits: number[];
 }
 
 export interface ProjectileComp {
