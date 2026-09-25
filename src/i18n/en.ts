@@ -271,7 +271,7 @@ export const EN: Record<string, string> = {
   Olhos: 'Eyes',
   Máscara: 'Mask',
   Corpo: 'Body',
-  Costas: 'Back',
+  Costas: 'Back gear',
 
   // ------------------------------------------------------------------ mapas, níveis e dicas
   'Área de Testes': 'Test Area',

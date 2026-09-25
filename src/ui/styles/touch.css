@@ -350,6 +350,13 @@ body.touch .hud-tr {
   .banner .b-title {
     font-size: 40px;
   }
+  /* dica acima e faixa do chefe abaixo: em tela baixa as duas se sobrepunham */
+  body.touch .hint {
+    top: 22%;
+  }
+  body.touch .banner {
+    top: 40%;
+  }
   body.touch .hud-br {
     top: calc(env(safe-area-inset-top, 0px) + 62px);
     transform: scale(0.68);
