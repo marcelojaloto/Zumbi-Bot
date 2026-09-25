@@ -94,7 +94,11 @@ export function applyHit(
     },
   });
 
-  if (res.total <= 0) return 0;
+  if (res.total <= 0) {
+    // golpes só de status (ex.: auras que molham) aplicam o efeito sem dano
+    if (hit.damage <= 0 && hit.status) applyStatus(w, dst, hit.status, src?.id ?? 0);
+    return 0;
+  }
 
   // modo deus (debug)
   const god = dst.player?.god;
