@@ -61,6 +61,7 @@ export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
     staffIdx: 0,
     staffCd: {},
     castStaff: null,
+    castFired: false,
     melee: null,
     powers: { doubleDamage: 0, turbo: 0, invulnerable: 0 },
     aiming: false,

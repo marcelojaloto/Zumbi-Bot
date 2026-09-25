@@ -174,6 +174,8 @@ export interface PlayerComp {
   staffIdx: number;
   staffCd: Partial<Record<StaffId, number>>;
   castStaff: StaffId | null;
+  /** O efeito da conjuração atual já foi liberado. */
+  castFired: boolean;
   melee: { id: MeleeId; durability: number } | null;
   powers: Record<PowerId, number>;
   aiming: boolean;
