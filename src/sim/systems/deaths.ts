@@ -88,6 +88,9 @@ function onEnemyKilled(w: World, e: Entity, killer: EntityId): void {
 
 function onPropBroken(w: World, e: Entity, killer: EntityId): void {
   const pr = e.prop!;
+  if (!e.alive) return;
+  // remove antes de explodir: evita que a própria explosão atinja o objeto (recursão)
+  w.remove(e.id);
   w.emit({ t: 'propBreak', id: e.id, kind: pr.kind, x: e.t.x, y: e.t.y, z: e.t.z });
   if (pr.kind === 'explosiveBarrel' || pr.kind === 'car') {
     const big = pr.kind === 'car';
@@ -119,5 +122,4 @@ function onPropBroken(w: World, e: Entity, killer: EntityId): void {
       if (extra) spawnPickup(w, extra, e.t.x + 0.4, e.t.z);
     }
   }
-  w.remove(e.id);
 }

@@ -42,6 +42,10 @@ export interface AnimInfo {
   startup: number;
   active: number;
   recovery: number;
+  /** Relógio próprio da pose (chefes); senão usa fighter.st. */
+  st?: number;
+  /** Aplica mesmo fora dos estados de ataque. */
+  force?: boolean;
 }
 
 /** Visual de um personagem: rig animado, tinta de status, flash de dano, gelo, itens na mão. */
@@ -127,8 +131,10 @@ export class CharacterView {
 
   private animateHumanoid(e: Entity, dt: number, dist: number, info: AnimInfo | null): void {
     const fi = e.fighter;
-    const state = fi?.state ?? 'idle';
-    const st = fi?.st ?? 0;
+    let state: string = fi?.state ?? 'idle';
+    const st = info?.st ?? fi?.st ?? 0;
+    if (info?.force && state !== 'dead' && state !== 'knockdown' && state !== 'down' && state !== 'attack')
+      state = 'windup';
     const speed = dist / Math.max(dt, 1e-4);
     const grounded = e.body?.grounded ?? true;
 
@@ -326,9 +332,24 @@ export class CharacterView {
 }
 
 /** Informação de animação de golpe para o estado atual. */
-export function animInfoFor(e: Entity): AnimInfo | null {
+export function animInfoFor(e: Entity, tick = 0): AnimInfo | null {
   const fi = e.fighter;
   if (!fi) return null;
+  const b = e.boss;
+  if (b && b.pose && fi.state !== 'attack') {
+    const el = tick - b.poseStart;
+    if (b.intro > 0 || el < b.poseTicks) {
+      const T = Math.max(8, b.poseTicks);
+      return {
+        pose: b.pose,
+        startup: Math.round(T * 0.45),
+        active: Math.round(T * 0.35),
+        recovery: Math.round(T * 0.2),
+        st: el,
+        force: true,
+      };
+    }
+  }
   if (fi.state === 'attack' && fi.moveId) {
     const m = MOVES[fi.moveId];
     if (m) return { pose: m.pose, startup: m.startup, active: m.active, recovery: m.recovery };

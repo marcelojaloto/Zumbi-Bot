@@ -101,7 +101,7 @@ export class SceneView {
       this.root.add(v.group);
     }
     if (e.player) this.syncPlayerHeld(e, v, tick);
-    v.sync(e, alpha, dt, animInfoFor(e));
+    v.sync(e, alpha, dt, animInfoFor(e, tick));
     // afundar corpos
     if (e.fighter?.state === 'dead' && e.kind === 'enemy') {
       const d = e.deadTicks ?? 0;

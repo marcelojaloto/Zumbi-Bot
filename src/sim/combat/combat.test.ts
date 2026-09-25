@@ -3,6 +3,8 @@ import { Btn } from '../InputFrame';
 import { makeWorld, player, run } from '../test/helpers';
 import { spawnEnemy } from '../ai/spawnEnemy';
 import { computeDamage, falloff } from './damage';
+import { spawnProp } from '../systems/props';
+import { killEntity } from './applyHit';
 
 describe('dano', () => {
   it('resistências, crítico, dano duplo e escudo', () => {
@@ -127,4 +129,18 @@ describe('inimigos à distância', () => {
       expect(p.health!.hp).toBeLessThan(p.health!.max);
     });
   }
+});
+
+describe('objetos', () => {
+  it('barris explosivos em cadeia não entram em recursão', () => {
+    const w = makeWorld();
+    const p = player(w);
+    const first = spawnProp(w, { kind: 'explosiveBarrel', x: p.t.x + 1, z: p.t.z });
+    for (let i = 1; i < 4; i++) spawnProp(w, { kind: 'explosiveBarrel', x: p.t.x + 1 + i * 0.8, z: p.t.z });
+    const z = spawnEnemy(w, 'walker', p.t.x + 2, p.t.z, 'right');
+    killEntity(w, first, 1);
+    run(w, 30);
+    expect(w.entities.filter((e) => e.kind === 'prop').length).toBe(0);
+    expect(z.health!.hp).toBeLessThan(z.health!.max);
+  });
 });

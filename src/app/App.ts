@@ -16,7 +16,13 @@ import type { UiHost } from '../ui/screens/host';
 import { pauseScreen } from '../ui/screens/PauseScreen';
 import { settingsScreen } from '../ui/screens/SettingsScreen';
 import { controlsScreen } from '../ui/screens/ControlsScreen';
-import { el } from '../ui/dom';
+import { el, fmtInt } from '../ui/dom';
+import { Autopilot } from '../sim/autopilot';
+import { resultScreen } from '../ui/screens/ResultScreen';
+import { mapSelectScreen } from '../ui/screens/MapSelectScreen';
+import type { RunStats } from '../sim/events';
+import { MAPS, getMap } from '../data/maps';
+import { xpToNext } from '../data/balance';
 
 export type Screen = 'boot' | 'splash' | 'menu' | 'loading' | 'playing' | 'paused' | 'gameover' | 'victory';
 
@@ -42,6 +48,8 @@ export class App implements UiHost {
   private slowFrames = 0;
   private autoQualityTimer = 0;
   lastLevel: { mapId: string; levelIdx: number } | null = null;
+  private lastStats: RunStats | null = null;
+  private loadingEl: HTMLElement | null = null;
 
   constructor(canvas: HTMLCanvasElement, ui: HTMLElement) {
     this.flags = readFlags();
@@ -140,6 +148,9 @@ export class App implements UiHost {
     this.screens.clear();
     const b = (label: string, fn: () => void, cls = 'btn') =>
       el('button', { class: cls, onclick: fn, data: { nav: '' } }, label);
+    const s = this.profile.save;
+    const cont = this.continueTarget();
+    const contMap = getMap(cont.mapId);
     const e = el(
       'div',
       { class: 'screen solid' },
@@ -147,13 +158,47 @@ export class App implements UiHost {
       el('div', { class: 'subtitle' }, 'A revolução dos robôs no apocalipse zumbi'),
       el(
         'div',
+        { class: 'profile-chip' },
+        el('span', {}, s.profile.name),
+        el('span', {}, 'Nível ', el('b', {}, String(s.profile.level))),
+        el('span', {}, `XP ${fmtInt(s.profile.xp)}/${fmtInt(xpToNext(s.profile.level))}`),
+        el('span', {}, 'Sucata ', el('b', {}, fmtInt(s.profile.scrap))),
+      ),
+      el(
+        'div',
         { class: 'menu' },
-        b('Jogar', () => void this.startLevel('sandbox', 0), 'btn primary'),
+        b(
+          s.stats.runs > 0 ? `Continuar: ${contMap.name}` : 'Jogar',
+          () => void this.startLevel(cont.mapId, cont.levelIdx),
+          'btn primary',
+        ),
+        b('Mapas', () => this.screens.push(mapSelectScreen(this))),
         b('Configurações', () => this.openSettings()),
         b('Controles', () => this.openControls()),
       ),
+      ...this.profile.notices.map((n) => el('p', { class: 'muted', style: 'color:#ffb02a' }, n)),
+      el(
+        'div',
+        { class: 'menu-footer muted' },
+        'WASD mover • J soco • K chute • Espaço pula • Mouse mira e atira • Esc pausa',
+      ),
     );
     this.screens.push({ el: e, id: 'menu', onBack: () => false });
+  }
+
+  /** Primeiro nível desbloqueado e não concluído (ou o último desbloqueado). */
+  continueTarget(): { mapId: string; levelIdx: number } {
+    const prog = this.profile.save.progress;
+    let last = { mapId: MAPS[0]!.id, levelIdx: 0 };
+    for (const m of MAPS) {
+      for (let i = 0; i < m.levels.length; i++) {
+        const id = m.levels[i]!.id;
+        if (!prog.unlockedLevels.includes(id)) continue;
+        last = { mapId: m.id, levelIdx: i };
+        if (!prog.levels[id]?.completed) return last;
+      }
+    }
+    return last;
   }
 
   openSettings(): void {
@@ -195,11 +240,32 @@ export class App implements UiHost {
   }
 
   // ------------------------------------------------------------------ partida
+  private showLoading(title: string): void {
+    this.loadingEl?.remove();
+    this.loadingEl = el(
+      'div',
+      { class: 'loading' },
+      el('div', { class: 'ltitle' }, title),
+      el('div', { class: 'lbar' }, el('i')),
+      el('div', { class: 'muted' }, 'Carregando…'),
+    );
+    this.ui.appendChild(this.loadingEl);
+  }
+
+  private hideLoading(): void {
+    this.loadingEl?.remove();
+    this.loadingEl = null;
+  }
+
   async startLevel(mapId: string, levelIdx = 0): Promise<void> {
     this.endSession();
     this.screens.clear();
     this.screen = 'loading';
     this.lastLevel = { mapId, levelIdx };
+    this.lastStats = null;
+    const map = getMap(mapId);
+    this.showLoading(map.index >= 0 ? `${map.index + 1}. ${map.name}` : map.name);
+    await new Promise((r) => requestAnimationFrame(() => r(null)));
     const seed = this.flags.seed ?? (hashString(mapId) ^ Date.now()) >>> 0;
     const session = new GameSession(this.renderer, this.input, {
       mapId,
@@ -219,6 +285,7 @@ export class App implements UiHost {
     const hud = this.hud;
     session.hooks.push({
       onEvents: (ev, s) => {
+        for (const x of ev) if (x.t === 'victory' || x.t === 'gameOver') this.lastStats = x.stats;
         director.onEvents(ev, s.world);
         overlay.onEvents(ev, s.world);
         hud.onEvents(ev, s.world);
@@ -237,19 +304,73 @@ export class App implements UiHost {
     this.applySettings();
     this.audio.setReverb(session.world.map.env.reverb);
     session.setInputOverride(this.autopilotSource);
+    // pré-compila shaders para evitar travadas na primeira aparição de efeitos
+    try {
+      session.frame(0);
+      await this.renderer.gl.compileAsync(this.renderer.scene, this.renderer.cam.camera);
+    } catch {
+      /* navegador sem suporte: compila sob demanda */
+    }
+    this.hideLoading();
     this.screen = 'playing';
     this.input.enabled = true;
     if (!this.flags.nopointerlock && this.profile.settings.controls.pointerLock)
       this.input.requestPointerLock();
   }
 
-  protected onSessionEnd(_s: GameSession, _victory: boolean): void {}
+  protected onSessionEnd(s: GameSession, victory: boolean): void {
+    const p = s.world.get(1)?.player;
+    const stats = this.lastStats;
+    if (!p || !stats) return;
+    const beforeLevel = this.profile.save.profile.level;
+    const res =
+      s.world.map.id === 'sandbox'
+        ? { newRecord: false, unlockedNext: null }
+        : this.profile.applyRun(stats, {
+            level: p.level,
+            xp: p.xp,
+            guns: p.guns,
+            loot: p.loot,
+            scrap: p.scrap,
+            pity: p.pity,
+          });
+    this.screen = victory ? 'victory' : 'gameover';
+    this.input.enabled = false;
+    this.input.exitPointerLock();
+    const idx = s.world.levelIdx;
+    this.screens.push(
+      resultScreen(this, {
+        stats,
+        playerLevel: p.level,
+        levelsGained: p.level - beforeLevel,
+        newRecord: res.newRecord,
+        next: victory ? this.profile.nextLevel(s.world.map.id, idx) : null,
+        unlockedNext: res.unlockedNext,
+      }),
+    );
+  }
+
+  /** Sair no meio da fase preserva XP, sucata e loot obtidos. */
+  private saveProgressOnQuit(): void {
+    const p = this.session?.world.get(1)?.player;
+    if (!p || this.session?.world.map.id === 'sandbox') return;
+    const s = this.profile.save;
+    s.profile.level = p.level;
+    s.profile.xp = p.xp;
+    s.profile.scrap += p.scrap;
+    for (const c of p.loot) if (!s.cosmetics.owned.includes(c)) s.cosmetics.owned.push(c);
+    for (const g of p.guns) if (!s.unlocks.firearms.includes(g)) s.unlocks.firearms.push(g);
+    s.cosmetics.pity = p.pity;
+    this.profile.persist();
+  }
 
   restartLevel(): void {
+    if (this.session && this.screen === 'paused') this.saveProgressOnQuit();
     if (this.lastLevel) void this.startLevel(this.lastLevel.mapId, this.lastLevel.levelIdx);
   }
 
   quitToMenu(): void {
+    if (this.session && this.screen !== 'victory' && this.screen !== 'gameover') this.saveProgressOnQuit();
     this.endSession();
     this.showMainMenu();
   }
@@ -293,7 +414,7 @@ export class App implements UiHost {
   }
 
   protected makeAutopilot(): InputSource | null {
-    return null;
+    return new Autopilot(() => this.session?.world ?? null);
   }
 
   renderOnce(): void {

@@ -1,8 +1,10 @@
+import '../bosses/all';
 import type { MapDef } from '../types';
 import { sandbox } from './00-sandbox';
+import { vila } from './01-vila';
 
 /** Mapas jogáveis em ordem (o sandbox fica fora da campanha). */
-export const MAPS: MapDef[] = [];
+export const MAPS: MapDef[] = [vila];
 
 export const ALL_MAPS: MapDef[] = [sandbox, ...MAPS];
 

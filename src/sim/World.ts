@@ -73,6 +73,8 @@ export class World {
   camX: number;
   bounds: Bounds;
   lock: { minX: number; maxX: number } | null = null;
+  /** Limite de avanço até concluir o próximo segmento/chefe. */
+  limitX = Infinity;
   zBand: [number, number];
 
   levelState: LevelState;

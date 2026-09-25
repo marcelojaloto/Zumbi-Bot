@@ -23,8 +23,8 @@ function noise(ctx: CanvasRenderingContext2D, size: number, rng: Rng, amt: numbe
     const x = rng.next() * size;
     const y = rng.next() * size;
     const s = 1 + rng.next() * 3;
-    const v = rng.next() < 0.5 ? 0 : 255;
-    ctx.fillStyle = `rgba(${v},${v},${v},${rng.next() * amt})`;
+    const v = rng.next() < 0.7 ? 0 : 200;
+    ctx.fillStyle = `rgba(${v},${v},${v},${rng.next() * amt * (v ? 0.5 : 1)})`;
     ctx.fillRect(x, y, s, s);
   }
 }

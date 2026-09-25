@@ -15,6 +15,7 @@ import { cleanupSystem } from './cleanup';
 
 /** Ordem fixa dos sistemas a cada tick. */
 export function runSystems(w: World, inputs: ReadonlyMap<PlayerSlot, InputFrame>): void {
+  if (w.slowmo > 0) w.slowmo--;
   if (w.freeze > 0) {
     w.freeze--;
     return;
