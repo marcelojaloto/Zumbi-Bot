@@ -39,6 +39,8 @@ export interface SettingsV1 {
     pointerLock: boolean;
     aimAssist: 'off' | 'low' | 'high';
     hints: boolean;
+    /** Controles de toque (celular/tablet). */
+    touch: TouchSettings;
   };
   graphics: {
     quality: QualityChoice;
@@ -50,6 +52,21 @@ export interface SettingsV1 {
     reduceFlashes: boolean;
   };
   gameplay: { difficulty: Difficulty };
+  /** Idioma da interface; "auto" segue o navegador. */
+  language: LanguageChoice;
+}
+
+export type LanguageChoice = 'auto' | 'pt' | 'en';
+
+export interface TouchSettings {
+  /** auto = aparece em celulares e tablets (e ao tocar na tela). */
+  mode: 'auto' | 'on' | 'off';
+  /** Escala dos controles (0,7–1,4). */
+  size: number;
+  /** Opacidade em repouso (0,15–0,8). */
+  opacity: number;
+  /** Vibração curta ao tocar (Android). */
+  haptics: boolean;
 }
 
 export interface RankEntry {
@@ -88,7 +105,13 @@ export function defaultSettings(): SettingsV1 {
   return {
     version: 1,
     audio: { master: 0.8, music: 0.55, sfx: 0.85, muted: false },
-    controls: { mouseSensitivity: 1, pointerLock: true, aimAssist: 'low', hints: true },
+    controls: {
+      mouseSensitivity: 1,
+      pointerLock: true,
+      aimAssist: 'low',
+      hints: true,
+      touch: { mode: 'auto', size: 1, opacity: 0.35, haptics: true },
+    },
     graphics: {
       quality: 'auto',
       renderScale: 1,
@@ -98,6 +121,7 @@ export function defaultSettings(): SettingsV1 {
       reduceFlashes: false,
     },
     gameplay: { difficulty: 'normal' },
+    language: 'auto',
   };
 }
 

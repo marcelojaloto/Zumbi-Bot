@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 // Regra de arquitetura: a simulação e os dados não dependem de three.js nem do DOM,
 // para que possam rodar em Node (testes) e futuramente num servidor/host de co-op.
-const PURE_DIRS = ['core', 'sim', 'data', 'save'];
+const PURE_DIRS = ['i18n', 'core', 'sim', 'data', 'save'];
 const FORBIDDEN = [/from\s+['"]three/, /\bdocument\./, /\bwindow\./, /\blocalStorage\b/, /Math\.random\(/];
 
 function walk(dir: string): string[] {

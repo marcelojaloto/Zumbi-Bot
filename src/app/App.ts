@@ -28,6 +28,7 @@ import { rankingScreen } from '../ui/screens/RankingScreen';
 import type { RunStats } from '../sim/events';
 import { MAPS, getMap } from '../data/maps';
 import { xpToNext } from '../data/balance';
+import { detectLang, setLang, t, type Lang } from '../i18n';
 
 export type Screen = 'boot' | 'splash' | 'menu' | 'loading' | 'playing' | 'paused' | 'gameover' | 'victory';
 
@@ -86,8 +87,8 @@ export class App implements WardrobeHost {
         el(
           'div',
           { class: 'screen solid' },
-          el('h2', {}, 'Contexto gráfico perdido'),
-          el('p', {}, 'Recarregue a página para continuar.'),
+          el('h2', {}, t('Contexto gráfico perdido')),
+          el('p', {}, t('Recarregue a página para continuar.')),
         ),
       );
     };
@@ -96,6 +97,13 @@ export class App implements WardrobeHost {
       this.installDebugKeys();
     }
     this.applySettings();
+  }
+
+  /** Controles de toque ativos (definido pelo modo toque). */
+  touchOn = false;
+
+  get touchActive(): boolean {
+    return this.touchOn;
   }
 
   get inGame(): boolean {
@@ -148,9 +156,9 @@ export class App implements WardrobeHost {
       'div',
       { class: 'screen dim splash-screen' },
       el('h1', {}, 'ZUMBI BOT'),
-      el('div', { class: 'subtitle' }, 'A revolução dos robôs no apocalipse zumbi'),
-      el('button', { class: 'btn primary', onclick: start, data: { nav: '', autofocus: '' } }, 'Jogar'),
-      el('p', { class: 'muted' }, 'Clique ou pressione Enter'),
+      el('div', { class: 'subtitle' }, t('A revolução dos robôs no apocalipse zumbi')),
+      el('button', { class: 'btn primary', onclick: start, data: { nav: '', autofocus: '' } }, t('Jogar')),
+      el('p', { class: 'muted' }, t('Clique ou pressione Enter')),
     );
     this.screens.push({ el: e, id: 'splash', onBack: () => false });
     for (const n of this.profile.notices) setTimeout(() => this.hud?.toast(n, '#ffb02a'), 500);
@@ -184,36 +192,36 @@ export class App implements WardrobeHost {
       'div',
       { class: 'screen menu-screen' },
       el('h1', {}, 'ZUMBI BOT'),
-      el('div', { class: 'subtitle' }, 'A revolução dos robôs no apocalipse zumbi'),
+      el('div', { class: 'subtitle' }, t('A revolução dos robôs no apocalipse zumbi')),
       el(
         'div',
         { class: 'profile-chip' },
         el('span', {}, s.profile.name),
-        el('span', {}, 'Nível ', el('b', {}, String(s.profile.level))),
+        el('span', {}, t('Nível'), ' ', el('b', {}, String(s.profile.level))),
         el('span', {}, `XP ${fmtInt(s.profile.xp)}/${fmtInt(xpToNext(s.profile.level))}`),
-        el('span', {}, 'Sucata ', el('b', {}, fmtInt(s.profile.scrap))),
+        el('span', {}, t('Sucata'), ' ', el('b', {}, fmtInt(s.profile.scrap))),
       ),
       el(
         'div',
         { class: 'menu' },
         b(
-          s.stats.runs > 0 ? `Continuar: ${contMap.name}` : 'Jogar',
+          s.stats.runs > 0 ? t('Continuar: {map}', { map: t(contMap.name) }) : t('Jogar'),
           () => void this.startLevel(cont.mapId, cont.levelIdx),
           'btn primary',
         ),
-        b('Mapas', () => this.screens.push(mapSelectScreen(this))),
-        b('Guarda-roupa', () => this.screens.push(wardrobeScreen(this))),
-        b('Loja', () => this.screens.push(shopScreen(this))),
-        b('Ranking', () => this.screens.push(rankingScreen(this))),
-        b('Configurações', () => this.openSettings()),
-        b('Controles', () => this.openControls()),
-        b('Créditos', () => this.screens.push(creditsScreen(this))),
+        b(t('Mapas'), () => this.screens.push(mapSelectScreen(this))),
+        b(t('Guarda-roupa'), () => this.screens.push(wardrobeScreen(this))),
+        b(t('Loja'), () => this.screens.push(shopScreen(this))),
+        b(t('Ranking'), () => this.screens.push(rankingScreen(this))),
+        b(t('Configurações'), () => this.openSettings()),
+        b(t('Controles'), () => this.openControls()),
+        b(t('Créditos'), () => this.screens.push(creditsScreen(this))),
       ),
-      ...this.profile.notices.map((n) => el('p', { class: 'muted', style: 'color:#ffb02a' }, n)),
+      ...this.profile.notices.map((n) => el('p', { class: 'muted', style: 'color:#ffb02a' }, t(n))),
       el(
         'div',
         { class: 'menu-footer muted' },
-        'WASD mover • J soco • K chute • Espaço pula • Mouse mira e atira • Esc pausa',
+        t('WASD mover • J soco • K chute • Espaço pula • Mouse mira e atira • Esc pausa'),
       ),
     );
     this.screens.push({ el: e, id: 'menu', onBack: () => false });
@@ -234,8 +242,8 @@ export class App implements WardrobeHost {
     return last;
   }
 
-  openSettings(): void {
-    this.screens.push(settingsScreen(this));
+  openSettings(tab?: string): void {
+    this.screens.push(settingsScreen(this, tab));
   }
 
   openControls(): void {
@@ -249,6 +257,7 @@ export class App implements WardrobeHost {
   /** Aplica configurações salvas (volume, sensibilidade, qualidade...). */
   applySettings(): void {
     const s = this.profile.settings;
+    this.applyLanguage(s.language);
     this.audio.volumes.master = s.audio.master;
     this.audio.volumes.music = s.audio.music;
     this.audio.volumes.sfx = s.audio.sfx;
@@ -259,17 +268,46 @@ export class App implements WardrobeHost {
     this.renderer.post.flashScale = s.graphics.reduceFlashes ? 0.3 : 1;
     this.renderer.renderScale = s.graphics.renderScale;
     this.renderer.resize();
-    if (this.hud) this.hud.showFps = s.graphics.showFps || this.flags.fps;
+    if (this.hud) {
+      this.hud.showFps = s.graphics.showFps || this.flags.fps;
+      this.hud.showHints = s.controls.hints;
+    }
     if (this.overlay) this.overlay.showNumbers = s.graphics.damageNumbers;
     const want: QualityLevel = resolveQuality(this.flags.quality ?? s.graphics.quality);
     if (want !== this.renderer.quality.level) void this.changeQuality(want);
+  }
+
+  /** Idioma: "auto" segue o navegador; atualiza o documento (lang e título). */
+  private applyLanguage(choice: 'auto' | Lang): void {
+    const lang: Lang = choice === 'auto' ? detectLang(navigator.language) : choice;
+    setLang(lang);
+    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+    document.title = `Zumbi Bot — ${t('A revolução dos robôs no apocalipse zumbi')}`;
+  }
+
+  /** Troca de idioma ao vivo: refaz as telas abertas e os rótulos fixos do HUD. */
+  relocalize(): void {
+    this.hud?.relabel();
+    if (this.session) {
+      if (this.screen === 'paused') {
+        this.screens.clear();
+        this.screens.push(pauseScreen(this));
+        this.openSettings('game');
+      }
+    } else if (this.screen === 'menu') {
+      this.showMainMenu();
+      this.openSettings('game');
+    }
   }
 
   private async changeQuality(q: QualityLevel): Promise<void> {
     await this.renderer.setQuality(q);
     // recria a partida atual com os novos recursos gráficos
     if (this.session && this.lastLevel) {
-      this.hud?.toast(`Qualidade: ${q === 'low' ? 'Baixa' : q === 'medium' ? 'Média' : 'Alta'}`, '#39e6ff');
+      this.hud?.toast(
+        t('Qualidade: {q}', { q: t(q === 'low' ? 'Baixa' : q === 'medium' ? 'Média' : 'Alta') }),
+        '#39e6ff',
+      );
     }
   }
 
@@ -281,7 +319,7 @@ export class App implements WardrobeHost {
       { class: 'loading' },
       el('div', { class: 'ltitle' }, title),
       el('div', { class: 'lbar' }, el('i')),
-      el('div', { class: 'muted' }, 'Carregando…'),
+      el('div', { class: 'muted' }, t('Carregando…')),
     );
     this.ui.appendChild(this.loadingEl);
   }
@@ -300,7 +338,7 @@ export class App implements WardrobeHost {
     this.lastLevel = { mapId, levelIdx };
     this.lastStats = null;
     const map = getMap(mapId);
-    this.showLoading(map.index >= 0 ? `${map.index + 1}. ${map.name}` : map.name);
+    this.showLoading(map.index >= 0 ? `${map.index + 1}. ${t(map.name)}` : t(map.name));
     await new Promise((r) => requestAnimationFrame(() => r(null)));
     const seed = this.flags.seed ?? (hashString(mapId) ^ Date.now()) >>> 0;
     const session = new GameSession(this.renderer, this.input, {
