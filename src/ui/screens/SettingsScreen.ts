@@ -1,7 +1,8 @@
 import { el } from '../dom';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
-import type { SettingsV1 } from '../../save/schema';
+import type { LanguageChoice, SettingsV1 } from '../../save/schema';
+import { dec, t } from '../../i18n';
 
 function slider(
   label: string,
@@ -44,7 +45,7 @@ function select<T extends string>(label: string, get: () => T, set: (v: T) => vo
   return [el('label', {}, label), s] as const;
 }
 
-export function settingsScreen(host: UiHost): Screen {
+export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
   const st = (): SettingsV1 => host.profile.settings;
   const apply = () => {
     host.applySettings();
@@ -56,7 +57,7 @@ export function settingsScreen(host: UiHost): Screen {
 
   sections.audio = mk([
     slider(
-      'Volume geral',
+      t('Volume geral'),
       () => st().audio.master,
       (v) => ((st().audio.master = v), apply()),
       0,
@@ -65,7 +66,7 @@ export function settingsScreen(host: UiHost): Screen {
       pct,
     ),
     slider(
-      'Música',
+      t('Música'),
       () => st().audio.music,
       (v) => ((st().audio.music = v), apply()),
       0,
@@ -74,7 +75,7 @@ export function settingsScreen(host: UiHost): Screen {
       pct,
     ),
     slider(
-      'Efeitos',
+      t('Efeitos'),
       () => st().audio.sfx,
       (v) => ((st().audio.sfx = v), apply()),
       0,
@@ -83,56 +84,89 @@ export function settingsScreen(host: UiHost): Screen {
       pct,
     ),
     check(
-      'Silenciar tudo',
+      t('Silenciar tudo'),
       () => st().audio.muted,
       (v) => ((st().audio.muted = v), apply()),
     ),
   ]);
   sections.controls = mk([
     slider(
-      'Sensibilidade do mouse',
+      t('Sensibilidade do mouse'),
       () => st().controls.mouseSensitivity,
       (v) => ((st().controls.mouseSensitivity = v), apply()),
       0.2,
       3,
       0.1,
-      (v) => v.toFixed(1),
+      (v) => dec(v),
     ),
     check(
-      'Travar o ponteiro do mouse no jogo',
+      t('Travar o ponteiro do mouse no jogo'),
       () => st().controls.pointerLock,
       (v) => ((st().controls.pointerLock = v), apply()),
     ),
     select(
-      'Assistência de mira',
+      t('Assistência de mira'),
       () => st().controls.aimAssist,
       (v) => ((st().controls.aimAssist = v), apply()),
       [
-        ['off', 'Desligada'],
-        ['low', 'Baixa'],
-        ['high', 'Alta'],
+        ['off', t('Desligada')],
+        ['low', t('Baixa')],
+        ['high', t('Alta')],
       ],
     ),
     check(
-      'Mostrar dicas',
+      t('Mostrar dicas'),
       () => st().controls.hints,
       (v) => ((st().controls.hints = v), apply()),
+    ),
+    select(
+      t('Controles de toque'),
+      () => st().controls.touch.mode,
+      (v) => ((st().controls.touch.mode = v), apply()),
+      [
+        ['auto', t('Automático (celular e tablet)')],
+        ['on', t('Sempre')],
+        ['off', t('Nunca')],
+      ],
+    ),
+    slider(
+      t('Tamanho dos controles de toque'),
+      () => st().controls.touch.size,
+      (v) => ((st().controls.touch.size = v), apply()),
+      0.7,
+      1.4,
+      0.05,
+      pct,
+    ),
+    slider(
+      t('Opacidade dos controles de toque'),
+      () => st().controls.touch.opacity,
+      (v) => ((st().controls.touch.opacity = v), apply()),
+      0.15,
+      0.8,
+      0.05,
+      pct,
+    ),
+    check(
+      t('Vibrar ao tocar'),
+      () => st().controls.touch.haptics,
+      (v) => ((st().controls.touch.haptics = v), apply()),
     ),
   ]);
   sections.graphics = mk([
     select(
-      'Qualidade gráfica',
+      t('Qualidade gráfica'),
       () => st().graphics.quality,
       (v) => ((st().graphics.quality = v), apply()),
       [
-        ['auto', 'Automática'],
-        ['low', 'Baixa'],
-        ['medium', 'Média'],
-        ['high', 'Alta'],
+        ['auto', t('Automática')],
+        ['low', t('Baixa')],
+        ['medium', t('Média')],
+        ['high', t('Alta')],
       ],
     ),
     slider(
-      'Escala de resolução',
+      t('Escala de resolução'),
       () => st().graphics.renderScale,
       (v) => ((st().graphics.renderScale = v), apply()),
       0.5,
@@ -141,7 +175,7 @@ export function settingsScreen(host: UiHost): Screen {
       pct,
     ),
     slider(
-      'Tremor de tela',
+      t('Tremor de tela'),
       () => st().graphics.screenShake,
       (v) => ((st().graphics.screenShake = v), apply()),
       0,
@@ -150,17 +184,17 @@ export function settingsScreen(host: UiHost): Screen {
       pct,
     ),
     check(
-      'Números de dano',
+      t('Números de dano'),
       () => st().graphics.damageNumbers,
       (v) => ((st().graphics.damageNumbers = v), apply()),
     ),
     check(
-      'Mostrar FPS',
+      t('Mostrar FPS'),
       () => st().graphics.showFps,
       (v) => ((st().graphics.showFps = v), apply()),
     ),
     check(
-      'Reduzir clarões (acessibilidade)',
+      t('Reduzir clarões (acessibilidade)'),
       () => st().graphics.reduceFlashes,
       (v) => ((st().graphics.reduceFlashes = v), apply()),
     ),
@@ -174,7 +208,7 @@ export function settingsScreen(host: UiHost): Screen {
       onclick: () => {
         confirmBox.innerHTML = '';
         confirmBox.append(
-          el('span', {}, 'Apagar TODO o progresso? '),
+          el('span', {}, t('Apagar TODO o progresso?') + ' '),
           el(
             'button',
             {
@@ -182,49 +216,66 @@ export function settingsScreen(host: UiHost): Screen {
               data: { nav: '' },
               onclick: () => {
                 host.profile.wipe();
-                confirmBox.innerHTML = '<span class="muted">Progresso apagado.</span>';
+                confirmBox.innerHTML = '';
+                confirmBox.appendChild(el('span', { class: 'muted' }, t('Progresso apagado.')));
               },
             },
-            'Sim, apagar',
+            t('Sim, apagar'),
           ),
           el(
             'button',
             { class: 'btn small', data: { nav: '' }, onclick: () => (confirmBox.innerHTML = '') },
-            'Cancelar',
+            t('Cancelar'),
           ),
         );
       },
     },
-    'Apagar progresso',
+    t('Apagar progresso'),
   );
   sections.game = el(
     'div',
     {},
     mk([
+      select<LanguageChoice>(
+        'Idioma / Language',
+        () => st().language,
+        (v) => {
+          st().language = v;
+          apply();
+          host.relocalize();
+        },
+        [
+          ['auto', 'Automático / Auto'],
+          ['pt', 'Português'],
+          ['en', 'English'],
+        ],
+      ),
       select(
-        'Dificuldade',
+        t('Dificuldade'),
         () => st().gameplay.difficulty,
         (v) => ((st().gameplay.difficulty = v), apply()),
         [
-          ['easy', 'Fácil'],
-          ['normal', 'Normal'],
-          ['hard', 'Difícil'],
+          ['easy', t('Fácil')],
+          ['normal', t('Normal')],
+          ['hard', t('Difícil')],
         ],
       ),
     ]),
     el(
       'div',
       { style: 'margin-top:16px' },
-      host.inGame ? el('span', { class: 'muted' }, 'A dificuldade vale a partir da próxima fase.') : wipeBtn,
+      host.inGame
+        ? el('span', { class: 'muted' }, t('A dificuldade vale a partir da próxima fase.'))
+        : wipeBtn,
     ),
     confirmBox,
   );
 
   const names: Record<string, string> = {
-    audio: 'Áudio',
-    controls: 'Controles',
-    graphics: 'Gráficos',
-    game: 'Jogo',
+    audio: t('Áudio'),
+    controls: t('Controles'),
+    graphics: t('Gráficos'),
+    game: t('Jogo'),
   };
   const body = el('div', { class: 'panel' });
   const tabs = el('div', { class: 'tabs' });
@@ -235,14 +286,14 @@ export function settingsScreen(host: UiHost): Screen {
   };
   for (const k of Object.keys(sections))
     tabs.appendChild(el('button', { class: 'btn', data: { nav: '', k }, onclick: () => show(k) }, names[k]!));
-  show('audio');
+  show(sections[tab] ? tab : 'audio');
   const e = el(
     'div',
     { class: 'screen dim' },
-    el('h2', {}, 'CONFIGURAÇÕES'),
+    el('h2', {}, t('CONFIGURAÇÕES')),
     tabs,
     body,
-    el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, 'Voltar'),
+    el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, t('Voltar')),
   );
   return {
     el: e,

@@ -12,6 +12,8 @@ export default defineConfig({
     ...devices['Desktop Chrome'],
     baseURL: 'http://localhost:4173/Zumbi-Bot/',
     viewport: { width: 1280, height: 720 },
+    // idioma automático segue o navegador: os testes padrão rodam em português
+    locale: 'pt-BR',
     trace: 'retain-on-failure',
     launchOptions: {
       args: [

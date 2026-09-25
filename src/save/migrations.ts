@@ -147,6 +147,7 @@ export function sanitizeSettings(raw: unknown): SettingsV1 {
   const q = g.quality;
   const diff = gp.difficulty;
   const aim = c.aimAssist;
+  const tc = obj(c.touch);
   return {
     version: 1,
     audio: {
@@ -160,6 +161,12 @@ export function sanitizeSettings(raw: unknown): SettingsV1 {
       pointerLock: bool(c.pointerLock, true),
       aimAssist: aim === 'off' || aim === 'low' || aim === 'high' ? aim : def.controls.aimAssist,
       hints: bool(c.hints, true),
+      touch: {
+        mode: tc.mode === 'on' || tc.mode === 'off' ? tc.mode : 'auto',
+        size: num(tc.size, 1, 0.7, 1.4),
+        opacity: num(tc.opacity, 0.35, 0.15, 0.8),
+        haptics: bool(tc.haptics, true),
+      },
     },
     graphics: {
       quality: q === 'auto' || q === 'low' || q === 'medium' || q === 'high' ? q : 'auto',
@@ -172,6 +179,7 @@ export function sanitizeSettings(raw: unknown): SettingsV1 {
     gameplay: {
       difficulty: (diff === 'easy' || diff === 'normal' || diff === 'hard' ? diff : 'normal') as Difficulty,
     },
+    language: d.language === 'pt' || d.language === 'en' ? d.language : 'auto',
   };
 }
 

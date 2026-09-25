@@ -5,6 +5,7 @@ import { FIREARMS } from '../../data/weapons';
 import { rankPosition } from '../../save/ranking';
 import type { RunStats } from '../../sim/events';
 import { el, fmtInt, hexColor } from '../dom';
+import { ordinal, t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
 
@@ -33,19 +34,23 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
   const stats = el(
     'div',
     { class: 'stats' },
-    el('span', {}, 'Pontuação'),
+    el('span', {}, t('Pontuação')),
     el('b', {}, fmtInt(s.score)),
-    el('span', {}, 'Abates'),
+    el('span', {}, t('Abates')),
     el('b', {}, String(s.kills)),
-    el('span', {}, 'Combo máximo'),
+    el('span', {}, t('Combo máximo')),
     el('b', {}, `x${s.maxCombo}`),
-    el('span', {}, 'Tempo'),
+    el('span', {}, t('Tempo')),
     el('b', {}, fmtTime(s.timeMs)),
-    el('span', {}, 'Vidas perdidas'),
+    el('span', {}, t('Vidas perdidas')),
     el('b', {}, String(s.livesLost)),
-    el('span', {}, 'XP ganho'),
-    el('b', {}, `+${fmtInt(s.xpGained)}${r.levelsGained > 0 ? ` (Nível ${r.playerLevel}!)` : ''}`),
-    el('span', {}, 'Sucata'),
+    el('span', {}, t('XP ganho')),
+    el(
+      'b',
+      {},
+      `+${fmtInt(s.xpGained)}${r.levelsGained > 0 ? ` (${t('Nível {n}!', { n: r.playerLevel })})` : ''}`,
+    ),
+    el('span', {}, t('Sucata')),
     el('b', {}, `+${fmtInt(s.scrap)}`),
   );
   const rewards = el('div', { class: 'rewards' });
@@ -55,8 +60,8 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
       el(
         'div',
         { class: 'reward', style: `border-color:${hexColor(st.color)}` },
-        el('b', {}, 'Novo cajado!'),
-        el('span', {}, st.name),
+        el('b', {}, t('Novo cajado!')),
+        el('span', {}, t(st.name)),
       ),
     );
   }
@@ -65,8 +70,8 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
       el(
         'div',
         { class: 'reward', style: 'border-color:#ffb02a' },
-        el('b', {}, 'Nova arma!'),
-        el('span', {}, FIREARMS[g].name),
+        el('b', {}, t('Nova arma!')),
+        el('span', {}, t(FIREARMS[g].name)),
       ),
     );
   for (const id of s.loot) {
@@ -77,8 +82,8 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
       el(
         'div',
         { class: 'reward', style: `border-color:${col}` },
-        el('b', { style: `color:${col}` }, c.name),
-        el('span', {}, RARITY_NAMES[c.rarity]),
+        el('b', { style: `color:${col}` }, t(c.name)),
+        el('span', {}, t(RARITY_NAMES[c.rarity])),
       ),
     );
   }
@@ -88,8 +93,8 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
       el(
         'div',
         { class: 'reward', style: 'border-color:#5aff9a' },
-        el('b', {}, 'Mapa desbloqueado!'),
-        el('span', {}, nm?.name ?? r.unlockedNext),
+        el('b', {}, t('Mapa desbloqueado!')),
+        el('span', {}, nm ? t(nm.name) : r.unlockedNext),
       ),
     );
   }
@@ -99,8 +104,8 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
       el(
         'div',
         { class: 'reward', style: 'border-color:#ff3a5a' },
-        el('b', { style: 'color:#ff3a5a' }, 'Novo Jogo+ desbloqueado!'),
-        el('span', {}, 'Ative na tela de mapas'),
+        el('b', { style: 'color:#ff3a5a' }, t('Novo Jogo+ desbloqueado!')),
+        el('span', {}, t('Ative na tela de mapas')),
       ),
     );
 
@@ -120,17 +125,23 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
         class: 'btn small primary',
         data: { nav: '' },
         onclick: () => {
-          const name = input.value.trim() || 'Anônimo';
+          const name = input.value.trim() || t('Anônimo');
           host.profile.save.profile.name = name;
           host.profile.persist();
           const p = host.profile.addRank(name, s, r.playerLevel);
           rankBox.innerHTML = '';
-          rankBox.appendChild(el('span', {}, `Registrado em ${p + 1}º lugar no ranking!`));
+          rankBox.appendChild(
+            el('span', {}, t('Registrado em {pos} lugar no ranking!', { pos: ordinal(p + 1) })),
+          );
         },
       },
-      'Salvar no ranking',
+      t('Salvar no ranking'),
     );
-    rankBox.append(el('span', {}, `Nova pontuação no ranking (${pos + 1}º)! Seu nome: `), input, save);
+    rankBox.append(
+      el('span', {}, t('Nova pontuação no ranking ({pos})! Seu nome:', { pos: ordinal(pos + 1) }) + ' '),
+      input,
+      save,
+    );
   }
 
   const btns = el('div', { class: 'row-btns' });
@@ -138,16 +149,16 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     el('button', { class: cls, onclick: fn, data: { nav: '' } }, label);
   if (win && r.next)
     btns.appendChild(
-      b('Próximo mapa', () => host.startLevel(r.next!.mapId, r.next!.levelIdx), 'btn primary'),
+      b(t('Próximo mapa'), () => host.startLevel(r.next!.mapId, r.next!.levelIdx), 'btn primary'),
     );
   btns.appendChild(
     b(
-      win ? 'Jogar de novo' : 'Tentar novamente',
+      win ? t('Jogar de novo') : t('Tentar novamente'),
       () => host.restartLevel(),
       win && r.next ? 'btn' : 'btn primary',
     ),
   );
-  btns.appendChild(b('Menu principal', () => host.quitToMenu()));
+  btns.appendChild(b(t('Menu principal'), () => host.quitToMenu()));
 
   const e = el(
     'div',
@@ -155,12 +166,12 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     el(
       'h1',
       { style: win ? '' : 'color:#ff4a3a;text-shadow:0 0 24px rgba(255,60,40,.6),0 5px 0 #400' },
-      win ? 'MAPA CONCLUÍDO!' : 'VOCÊ FOI DESATIVADO',
+      win ? t('MAPA CONCLUÍDO!') : t('VOCÊ FOI DESATIVADO'),
     ),
     el(
       'div',
       { class: 'subtitle' },
-      `${map.index + 1}. ${map.name}${s.ngPlus ? ' • NG+' : ''}${r.newRecord ? ' • NOVO RECORDE!' : ''}${win && !r.next ? ' • CAMPANHA CONCLUÍDA!' : ''}`,
+      `${map.index + 1}. ${t(map.name)}${s.ngPlus ? ' • NG+' : ''}${r.newRecord ? ` • ${t('NOVO RECORDE!')}` : ''}${win && !r.next ? ` • ${t('CAMPANHA CONCLUÍDA!')}` : ''}`,
     ),
     win ? stars : null,
     el('div', { class: 'panel', style: 'max-width:520px' }, stats),

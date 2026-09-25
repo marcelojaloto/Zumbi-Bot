@@ -1,6 +1,7 @@
 import { MAPS, getMap } from '../../data/maps';
 import { filterByMap } from '../../save/ranking';
 import { el, fmtInt } from '../dom';
+import { locale, t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
 
@@ -9,10 +10,10 @@ function fmtTime(ms: number): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
-function fmtDate(t: number): string {
-  if (!t) return '—';
+function fmtDate(ts: number): string {
+  if (!ts) return '—';
   try {
-    return new Date(t).toLocaleDateString('pt-BR');
+    return new Date(ts).toLocaleDateString(locale());
   } catch {
     return '—';
   }
@@ -41,8 +42,8 @@ export function rankingScreen(host: UiHost): Screen {
           'p',
           { class: 'muted rk-empty' },
           filter
-            ? 'Ninguém registrou pontos neste mapa ainda.'
-            : 'O ranking está vazio. Termine uma partida e registre seu nome!',
+            ? t('Ninguém registrou pontos neste mapa ainda.')
+            : t('O ranking está vazio. Termine uma partida e registre seu nome!'),
         ),
       );
       return;
@@ -56,7 +57,9 @@ export function rankingScreen(host: UiHost): Screen {
         el(
           'tr',
           {},
-          ...['#', 'Nome', 'Pontos', 'Mapa', 'Tempo', 'Abates', 'Nível', 'Data'].map((h) => el('th', {}, h)),
+          ...['#', t('Nome'), t('Pontos'), t('Mapa'), t('Tempo'), t('Abates'), t('Nível'), t('Data')].map(
+            (h) => el('th', {}, h),
+          ),
         ),
       ),
     );
@@ -65,7 +68,7 @@ export function rankingScreen(host: UiHost): Screen {
       let mapName = r.mapId;
       try {
         const m = getMap(r.mapId);
-        mapName = `${m.index + 1}. ${m.name}`;
+        mapName = `${m.index + 1}. ${t(m.name)}`;
       } catch {
         /* mapa removido */
       }
@@ -76,7 +79,7 @@ export function rankingScreen(host: UiHost): Screen {
           el('td', {}, String(i + 1)),
           el('td', {}, r.name, r.ngPlus ? el('i', { class: 'rk-tag' }, 'NG+') : null),
           el('td', { class: 'num' }, fmtInt(r.score)),
-          el('td', {}, mapName, r.victory ? '' : el('i', { class: 'rk-tag lose' }, 'derrota')),
+          el('td', {}, mapName, r.victory ? '' : el('i', { class: 'rk-tag lose' }, t('derrota'))),
           el('td', { class: 'num' }, fmtTime(r.timeMs)),
           el('td', { class: 'num' }, String(r.kills)),
           el('td', { class: 'num' }, String(r.playerLevel)),
@@ -101,7 +104,7 @@ export function rankingScreen(host: UiHost): Screen {
       },
       label,
     );
-  tabs.appendChild(tab('Geral', null));
+  tabs.appendChild(tab(t('Geral'), null));
   for (const m of MAPS) if (prof.isMapUnlocked(m.id)) tabs.appendChild(tab(String(m.index + 1), m.id));
 
   const s = prof.save.stats;
@@ -113,13 +116,13 @@ export function rankingScreen(host: UiHost): Screen {
     { class: 'rk-career' },
     ...(
       [
-        ['Abates', fmtInt(s.kills)],
-        ['Chefes', fmtInt(s.bosses)],
-        ['Mortes', fmtInt(s.deaths)],
-        ['Partidas', fmtInt(s.runs)],
-        ['Tempo de jogo', fmtPlay(s.playTimeMs)],
-        ['Níveis', `${done}/${totalLevels}`],
-        ['Estrelas', `${stars}/${totalLevels * 3}`],
+        [t('Abates'), fmtInt(s.kills)],
+        [t('Chefes'), fmtInt(s.bosses)],
+        [t('Mortes'), fmtInt(s.deaths)],
+        [t('Partidas'), fmtInt(s.runs)],
+        [t('Tempo de jogo'), fmtPlay(s.playTimeMs)],
+        [t('Níveis'), `${done}/${totalLevels}`],
+        [t('Estrelas'), `${stars}/${totalLevels * 3}`],
       ] as const
     ).map(([k, v]) => el('div', {}, el('span', { class: 'muted' }, k), el('b', {}, v))),
   );
@@ -127,14 +130,14 @@ export function rankingScreen(host: UiHost): Screen {
   const e = el(
     'div',
     { class: 'screen dim ranking' },
-    el('h2', {}, 'RANKING'),
+    el('h2', {}, t('RANKING')),
     career,
     tabs,
     body,
     el(
       'div',
       { class: 'row-btns' },
-      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, 'Voltar'),
+      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
     ),
   );
   render();

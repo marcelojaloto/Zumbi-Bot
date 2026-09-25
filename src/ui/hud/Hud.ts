@@ -13,8 +13,9 @@ import { ELEMENT_COLORS } from '../../render/views/staffRecipe';
 import { el, fmtInt, hexColor } from '../dom';
 import { Minimap } from './Minimap';
 import type { Element } from '../../data/types';
+import { t } from '../../i18n';
 
-const ELEMENT_NAMES: Record<Element, string> = {
+export const ELEMENT_NAMES: Record<Element, string> = {
   heal: 'Cura',
   fire: 'Fogo',
   water: 'Água',
@@ -28,10 +29,26 @@ const ELEMENT_NAMES: Record<Element, string> = {
 };
 
 const POWER_INFO = {
-  doubleDamage: { icon: '✖2', name: 'Dano Duplo', color: '#ff4a3a' },
-  turbo: { icon: '⚡', name: 'Turbo', color: '#ffd24a' },
-  invulnerable: { icon: '🛡', name: 'Invulnerável', color: '#ffffff' },
+  doubleDamage: { icon: '✖2', color: '#ff4a3a' },
+  turbo: { icon: '⚡', color: '#ffd24a' },
+  invulnerable: { icon: '🛡', color: '#ffffff' },
 } as const;
+
+/** Dicas do tutorial que citam teclas: versão para os controles de toque. */
+export const TOUCH_HINTS: Record<string, string> = {
+  'A/D andam • W/S mudam de plano (profundidade)':
+    'Arraste o direcional para andar • para cima e para baixo muda de plano (profundidade)',
+  'J = soco • K = chute • J, J, J, J = combo com uppercut':
+    'SOCO e CHUTE atacam • 4 socos seguidos = combo com uppercut',
+  'Espaço pula — aperte de novo no ar para o pulo duplo':
+    'PULAR pula — toque de novo no ar para o pulo duplo',
+  'Clique (ou L) atira • botão direito mira para crítico':
+    'ATIRAR dispara e mira sozinho no inimigo à frente',
+  'Shift ou toque duplo corre • correndo + K = voadora':
+    'Empurre o direcional até a borda para correr • correndo + CHUTE = voadora',
+  '2 = modo cajado • 1 = armas • U (ou J+K) = Giro Turbo':
+    'O botão ⇄ troca arma e cajado • ESPECIAL = Giro Turbo',
+};
 
 /** HUD em HTML sobre o canvas: vida, mana, vidas, XP, pontuação, combo, arma, minimapa, chefe e avisos. */
 export class Hud {
@@ -76,6 +93,10 @@ export class Hud {
   private lastKey = '';
   showFps = false;
   crosshairVisible = true;
+  /** Configuração "Mostrar dicas". */
+  showHints = true;
+  /** Controles de toque ativos: dicas do tutorial viram a versão de toque. */
+  touchMode = false;
 
   constructor(parent: HTMLElement) {
     this.hpFill = el('div', { class: 'bar-fill hp' });
@@ -100,7 +121,7 @@ export class Hud {
     );
     this.mapName = el('div', { class: 'mapname' });
     this.pips = el('div', { class: 'pips' });
-    this.go = el('div', { class: 'go' }, 'SIGA ➜');
+    this.go = el('div', { class: 'go' }, t('SIGA ➜'));
     const tc = el('div', { class: 'hud-tc' }, this.mapName, this.pips, this.go);
     this.score = el('div', { class: 'score' }, '0');
     this.combo = el('div', { class: 'combo' });
@@ -154,6 +175,13 @@ export class Hud {
     parent.appendChild(this.root);
   }
 
+  /** Rótulos fixos depois de trocar o idioma (o resto é atualizado a cada quadro). */
+  relabel(): void {
+    this.go.textContent = t('SIGA ➜');
+    this.bossName.dataset.id = '';
+    this.lastKey = '';
+  }
+
   toast(text: string, color = '#e8ecf4', sub?: string): void {
     const t = el(
       'div',
@@ -175,7 +203,8 @@ export class Hud {
   }
 
   showHint(text: string): void {
-    this.hint.textContent = text;
+    if (!this.showHints) return;
+    this.hint.textContent = t((this.touchMode && TOUCH_HINTS[text]) || text);
     this.hint.classList.add('show');
     this.hintTimer = 5;
   }
@@ -187,14 +216,17 @@ export class Hud {
           this.goTimer = 4;
           break;
         case 'levelUp':
-          this.toast(`NÍVEL ${ev.level}!`, '#ffd24a', 'Vida e mana aumentaram');
+          this.toast(t('NÍVEL {n}!', { n: ev.level }), '#ffd24a', t('Vida e mana aumentaram'));
           break;
         case 'unlock':
           if (ev.kind === 'gun')
-            this.toast(`Nova arma: ${FIREARMS[ev.id as keyof typeof FIREARMS]?.name ?? ev.id}`, '#ffb02a');
+            this.toast(
+              t('Nova arma: {name}', { name: t(FIREARMS[ev.id as keyof typeof FIREARMS]?.name ?? ev.id) }),
+              '#ffb02a',
+            );
           else
             this.toast(
-              `Novo cajado: ${STAFFS[ev.id as keyof typeof STAFFS]?.name ?? ev.id}`,
+              t('Novo cajado: {name}', { name: t(STAFFS[ev.id as keyof typeof STAFFS]?.name ?? ev.id) }),
               hexColor(ELEMENT_COLORS[ev.id as keyof typeof ELEMENT_COLORS] ?? 0xffffff),
             );
           break;
@@ -203,25 +235,32 @@ export class Hud {
             const c = COSMETICS[ev.cosmetic];
             if (c) {
               const col = hexColor(RARITY_COLORS[c.rarity]);
-              if (ev.duplicate) this.toast(`${c.name} (repetido)`, col, `+${ev.scrap} sucata`);
-              else this.toast(c.name, col, `${RARITY_NAMES[c.rarity]} • novo item!`);
+              if (ev.duplicate)
+                this.toast(
+                  t('{name} (repetido)', { name: t(c.name) }),
+                  col,
+                  t('+{n} sucata', { n: ev.scrap ?? 0 }),
+                );
+              else
+                this.toast(t(c.name), col, t('{rarity} • novo item!', { rarity: t(RARITY_NAMES[c.rarity]) }));
             }
-          } else if (ev.scrap) this.toast(`+${ev.scrap} sucata`, '#c8d0d8');
+          } else if (ev.scrap) this.toast(t('+{n} sucata', { n: ev.scrap }), '#c8d0d8');
           break;
         }
         case 'pickup': {
           const d = ITEMS[ev.item];
-          if (d && (d.effect.k === 'power' || d.effect.k === 'melee')) this.toast(d.name, hexColor(d.color));
+          if (d && (d.effect.k === 'power' || d.effect.k === 'melee'))
+            this.toast(t(d.name), hexColor(d.color));
           break;
         }
         case 'meleeBreak':
-          this.toast(`${MELEE_WEAPONS[ev.melee].name} quebrou!`, '#ff7a5a');
+          this.toast(t('{name} quebrou!', { name: t(MELEE_WEAPONS[ev.melee].name) }), '#ff7a5a');
           break;
         case 'playerDown':
           if (ev.livesLeft > 0)
             this.showBanner(
-              'DESATIVADO',
-              `${ev.livesLeft} ${ev.livesLeft === 1 ? 'vida restante' : 'vidas restantes'}`,
+              t('DESATIVADO'),
+              ev.livesLeft === 1 ? t('1 vida restante') : t('{n} vidas restantes', { n: ev.livesLeft }),
               2000,
               'danger',
             );
@@ -231,24 +270,27 @@ export class Hud {
           break;
         case 'bossIntro': {
           const b = BOSSES[ev.bossId];
-          if (b) this.showBanner(b.name.toUpperCase(), b.title, 3000, 'boss');
+          if (b) this.showBanner(t(b.name).toUpperCase(), t(b.title), 3000, 'boss');
           break;
         }
         case 'bossPhase': {
           const be = w.get(ev.id);
           const name = be ? BOSSES[be.defId]?.phases[ev.phase]?.name : undefined;
-          this.showBanner(`FASE ${ev.phase + 1}`, name ?? '', 1800, 'boss');
+          this.showBanner(t('FASE {n}', { n: ev.phase + 1 }), name ? t(name) : '', 1800, 'boss');
           break;
         }
         case 'bossElement': {
           const be = w.get(ev.id);
           const def = be ? BOSSES[be.defId] : undefined;
           if (def && be?.boss && def.phases[be.boss.phase]?.elementCycle)
-            this.toast(`${def.name}: ${ELEMENT_NAMES[ev.element]}`, hexColor(ELEMENT_COLORS[ev.element]));
+            this.toast(
+              `${t(def.name)}: ${t(ELEMENT_NAMES[ev.element])}`,
+              hexColor(ELEMENT_COLORS[ev.element]),
+            );
           break;
         }
         case 'bossDefeated':
-          this.showBanner('CHEFE DERROTADO!', '', 2500, 'win');
+          this.showBanner(t('CHEFE DERROTADO!'), '', 2500, 'win');
           break;
         case 'segment':
           if (ev.phase === 'locked') this.showBanner('', '', 1);
@@ -292,7 +334,7 @@ export class Hud {
       this.lives.dataset.v = livesKey;
       this.lives.textContent = '♥'.repeat(Math.max(0, pc.lives));
     }
-    this.level.textContent = `Nv ${pc.level}`;
+    this.level.textContent = t('Nv {n}', { n: pc.level });
     this.xpFill.style.width = `${Math.min(1, pc.xp / xpToNext(pc.level)) * 100}%`;
     this.score.textContent = fmtInt(pc.score);
     if (pc.combo !== this.lastCombo) {
@@ -305,7 +347,8 @@ export class Hud {
       } else this.combo.classList.remove('show');
     }
     this.mapName.textContent =
-      (w.map.index >= 0 ? `${w.map.index + 1}. ${w.map.name}` : w.map.name) + (w.ngPlus ? ' • NG+' : '');
+      (w.map.index >= 0 ? `${w.map.index + 1}. ${t(w.map.name)}` : t(w.map.name)) +
+      (w.ngPlus ? ' • NG+' : '');
     const segs = w.level.segments.filter((s) => s.lock);
     const pipKey = `${segs.length}:${w.levelState.cleared.join(',')}:${w.levelState.segmentIdx}:${w.levelState.active}`;
     if (this.pips.dataset.k !== pipKey) {
@@ -337,20 +380,20 @@ export class Hud {
       const g = FIREARMS[pc.guns[pc.gunIdx] ?? 'pistol'];
       const mag = pc.ammoMag[g.id] ?? 0;
       const res = g.reserveMax === 'infinite' ? '∞' : String(pc.ammo[g.ammo]);
-      this.weaponName.textContent = g.name;
+      this.weaponName.textContent = t(g.name);
       this.ammo.textContent = `${mag} / ${res}`;
       this.ammo.classList.toggle('empty', mag === 0);
       const rl = pc.fire.reloadTotal > 0 ? 1 - pc.fire.reload / pc.fire.reloadTotal : 0;
       this.ring.style.setProperty('--p', `${rl * 100}%`);
       this.ring.style.setProperty('--c', '#ffb02a');
-      this.ring.textContent = pc.fire.reload > 0 ? '⟳' : g.short;
+      this.ring.textContent = pc.fire.reload > 0 ? '⟳' : t(g.short);
       key = `g:${pc.gunIdx}:${pc.guns.join(',')}`;
     } else {
       const s = STAFFS[pc.staffs[pc.staffIdx] ?? 'heal'];
       const cd = pc.staffCd[s.id] ?? 0;
       const total = Math.round(s.cooldownS * 60);
-      this.weaponName.textContent = s.name;
-      this.ammo.textContent = `${s.manaCost} mana`;
+      this.weaponName.textContent = t(s.name);
+      this.ammo.textContent = t('{n} mana', { n: s.manaCost });
       this.ammo.classList.toggle('empty', pc.mana < s.manaCost);
       this.ring.style.setProperty('--p', `${cd > 0 ? (1 - cd / total) * 100 : 0}%`);
       this.ring.style.setProperty('--c', hexColor(ELEMENT_COLORS[s.id]));
@@ -364,7 +407,7 @@ export class Hud {
       this.meleeBox.style.display = 'flex';
       this.meleeBox.innerHTML = '';
       this.meleeBox.append(
-        el('span', {}, m.name),
+        el('span', {}, t(m.name)),
         el(
           'div',
           { class: 'dur' },
@@ -377,7 +420,7 @@ export class Hud {
       this.slots.innerHTML = '';
       if (pc.mode === 'gun') {
         pc.guns.forEach((g, i) =>
-          this.slots.appendChild(el('i', { class: i === pc.gunIdx ? 'on' : '' }, FIREARMS[g].short)),
+          this.slots.appendChild(el('i', { class: i === pc.gunIdx ? 'on' : '' }, t(FIREARMS[g].short))),
         );
       } else {
         pc.staffs.forEach((s, i) =>
@@ -385,7 +428,7 @@ export class Hud {
             el('i', {
               class: `dot ${i === pc.staffIdx ? 'on' : ''}`,
               style: `background:${hexColor(ELEMENT_COLORS[s])}`,
-              title: STAFFS[s].name,
+              title: t(STAFFS[s].name),
             }),
           ),
         );
@@ -409,7 +452,7 @@ export class Hud {
       .filter((s) => s.id !== 'regen' || true)
       .map(
         (s) =>
-          `<div class="st" title="${STATUS[s.id].name}" style="border-color:${hexColor(STATUS[s.id].color)}">${STATUS[s.id].icon}${s.stacks > 1 ? `<sub>${s.stacks}</sub>` : ''}</div>`,
+          `<div class="st" title="${t(STATUS[s.id].name)}" style="border-color:${hexColor(STATUS[s.id].color)}">${STATUS[s.id].icon}${s.stacks > 1 ? `<sub>${s.stacks}</sub>` : ''}</div>`,
       )
       .join('');
     if (this.statuses.innerHTML !== st) this.statuses.innerHTML = st;
@@ -448,7 +491,8 @@ export class Hud {
     this.bossFill.classList.toggle('immune', b.boss.transitioning);
     if (def && this.bossName.dataset.id !== def.id) {
       this.bossName.dataset.id = def.id;
-      this.bossName.innerHTML = `<b>${def.name}</b><span>${def.title}</span>`;
+      this.bossName.innerHTML = '';
+      this.bossName.append(el('b', {}, t(def.name)), el('span', {}, t(def.title)));
       this.bossPhases.innerHTML = '';
       for (const ph of def.phases.slice(0, -1))
         this.bossPhases.appendChild(el('i', { style: `left:${ph.untilHpFrac * 100}%` }));

@@ -1,5 +1,7 @@
 import { hashString } from '../core/rng';
 import { InputManager } from '../input/InputManager';
+import { TouchControls } from '../input/TouchControls';
+import { deviceKind, isPortrait, type DeviceKind } from '../input/device';
 import { Renderer } from '../render/Renderer';
 import { downgrade, resolveQuality, type QualityLevel } from '../render/quality';
 import type { InputSource } from '../sim/InputFrame';
@@ -28,6 +30,7 @@ import { rankingScreen } from '../ui/screens/RankingScreen';
 import type { RunStats } from '../sim/events';
 import { MAPS, getMap } from '../data/maps';
 import { xpToNext } from '../data/balance';
+import { detectLang, setLang, t, type Lang } from '../i18n';
 
 export type Screen = 'boot' | 'splash' | 'menu' | 'loading' | 'playing' | 'paused' | 'gameover' | 'victory';
 
@@ -57,14 +60,44 @@ export class App implements WardrobeHost {
   lastLevel: { mapId: string; levelIdx: number } | null = null;
   private lastStats: RunStats | null = null;
   private loadingEl: HTMLElement | null = null;
+  /** Celular, tablet ou computador (decide controles de toque e qualidade inicial). */
+  readonly device: DeviceKind = deviceKind();
+  readonly touch: TouchControls;
+  private rotateEl: HTMLElement;
 
   constructor(canvas: HTMLCanvasElement, ui: HTMLElement) {
     this.flags = readFlags();
     this.ui = ui;
     this.profile = new Profile();
     const q = this.flags.quality ?? this.profile.settings.graphics.quality;
-    this.renderer = new Renderer(canvas, resolveQuality(q));
+    this.renderer = new Renderer(canvas, resolveQuality(q, this.device));
     this.input = new InputManager(canvas);
+    this.touch = new TouchControls(ui, {
+      onPause: () => this.togglePause(),
+      onFullscreen: () => this.toggleFullscreen(),
+    });
+    this.rotateEl = el(
+      'div',
+      { class: 'rotate', hidden: true },
+      el('div', { class: 'phone' }),
+      el('h2'),
+      el('p'),
+    );
+    document.body.appendChild(this.rotateEl);
+    // modo toque automático: toque liga; mouse ou teclado (no computador) desliga
+    addEventListener(
+      'pointerdown',
+      (e) => {
+        if (this.profile.settings.controls.touch.mode !== 'auto') return;
+        if (e.pointerType === 'touch') this.setTouchMode(true);
+        else if (e.pointerType === 'mouse' && this.device === 'desktop') this.setTouchMode(false);
+      },
+      { capture: true },
+    );
+    addEventListener('keydown', () => {
+      if (this.profile.settings.controls.touch.mode === 'auto' && this.device === 'desktop' && this.touchOn)
+        this.setTouchMode(false);
+    });
     this.input.onPause = () => this.togglePause();
     this.input.onMap = () => this.hud?.minimap.toggle();
     this.audio = new AudioEngine(this.flags.mute);
@@ -86,8 +119,8 @@ export class App implements WardrobeHost {
         el(
           'div',
           { class: 'screen solid' },
-          el('h2', {}, 'Contexto gráfico perdido'),
-          el('p', {}, 'Recarregue a página para continuar.'),
+          el('h2', {}, t('Contexto gráfico perdido')),
+          el('p', {}, t('Recarregue a página para continuar.')),
         ),
       );
     };
@@ -96,6 +129,59 @@ export class App implements WardrobeHost {
       this.installDebugKeys();
     }
     this.applySettings();
+  }
+
+  /** Controles de toque ativos (celular/tablet ou toque na tela). */
+  touchOn = false;
+
+  /** Liga/desliga o modo toque: controles na tela, HUD adaptado e sem travar o ponteiro. */
+  setTouchMode(on: boolean): void {
+    if (on === this.touchOn) return;
+    this.touchOn = on;
+    document.body.classList.toggle('touch', on);
+    this.input.touch = on ? this.touch : null;
+    if (this.hud) this.hud.touchMode = on;
+    if (on) this.input.exitPointerLock();
+  }
+
+  /** Tela cheia + paisagem travada (Android); no iPhone a API não existe e o aviso de girar resolve. */
+  toggleFullscreen(force?: boolean): void {
+    const d = document as Document & { webkitFullscreenElement?: Element };
+    const on = force ?? !(document.fullscreenElement || d.webkitFullscreenElement);
+    try {
+      if (on) {
+        const root = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => void };
+        const p = root.requestFullscreen?.({ navigationUI: 'hide' }) ?? root.webkitRequestFullscreen?.();
+        Promise.resolve(p)
+          .then(() => {
+            const o = screen.orientation as ScreenOrientation & { lock?: (o: string) => Promise<void> };
+            return o?.lock?.('landscape');
+          })
+          .catch(() => {});
+      } else if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+    } catch {
+      /* sem suporte */
+    }
+  }
+
+  /** Por quadro: controles de toque só na partida; aviso para girar em retrato. */
+  private updateTouchUi(): void {
+    const portrait = this.touchOn && this.device !== 'desktop' && isPortrait();
+    if (portrait !== !this.rotateEl.hidden) {
+      this.rotateEl.hidden = !portrait;
+      if (portrait) {
+        this.rotateEl.querySelector('h2')!.textContent = t('Gire o aparelho');
+        this.rotateEl.querySelector('p')!.textContent = t('O Zumbi Bot é jogado com o celular deitado.');
+        if (this.screen === 'playing') this.pause();
+      }
+    }
+    this.touch.setVisible(this.touchOn && this.screen === 'playing' && !portrait);
+    const p = this.session?.world.get(1)?.player;
+    if (p) this.touch.setFireMode(p.mode);
+  }
+
+  get touchActive(): boolean {
+    return this.touchOn;
   }
 
   get inGame(): boolean {
@@ -141,6 +227,7 @@ export class App implements WardrobeHost {
     this.ensureMenuScene();
     const start = () => {
       this.audio.unlock();
+      if (this.device !== 'desktop') this.toggleFullscreen(true);
       this.showMainMenu();
     };
     this.music.play('menu');
@@ -148,9 +235,9 @@ export class App implements WardrobeHost {
       'div',
       { class: 'screen dim splash-screen' },
       el('h1', {}, 'ZUMBI BOT'),
-      el('div', { class: 'subtitle' }, 'A revolução dos robôs no apocalipse zumbi'),
-      el('button', { class: 'btn primary', onclick: start, data: { nav: '', autofocus: '' } }, 'Jogar'),
-      el('p', { class: 'muted' }, 'Clique ou pressione Enter'),
+      el('div', { class: 'subtitle' }, t('A revolução dos robôs no apocalipse zumbi')),
+      el('button', { class: 'btn primary', onclick: start, data: { nav: '', autofocus: '' } }, t('Jogar')),
+      el('p', { class: 'muted' }, t('Clique ou pressione Enter')),
     );
     this.screens.push({ el: e, id: 'splash', onBack: () => false });
     for (const n of this.profile.notices) setTimeout(() => this.hud?.toast(n, '#ffb02a'), 500);
@@ -184,36 +271,43 @@ export class App implements WardrobeHost {
       'div',
       { class: 'screen menu-screen' },
       el('h1', {}, 'ZUMBI BOT'),
-      el('div', { class: 'subtitle' }, 'A revolução dos robôs no apocalipse zumbi'),
+      el('div', { class: 'subtitle' }, t('A revolução dos robôs no apocalipse zumbi')),
       el(
         'div',
         { class: 'profile-chip' },
         el('span', {}, s.profile.name),
-        el('span', {}, 'Nível ', el('b', {}, String(s.profile.level))),
+        el('span', {}, t('Nível'), ' ', el('b', {}, String(s.profile.level))),
         el('span', {}, `XP ${fmtInt(s.profile.xp)}/${fmtInt(xpToNext(s.profile.level))}`),
-        el('span', {}, 'Sucata ', el('b', {}, fmtInt(s.profile.scrap))),
+        el('span', {}, t('Sucata'), ' ', el('b', {}, fmtInt(s.profile.scrap))),
       ),
       el(
         'div',
         { class: 'menu' },
         b(
-          s.stats.runs > 0 ? `Continuar: ${contMap.name}` : 'Jogar',
+          s.stats.runs > 0 ? t('Continuar: {map}', { map: t(contMap.name) }) : t('Jogar'),
           () => void this.startLevel(cont.mapId, cont.levelIdx),
           'btn primary',
         ),
-        b('Mapas', () => this.screens.push(mapSelectScreen(this))),
-        b('Guarda-roupa', () => this.screens.push(wardrobeScreen(this))),
-        b('Loja', () => this.screens.push(shopScreen(this))),
-        b('Ranking', () => this.screens.push(rankingScreen(this))),
-        b('Configurações', () => this.openSettings()),
-        b('Controles', () => this.openControls()),
-        b('Créditos', () => this.screens.push(creditsScreen(this))),
+        b(t('Mapas'), () => this.screens.push(mapSelectScreen(this))),
+        b(t('Guarda-roupa'), () => this.screens.push(wardrobeScreen(this))),
+        b(t('Loja'), () => this.screens.push(shopScreen(this))),
+        b(t('Ranking'), () => this.screens.push(rankingScreen(this))),
+        b(t('Configurações'), () => this.openSettings()),
+        b(t('Controles'), () => this.openControls()),
+        b(t('Créditos'), () => this.screens.push(creditsScreen(this))),
+        el(
+          'a',
+          { class: 'btn', href: 'manual/index.html', target: '_blank', rel: 'noopener', data: { nav: '' } },
+          t('Manual'),
+        ),
       ),
-      ...this.profile.notices.map((n) => el('p', { class: 'muted', style: 'color:#ffb02a' }, n)),
+      ...this.profile.notices.map((n) => el('p', { class: 'muted', style: 'color:#ffb02a' }, t(n))),
       el(
         'div',
         { class: 'menu-footer muted' },
-        'WASD mover • J soco • K chute • Espaço pula • Mouse mira e atira • Esc pausa',
+        this.touchOn
+          ? t('Direcional à esquerda • botões de ação à direita • ⏸ pausa')
+          : t('WASD mover • J soco • K chute • Espaço pula • Mouse mira e atira • Esc pausa'),
       ),
     );
     this.screens.push({ el: e, id: 'menu', onBack: () => false });
@@ -234,8 +328,8 @@ export class App implements WardrobeHost {
     return last;
   }
 
-  openSettings(): void {
-    this.screens.push(settingsScreen(this));
+  openSettings(tab?: string): void {
+    this.screens.push(settingsScreen(this, tab));
   }
 
   openControls(): void {
@@ -249,6 +343,14 @@ export class App implements WardrobeHost {
   /** Aplica configurações salvas (volume, sensibilidade, qualidade...). */
   applySettings(): void {
     const s = this.profile.settings;
+    this.applyLanguage(s.language);
+    const tc = s.controls.touch;
+    // tablets têm tela maior: controles um pouco maiores
+    this.touch.setLook(tc.size * (this.device === 'tablet' ? 1.2 : 1), tc.opacity);
+    this.touch.haptics = tc.haptics;
+    this.setTouchMode(
+      tc.mode === 'on' || (tc.mode === 'auto' && (this.device !== 'desktop' || this.touchOn)),
+    );
     this.audio.volumes.master = s.audio.master;
     this.audio.volumes.music = s.audio.music;
     this.audio.volumes.sfx = s.audio.sfx;
@@ -259,17 +361,48 @@ export class App implements WardrobeHost {
     this.renderer.post.flashScale = s.graphics.reduceFlashes ? 0.3 : 1;
     this.renderer.renderScale = s.graphics.renderScale;
     this.renderer.resize();
-    if (this.hud) this.hud.showFps = s.graphics.showFps || this.flags.fps;
+    if (this.hud) {
+      this.hud.showFps = s.graphics.showFps || this.flags.fps;
+      this.hud.showHints = s.controls.hints;
+    }
     if (this.overlay) this.overlay.showNumbers = s.graphics.damageNumbers;
-    const want: QualityLevel = resolveQuality(this.flags.quality ?? s.graphics.quality);
+    const want: QualityLevel = resolveQuality(this.flags.quality ?? s.graphics.quality, this.device);
     if (want !== this.renderer.quality.level) void this.changeQuality(want);
+  }
+
+  /** Idioma: "auto" segue o navegador; atualiza o documento (lang e título). */
+  private applyLanguage(choice: 'auto' | Lang): void {
+    const lang: Lang = choice === 'auto' ? detectLang(navigator.language) : choice;
+    setLang(lang);
+    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+    document.title = `Zumbi Bot — ${t('A revolução dos robôs no apocalipse zumbi')}`;
+    this.touch?.relabel();
+  }
+
+  /** Troca de idioma ao vivo: refaz as telas abertas e os rótulos fixos do HUD. */
+  relocalize(): void {
+    this.hud?.relabel();
+    this.touch.relabel();
+    if (this.session) {
+      if (this.screen === 'paused') {
+        this.screens.clear();
+        this.screens.push(pauseScreen(this));
+        this.openSettings('game');
+      }
+    } else if (this.screen === 'menu') {
+      this.showMainMenu();
+      this.openSettings('game');
+    }
   }
 
   private async changeQuality(q: QualityLevel): Promise<void> {
     await this.renderer.setQuality(q);
     // recria a partida atual com os novos recursos gráficos
     if (this.session && this.lastLevel) {
-      this.hud?.toast(`Qualidade: ${q === 'low' ? 'Baixa' : q === 'medium' ? 'Média' : 'Alta'}`, '#39e6ff');
+      this.hud?.toast(
+        t('Qualidade: {q}', { q: t(q === 'low' ? 'Baixa' : q === 'medium' ? 'Média' : 'Alta') }),
+        '#39e6ff',
+      );
     }
   }
 
@@ -281,7 +414,7 @@ export class App implements WardrobeHost {
       { class: 'loading' },
       el('div', { class: 'ltitle' }, title),
       el('div', { class: 'lbar' }, el('i')),
-      el('div', { class: 'muted' }, 'Carregando…'),
+      el('div', { class: 'muted' }, t('Carregando…')),
     );
     this.ui.appendChild(this.loadingEl);
   }
@@ -300,7 +433,7 @@ export class App implements WardrobeHost {
     this.lastLevel = { mapId, levelIdx };
     this.lastStats = null;
     const map = getMap(mapId);
-    this.showLoading(map.index >= 0 ? `${map.index + 1}. ${map.name}` : map.name);
+    this.showLoading(map.index >= 0 ? `${map.index + 1}. ${t(map.name)}` : t(map.name));
     await new Promise((r) => requestAnimationFrame(() => r(null)));
     const seed = this.flags.seed ?? (hashString(mapId) ^ Date.now()) >>> 0;
     const session = new GameSession(this.renderer, this.input, {
@@ -318,6 +451,8 @@ export class App implements WardrobeHost {
     this.music.play(map.music, 0);
     this.overlay = new WorldOverlay(this.ui);
     this.hud = new Hud(this.ui);
+    this.hud.touchMode = this.touchOn;
+    this.ui.appendChild(this.touch.root);
     this.ui.appendChild(this.screens.root);
     const overlay = this.overlay;
     const hud = this.hud;
@@ -355,7 +490,7 @@ export class App implements WardrobeHost {
     this.hideLoading();
     this.screen = 'playing';
     this.input.enabled = true;
-    if (!this.flags.nopointerlock && this.profile.settings.controls.pointerLock)
+    if (!this.flags.nopointerlock && this.profile.settings.controls.pointerLock && !this.touchOn)
       this.input.requestPointerLock();
   }
 
@@ -451,7 +586,7 @@ export class App implements WardrobeHost {
     this.music.muffle(false);
     this.screen = 'playing';
     this.input.enabled = true;
-    if (!this.flags.nopointerlock && this.profile.settings.controls.pointerLock)
+    if (!this.flags.nopointerlock && this.profile.settings.controls.pointerLock && !this.touchOn)
       this.input.requestPointerLock();
   }
 
@@ -485,6 +620,7 @@ export class App implements WardrobeHost {
     }
     this.screens.pollGamepad(dt);
     this.screens.update(dt);
+    this.updateTouchUi();
     this.renderer.gl.info.reset();
     if (!this.session && this.menuScene) {
       this.menuScene.frame(dt);

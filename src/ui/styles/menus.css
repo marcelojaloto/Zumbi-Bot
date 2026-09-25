@@ -650,3 +650,72 @@
   text-align: center;
   padding: 24px;
 }
+a.btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+/* ---------------------------------------------------------------- telas baixas (celular deitado) */
+@media (max-height: 500px) {
+  .screen {
+    gap: 8px;
+    padding: 12px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px));
+    justify-content: flex-start;
+  }
+  .screen h1 {
+    font-size: clamp(30px, 9vh, 52px);
+  }
+  .screen h2 {
+    font-size: clamp(22px, 7vh, 34px);
+  }
+  .btn {
+    font-size: 16px;
+    padding: 9px 16px;
+    min-height: 44px;
+  }
+  .btn.small {
+    min-height: 40px;
+  }
+  .screen.menu-screen {
+    justify-content: center;
+  }
+  .menu-screen .menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    min-width: min(460px, 70vw);
+  }
+  .menu-screen .menu > :first-child {
+    grid-column: 1 / -1;
+  }
+  .menu-screen .menu-footer {
+    display: none;
+  }
+  .profile-chip {
+    font-size: 12px;
+  }
+  .splash-screen p {
+    display: none;
+  }
+  .wr-panel {
+    max-height: 96vh;
+  }
+  .rk-scroll {
+    max-height: 48vh;
+  }
+  .cr-block {
+    margin: 28px 0;
+  }
+}
+.keys.touch-keys {
+  grid-template-columns: auto 1fr;
+}
+.controls-screen h3 {
+  margin: 4px 0 0;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 14px;
+}

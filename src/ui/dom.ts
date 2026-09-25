@@ -1,3 +1,4 @@
+import { locale } from '../i18n';
 /** Mini-helper para criar elementos DOM sem framework. */
 export type Child = Node | string | null | undefined | false;
 
@@ -32,5 +33,5 @@ export function hexColor(c: number): string {
 }
 
 export function fmtInt(n: number): string {
-  return Math.round(n).toLocaleString('pt-BR');
+  return Math.round(n).toLocaleString(locale());
 }

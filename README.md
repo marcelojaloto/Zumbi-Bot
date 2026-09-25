@@ -60,7 +60,33 @@ Web Audio.
 Combos: J, J, J, J termina em uppercut • J, J, K faz o chute giratório • correndo + K é a voadora • no ar,
 J e K atacam.
 
-## Como rodar
+No celular e no tablet: direcional à esquerda (empurrar até a borda corre) e botões Soco, Pular, Chute,
+Atirar/Conjurar (mira sozinho), Especial, Recarregar, Próxima arma e Arma ⇄ Cajado à direita; pausa e tela cheia no
+topo. Tamanho, opacidade e vibração dos controles ficam em Configurações → Controles.
+
+## Jogar
+
+- **No navegador:** https://marcelojaloto.github.io/Zumbi-Bot/ — computador, celular ou tablet.
+- **No celular e no tablet:** deite o aparelho; os controles de toque aparecem sozinhos (direcional com setas à
+  esquerda, botões de ação à direita). Em "Adicionar à tela inicial", o jogo abre em tela cheia e deitado.
+- **Idiomas:** português e inglês, escolhidos pelo idioma do navegador e trocáveis em Configurações → Jogo.
+
+## Instalação local
+
+Passo a passo completo, com solução de problemas:
+[manual no site](https://marcelojaloto.github.io/Zumbi-Bot/manual/) ·
+[docs/INSTALACAO.md](docs/INSTALACAO.md) · [docs/INSTALL.md (English)](docs/INSTALL.md).
+
+Resumo (precisa de Node.js 22 LTS e Git):
+
+```bash
+git clone https://github.com/marcelojaloto/Zumbi-Bot.git
+cd Zumbi-Bot
+npm install
+npm run dev        # abra http://localhost:5173/Zumbi-Bot/ e deixe o terminal aberto
+```
+
+## Comandos de desenvolvimento
 
 ```bash
 npm install

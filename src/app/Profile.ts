@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { PLAYER, xpToNext } from '../data/balance';
 import { getMap, MAPS } from '../data/maps';
 import { STAFFS } from '../data/staffs';
@@ -147,7 +148,7 @@ export class Profile {
   /** Posição no ranking (0-based) se entrar. */
   addRank(name: string, stats: RunStats, playerLevel: number): number {
     const pos = insertRank(this.ranking, {
-      name: name.slice(0, 16) || 'Anônimo',
+      name: name.slice(0, 16) || t('Anônimo'),
       score: stats.score,
       mapId: stats.mapId,
       levelId: stats.levelId,
