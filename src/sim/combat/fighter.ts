@@ -168,7 +168,8 @@ export function fighterSystem(w: World): void {
 
 function toIdle(e: Entity): void {
   const fi = e.fighter!;
-  fi.state = e.body && !e.body.grounded ? 'fall' : 'idle';
+  // voadores (drones) nunca "caem": voltam direto a agir
+  fi.state = e.body && !e.body.grounded && e.body.fly === undefined ? 'fall' : 'idle';
   fi.st = 0;
   fi.moveId = null;
   fi.superArmor = false;

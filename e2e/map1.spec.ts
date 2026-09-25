@@ -36,8 +36,13 @@ test('mapa 1: anda, luta, renderiza e conclui com piloto automático', async ({ 
 
   // anda com o teclado de verdade
   const x0 = await page.evaluate(() => (window as unknown as { __game: G }).__game.state().player!.x);
+  // segura "d" até andar 1 m (o relógio real do navegador headless pode ser lento)
   await page.keyboard.down('d');
-  await page.waitForTimeout(1500);
+  await page
+    .waitForFunction((x) => (window as unknown as { __game: G }).__game.state().player!.x > x + 1.2, x0, {
+      timeout: 10_000,
+    })
+    .catch(() => undefined);
   await page.keyboard.up('d');
   const x1 = await page.evaluate(() => (window as unknown as { __game: G }).__game.state().player!.x);
   expect(x1 - x0).toBeGreaterThan(1);

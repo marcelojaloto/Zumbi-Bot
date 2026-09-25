@@ -60,7 +60,8 @@ export function spawnEnemy(w: World, id: string, x: number, z: number, from: Spa
     e.t.y = 7;
     e.t.py = 7;
     e.body!.grounded = false;
-    e.fighter!.state = 'fall';
+    // voadores descem planando até a altura de voo, já ativos
+    if (!def.fly) e.fighter!.state = 'fall';
   }
   if (from === 'ground' && e.health) e.health.invuln = 30;
   return e;

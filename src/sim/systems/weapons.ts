@@ -7,7 +7,7 @@ import { Btn, held, pressed } from '../InputFrame';
 import type { World } from '../World';
 import { applyHit } from '../combat/applyHit';
 import { falloff } from '../combat/damage';
-import { spawnProjectile } from './projectiles';
+import { shootDown, spawnProjectile } from './projectiles';
 import { LOCOMOTION } from './playerControl';
 
 /** Munição inicial de cada arma desbloqueada: 1 pente cheio + 1 pente de reserva. */
@@ -315,11 +315,29 @@ function hitscan(
     if (y < o.t.y - 1.0 || y > o.t.y + h + 0.3) continue;
     hits.push({ e: o, t });
   }
+  // projéteis destrutíveis na linha de tiro
+  for (const o of w.entities) {
+    const oc = o.projectile;
+    if (!oc || oc.hp <= 0 || !o.alive || !isHostile(e.team, o.team)) continue;
+    const ox = o.t.x - x;
+    const oz = o.t.z - z;
+    const t = ox * dx + oz * dz;
+    if (t < 0 || t > range) continue;
+    const px = ox - dx * t;
+    const pz = oz - dz * t;
+    const r = oc.radius + 0.3;
+    if (px * px + pz * pz > r * r || Math.abs(o.t.y - y) > 1) continue;
+    hits.push({ e: o, t });
+  }
   hits.sort((a, b) => a.t - b.t);
   let endT = range;
   let n = 0;
   let stopped = false;
   for (const h of hits) {
+    if (h.e.projectile) {
+      shootDown(w, h.e, hit.damage);
+      continue;
+    }
     applyHit(w, e, h.e, hit, {
       crit: crit > 1,
       critMult: crit > 1 ? crit : undefined,
