@@ -55,7 +55,7 @@ export type StatusId =
   | 'glitch';
 
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-export type Difficulty = 'easy' | 'normal' | 'hard';
+export type Difficulty = 'veryEasy' | 'easy' | 'normal' | 'hard';
 export type Resist = Partial<Record<DamageType, number>>;
 
 export type UnlockCond =

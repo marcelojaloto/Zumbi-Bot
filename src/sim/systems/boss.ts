@@ -51,7 +51,7 @@ export function compileSteps(steps: BossStep[]): BossStep[] {
 }
 
 export function spawnBoss(w: World, def: BossDef, x: number, z: number): Entity {
-  const hp = Math.round(def.hp * coopScaling(w.playerCount).bossHp * w.diff.enemyHp);
+  const hp = Math.round(def.hp * coopScaling(w.playerCount).bossHp * w.diff.bossHp);
   const boss: BossComp = {
     phase: 0,
     transitioning: false,
@@ -889,7 +889,7 @@ export function bossSystem(w: World): void {
         b.steps = [];
         b.patternId = null;
         if (b.transitioning) b.transitioning = false;
-        b.idle = secToTicks(w.rng.range(ph.idleBetweenS[0], ph.idleBetweenS[1]));
+        b.idle = secToTicks(w.rng.range(ph.idleBetweenS[0], ph.idleBetweenS[1]) * w.diff.bossPace);
         if (fi.state === 'walk') fi.state = 'idle';
       }
     }

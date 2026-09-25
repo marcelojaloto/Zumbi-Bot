@@ -2,6 +2,8 @@ import { BOSSES } from '../../data/bosses';
 import { MAPS } from '../../data/maps';
 import { el, fmtInt, hexColor } from '../dom';
 import { t } from '../../i18n';
+import { DIFFICULTY_ORDER } from '../../data/balance';
+import { difficultyName } from '../difficulty';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
 
@@ -67,10 +69,30 @@ export function mapSelectScreen(host: UiHost): Screen {
       el('span', { class: 'muted' }, t('Inimigos +50% vida e +30% dano • pontos e sucata ×1,5')),
     );
   }
+  // dificuldade à mão na escolha do mapa (Configurações → Jogo também muda)
+  const diffRow = el('div', { class: 'diff-row' }, el('span', { class: 'muted' }, t('Dificuldade')));
+  const diffBtns = DIFFICULTY_ORDER.map((d) =>
+    el(
+      'button',
+      {
+        class: `btn small ${host.profile.settings.gameplay.difficulty === d ? 'on' : ''}`,
+        data: { nav: '', diff: d },
+        onclick: () => {
+          host.profile.settings.gameplay.difficulty = d;
+          host.profile.persistSettings();
+          host.applySettings();
+          for (const b of diffBtns) b.classList.toggle('on', b.dataset.diff === d);
+        },
+      },
+      difficultyName(d),
+    ),
+  );
+  diffRow.append(...diffBtns);
   const e = el(
     'div',
     { class: 'screen dim' },
     el('h2', {}, t('ESCOLHA O MAPA')),
+    diffRow,
     ng,
     grid,
     el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, t('Voltar')),

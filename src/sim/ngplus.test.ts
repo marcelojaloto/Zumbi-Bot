@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { NG_PLUS } from '../data/balance';
+import { DIFFICULTY, NG_PLUS } from '../data/balance';
 import { getMap } from '../data/maps';
 import { spawnEnemy } from './ai/spawnEnemy';
 import { spawnBoss } from './systems/boss';
@@ -63,5 +63,18 @@ describe('OMEGA-Z', () => {
     expect(boss.boss!.phase).toBe(2);
     expect(boss.scale).toBeCloseTo(2.5 * 1.3);
     expect(w.zBand).toEqual([-2, 1.2]);
+  });
+});
+
+describe('dificuldade', () => {
+  it('Muito fácil: chefe com metade da vida e mais tempo entre ataques', () => {
+    const a = makeWorld();
+    const b = makeWorld({ difficulty: 'veryEasy' });
+    const ba = spawnBoss(a, getBoss('omega'), 8, 0);
+    const bb = spawnBoss(b, getBoss('omega'), 8, 0);
+    expect(bb.health!.max).toBe(Math.round(ba.health!.max * DIFFICULTY.veryEasy.bossHp));
+    expect(DIFFICULTY.veryEasy.bossHp).toBeLessThan(DIFFICULTY.easy.bossHp);
+    expect(DIFFICULTY.veryEasy.bossPace).toBeGreaterThan(DIFFICULTY.easy.bossPace);
+    expect(DIFFICULTY.normal).toMatchObject({ enemyDmg: 1, enemyHp: 1, bossHp: 1, bossPace: 1 });
   });
 });

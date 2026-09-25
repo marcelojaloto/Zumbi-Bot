@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { Btn } from '../InputFrame';
 import { makeWorld, player, run } from '../test/helpers';
 import { giveFirearm } from './pickups';
+import { resolveAim } from './weapons';
+import { spawnEnemy } from '../ai/spawnEnemy';
 import type { GameEvent } from '../events';
 import type { World } from '../World';
 
@@ -92,5 +94,36 @@ describe('armas de fogo', () => {
     run(w, 130);
     expect(pc.ammo.rifle).toBeLessThan(100);
     expect(pc.ammoMag.rifle).toBe(30);
+  });
+});
+
+describe('mira', () => {
+  it('tiro mirado com o mouse na diagonal sai reto para a frente', () => {
+    const w = makeWorld();
+    const p = player(w);
+    p.player!.aimMode = 1;
+    p.player!.aimYaw = Math.PI / 4;
+    expect(resolveAim(w, p, 20)).toBe(0);
+    p.player!.aimYaw = (3 * Math.PI) / 4;
+    expect(resolveAim(w, p, 20)).toBe(Math.PI);
+  });
+
+  it('assistência só pega inimigo à frente na mesma faixa', () => {
+    const w = makeWorld();
+    const p = player(w);
+    p.t.facing = 1;
+    const x0 = p.t.x;
+    const z0 = p.t.z;
+    // fora da faixa (profundidade diferente): ignorado, tiro reto
+    spawnEnemy(w, 'walker', x0 + 4, z0 + 3, 'right');
+    expect(resolveAim(w, p, 20)).toBe(0);
+    // na faixa: mira nele, com inclinação pequena
+    const e = spawnEnemy(w, 'walker', x0 + 6, z0 + 0.5, 'right');
+    const yaw = resolveAim(w, p, 20);
+    expect(yaw).toBeCloseTo(Math.atan2(e.t.z - z0, e.t.x - x0));
+    expect(Math.abs(yaw)).toBeLessThan(0.2);
+    // atrás não conta
+    p.t.facing = -1;
+    expect(resolveAim(w, p, 20)).toBe(Math.PI);
   });
 });
