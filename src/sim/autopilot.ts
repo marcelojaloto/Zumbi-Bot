@@ -16,6 +16,9 @@ export class Autopilot implements InputSource {
   private skip = new Set<number>();
   private tryId = 0;
   private tries = 0;
+  /** Vigia de progresso: sem inimigos e sem avançar por muito tempo, ignora o que está perto. */
+  private bestX = -Infinity;
+  private idleTicks = 0;
 
   constructor(private getWorld: () => World | null) {}
 
@@ -43,7 +46,7 @@ export class Autopilot implements InputSource {
     let prop: Entity | undefined;
     if (!tgt) {
       for (const e of w.entities) {
-        if (e.kind !== 'prop' || !e.alive) continue;
+        if (e.kind !== 'prop' || !e.alive || this.skip.has(e.id)) continue;
         if (e.t.x > p.t.x - 0.5 && e.t.x < p.t.x + 4) prop = e;
       }
     }
@@ -66,6 +69,16 @@ export class Autopilot implements InputSource {
       return f;
     }
     if (pc.mode === 'staff') b |= Btn.ModeGun;
+
+    if (tgt || p.t.x > this.bestX + 0.5) {
+      this.bestX = Math.max(this.bestX, p.t.x);
+      this.idleTicks = 0;
+    } else if (++this.idleTicks > 360) {
+      this.idleTicks = 0;
+      for (const e of w.entities)
+        if ((e.kind === 'prop' || e.kind === 'pickup') && Math.abs(e.t.x - p.t.x) < 6) this.skip.add(e.id);
+      prop = undefined;
+    }
 
     if (tgt) {
       const dx = tgt.t.x - p.t.x;
