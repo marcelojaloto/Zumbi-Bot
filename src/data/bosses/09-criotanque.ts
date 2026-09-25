@@ -196,13 +196,17 @@ export const criotanque = registerBoss({
             {
               t: 'repeat',
               times: 4,
-              steps: [{ t: 'projectile', spec: tracer, count: 3, spreadDeg: 0, aim: 'lanes', intervalS: 0.07 }],
+              steps: [
+                { t: 'projectile', spec: tracer, count: 3, spreadDeg: 0, aim: 'lanes', intervalS: 0.07 },
+              ],
             },
             { t: 'wait', s: 0.35 },
             {
               t: 'repeat',
               times: 4,
-              steps: [{ t: 'projectile', spec: tracer, count: 4, spreadDeg: 0, aim: 'lanes', intervalS: 0.06 }],
+              steps: [
+                { t: 'projectile', spec: tracer, count: 4, spreadDeg: 0, aim: 'lanes', intervalS: 0.06 },
+              ],
             },
             { t: 'wait', s: 0.7 },
           ],
@@ -304,19 +308,25 @@ export const criotanque = registerBoss({
             {
               t: 'repeat',
               times: 4,
-              steps: [{ t: 'projectile', spec: tracer, count: 3, spreadDeg: 0, aim: 'lanes', intervalS: 0.06 }],
+              steps: [
+                { t: 'projectile', spec: tracer, count: 3, spreadDeg: 0, aim: 'lanes', intervalS: 0.06 },
+              ],
             },
             { t: 'wait', s: 0.3 },
             {
               t: 'repeat',
               times: 4,
-              steps: [{ t: 'projectile', spec: tracer, count: 4, spreadDeg: 0, aim: 'lanes', intervalS: 0.06 }],
+              steps: [
+                { t: 'projectile', spec: tracer, count: 4, spreadDeg: 0, aim: 'lanes', intervalS: 0.06 },
+              ],
             },
             { t: 'wait', s: 0.3 },
             {
               t: 'repeat',
               times: 3,
-              steps: [{ t: 'projectile', spec: tracer, count: 3, spreadDeg: 0, aim: 'lanes', intervalS: 0.06 }],
+              steps: [
+                { t: 'projectile', spec: tracer, count: 3, spreadDeg: 0, aim: 'lanes', intervalS: 0.06 },
+              ],
             },
             { t: 'wait', s: 0.6 },
           ],

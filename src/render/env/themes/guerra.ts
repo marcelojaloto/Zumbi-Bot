@@ -21,10 +21,18 @@ function crater(p: Pieces, rng: Rng, x: number, z: number, r: number): void {
   for (let i = 0; i < n; i++) {
     const a = (i / n) * Math.PI * 2 + rng.range(-0.2, 0.2);
     const rr = r * rng.range(1.02, 1.2);
-    p.part('ico', [rng.range(0.18, 0.28) * Math.min(1.6, r), 0], x + Math.cos(a) * rr, 0.02, z + Math.sin(a) * rr * 0.9, rng.pick(MUD), {
-      rot: [rng.next() * 3, rng.next() * 3, rng.next() * 3],
-      jitter: 0.15,
-    });
+    p.part(
+      'ico',
+      [rng.range(0.18, 0.28) * Math.min(1.6, r), 0],
+      x + Math.cos(a) * rr,
+      0.02,
+      z + Math.sin(a) * rr * 0.9,
+      rng.pick(MUD),
+      {
+        rot: [rng.next() * 3, rng.next() * 3, rng.next() * 3],
+        jitter: 0.15,
+      },
+    );
   }
 }
 
@@ -41,7 +49,10 @@ function barbedWire(p: Pieces, rng: Rng, x0: number, x1: number, z: number): voi
       const mx = (x + px) / 2;
       for (const k of [0.3, 0.6, 0.9]) {
         const y = Math.min(h, ph) * k;
-        p.box(mx, y - 0.04, z, len, 0.015, 0.015, WIRE, { rot: [0, 0, rng.range(-0.05, 0.05)], noShadow: true });
+        p.box(mx, y - 0.04, z, len, 0.015, 0.015, WIRE, {
+          rot: [0, 0, rng.range(-0.05, 0.05)],
+          noShadow: true,
+        });
       }
       const a = Math.atan2(Math.min(h, ph) * 0.8, len);
       const d = Math.hypot(len, Math.min(h, ph) * 0.8);
@@ -65,7 +76,10 @@ function lowWire(p: Pieces, rng: Rng, x0: number, x1: number, z: number): void {
     [0.3, -0.12],
     [0.15, 0],
   ] as const)
-    p.box((x0 + x1) / 2, y, z + dz, len, 0.012, 0.012, WIRE, { rot: [0, 0, rng.range(-0.03, 0.03)], noShadow: true });
+    p.box((x0 + x1) / 2, y, z + dz, len, 0.012, 0.012, WIRE, {
+      rot: [0, 0, rng.range(-0.03, 0.03)],
+      noShadow: true,
+    });
 }
 
 /** Ouriço tcheco: três vigas cruzadas. */
@@ -86,7 +100,10 @@ function burningDrum(ctx: EnvCtx, x: number, z: number, light = true): void {
     const s = rng.range(0.7, 1.1);
     const dx = rng.range(-0.15, 0.15);
     const dz = rng.range(-0.12, 0.12);
-    p.cone(x + dx, 1.25 * s, z + dz, 0.2 * s, 0.6 * s, FIRE, 5, { glow: 2, rot: [0, rng.next() * 3, rng.range(-0.15, 0.15)] });
+    p.cone(x + dx, 1.25 * s, z + dz, 0.2 * s, 0.6 * s, FIRE, 5, {
+      glow: 2,
+      rot: [0, rng.next() * 3, rng.range(-0.15, 0.15)],
+    });
     p.cone(x + dx, 1.18 * s, z + dz + 0.03, 0.1 * s, 0.35 * s, FIRE_CORE, 5, { glow: 2.6 });
   }
   if (light) ctx.light(x, 1.8, z + 0.6, 0xff8a3a, 9, 8, 0.8);
@@ -101,7 +118,9 @@ function crateStack(p: Pieces, rng: Rng, x: number, z: number): void {
     const cx = x + (lvl ? rng.range(-0.3, 0.3) : (i - 1) * 0.75);
     const cz = z + rng.range(-0.15, 0.15);
     const col = rng.pick(OLIVE);
-    p.box(cx, lvl * 0.72 + s * 0.35, cz, s * 1.25, s * 0.7, s * 0.8, col, { rot: [0, rng.range(-0.15, 0.15), 0] });
+    p.box(cx, lvl * 0.72 + s * 0.35, cz, s * 1.25, s * 0.7, s * 0.8, col, {
+      rot: [0, rng.range(-0.15, 0.15), 0],
+    });
     p.box(cx, lvl * 0.72 + s * 0.35, cz + s * 0.405, s * 0.5, s * 0.14, 0.01, 0xc8b88a, { noShadow: true });
   }
 }
@@ -138,12 +157,16 @@ function tankWreck(ctx: EnvCtx, x: number, z: number, dir: number): void {
   p.box(tx, ty + 0.45, tz, 0.5, 0.15, 0.5, METAL, { rot: tr });
   const bx = tx + dir * 1.7;
   const by = knocked ? 0.35 : 1.85 + rng.range(-0.1, 0.25);
-  p.cyl(bx, by, tz, 0.09, 0.12, 2.6, METAL, 7, { rot: [0, yaw, -dir * (H - (knocked ? 0.15 : rng.range(-0.15, 0.08)))] });
+  p.cyl(bx, by, tz, 0.09, 0.12, 2.6, METAL, 7, {
+    rot: [0, yaw, -dir * (H - (knocked ? 0.15 : rng.range(-0.15, 0.08)))],
+  });
   // queimaduras e fogo no motor
   p.box(hx - dir * 1.2, 1.46, hz, 1.2, 0.02, 1.6, 0x16140f, { noShadow: true });
   if (rng.chance(0.6)) {
     for (let i = 0; i < 3; i++)
-      p.cone(hx - dir * rng.range(0.8, 1.8), 1.8, hz + rng.range(-0.5, 0.5), 0.22, 0.7, FIRE, 5, { glow: 1.8 });
+      p.cone(hx - dir * rng.range(0.8, 1.8), 1.8, hz + rng.range(-0.5, 0.5), 0.22, 0.7, FIRE, 5, {
+        glow: 1.8,
+      });
     ctx.light(hx - dir * 1.3, 2.4, hz + 1.2, 0xff8a3a, 10, 9, 0.8);
   }
 }
@@ -210,7 +233,10 @@ function trench(ctx: EnvCtx, x0: number, x1: number, z: number): void {
   for (const s of [-1, 1]) {
     p.box(mx, 0.22, z + s * 1.05, len, 0.44, 0.8, rng.pick(MUD), { rot: [s * 0.25, 0, 0], jitter: 0.1 });
     for (let x = x0 + 0.3; x < x1; x += 0.9)
-      p.box(x, 0.3, z + s * 0.66, 0.85, 0.5, 0.05, WOOD, { rot: [0, 0, rng.range(-0.04, 0.04)], jitter: 0.15 });
+      p.box(x, 0.3, z + s * 0.66, 0.85, 0.5, 0.05, WOOD, {
+        rot: [0, 0, rng.range(-0.04, 0.04)],
+        jitter: 0.15,
+      });
   }
   for (let x = x0 + 1; x < x1 - 1; x += 3.4) sandbags(p, x, z + 1.55, 5);
   for (let x = x0 + 0.5; x < x1; x += 2.2) p.box(x, 0.5, z + 0.7, 0.08, 1, 0.08, WOOD);
@@ -222,11 +248,19 @@ function stump(p: Pieces, rng: Rng, x: number, z: number): void {
   const c = rng.pick([0x2e261e, 0x3a3026, 0x262018]);
   p.cyl(x, h / 2, z, 0.14, 0.24, h, c, 6, { rot: [rng.range(-0.08, 0.08), 0, rng.range(-0.12, 0.12)] });
   for (let i = 0; i < 3; i++)
-    p.cone(x + rng.range(-0.08, 0.08), h + 0.15, z + rng.range(-0.08, 0.08), 0.06, rng.range(0.3, 0.6), c, 4, {
-      rot: [rng.range(-0.4, 0.4), 0, rng.range(-0.4, 0.4)],
-    });
-  if (rng.chance(0.5))
-    p.cyl(x + 0.4, h * 0.6, z, 0.03, 0.06, 1.1, c, 4, { rot: [0, 0, -1] });
+    p.cone(
+      x + rng.range(-0.08, 0.08),
+      h + 0.15,
+      z + rng.range(-0.08, 0.08),
+      0.06,
+      rng.range(0.3, 0.6),
+      c,
+      4,
+      {
+        rot: [rng.range(-0.4, 0.4), 0, rng.range(-0.4, 0.4)],
+      },
+    );
+  if (rng.chance(0.5)) p.cyl(x + 0.4, h * 0.6, z, 0.03, 0.06, 1.1, c, 4, { rot: [0, 0, -1] });
 }
 
 /** Coluna de fumaça cinza. */
@@ -261,12 +295,18 @@ export function guerraTheme(ctx: EnvCtx): void {
   for (let i = 0; i < ctx.dense(28); i++) {
     const x = rng.range(ctx.x0, ctx.x1);
     const inLane = rng.chance(0.35);
-    const z = inLane ? rng.range(z0 + 0.6, z1 - 0.6) : rng.chance(0.6) ? rng.range(-11, back - 1) : rng.range(front + 1, front + 4);
+    const z = inLane
+      ? rng.range(z0 + 0.6, z1 - 0.6)
+      : rng.chance(0.6)
+        ? rng.range(-11, back - 1)
+        : rng.range(front + 1, front + 4);
     crater(p, rng, x, z, inLane ? rng.range(0.6, 1.1) : rng.range(0.9, 2.2));
   }
   for (let i = 0; i < ctx.dense(40); i++) {
     const x = rng.range(ctx.x0, ctx.x1);
-    p.cyl(x, 0.005, rng.range(-10, 5), rng.range(0.3, 0.8), rng.range(0.4, 1), 0.01, 0x2a241c, 7, { noShadow: true });
+    p.cyl(x, 0.005, rng.range(-10, 5), rng.range(0.3, 0.8), rng.range(0.4, 1), 0.01, 0x2a241c, 7, {
+      noShadow: true,
+    });
   }
   // marcas de esteira atravessando a faixa
   for (let x = ctx.x0 + 10; x < ctx.x1; x += rng.range(25, 40)) {
@@ -304,7 +344,8 @@ export function guerraTheme(ctx: EnvCtx): void {
     if (r < 0.45) lowWire(p, rng, fx, fx + rng.range(2.8, 5.6), z + 0.1);
     else if (r < 0.6) sandbags(p, fx, z + 0.1, rng.int(2, 3));
     else if (r < 0.72) burningDrum(ctx, fx, z + 0.2, false);
-    for (let i = 0; i < 3; i++) rock(p, rng, fx + rng.range(-2, 2), z + rng.range(0, 1.5), 0.3, rng.pick(MUD));
+    for (let i = 0; i < 3; i++)
+      rock(p, rng, fx + rng.range(-2, 2), z + rng.range(0, 1.5), 0.3, rng.pick(MUD));
   }
   // cápsulas e destroços espalhados fora da faixa
   for (let i = 0; i < ctx.dense(50); i++) {
@@ -312,7 +353,10 @@ export function guerraTheme(ctx: EnvCtx): void {
     const cz = rng.chance(0.6) ? rng.range(back - 3, back) : rng.range(front, front + 2.5);
     if (rng.chance(0.5))
       p.cyl(cx, 0.04, cz, 0.035, 0.035, 0.18, 0x9a7a44, 6, { rot: [H, rng.next() * 3, 0], noShadow: true });
-    else p.box(cx, 0.05, cz, rng.range(0.2, 0.6), 0.08, rng.range(0.1, 0.3), rng.pick([METAL, RUST, WOOD]), { rot: [0, rng.next() * 3, 0] });
+    else
+      p.box(cx, 0.05, cz, rng.range(0.2, 0.6), 0.08, rng.range(0.1, 0.3), rng.pick([METAL, RUST, WOOD]), {
+        rot: [0, rng.next() * 3, 0],
+      });
   }
 
   // ------------------------------------------------------------ plano médio
@@ -360,7 +404,8 @@ export function guerraTheme(ctx: EnvCtx): void {
     p.box(px + 2.5, h * 0.62, -9.8, 5, 0.02, 0.02, WIRE, { rot: [0, 0, -0.35], noShadow: true });
   }
   // tanques e tocos mais distantes
-  for (let tx = ctx.x0 + 8; tx < ctx.x1; tx += rng.range(22, 34)) tankWreck(ctx, tx, -16 - rng.range(0, 3), rng.chance(0.5) ? 1 : -1);
+  for (let tx = ctx.x0 + 8; tx < ctx.x1; tx += rng.range(22, 34))
+    tankWreck(ctx, tx, -16 - rng.range(0, 3), rng.chance(0.5) ? 1 : -1);
   for (let i = 0; i < ctx.dense(24); i++) stump(p, rng, rng.range(ctx.x0, ctx.x1), rng.range(-22, -13));
 
   // ------------------------------------------------------------ horizonte
@@ -371,7 +416,10 @@ export function guerraTheme(ctx: EnvCtx): void {
     const n = rng.int(2, 4);
     for (let i = 0; i < n; i++) {
       const h = rng.range(2.5, 6);
-      p.box(rx + i * 2.2, h / 2, -27, 2, h, 2, rng.pick([0x3a342c, 0x332e28]), { noShadow: true, jitter: 0.08 });
+      p.box(rx + i * 2.2, h / 2, -27, 2, h, 2, rng.pick([0x3a342c, 0x332e28]), {
+        noShadow: true,
+        jitter: 0.08,
+      });
       p.box(rx + i * 2.2 + 0.5, h + 0.4, -27, 0.8, 0.8, 2, 0x3a342c, { noShadow: true, rot: [0, 0, 0.5] });
     }
     if (rng.chance(0.4)) {
@@ -379,7 +427,8 @@ export function guerraTheme(ctx: EnvCtx): void {
       smoke(p, rng, rx + 1, -26.5, 1.3);
     }
   }
-  for (let i = 0; i < ctx.dense(8); i++) smoke(p, rng, rng.range(ctx.x0, ctx.x1), rng.range(-24, -18), rng.range(1, 1.8));
+  for (let i = 0; i < ctx.dense(8); i++)
+    smoke(p, rng, rng.range(ctx.x0, ctx.x1), rng.range(-24, -18), rng.range(1, 1.8));
 
   // ------------------------------------------------------------ arena do chefe: posto de comando
   if (boss) {
@@ -395,11 +444,29 @@ export function guerraTheme(ctx: EnvCtx): void {
     for (let i = 0; i < 14; i++) {
       const ix = ax + rng.range(-11, 11);
       const iz = back - rng.range(0.2, 2.2);
-      p.part('oct', [rng.range(0.2, 0.45), 0], ix, rng.range(0.1, 0.3), iz, rng.pick([0x7ab4cc, 0x8ac4da, 0x6a9cb4]), {
-        rot: [rng.next(), rng.next() * 3, rng.next()],
-      });
+      p.part(
+        'oct',
+        [rng.range(0.2, 0.45), 0],
+        ix,
+        rng.range(0.1, 0.3),
+        iz,
+        rng.pick([0x7ab4cc, 0x8ac4da, 0x6a9cb4]),
+        {
+          rot: [rng.next(), rng.next() * 3, rng.next()],
+        },
+      );
     }
     for (let i = 0; i < 6; i++)
-      p.cyl(ax + rng.range(-10, 10), 0.008, back - rng.range(0, 1.5), rng.range(0.6, 1.4), rng.range(0.7, 1.5), 0.01, 0x6a8a98, 9, { noShadow: true });
+      p.cyl(
+        ax + rng.range(-10, 10),
+        0.008,
+        back - rng.range(0, 1.5),
+        rng.range(0.6, 1.4),
+        rng.range(0.7, 1.5),
+        0.01,
+        0x6a8a98,
+        9,
+        { noShadow: true },
+      );
   }
 }

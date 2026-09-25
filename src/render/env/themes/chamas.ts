@@ -53,7 +53,8 @@ function beam(
   p.box(cx, cy, z, t, len, t, color, { rot: [0, 0, a] });
   // abas de perfil I
   p.box(cx, cy, z + t * 0.45, t * 1.6, len, t * 0.18, color, { rot: [0, 0, a] });
-  if (glow) p.box(cx, cy, z + t * 0.56, t * 0.3, len * 0.7, 0.03, EMBER, { rot: [0, 0, a], glow: glow * 0.7 });
+  if (glow)
+    p.box(cx, cy, z + t * 0.56, t * 0.3, len * 0.7, 0.03, EMBER, { rot: [0, 0, a], glow: glow * 0.7 });
 }
 
 /** Rachadura de brasas no chão: segmentos finos emissivos em zigue-zague. */
@@ -143,7 +144,8 @@ export function chamasTheme(ctx: EnvCtx): void {
         jitter: 0.14,
       });
     }
-    if (rng.chance(0.55)) rock(p, rng, x + rng.range(-0.4, 0.4), z + rng.range(-0.3, 0.2), 0.55, rng.pick(CHAR));
+    if (rng.chance(0.55))
+      rock(p, rng, x + rng.range(-0.4, 0.4), z + rng.range(-0.3, 0.2), 0.55, rng.pick(CHAR));
     if (rng.chance(0.3))
       p.box(x, 0.06, z + 0.15, rng.range(0.2, 0.4), 0.12, rng.range(0.15, 0.3), rng.pick(BRICK), {
         rot: [0, rng.next() * 3, 0],
@@ -172,7 +174,14 @@ export function chamasTheme(ctx: EnvCtx): void {
   // pequenos focos nas bordas do corredor
   for (let x = ctx.x0 + 4; x < ctx.x1; x += rng.range(5.5, 9)) {
     const f = rng.chance(0.45);
-    fireCluster(ctx, x, 0, f ? front(x) + rng.range(0.5, 1.3) : back(x) - rng.range(0.4, 1), rng.range(0.45, 0.7), !f && rng.chance(0.7));
+    fireCluster(
+      ctx,
+      x,
+      0,
+      f ? front(x) + rng.range(0.5, 1.3) : back(x) - rng.range(0.4, 1),
+      rng.range(0.45, 0.7),
+      !f && rng.chance(0.7),
+    );
   }
 
   // rachaduras de brasas fora da faixa
@@ -213,7 +222,14 @@ export function chamasTheme(ctx: EnvCtx): void {
     } else {
       // pilha de escombros em chamas
       for (let i = 0; i < 6; i++)
-        rock(p, rng, x + w / 2 + rng.range(-1.3, 1.3), z + rng.range(-0.6, 0.6), rng.range(0.8, 1.4), rng.pick(CHAR));
+        rock(
+          p,
+          rng,
+          x + w / 2 + rng.range(-1.3, 1.3),
+          z + rng.range(-0.6, 0.6),
+          rng.range(0.8, 1.4),
+          rng.pick(CHAR),
+        );
       fireCluster(ctx, x + w / 2, 0.5, z + 0.3, 1.1);
     }
     x += w + rng.range(0.5, 2.5);
@@ -244,9 +260,18 @@ export function chamasTheme(ctx: EnvCtx): void {
     p.box(fx + w / 2, hh / 2, z, w, hh, 3, col, { jitter: 0.08 });
     if (collapsed) {
       for (let i = 0; i < 5; i++)
-        p.box(fx + rng.range(1, w - 1), hh + rng.range(0.3, 1.8), z, rng.range(0.8, 2), rng.range(0.8, 3), 3, col, {
-          rot: [0, 0, rng.range(-0.4, 0.4)],
-        });
+        p.box(
+          fx + rng.range(1, w - 1),
+          hh + rng.range(0.3, 1.8),
+          z,
+          rng.range(0.8, 2),
+          rng.range(0.8, 3),
+          3,
+          col,
+          {
+            rot: [0, 0, rng.range(-0.4, 0.4)],
+          },
+        );
       fireCluster(ctx, fx + w / 2, hh, z + 1.2, 1.6, false);
       ctx.light(fx + w / 2, hh + 1.5, z + 3, 0xff5a1a, 20, 14, 0.9);
     } else {
@@ -260,7 +285,16 @@ export function chamasTheme(ctx: EnvCtx): void {
       for (let wx = fx + 1; wx < fx + w - 0.8; wx += 1.9) {
         const on = rng.chance(0.35);
         const wy = 1.6 + r * 2.6;
-        p.box(wx, wy, z + 1.51, 0.8, 1.0, 0.04, on ? rng.pick([0xff5a14, 0xff6a1c, 0xff4010]) : 0x120c0a, on ? { glow: rng.range(0.6, 1.1) } : {});
+        p.box(
+          wx,
+          wy,
+          z + 1.51,
+          0.8,
+          1.0,
+          0.04,
+          on ? rng.pick([0xff5a14, 0xff6a1c, 0xff4010]) : 0x120c0a,
+          on ? { glow: rng.range(0.6, 1.1) } : {},
+        );
         p.box(wx, wy - 0.55, z + 1.56, 1, 0.1, 0.12, 0x1a1412);
         p.box(wx, wy, z + 1.55, 0.06, 1.0, 0.06, 0x1a1412);
       }
@@ -303,7 +337,8 @@ export function chamasTheme(ctx: EnvCtx): void {
         glow: rng.range(0.8, 1.5),
       });
   }
-  for (let i = 0; i < ctx.dense(14); i++) smokeColumn(p, rng, rng.range(ctx.x0, ctx.x1), rng.range(-24, -18), rng.range(1.2, 2));
+  for (let i = 0; i < ctx.dense(14); i++)
+    smokeColumn(p, rng, rng.range(ctx.x0, ctx.x1), rng.range(-24, -18), rng.range(1.2, 2));
 
   // ---------------------------------------------------------------- arena do chefe: fornalha
   if (boss) {
