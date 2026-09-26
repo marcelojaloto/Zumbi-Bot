@@ -51,3 +51,12 @@ export function canFullscreen(): boolean {
   const root = document.documentElement as HTMLElement & { webkitRequestFullscreen?: unknown };
   return typeof root.requestFullscreen === 'function' || typeof root.webkitRequestFullscreen === 'function';
 }
+
+/** Onde o jogo está rodando (muda o caminho para liberar permissões, por exemplo). */
+export type Platform = 'android-app' | 'ios-app' | 'ios-web' | 'android-web' | 'desktop';
+
+export function platform(): Platform {
+  if (__NATIVE__) return isIOS() ? 'ios-app' : 'android-app';
+  if (isIOS()) return 'ios-web';
+  return isAndroid() ? 'android-web' : 'desktop';
+}
