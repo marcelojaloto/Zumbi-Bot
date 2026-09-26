@@ -8,6 +8,7 @@ export function loadout(over: Partial<PlayerLoadout> = {}): PlayerLoadout {
   return {
     slot: 0,
     name: 'Teste',
+    character: 'robot',
     level: 1,
     xp: 0,
     guns: ['pistol'],

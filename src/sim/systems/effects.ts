@@ -1,5 +1,5 @@
 import { secToTicks } from '../../core/time';
-import type { Element, ExplosionSpec, HitSpec, TelegraphShape, ZoneSpec } from '../../data/types';
+import type { Element, ExplosionSpec, HitSource, HitSpec, TelegraphShape, ZoneSpec } from '../../data/types';
 import {
   makeTransform,
   isHostile,
@@ -34,6 +34,7 @@ export function explode(
   owner: EntityId,
   team: Team,
   element?: Element,
+  source?: HitSource,
 ): void {
   // sem elemento explícito, o tipo de dano elemental da explosão define a cor do efeito
   const el = element ?? (ELEMENTAL_DTYPES.has(spec.dtype) ? (spec.dtype as Element) : 'explosive');
@@ -75,6 +76,7 @@ export function explode(
       y: e.t.y + 1,
       z: e.t.z,
       ignoreInvuln: false,
+      source,
     });
   }
 }
@@ -103,6 +105,8 @@ export interface HazardOpts {
   pushX?: number;
   pushZ?: number;
   defId?: string;
+  /** Origem do dano quando o dono é um jogador. */
+  source?: HitSource;
 }
 
 export function spawnHazard(w: World, o: HazardOpts): Entity {
@@ -127,6 +131,7 @@ export function spawnHazard(w: World, o: HazardOpts): Entity {
     element: o.element,
     pushX: o.pushX ?? 0,
     pushZ: o.pushZ ?? 0,
+    ...(o.source ? { source: o.source } : {}),
   };
   const t = makeTransform(o.x, o.y ?? 0, o.z);
   t.vx = o.vx ?? 0;
@@ -164,6 +169,7 @@ export function spawnZone(
   owner: EntityId,
   team: Team,
   element?: Element,
+  source?: HitSource,
 ): Entity {
   return spawnHazard(w, {
     x,
@@ -179,5 +185,6 @@ export function spawnZone(
     slow: spec.slow,
     height: 0.6,
     element,
+    source,
   });
 }

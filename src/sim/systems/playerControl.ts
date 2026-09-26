@@ -1,11 +1,13 @@
 import { approach } from '../../core/math';
 import { DT } from '../../core/time';
 import { PLAYER } from '../../data/balance';
+import { RAGE } from '../../data/characters';
+import { characterDef } from '../defs';
 import type { Entity, FighterState, PlayerSlot } from '../Entity';
 import { Btn, emptyFrame, held, pressed, type InputFrame } from '../InputFrame';
 import { updateDoubleTap } from '../doubleTap';
 import type { World } from '../World';
-import { moveMultiplier, canAct, canMove } from './status';
+import { moveMultiplier, canAct, canMove, regenBlocked } from './status';
 import { playerMeleeInput } from '../combat/fighter';
 import { playerWeaponsInput } from './weapons';
 import { playerStaffInput } from './staffs';
@@ -58,7 +60,7 @@ function tickPlayerTimers(w: World, e: Entity): void {
   const p = e.player!;
   if (p.coyote > 0) p.coyote--;
   if (p.jumpBuffer > 0) p.jumpBuffer--;
-  for (const k of ['doubleDamage', 'turbo', 'invulnerable'] as const) {
+  for (const k of ['doubleDamage', 'turbo', 'invulnerable', 'rage'] as const) {
     if (p.powers[k] > 0) {
       p.powers[k]--;
       if (p.powers[k] === 0) w.emit({ t: 'power', player: e.id, power: k, on: false });
@@ -71,9 +73,14 @@ function tickPlayerTimers(w: World, e: Entity): void {
       w.emit({ t: 'combo', player: e.id, combo: 0 });
     }
   }
+  const st = characterDef(e).stats;
   // regeneração de mana
   if (p.manaDelay > 0) p.manaDelay--;
-  else if (p.mana < p.manaMax) p.mana = Math.min(p.manaMax, p.mana + PLAYER.manaRegen * DT);
+  else if (p.mana < p.manaMax) p.mana = Math.min(p.manaMax, p.mana + PLAYER.manaRegen * st.manaRegen * DT);
+  // regeneração de vida (mutante): depois de um tempo sem apanhar
+  const h = e.health!;
+  if (st.hpRegen > 0 && h.hp > 0 && h.hp < h.max && h.sinceHit >= st.hpRegenDelayS * 60 && !regenBlocked(e))
+    h.hp = Math.min(h.max, h.hp + st.hpRegen * DT);
 }
 
 /** Andar, correr, pular e pulo duplo. */
@@ -100,7 +107,10 @@ function locomotion(w: World, e: Entity, movable: boolean): void {
   const aiming = held(p.buttons, Btn.Aim);
   p.aiming = aiming;
   const turbo = p.powers.turbo > 0 ? 1.4 : 1;
-  const mult = moveMultiplier(e) * turbo * (aiming ? PLAYER.aimMoveMult : 1) * firingMoveMult(e);
+  const st = characterDef(e).stats;
+  const rage = p.powers.rage > 0 ? RAGE.speed : 1;
+  const mult =
+    moveMultiplier(e) * turbo * rage * st.speed * (aiming ? PLAYER.aimMoveMult : 1) * firingMoveMult(e);
   const run = p.running && !aiming;
   let mx = movable ? p.moveX : 0;
   let mz = movable ? p.moveZ : 0;
@@ -127,7 +137,7 @@ function locomotion(w: World, e: Entity, movable: boolean): void {
   if (pressed(p.buttons, p.prevButtons, Btn.Jump) && movable) p.jumpBuffer = PLAYER.jumpBufferTicks;
   if (p.jumpBuffer > 0 && movable) {
     if (b.grounded || p.coyote > 0) {
-      t.vy = PLAYER.jumpV;
+      t.vy = PLAYER.jumpV * st.jump;
       b.grounded = false;
       p.coyote = 0;
       p.jumpsUsed = 1;
@@ -135,7 +145,7 @@ function locomotion(w: World, e: Entity, movable: boolean): void {
       setState(e, 'jump');
       w.emit({ t: 'jump', id: e.id, double: false });
     } else if (p.jumpsUsed < 2) {
-      t.vy = PLAYER.doubleJumpV;
+      t.vy = PLAYER.doubleJumpV * st.jump;
       p.jumpsUsed = 2;
       p.jumpBuffer = 0;
       setState(e, 'jump');

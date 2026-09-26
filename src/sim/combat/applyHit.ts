@@ -1,10 +1,11 @@
 import { PLAYER, comboMultiplier, COMBO_TIMEOUT_TICKS, levelDamageMult } from '../../data/balance';
-import type { DamageType, Element, HitSpec } from '../../data/types';
+import { RAGE } from '../../data/characters';
+import type { DamageType, Element, HitSource, HitSpec } from '../../data/types';
 import type { Entity, EntityId } from '../Entity';
 import type { World } from '../World';
 import { computeDamage } from './damage';
 import { applyStatus, removeStatus } from '../systems/status';
-import { getPhaseResist, getResist, isBossEntity } from '../defs';
+import { characterDef, getPhaseResist, getResist, isBossEntity } from '../defs';
 import { onEntityKilled } from '../systems/deaths';
 
 export interface HitOpts {
@@ -27,9 +28,19 @@ export interface HitOpts {
   noReact?: boolean;
   /** Não conta combo (DoT). */
   noCombo?: boolean;
+  /** Origem do dano de um jogador (multiplicadores do personagem). */
+  source?: HitSource;
 }
 
-function attackerMults(w: World, src: Entity | undefined) {
+/** Multiplicador do personagem para a origem do dano (× fúria nos golpes corpo a corpo). */
+function characterMult(src: Entity, source: HitSource | undefined): number {
+  if (!source || !src.player) return 1;
+  const m = characterDef(src).stats.dmg[source];
+  const rage = src.player.powers.rage > 0 && (source === 'melee' || source === 'special') ? RAGE.melee : 1;
+  return m * rage;
+}
+
+function attackerMults(w: World, src: Entity | undefined, source: HitSource | undefined) {
   if (!src) return { levelMult: 1, powerDouble: false, diffMult: 1, mapMult: 1 };
   if (src.player) {
     return {
@@ -37,6 +48,7 @@ function attackerMults(w: World, src: Entity | undefined) {
       powerDouble: src.player.powers.doubleDamage > 0,
       diffMult: 1,
       mapMult: 1,
+      charMult: characterMult(src, source),
     };
   }
   // inimigo controlado pelo jogador bate com força "normal"
@@ -82,7 +94,7 @@ export function applyHit(
     falloffMult: opts.falloff,
     crit: opts.crit,
     critMult: opts.critMult,
-    attacker: attackerMults(w, src),
+    attacker: attackerMults(w, src, opts.source),
     target: {
       resist: getResist(dst),
       phaseResist: getPhaseResist(dst),
@@ -253,7 +265,9 @@ function react(w: World, src: Entity | undefined, dst: Entity, hit: HitSpec, opt
     fi.state = 'hurt';
     fi.st = 0;
     fi.moveId = null;
-    fi.hitstun = hit.hitstun;
+    fi.hitstun = dst.player
+      ? Math.max(1, Math.round(hit.hitstun * characterDef(dst).stats.hitstun))
+      : hit.hitstun;
     dst.t.vx = d.x * hit.knockback * massK;
     dst.t.vz = d.z * hit.knockback * massK * 0.5;
   }

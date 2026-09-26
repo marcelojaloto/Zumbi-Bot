@@ -1,4 +1,5 @@
 import { PLAYER, maxHpForLevel, maxManaForLevel, xpToNext } from '../data/balance';
+import { getCharacter } from '../data/characters';
 import type { Entity } from './Entity';
 import type { World } from './World';
 
@@ -14,10 +15,11 @@ export function grantXp(w: World, e: Entity, amount: number): number {
     p.level++;
     ups++;
     const h = e.health!;
-    const newMax = maxHpForLevel(p.level);
+    const ch = getCharacter(p.character);
+    const newMax = maxHpForLevel(p.level, ch.stats.hp);
     h.hp = Math.min(newMax, h.hp + (newMax - h.max) + 20);
     h.max = newMax;
-    p.manaMax = maxManaForLevel(p.level);
+    p.manaMax = maxManaForLevel(p.level, ch.stats.mana);
     p.mana = Math.min(p.manaMax, p.mana + 20);
     w.emit({ t: 'levelUp', player: e.id, level: p.level });
   }

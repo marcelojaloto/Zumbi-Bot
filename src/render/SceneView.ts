@@ -8,7 +8,8 @@ import type { World } from '../sim/World';
 import { BlobShadows } from './fx/BlobShadows';
 import { recipeMesh } from './meshCache';
 import type { QualityPreset } from './quality';
-import { enemyRig, robotPlayerRig } from './rig/rigs';
+import { enemyRig } from './rig/rigs';
+import { characterRig, characterStyle } from './rig/characterRigs';
 import { CharacterView, animInfoFor } from './views/CharacterView';
 import { PROP_RECIPES } from './views/propRecipes';
 import { staffRecipe } from './views/staffRecipe';
@@ -143,8 +144,16 @@ export class SceneView {
 
   private createChar(e: Entity): CharacterView {
     const std = this.q.standardMaterials;
-    if (e.kind === 'player')
-      return new CharacterView(robotPlayerRig(), std, { hunch: 0, zombieArms: false, heavy: false });
+    if (e.kind === 'player') {
+      const id = e.player?.character ?? 'robot';
+      const st = characterStyle(id);
+      return new CharacterView(
+        characterRig(id),
+        std,
+        { hunch: st.hunch, zombieArms: false, heavy: false },
+        st.scale,
+      );
+    }
     if (e.kind === 'boss') {
       const def = BOSSES[e.defId]!;
       return new CharacterView(

@@ -23,7 +23,7 @@ export function mapSelectScreen(host: UiHost): Screen {
           class: 'btn small level-btn',
           disabled: !open,
           data: { nav: '' },
-          onclick: () => host.startLevel(m.id, i),
+          onclick: () => host.openLobby(m.id, i),
           title: t(l.name),
         },
         open ? `${m.levels.length > 1 ? `${i + 1}. ` : ''}${t(l.name)}` : `🔒 ${t('Bloqueado')}`,

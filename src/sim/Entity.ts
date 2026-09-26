@@ -1,7 +1,9 @@
 import type {
   AmmoType,
   BossStep,
+  CharacterId,
   DamageType,
+  HitSource,
   Element,
   ExplosionSpec,
   HazardKind,
@@ -134,6 +136,7 @@ export interface FirearmState {
 export interface PlayerComp {
   slot: PlayerSlot;
   name: string;
+  character: CharacterId;
   level: number;
   xp: number;
   mana: number;
@@ -311,6 +314,8 @@ export interface HazardComp {
   element?: Element;
   pushX: number;
   pushZ: number;
+  /** Origem do dano quando o dono é um jogador. */
+  source?: HitSource;
 }
 
 export interface PickupComp {

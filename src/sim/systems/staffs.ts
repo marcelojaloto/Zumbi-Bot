@@ -132,7 +132,12 @@ export function executeStaff(w: World, e: Entity, def: StaffDef): void {
           inCone(e.t.x, e.t.z, yaw, d.angleDeg * DEG, d.range, o.t.x, o.t.z, o.body?.radius ?? 0.4),
       );
       for (const o of hits)
-        applyHit(w, e, o, def.hit, { dirX: Math.cos(yaw), dirZ: Math.sin(yaw) * 0.5, element: 'wind' });
+        applyHit(w, e, o, def.hit, {
+          dirX: Math.cos(yaw),
+          dirZ: Math.sin(yaw) * 0.5,
+          element: 'wind',
+          source: 'staff',
+        });
       // perigo curto só para o visual
       spawnHazard(w, {
         x: e.t.x,
@@ -163,6 +168,7 @@ export function executeStaff(w: World, e: Entity, def: StaffDef): void {
         fx: 'spikes',
         height: 1.2,
         element: 'earth',
+        source: 'staff',
       });
       break;
     }
@@ -179,7 +185,7 @@ export function executeStaff(w: World, e: Entity, def: StaffDef): void {
           } else if (isHostile(e.team, o.team) && isCharacter(o)) {
             const fam = family(o);
             if (fam === 'zombie' || fam === 'cyborg')
-              applyHit(w, e, o, def.hit, { dirX: o.t.x - e.t.x, dirZ: 0 });
+              applyHit(w, e, o, def.hit, { dirX: o.t.x - e.t.x, dirZ: 0, source: 'staff' });
           }
         }
         spawnHazard(w, {
@@ -261,6 +267,7 @@ function chainLightning(
       y: cy,
       z: cur.t.z,
       element: 'electric',
+      source: 'staff',
     });
     hitIds.push(cur.id);
     px = cur.t.x;

@@ -1,6 +1,7 @@
 import { Rng } from '../core/rng';
 import { DIFFICULTY, NG_PLUS, VIEW_HALF_WIDTH } from '../data/balance';
 import type {
+  CharacterId,
   CosmeticId,
   CosmeticSlot,
   Difficulty,
@@ -20,6 +21,7 @@ import { spawnPlayer } from './spawn';
 export interface PlayerLoadout {
   slot: PlayerSlot;
   name: string;
+  character: CharacterId;
   level: number;
   xp: number;
   guns: WeaponId[];
