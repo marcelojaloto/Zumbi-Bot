@@ -7,6 +7,8 @@ import type { RunStats } from '../../sim/events';
 import { el, fmtInt, hexColor } from '../dom';
 import { ordinal, t } from '../../i18n';
 import { difficultyName, easierThan } from '../difficulty';
+import { getCharacter } from '../../data/characters';
+import { SLOT_COLORS, playerTag } from '../../app/party';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
 
@@ -54,6 +56,36 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     el('span', {}, t('Sucata')),
     el('b', {}, `+${fmtInt(s.scrap)}`),
   );
+  // multijogador: uma linha por jogador (os números de cima são da equipe)
+  const team = (s.players?.length ?? 0) > 1 ? s.players! : null;
+  const table = team
+    ? el(
+        'table',
+        { class: 'party-table' },
+        el(
+          'tr',
+          {},
+          el('th', {}, ''),
+          el('th', {}, t('Personagem')),
+          el('th', {}, t('Pontuação')),
+          el('th', {}, t('Abates')),
+          el('th', {}, t('Combo')),
+          el('th', {}, t('Vidas perdidas')),
+        ),
+        ...team.map((p) =>
+          el(
+            'tr',
+            {},
+            el('td', { style: `color:${SLOT_COLORS[p.slot]};font-weight:900` }, playerTag(p.slot)),
+            el('td', {}, t(getCharacter(p.character).name)),
+            el('td', {}, fmtInt(p.score)),
+            el('td', {}, String(p.kills)),
+            el('td', {}, `x${p.maxCombo}`),
+            el('td', {}, String(p.livesLost)),
+          ),
+        ),
+      )
+    : null;
   const rewards = el('div', { class: 'rewards' });
   if (s.unlockedStaff) {
     const st = STAFFS[s.unlockedStaff];
@@ -117,7 +149,7 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     const input = el('input', {
       type: 'text',
       maxLength: 16,
-      value: host.profile.save.profile.name,
+      value: team ? t('Equipe de {n}', { n: team.length }) : host.profile.save.profile.name,
       data: { nav: '' },
     });
     const save = el(
@@ -127,8 +159,11 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
         data: { nav: '' },
         onclick: () => {
           const name = input.value.trim() || t('Anônimo');
-          host.profile.save.profile.name = name;
-          host.profile.persist();
+          // o nome do perfil é o do jogador 1: uma equipe registra só no ranking
+          if (!team) {
+            host.profile.save.profile.name = name;
+            host.profile.persist();
+          }
           const p = host.profile.addRank(name, s, r.playerLevel);
           rankBox.innerHTML = '';
           rankBox.appendChild(
@@ -187,7 +222,7 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     el(
       'h1',
       { style: win ? '' : 'color:#ff4a3a;text-shadow:0 0 24px rgba(255,60,40,.6),0 5px 0 #400' },
-      win ? t('MAPA CONCLUÍDO!') : t('VOCÊ FOI DESATIVADO'),
+      win ? t('MAPA CONCLUÍDO!') : team ? t('EQUIPE DESATIVADA') : t('VOCÊ FOI DESATIVADO'),
     ),
     el(
       'div',
@@ -196,6 +231,7 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     ),
     win ? stars : null,
     el('div', { class: 'panel', style: 'max-width:520px' }, stats),
+    table ? el('div', { class: 'panel party-results' }, table) : null,
     rewards.childElementCount ? rewards : null,
     rankBox,
     easier,

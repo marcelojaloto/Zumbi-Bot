@@ -1,4 +1,5 @@
 import type { World } from '../../sim/World';
+import { SLOT_COLORS } from '../../app/party';
 
 /** Minimapa em faixa (canvas 2D): nível inteiro em X, profundidade em Y. */
 export class Minimap {
@@ -86,7 +87,7 @@ export class Minimap {
     for (const p of w.playerEntities()) {
       const x = sx(p.t.x);
       const y = sy(p.t.z);
-      c.fillStyle = '#39e6ff';
+      c.fillStyle = w.playerCount > 1 ? (SLOT_COLORS[p.player!.slot] ?? '#39e6ff') : '#39e6ff';
       c.beginPath();
       const f = p.t.facing;
       c.moveTo(x + 5 * f, y);

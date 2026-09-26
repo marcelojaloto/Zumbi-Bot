@@ -307,6 +307,39 @@ export const EN: Record<string, string> = {
   'O botão ⇄ troca arma e cajado • ESPECIAL = {special}':
     'The ⇄ button switches firearm and staff • SPECIAL = {special}',
   // --- personagens ---
+  Esquerda: 'Left',
+  Direita: 'Right',
+  'Multijogador: teclado dividido': 'Multiplayer: shared keyboard',
+  'Até 5 jogadores: na seleção, cada controle entra com A e uma segunda pessoa no teclado entra com J.':
+    'Up to 5 players: on the selection screen, each gamepad joins with A and a second person on the keyboard joins with J.',
+  '{p}: controle desconectado': '{p}: gamepad disconnected',
+  Combo: 'Combo',
+  'EQUIPE DESATIVADA': 'TEAM DOWN',
+  'Equipe de {n}': 'Team of {n}',
+  'PULAR: pegar 1 vida de {p}': 'JUMP: take 1 life from {p}',
+  Personagem: 'Character',
+  'Sem vidas': 'Out of lives',
+  'Voltando...': 'Coming back...',
+  '{a} pegou uma vida de {b}': '{a} took a life from {b}',
+  Anterior: 'Previous',
+  Próximo: 'Next',
+  'Aperte A no controle': 'Press A on a gamepad',
+  'Começando em {s}...': 'Starting in {s}...',
+  'Controle {n}': 'Gamepad {n}',
+  'Enter no teclado': 'Enter on the keyboard',
+  Entrar: 'Join',
+  'J no teclado (divide com o P{n})': 'J on the keyboard (shares it with P{n})',
+  'Pronto!': 'Ready!',
+  'Pronto?': 'Ready?',
+  'Setas andam • J soco • K chute • L pula • O atira • I especial':
+    'Arrows move • J punch • K kick • L jump • O shoot • I special',
+  Teclado: 'Keyboard',
+  'Teclado (direita)': 'Keyboard (right)',
+  'Teclado (esquerda)': 'Keyboard (left)',
+  'WASD andam • F soco • G chute • Espaço pula • R atira • T especial':
+    'WASD move • F punch • G kick • Space jumps • R shoot • T special',
+  'Cada jogador: ←/→ troca • confirmar = pronto • todos prontos começa':
+    'Each player: ←/→ change • confirm = ready • everyone ready starts',
   'ESCOLHA SEU PERSONAGEM': 'CHOOSE YOUR CHARACTER',
   '←/→ trocam de personagem • Enter começa • Esc volta':
     '←/→ change character • Enter starts • Esc goes back',

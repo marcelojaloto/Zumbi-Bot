@@ -13,6 +13,23 @@ import type {
 } from '../data/types';
 import type { EntityId } from './Entity';
 
+/** Resultado de um jogador na partida. */
+export interface PlayerRunStats {
+  slot: number;
+  name: string;
+  character: CharacterId;
+  score: number;
+  kills: number;
+  maxCombo: number;
+  livesLost: number;
+  damageTaken: number;
+  xpGained: number;
+  bossKills: number;
+  scrap: number;
+  level: number;
+}
+
+/** Resultado da partida: totais da equipe (no solo, os números do jogador) e a lista por jogador. */
 export interface RunStats {
   mapId: string;
   levelId: string;
@@ -34,6 +51,7 @@ export interface RunStats {
   ngPlus?: boolean;
   /** Personagem de cada jogador. */
   chars?: CharacterId[];
+  players?: PlayerRunStats[];
 }
 
 /**
@@ -124,6 +142,8 @@ export type GameEvent =
   | { t: 'loot'; player: EntityId; cosmetic?: string; scrap?: number; duplicate?: boolean }
   | { t: 'unlock'; player: EntityId; kind: 'gun' | 'staff'; id: string }
   | { t: 'playerDown'; player: EntityId; livesLeft: number }
+  /** Jogador sem vidas pegou uma vida de um colega. */
+  | { t: 'lifeShare'; from: EntityId; to: EntityId }
   | { t: 'respawn'; player: EntityId }
   | { t: 'jump'; id: EntityId; double: boolean }
   | { t: 'land'; id: EntityId; heavy: boolean }

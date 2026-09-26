@@ -20,7 +20,9 @@ import type {
 } from '../data/types';
 
 export type EntityId = number;
-export type PlayerSlot = 0 | 1 | 2 | 3;
+/** Até 5 jogadores locais (ids de entidade 1..5 são deles). */
+export const MAX_PLAYERS = 5;
+export type PlayerSlot = 0 | 1 | 2 | 3 | 4;
 export type EntityKind = 'player' | 'enemy' | 'boss' | 'projectile' | 'pickup' | 'prop' | 'hazard';
 /** 'neutral' atinge todos (barris, perigos do cenário). */
 export type Team = 'players' | 'enemies' | 'neutral';

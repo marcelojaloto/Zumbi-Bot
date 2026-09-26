@@ -82,7 +82,11 @@ export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
 export function spawnPlayer(w: World, lo: PlayerLoadout): Entity {
   const ch = getCharacter(lo.character);
   const start = w.level.playerStart;
-  const zOff = lo.slot * 0.8 - 1.2;
+  const n = w.opts.loadouts.length;
+  // solo: ponto de partida do nível; em grupo: espalhados pela faixa de profundidade
+  const [z0, z1] = w.zBand;
+  const z = n > 1 ? z0 + ((z1 - z0) * (lo.slot + 1)) / (n + 1) : start.z;
+  const x = n > 1 ? start.x + 0.6 - lo.slot * 0.3 : start.x;
   const e = w.add({
     id: lo.slot + 1,
     kind: 'player',
@@ -90,7 +94,7 @@ export function spawnPlayer(w: World, lo: PlayerLoadout): Entity {
     defId: ch.id,
     alive: true,
     age: 0,
-    t: makeTransform(start.x - lo.slot * 0.6, 0, w.playerCount > 0 ? start.z + zOff : start.z, 1),
+    t: makeTransform(x, 0, z, 1),
     body: {
       radius: PLAYER.radius,
       height: PLAYER.height,
