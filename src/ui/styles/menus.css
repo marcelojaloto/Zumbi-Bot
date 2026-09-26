@@ -13,6 +13,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* tela mais alta que a janela: começa do topo e rola (sem cortar o começo) */
+  justify-content: safe center;
   gap: 14px;
   padding: 24px;
   overflow-y: auto;
@@ -480,6 +482,19 @@
 .menu-screen .menu-footer {
   text-align: center;
 }
+/* telas de altura comum: botões do menu em duas colunas ("Jogar" e "Jogar online" inteiros) */
+@media (max-height: 900px) {
+  .menu-screen .menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    min-width: min(460px, 70vw);
+  }
+  .menu-screen .menu > :first-child,
+  .menu-screen .menu > :nth-child(2) {
+    grid-column: 1 / -1;
+  }
+}
 .screen.splash-screen {
   background: radial-gradient(circle at 50% 45%, rgba(4, 5, 10, 0.2), rgba(4, 5, 10, 0.85));
 }
@@ -680,15 +695,17 @@ a.btn {
   }
   .screen.menu-screen {
     justify-content: center;
-  }
-  .menu-screen .menu {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    padding-top: 10px;
+    padding-bottom: 10px;
     gap: 8px;
-    min-width: min(460px, 70vw);
   }
-  .menu-screen .menu > :first-child {
-    grid-column: 1 / -1;
+  /* celular deitado: "Jogar" e "Jogar online" lado a lado e sem o subtítulo, para caber numa tela */
+  .menu-screen .menu > :first-child,
+  .menu-screen .menu > :nth-child(2) {
+    grid-column: auto;
+  }
+  .menu-screen .subtitle {
+    display: none;
   }
   .menu-screen .menu-footer {
     display: none;
@@ -1319,4 +1336,108 @@ a.btn {
     font-size: 30px;
     padding: 4px 10px;
   }
+}
+
+/* ---------------------------------------------------------------- teclas do teclado */
+.screen.keybind-screen {
+  justify-content: flex-start;
+  gap: 10px;
+}
+.keybind-screen .subtitle {
+  margin: 0;
+}
+.kb-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 4px 22px;
+}
+.kb-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 96px 96px;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.kb-label {
+  font-size: 14px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.kb-label small {
+  color: #ff6a5a;
+  font-weight: 800;
+}
+.kb-row.missing .kb-label {
+  color: #ff9a8a;
+}
+.kb-key {
+  min-height: 30px;
+  padding: 3px 6px;
+  font: 700 14px var(--ui-font);
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-bottom-width: 3px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kb-key:hover,
+.kb-key:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(255, 140, 26, 0.4);
+}
+.kb-key.empty {
+  color: var(--muted);
+}
+.kb-key.listening {
+  color: #111;
+  background: var(--cyan);
+  border-color: var(--cyan);
+  font-size: 12px;
+  animation: kb-blink 0.8s ease-in-out infinite alternate;
+}
+@keyframes kb-blink {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.55;
+  }
+}
+.kb-status {
+  margin: 0;
+  min-height: 1.3em;
+  text-align: center;
+  color: var(--cyan);
+  font-weight: 700;
+}
+.kb-note {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+}
+@media (max-height: 520px) {
+  .screen.keybind-screen {
+    padding: 8px 16px;
+    gap: 6px;
+  }
+  .keybind-screen h2 {
+    font-size: 22px;
+  }
+  .kb-row {
+    grid-template-columns: minmax(0, 1fr) 80px 80px;
+  }
+  .kb-key {
+    min-height: 26px;
+  }
+}
+.controls-screen .panel > .row-btns {
+  margin-top: 12px;
 }

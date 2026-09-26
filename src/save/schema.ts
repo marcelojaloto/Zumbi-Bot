@@ -8,6 +8,7 @@ import type {
   StaffId,
   WeaponId,
 } from '../data/types';
+import type { KeyMap } from '../input/keymap';
 
 export const SAVE_VERSION = 1;
 export const SETTINGS_VERSION = 1;
@@ -51,6 +52,8 @@ export interface SettingsV1 {
     hints: boolean;
     /** Controles de toque (celular/tablet). */
     touch: TouchSettings;
+    /** Teclas trocadas pelo jogador (teclado inteiro); ausente = teclas padrão. */
+    keys?: Partial<KeyMap>;
   };
   graphics: {
     quality: QualityChoice;

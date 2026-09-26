@@ -3,6 +3,7 @@ import { COSMETICS, SELL_VALUE } from '../data/cosmetics';
 import { STAFFS } from '../data/staffs';
 import { FIREARMS } from '../data/weapons';
 import type { CosmeticSlot, Difficulty, StaffId, WeaponId } from '../data/types';
+import { sanitizeKeys } from '../input/keymap';
 import {
   defaultRanking,
   defaultSave,
@@ -169,6 +170,7 @@ export function sanitizeSettings(raw: unknown): SettingsV1 {
         opacity: num(tc.opacity, 0.35, 0.15, 0.8),
         haptics: bool(tc.haptics, true),
       },
+      ...(sanitizeKeys(c.keys) ? { keys: sanitizeKeys(c.keys) } : {}),
     },
     graphics: {
       quality: q === 'auto' || q === 'low' || q === 'medium' || q === 'high' ? q : 'auto',
