@@ -142,7 +142,8 @@ versão, escolha o build e envie para a revisão.
   Store exige).
 - Texto do pedido de microfone: `NSMicrophoneUsageDescription` em `ios/App/App/Info.plist` (inglês) e
   `ios/App/App/pt-BR.lproj/InfoPlist.strings` (português).
-- `GameViewController` (em `SceneDelegate.swift`) esconde o indicador da Tela de Início e segura os gestos do sistema
-  nas bordas da tela durante o jogo.
+- `GameViewController` (em `SceneDelegate.swift`) segura os gestos do sistema nas bordas da tela durante o jogo; o
+  indicador da Tela de Início e a barra de status somem pelo plugin SystemBars do Capacitor
+  (`plugins.SystemBars.hidden` no `capacitor.config.json`).
 - O código exclusivo dos apps fica atrás da constante `__NATIVE__`; o texto de ajuda do microfone muda no app de
   iPhone (Ajustes do iPhone → Apps → Zumbi Bot → Microfone).

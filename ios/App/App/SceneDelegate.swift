@@ -23,13 +23,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-/// Zumbi Bot em tela cheia: esconde o indicador da Tela de Início e segura os gestos do sistema nas bordas (o primeiro
-/// toque perto da borda vai para os controles do jogo, não para o iOS).
+/// Zumbi Bot em tela cheia: segura os gestos do sistema nas bordas (o primeiro toque perto da borda vai para os
+/// controles do jogo, não para o iOS). O indicador da Tela de Início some pelo plugin SystemBars do Capacitor
+/// (`plugins.SystemBars.hidden` no capacitor.config.json).
 class GameViewController: CAPBridgeViewController {
-    override var prefersHomeIndicatorAutoHidden: Bool {
-        return true
-    }
-
     override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge {
         return .all
     }
