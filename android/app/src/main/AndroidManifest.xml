@@ -42,4 +42,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- resposta tátil dos botões de toque (navigator.vibrate) -->
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- chat de voz do jogo online: o Android pede na primeira vez que o jogador liga o microfone -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
 </manifest>

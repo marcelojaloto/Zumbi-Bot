@@ -1,12 +1,17 @@
 // Capturas de tela da Play Store (celular deitado, 1920×1080), em português e inglês.
 // Uso: npm run store:shots  (gera o build do app e grava em store/android/screenshots/)
 import { mkdirSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { chromium } from '@playwright/test';
 import { preview } from 'vite';
 
+// jogo online de verdade (WebRTC) num servidor PeerJS local, com o microfone falso do Chromium (chat de voz)
+const { PeerServer } = createRequire(import.meta.url)('peer');
+PeerServer({ port: 9001, host: '127.0.0.1', path: '/zb' });
+
 const OUT = 'store/android/screenshots';
 const PORT = 4174;
-const URL = `http://localhost:${PORT}/?debug=1&quality=medium&mute=1&seed=7&nopointerlock=1&net=local`;
+const URL = `http://localhost:${PORT}/?debug=1&quality=medium&mute=1&seed=7&nopointerlock=1&peer=127.0.0.1:9001/zb`;
 const NAMES = {
   pt: ['1-menu', '2-equipe', '3-personagens', '4-online', '5-magia', '6-chefe', '7-robos'],
   en: ['1-menu', '2-team', '3-characters', '4-online', '5-magic', '6-boss', '7-robots'],
@@ -16,7 +21,14 @@ const HIDE = '.fps, .hint, .t-fs, .toast { display: none !important }';
 mkdirSync(OUT, { recursive: true });
 const server = await preview({ mode: 'app', preview: { port: PORT, strictPort: true } });
 const browser = await chromium.launch({
-  args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
+  args: [
+    '--use-angle=swiftshader',
+    '--enable-unsafe-swiftshader',
+    '--ignore-gpu-blocklist',
+    '--autoplay-policy=no-user-gesture-required',
+    '--use-fake-device-for-media-stream',
+    '--use-fake-ui-for-media-stream',
+  ],
 });
 
 /** Celular deitado: 864×486 × 20/9 = 1920×1080. Controles falsos para a seleção com vários jogadores. */
@@ -27,6 +39,7 @@ async function phone(locale) {
     isMobile: true,
     hasTouch: true,
     locale,
+    permissions: ['microphone'],
   });
   await ctx.addInitScript(() => {
     const pads = [null, null, null, null];
@@ -159,7 +172,7 @@ async function shots(locale) {
     for (let i = 0; i < 4; i++) window.__pads[i] = null;
   });
 
-  // 4. sala online: anfitrião com dois amigos (abas no mesmo navegador)
+  // 4. sala online: anfitrião com dois amigos (outros aparelhos), conversando pelo chat de voz
   await pg.evaluate(() => {
     const app = window.__game.app;
     app.quitToMenu();
@@ -168,30 +181,41 @@ async function shots(locale) {
   });
   await pg.locator('.menu .btn', { hasText: /online/i }).click();
   await pg.locator('.online-choice').first().click();
-  await pg.waitForFunction(() => window.__game.online()?.code);
+  await pg.locator('.create-room .btn.primary').click();
+  await pg.waitForFunction(() => window.__game.online()?.code, null, { timeout: 60_000 });
   const code = await pg.evaluate(() => window.__game.online().code);
   const guests = [];
-  for (const [name, char] of [
-    ['Bia', 'mutant'],
-    ['Leo', 'cyborg'],
+  for (const [name, char, mic] of [
+    ['Bia', 'mutant', true],
+    ['Leo', 'cyborg', false],
   ]) {
-    const gp = await open(ctx, 'low');
+    const gctx = await phone(locale);
+    const gp = await open(gctx, 'low');
     await gp.evaluate(
-      async ([c, n, ch]) => {
+      async ([c, n, ch, m]) => {
         const app = window.__game.app;
         app.profile.save.profile.name = n;
         app.profile.save.profile.level = 9;
         await app.joinRoom(c);
         app.online.pick(ch, true);
+        if (m) await app.toggleMic(true);
       },
-      [code, name, char],
+      [code, name, char, mic],
     );
-    guests.push(gp);
+    guests.push(gctx);
   }
   await pg.waitForFunction(() => window.__game.online()?.players.length === 3);
+  await pg.evaluate(() => window.__game.app.toggleMic(true));
+  await pg.waitForFunction(() => window.__game.voice().peers === 2, null, { timeout: 60_000 });
   await pg.bringToFront();
-  await shot(3);
-  for (const gp of guests) await gp.close();
+  await pg.waitForTimeout(700);
+  // a Bia falando (o microfone falso dá bipes): fotografa com o brilho aceso
+  await pg.waitForFunction(() => document.querySelector('.rp.talking'), null, {
+    timeout: 30_000,
+    polling: 20,
+  });
+  await pg.screenshot({ path: `${OUT}/${tag}-${names[3]}.jpg`, type: 'jpeg', quality: 88 });
+  for (const g of guests) await g.close();
   await pg.evaluate(() => window.__game.app.leaveRoom());
 
   // 5. magia (a maga com o cajado de fogo)
@@ -272,3 +296,5 @@ try {
   await server.close();
 }
 console.log(`capturas em ${OUT}/`);
+// o servidor PeerJS local não tem como fechar: encerra o processo
+process.exit(0);

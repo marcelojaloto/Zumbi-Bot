@@ -23,6 +23,7 @@ ruas, pule, soque, chute e atire para limpar 10 mapas cheios de mortos-vivos e r
 • 10 mapas, da Vila Assombrada à Arena Final, cada um com seu chefe gigante e seus próprios ataques
 • 5 personagens para escolher — robô, maga, militar, ciborgue e mutante — cada um com seu golpe especial
 • Jogue online com até 4 amigos: crie uma sala, mande o código de 4 letras e joguem juntos, cada um no seu celular
+• Chat de voz na sala: todos conversam com todos — cada um liga ou desliga o próprio microfone
 • Ou até 5 jogadores no mesmo aparelho, com controles
 • Combos de socos e chutes, voadora e pulo duplo
 • 7 armas de fogo — pistola, escopeta, submetralhadora, fuzil, sniper, metralhadora e lança-granadas
@@ -35,7 +36,7 @@ ruas, pule, soque, chute e atire para limpar 10 mapas cheios de mortos-vivos e r
 • Em português e inglês
 • Sem anúncios, sem compras e sem coleta de dados. Joga offline (só o jogo online usa internet).
 
-Também dá para jogar no navegador: marcelojaloto.github.io/Zumbi-Bot
+Também dá para jogar no navegador (computador, Android e iPhone): marcelojaloto.github.io/Zumbi-Bot
 ```
 
 **Categoria**: Jogos → Ação · **Tags sugeridas**: beat 'em up, zumbis, robôs, ação, arcade
@@ -59,6 +60,7 @@ streets, jump, punch, kick and shoot your way through 10 maps packed with the un
 • 10 maps, from the Haunted Village to the Final Arena, each with its own giant boss and attacks
 • 5 characters to pick — robot, mage, soldier, cyborg and mutant — each with a special move
 • Play online with up to 4 friends: create a room, share the 4-letter code and play together, each on their phone
+• Voice chat in the room: everyone talks with everyone — each player turns their own mic on or off
 • Or up to 5 players on the same device with controllers
 • Punch and kick combos, flying kick and double jump
 • 7 firearms — pistol, shotgun, SMG, assault rifle, sniper, machine gun and grenade launcher
@@ -71,7 +73,7 @@ streets, jump, punch, kick and shoot your way through 10 maps packed with the un
 • In English and Portuguese
 • No ads, no purchases and no data collection. Plays offline (only online play uses the internet).
 
-You can also play in the browser: marcelojaloto.github.io/Zumbi-Bot
+You can also play in the browser (computer, Android and iPhone): marcelojaloto.github.io/Zumbi-Bot
 ```
 
 **Category**: Games → Action · **Suggested tags**: beat 'em up, zombies, robots, action, arcade

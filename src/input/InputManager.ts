@@ -35,6 +35,7 @@ export const ACTION_LABELS: Record<Action, string> = {
   modeStaff: 'Modo cajado',
   toggleMode: 'Arma ⇄ Cajado',
   map: 'Mapa ampliado',
+  voice: 'Microfone (chat de voz online)',
   pause: 'Pausa',
 };
 
@@ -73,6 +74,8 @@ export class InputManager implements InputSource {
   gamepadConnected = false;
   onPause: (() => void) | null = null;
   onMap: (() => void) | null = null;
+  /** Liga/desliga o microfone (chat de voz online) — funciona também nos menus. */
+  onVoice: (() => void) | null = null;
   /** Ações de interface (tecla pressionada) ouvidas pelo menu. */
   onKeyDown: ((code: string, e: KeyboardEvent) => void) | null = null;
   /** Controles de toque ativos (celular/tablet). */
@@ -116,6 +119,9 @@ export class InputManager implements InputSource {
 
   private kd = (e: KeyboardEvent): void => {
     this.onKeyDown?.(e.code, e);
+    // (não enquanto digita, nem quando a tela de trocar teclas pegou a tecla)
+    const typing = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+    if (this.bindings.voice.includes(e.code) && !e.repeat && !typing && !e.defaultPrevented) this.onVoice?.();
     if (!this.enabled) return;
     if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code))
       e.preventDefault();

@@ -150,7 +150,30 @@ export function installDebug(app: App): void {
         slot: r.role === 'guest' ? r.slot : 0,
         phase: r.phase,
         players: r.role === 'host' ? r.players() : r.players,
+        difficulty: r.difficulty,
+        voice: r.voice,
       };
+    },
+    /** Chat de voz: permitido na sala, disponível aqui, microfone, conexões, quem fala. */
+    voice() {
+      const r = app.online;
+      return {
+        allowed: !!r?.voice,
+        available: !!app.voice,
+        ...(app.voice?.state() ?? {
+          mic: false,
+          starting: false,
+          permission: 'unknown',
+          problem: null,
+          peers: 0,
+          speaking: [],
+          blocked: false,
+        }),
+      };
+    },
+    /** Liga/desliga o microfone (como o botão). */
+    mic(on?: boolean) {
+      return app.toggleMic(on);
     },
     autopilot(on: boolean) {
       app.setAutopilot(on);

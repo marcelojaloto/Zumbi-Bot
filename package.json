@@ -1,7 +1,7 @@
 {
   "name": "zumbi-bot",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Zumbi Bot - A revolução dos robôs no apocalipse zumbi. Beat 'em up 2.5D no navegador.",
   "type": "module",
   "license": "CC0-1.0",

@@ -8,6 +8,7 @@ import { getMap } from '../data/maps';
 import { LocalTransport } from './localTransport';
 import {
   CODE_ALPHABET,
+  NET_VERSION,
   RemoteInputSource,
   cleanCode,
   packInput,
@@ -17,7 +18,7 @@ import {
   type StartMsg,
 } from './protocol';
 import { ClientAdapter, GuestRoom, HostRoom, type RoomNotice } from './room';
-import { NetError } from './transport';
+import { NetError, type Link, type Transport } from './transport';
 
 const until = async (cond: () => boolean, ms = 3000): Promise<void> => {
   const t0 = Date.now();
@@ -135,7 +136,7 @@ describe('sala online (canal local)', () => {
 
     let started: StartMsg | null = null;
     guest.onStart = (m) => (started = m);
-    const msg = host.start({ seed: 9, difficulty: 'normal', ngPlus: false, enemyCap: 14 });
+    const msg = host.start({ seed: 9, ngPlus: false, enemyCap: 14 });
     await until(() => !!started);
     expect(started!.loadouts.map((l) => [l.slot, l.character])).toEqual([
       [0, 'robot'],
@@ -194,6 +195,76 @@ describe('sala online (canal local)', () => {
     expect(notices.at(-1)).toEqual({ kind: 'left', slot: 1, name: 'Bia' });
   });
 
+  it('opções da sala (dificuldade e voz) chegam a todos; a partida usa a dificuldade da sala; microfones', async () => {
+    const host = await HostRoom.open(
+      transport(),
+      loadout({ name: 'Ana' }),
+      { mapId: 'vila', levelIdx: 0 },
+      { difficulty: 'hard', voice: false },
+    );
+    cleanup.push(() => host.close());
+    const guest = await GuestRoom.join(transport(), host.code, loadout({ name: 'Bia' }));
+    cleanup.push(() => guest.leave());
+    await until(() => guest.players.length === 2);
+    expect(guest.difficulty).toBe('hard');
+    expect(guest.voice).toBe(false);
+
+    host.setOptions({ difficulty: 'easy', voice: true });
+    await until(() => guest.voice);
+    expect(guest.difficulty).toBe('easy');
+    host.setOptions({ difficulty: 'impossible' as never });
+    expect(host.difficulty).toBe('easy');
+
+    // microfone ligado aparece para os outros
+    expect(host.players().map((p) => p.mic)).toEqual([false, false]);
+    guest.setMic(true);
+    await until(() => host.players()[1]!.mic === true);
+    host.setMic(true);
+    await until(() => guest.players[0]!.mic === true);
+    guest.setMic(false);
+    await until(() => host.players()[1]!.mic === false);
+
+    let started: StartMsg | null = null;
+    guest.onStart = (m) => (started = m);
+    guest.pick('robot', true);
+    await until(() => host.allReady());
+    const msg = host.start({ seed: 3, ngPlus: false, enemyCap: 10 });
+    expect(msg.difficulty).toBe('easy');
+    await until(() => !!started);
+    expect(started!.difficulty).toBe('easy');
+  });
+
+  it('o mesmo aparelho chegando duas vezes (aviso repetido da conexão) não vira um jogador fantasma', async () => {
+    let deliver: ((l: Link) => void) | null = null;
+    const t: Transport = {
+      host: (on) => {
+        deliver = on;
+        return Promise.resolve({ code: 'ABCD', close: () => {} });
+      },
+      join: () => Promise.reject(new NetError('not-found')),
+    };
+    const host = await HostRoom.open(t, loadout(), { mapId: 'vila', levelIdx: 0 });
+    cleanup.push(() => host.close());
+    let closed = 0;
+    const fake = (): Link => ({
+      peerId: 'guest-1',
+      onMessage: null,
+      onClose: null,
+      send: () => {},
+      close: () => closed++,
+    });
+    const a = fake();
+    const b = fake();
+    deliver!(a);
+    deliver!(b);
+    const hello = { t: 'hello', v: NET_VERSION, lo: loadout({ name: 'Bia' }) };
+    a.onMessage!(hello);
+    b.onMessage?.(hello);
+    expect(host.guestCount).toBe(1);
+    expect(host.players().map((p) => p.slot)).toEqual([0, 1]);
+    expect(closed).toBe(0);
+  });
+
   it('código errado, sala cheia, partida já começou e anfitrião fechando', async () => {
     const t = transport();
     await expect(GuestRoom.join(t, 'ZZZZ', loadout())).rejects.toMatchObject({ kind: 'not-found' });
@@ -209,7 +280,7 @@ describe('sala online (canal local)', () => {
 
     gs.pop()!.leave();
     await until(() => host.guestCount === 3);
-    host.start({ seed: 1, difficulty: 'normal', ngPlus: false, enemyCap: 14 });
+    host.start({ seed: 1, ngPlus: false, enemyCap: 14 });
     const late = await GuestRoom.join(transport(), host.code, loadout()).catch((e: unknown) => e);
     expect((late as NetError).kind).toBe('started');
 
