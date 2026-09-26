@@ -815,4 +815,6 @@ export const EN: Record<string, string> = {
   'Tela cheia no iPhone': 'Full screen on iPhone',
   'Para jogar em tela cheia: toque em Compartilhar (□↑) → "Adicionar à Tela de Início" e abra o Zumbi Bot por lá.':
     'To play in full screen: tap Share (□↑) → "Add to Home Screen" and open Zumbi Bot from there.',
+  'Para liberar: Ajustes do iPhone → Apps → Zumbi Bot → Microfone (ligado).':
+    'To allow it: iPhone Settings → Apps → Zumbi Bot → Microphone (on).',
 };

@@ -1,5 +1,6 @@
-// Capturas de tela da Play Store (celular deitado, 1920×1080), em português e inglês.
-// Uso: npm run store:shots  (gera o build do app e grava em store/android/screenshots/)
+// Capturas de tela das lojas (aparelho deitado), em português e inglês.
+// Uso: npm run store:shots        → Play Store (1920×1080) em store/android/screenshots/
+//      npm run store:shots:ios    → App Store: iPhone 6,9" (2868×1320) e iPad 13" (2752×2064) em store/ios/screenshots/
 import { mkdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { chromium } from '@playwright/test';
@@ -9,7 +10,27 @@ import { preview } from 'vite';
 const { PeerServer } = createRequire(import.meta.url)('peer');
 PeerServer({ port: 9001, host: '127.0.0.1', path: '/zb' });
 
-const OUT = 'store/android/screenshots';
+/** Tela lógica × densidade = tamanho exigido pela loja. */
+const DEVICES = {
+  android: { out: 'store/android/screenshots', width: 864, height: 486, scale: 20 / 9, ua: undefined },
+  iphone: {
+    out: 'store/ios/screenshots/iphone',
+    width: 956,
+    height: 440,
+    scale: 3,
+    ua: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+  },
+  ipad: {
+    out: 'store/ios/screenshots/ipad',
+    width: 1376,
+    height: 1032,
+    scale: 2,
+    ua: 'Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+  },
+};
+const DEVICE = DEVICES[process.argv[2] ?? 'android'];
+if (!DEVICE) throw new Error(`aparelho desconhecido: ${process.argv[2]} (use android, iphone ou ipad)`);
+const OUT = DEVICE.out;
 const PORT = 4174;
 const URL = `http://localhost:${PORT}/?debug=1&quality=medium&mute=1&seed=7&nopointerlock=1&peer=127.0.0.1:9001/zb`;
 const NAMES = {
@@ -31,11 +52,12 @@ const browser = await chromium.launch({
   ],
 });
 
-/** Celular deitado: 864×486 × 20/9 = 1920×1080. Controles falsos para a seleção com vários jogadores. */
+/** Aparelho deitado no tamanho da loja. Controles falsos para a seleção com vários jogadores. */
 async function phone(locale) {
   const ctx = await browser.newContext({
-    viewport: { width: 864, height: 486 },
-    deviceScaleFactor: 20 / 9,
+    viewport: { width: DEVICE.width, height: DEVICE.height },
+    deviceScaleFactor: DEVICE.scale,
+    userAgent: DEVICE.ua,
     isMobile: true,
     hasTouch: true,
     locale,
@@ -198,6 +220,8 @@ async function shots(locale) {
         app.profile.save.profile.level = 9;
         await app.joinRoom(c);
         app.online.pick(ch, true);
+        // o chat de voz de quem entra começa quando a sala avisa que a voz é permitida
+        while (m && !app.voice) await new Promise((r) => setTimeout(r, 50));
         if (m) await app.toggleMic(true);
       },
       [code, name, char, mic],
@@ -209,8 +233,8 @@ async function shots(locale) {
   await pg.waitForFunction(() => window.__game.voice().peers === 2, null, { timeout: 60_000 });
   await pg.bringToFront();
   await pg.waitForTimeout(700);
-  // a Bia falando (o microfone falso dá bipes): fotografa com o brilho aceso
-  await pg.waitForFunction(() => document.querySelector('.rp.talking'), null, {
+  // a Bia (P2) falando (o microfone falso dá bipes): fotografa com o brilho aceso
+  await pg.waitForFunction(() => document.querySelector('.rp.talking[data-slot="1"]'), null, {
     timeout: 30_000,
     polling: 20,
   });
