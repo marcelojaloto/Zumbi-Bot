@@ -19,6 +19,7 @@ export type Action =
   | 'modeStaff'
   | 'toggleMode'
   | 'map'
+  | 'voice'
   | 'pause';
 
 export type KeyMap = Record<Action, string[]>;
@@ -43,6 +44,7 @@ export const DEFAULT_KEYS: KeyMap = {
   modeStaff: ['Digit2'],
   toggleMode: [],
   map: ['KeyM'],
+  voice: ['KeyV'],
   pause: ['Escape', 'KeyP'],
 };
 
@@ -72,6 +74,7 @@ export const SPLIT_KEYS: Record<'left' | 'right', KeyMap> = {
     modeStaff: ['Digit2'],
     toggleMode: [],
     map: [],
+    voice: [],
     pause: [],
   },
   right: {
@@ -93,6 +96,7 @@ export const SPLIT_KEYS: Record<'left' | 'right', KeyMap> = {
     modeStaff: [],
     toggleMode: ['Slash', 'Numpad8'],
     map: [],
+    voice: [],
     pause: [],
   },
 };
@@ -156,10 +160,12 @@ export function editableKeys(map: KeyMap, a: Action): string[] {
 /** Tabela em uso: a padrão com as ações que o jogador trocou (o Esc sempre pausa). */
 export function bindingsFrom(custom?: Partial<KeyMap> | null): KeyMap {
   const out = {} as KeyMap;
+  // ação nova (salva antes de existir) fica com a tecla padrão, se o jogador não a usou em outra ação
+  const used = new Set(ACTIONS.flatMap((a) => custom?.[a] ?? []));
   for (const a of ACTIONS) {
     const keys = custom?.[a]
       ? custom[a]!.filter((k) => !RESERVED_KEYS.includes(k))
-      : editableKeys(DEFAULT_KEYS, a);
+      : editableKeys(DEFAULT_KEYS, a).filter((k) => !used.has(k));
     out[a] = withReserved(a, keys.slice(0, MAX_KEYS_PER_ACTION));
   }
   return out;

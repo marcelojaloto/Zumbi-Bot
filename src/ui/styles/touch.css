@@ -193,6 +193,12 @@
   gap: 10px;
   pointer-events: auto;
 }
+/* multijogador: os painéis dos jogadores ocupam o topo; pausa, tela cheia e microfone vão para o canto */
+body.touch:has(.hud.party-mode) .t-top {
+  top: calc(var(--st) + 6px);
+  left: calc(env(safe-area-inset-left, 0px) + 12px);
+  transform: none;
+}
 .t-mini {
   width: 40px;
   height: 40px;
@@ -208,6 +214,16 @@
 }
 .t-mini:active {
   background: rgba(255, 255, 255, 0.25);
+}
+.t-mini[hidden] {
+  display: none;
+}
+.t-mic.on {
+  border-color: #5aff9a;
+  opacity: 1;
+}
+.t-mic.talking {
+  box-shadow: 0 0 12px rgba(90, 255, 154, 0.8);
 }
 
 /* ---------------------------------------------------------------- aviso para girar */

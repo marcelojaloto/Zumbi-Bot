@@ -41,11 +41,47 @@ export interface Link {
   close(): void;
   onMessage: ((msg: unknown) => void) | null;
   onClose: (() => void) | null;
+  /** Id do outro aparelho no serviço de conexão (para a voz). */
+  readonly peerId?: string;
+  /** Voz deste aparelho (quem entrou na sala); ausente quando o transporte não tem áudio. */
+  readonly voice?: VoicePeer;
 }
 
 /** Sala aberta pelo anfitrião: recebe as conexões de quem digita o código. */
 export interface RoomServer {
   readonly code: string;
+  close(): void;
+  /** Voz do anfitrião; ausente quando o transporte não tem áudio. */
+  readonly voice?: VoicePeer;
+}
+
+/** Chamadas de áudio de um aparelho (voz entre os jogadores da sala). */
+export interface VoicePeer {
+  /** Id deste aparelho no serviço de conexão. */
+  readonly id: string;
+  /** Liga para outro aparelho mandando `stream`; `meta` vai junto (o código da sala). */
+  call(to: string, stream: MediaStream, meta: Record<string, unknown>): VoiceCall;
+  /** Alguém ligou (atender com `answer`). */
+  onCall: ((c: VoiceCall) => void) | null;
+}
+
+/** Uma chamada de áudio entre dois aparelhos. */
+export interface VoiceCall {
+  /** Id do outro aparelho. */
+  readonly peer: string;
+  readonly metadata: Record<string, unknown> | undefined;
+  answer(stream: MediaStream): void;
+  /** Troca a trilha de áudio enviada (silêncio ⇄ microfone) sem religar. */
+  replaceTrack(track: MediaStreamTrack): void;
+  /** Nível do áudio recebido agora (0..1); null quando o navegador não informa. */
+  audioLevel(): number | null;
+  /**
+   * Energia acumulada do áudio recebido (estatísticas do WebRTC): a diferença entre duas leituras dá o nível médio
+   * no intervalo, sem perder sons curtos. null quando o navegador não informa.
+   */
+  audioEnergy(): Promise<{ energy: number; duration: number } | null>;
+  onStream: ((s: MediaStream) => void) | null;
+  onClose: (() => void) | null;
   close(): void;
 }
 

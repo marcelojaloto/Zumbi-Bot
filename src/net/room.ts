@@ -1,5 +1,5 @@
 import { isCharacterId } from '../data/characters';
-import type { CharacterId } from '../data/types';
+import type { CharacterId, Difficulty } from '../data/types';
 import { MAX_PLAYERS, type PlayerSlot } from '../sim/Entity';
 import type { GameEvent } from '../sim/events';
 import type { InputFrame, InputSource } from '../sim/InputFrame';
@@ -8,15 +8,17 @@ import { SnapshotEncoder, applyDelta, type SnapDelta } from './delta';
 import {
   NET_VERSION,
   RemoteInputSource,
+  isDifficulty,
   packInput,
   sanitizeLoadout,
   type GuestMsg,
   type HostMsg,
+  type RoomOptions,
   type RoomPhase,
   type RoomPlayer,
   type StartMsg,
 } from './protocol';
-import { NetError, type Link, type RoomServer, type Transport } from './transport';
+import { NetError, type Link, type RoomServer, type Transport, type VoicePeer } from './transport';
 import type { NetAdapter } from './types';
 
 /** Intervalo dos "sinais de vida" e quanto tempo sem notícias derruba a conexão. */
@@ -40,6 +42,8 @@ interface Guest {
   inGame: boolean;
   /** Pediu um quadro completo (vai no próximo envio). */
   needKey: boolean;
+  /** Microfone ligado. */
+  mic: boolean;
   input: RemoteInputSource;
   seen: number;
 }
@@ -63,6 +67,12 @@ export class HostRoom {
   onNotice: ((n: RoomNotice) => void) | null = null;
   /** Alguém saiu no meio da partida (o jogador dele sai do jogo). */
   onGuestLeft: ((slot: PlayerSlot) => void) | null = null;
+  /** Dificuldade da partida (escolhida pelo anfitrião). */
+  difficulty: Difficulty;
+  /** Chat de voz permitido nesta sala. */
+  voice: boolean;
+  /** Microfone do anfitrião ligado. */
+  private myMic = false;
   private guests = new Map<PlayerSlot, Guest>();
   private server: RoomServer | null = null;
   private timer: ReturnType<typeof setInterval>;
@@ -72,8 +82,11 @@ export class HostRoom {
     public me: PlayerLoadout,
     public mapId: string,
     public levelIdx: number,
+    opts: RoomOptions,
     private now: Clock,
   ) {
+    this.difficulty = opts.difficulty;
+    this.voice = opts.voice;
     this.timer = setInterval(() => this.heartbeat(), PING_MS);
   }
 
@@ -81,9 +94,10 @@ export class HostRoom {
     t: Transport,
     me: PlayerLoadout,
     target: { mapId: string; levelIdx: number },
+    opts: RoomOptions = { difficulty: 'normal', voice: true },
     now: Clock = defaultClock,
   ): Promise<HostRoom> {
-    const room = new HostRoom({ ...me, slot: 0 }, target.mapId, target.levelIdx, now);
+    const room = new HostRoom({ ...me, slot: 0 }, target.mapId, target.levelIdx, opts, now);
     try {
       room.server = await t.host((l) => room.accept(l));
     } catch (e) {
@@ -99,6 +113,15 @@ export class HostRoom {
 
   get guestCount(): number {
     return this.guests.size;
+  }
+
+  /** Voz do anfitrião (ausente quando o transporte não tem áudio). */
+  get voicePeer(): VoicePeer | undefined {
+    return this.server?.voice;
+  }
+
+  get mySlot(): PlayerSlot {
+    return 0;
   }
 
   get full(): boolean {
@@ -117,10 +140,42 @@ export class HostRoom {
 
   players(): RoomPlayer[] {
     const me = this.me;
-    const out: RoomPlayer[] = [{ slot: 0, name: me.name, char: me.character, ready: true, level: me.level }];
+    const out: RoomPlayer[] = [
+      {
+        slot: 0,
+        name: me.name,
+        char: me.character,
+        ready: true,
+        level: me.level,
+        pid: this.server?.voice?.id,
+        mic: this.myMic,
+      },
+    ];
     for (const g of [...this.guests.values()].sort((a, b) => a.slot - b.slot))
-      out.push({ slot: g.slot, name: g.lo.name, char: g.lo.character, ready: g.ready, level: g.lo.level });
+      out.push({
+        slot: g.slot,
+        name: g.lo.name,
+        char: g.lo.character,
+        ready: g.ready,
+        level: g.lo.level,
+        pid: g.link.peerId,
+        mic: g.mic,
+      });
     return out;
+  }
+
+  /** Muda a dificuldade e/ou se a voz é permitida (antes de começar). */
+  setOptions(o: Partial<RoomOptions>): void {
+    if (o.difficulty && isDifficulty(o.difficulty)) this.difficulty = o.difficulty;
+    if (typeof o.voice === 'boolean') this.voice = o.voice;
+    this.changed();
+  }
+
+  /** O anfitrião ligou ou desligou o microfone. */
+  setMic(on: boolean): void {
+    if (this.myMic === on) return;
+    this.myMic = on;
+    this.changed();
   }
 
   setMyCharacter(c: CharacterId): void {
@@ -134,11 +189,12 @@ export class HostRoom {
     this.changed();
   }
 
-  /** Começa a partida para todos que estão na sala. */
-  start(o: Omit<StartMsg, 't' | 'loadouts' | 'mapId' | 'levelIdx'>): StartMsg {
+  /** Começa a partida para todos que estão na sala (na dificuldade da sala). */
+  start(o: Omit<StartMsg, 't' | 'loadouts' | 'mapId' | 'levelIdx' | 'difficulty'>): StartMsg {
     const msg: StartMsg = {
       t: 'start',
       ...o,
+      difficulty: this.difficulty,
       mapId: this.mapId,
       levelIdx: this.levelIdx,
       loadouts: [{ ...this.me, slot: 0 }],
@@ -217,6 +273,8 @@ export class HostRoom {
       phase: this.phase,
       mapId: this.mapId,
       levelIdx: this.levelIdx,
+      difficulty: this.difficulty,
+      voice: this.voice,
     });
     this.onChange?.();
   }
@@ -242,6 +300,12 @@ export class HostRoom {
       if (slot === null) {
         if (m.t !== 'hello') return;
         clearTimeout(helloTimer);
+        // o mesmo aparelho já está na sala (aviso repetido da conexão): não vira outro jogador; este link é
+        // ignorado sem fechar (pode ser a mesma conexão do jogador que já entrou)
+        if (link.peerId && [...this.guests.values()].some((x) => x.link.peerId === link.peerId)) {
+          link.onMessage = null;
+          return;
+        }
         const why =
           m.v !== NET_VERSION ? 'version' : this.phase === 'playing' ? 'started' : this.full ? 'full' : null;
         if (why) {
@@ -259,6 +323,7 @@ export class HostRoom {
           loaded: false,
           inGame: false,
           needKey: false,
+          mic: false,
           input: new RemoteInputSource(s, this.now),
           seen: this.now(),
         };
@@ -286,6 +351,10 @@ export class HostRoom {
           break;
         case 'key':
           g.needKey = true;
+          break;
+        case 'mic':
+          g.mic = !!m.on;
+          this.changed();
           break;
         case 'bye':
           this.drop(slot);
@@ -372,6 +441,9 @@ export class GuestRoom {
   players: RoomPlayer[] = [];
   mapId = '';
   levelIdx = 0;
+  difficulty: Difficulty = 'normal';
+  /** Chat de voz permitido pelo anfitrião (desligado até a sala dizer). */
+  voice = false;
   onChange: (() => void) | null = null;
   onStart: ((m: StartMsg) => void) | null = null;
   onClosed: ((why: LeaveReason) => void) | null = null;
@@ -438,6 +510,24 @@ export class GuestRoom {
     return this.players.find((p) => p.slot === this.slot);
   }
 
+  get mySlot(): PlayerSlot {
+    return this.slot;
+  }
+
+  /** Voz deste aparelho (ausente quando o transporte não tem áudio). */
+  get voicePeer(): VoicePeer | undefined {
+    return this.link.voice;
+  }
+
+  /** Ligou ou desligou o microfone: os outros veem 🎤/🔇. */
+  setMic(on: boolean): void {
+    const me = this.me();
+    if ((me?.mic ?? false) === on) return;
+    if (me) me.mic = on;
+    this.send({ t: 'mic', on });
+    this.onChange?.();
+  }
+
   send(m: GuestMsg): void {
     if (!this.closed) this.link.send(m);
   }
@@ -496,6 +586,8 @@ export class GuestRoom {
         this.phase = m.phase;
         this.mapId = m.mapId;
         this.levelIdx = m.levelIdx;
+        if (isDifficulty(m.difficulty)) this.difficulty = m.difficulty;
+        this.voice = m.voice === true;
         this.onChange?.();
         break;
       case 'start':

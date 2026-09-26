@@ -44,7 +44,8 @@ export type QualityChoice = 'auto' | 'low' | 'medium' | 'high';
 
 export interface SettingsV1 {
   version: 1;
-  audio: { master: number; music: number; sfx: number; muted: boolean };
+  /** `voice`: volume das vozes do chat de voz online. */
+  audio: { master: number; music: number; sfx: number; voice: number; muted: boolean };
   controls: {
     mouseSensitivity: number;
     pointerLock: boolean;
@@ -119,7 +120,7 @@ export function defaultSave(now = 0): SaveV1 {
 export function defaultSettings(): SettingsV1 {
   return {
     version: 1,
-    audio: { master: 0.8, music: 0.55, sfx: 0.85, muted: false },
+    audio: { master: 0.8, music: 0.55, sfx: 0.85, voice: 1, muted: false },
     controls: {
       mouseSensitivity: 1,
       pointerLock: true,

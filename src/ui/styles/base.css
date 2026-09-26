@@ -23,12 +23,20 @@ body {
   font-family: var(--ui-font);
   user-select: none;
   -webkit-user-select: none;
+  /* iPhone: sem zoom por toque duplo, sem menu do toque longo, sem "puxar" a página */
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
 }
 #game {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
+  /* altura visível de verdade (no iPhone a barra do Safari entra e sai) */
+  height: 100dvh;
   display: block;
   outline: none;
 }

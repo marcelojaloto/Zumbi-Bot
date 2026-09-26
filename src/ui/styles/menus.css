@@ -1192,7 +1192,7 @@ a.btn {
 }
 .rp {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto auto;
+  grid-template-columns: 34px minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 10px;
   padding: 7px 12px;
@@ -1262,6 +1262,101 @@ a.btn {
   background: linear-gradient(180deg, #7dffb0, #22a458);
   border-color: #b4ffd0;
 }
+
+/* ---------------------------------------------------------------- opções da sala e chat de voz */
+.room-opts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: min(640px, 94vw);
+}
+.opt-label {
+  font-family: var(--title-font);
+  letter-spacing: 1px;
+  color: var(--muted);
+  font-size: 15px;
+  margin-top: 4px;
+}
+.opt-note {
+  margin: 4px 0 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.seg {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.seg-btn {
+  font: 700 15px var(--ui-font, inherit);
+  padding: 8px 14px;
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.seg-btn:hover,
+.seg-btn:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.seg-btn.on {
+  color: #1a0c00;
+  background: linear-gradient(180deg, #ff9a2a, #c05a08);
+  border-color: #ffc070;
+}
+.rp-mic {
+  font-size: 15px;
+  min-width: 1.2em;
+  text-align: center;
+}
+.rp-mic.off {
+  opacity: 0.45;
+}
+.rp.talking {
+  box-shadow:
+    0 0 0 2px #5aff9a,
+    0 0 14px rgba(90, 255, 154, 0.55);
+}
+.room-opts-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.voice-allow.on {
+  border-color: #5aff9a;
+}
+.room-voice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  max-width: min(1000px, 96vw);
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+.room-voice.error {
+  color: #ffb02a;
+}
+.room-voice-text:empty {
+  display: none;
+}
+.mic-btn.on {
+  border-color: #5aff9a;
+  box-shadow: 0 0 12px rgba(90, 255, 154, 0.45);
+}
+.mic-btn.talking {
+  background: linear-gradient(180deg, #2e5a40, #163324);
+}
 @media (max-width: 640px) {
   .room-body {
     grid-template-columns: 1fr;
@@ -1312,7 +1407,8 @@ a.btn {
   .rp-tag {
     font-size: 14px;
   }
-  .room-side .lc-arrow {
+  .room-side .lc-arrow,
+  .room-opts-box .lc-arrow {
     width: 28px;
     height: 28px;
   }
@@ -1322,6 +1418,30 @@ a.btn {
   .screen.room .btn {
     font-size: 16px;
     padding: 6px 16px;
+  }
+  .screen.room .btn.small {
+    font-size: 13px;
+    padding: 3px 10px;
+  }
+  .room-voice {
+    font-size: 11px;
+  }
+  /* sem espaço: a ajuda da voz só aparece quando há um problema (o botão já diz o que faz) */
+  .room-voice:not(.error) .room-voice-text {
+    display: none;
+  }
+  .room-opts-box {
+    padding-top: 4px;
+    gap: 2px;
+    font-size: 13px;
+  }
+  .room-opts {
+    padding: 8px 14px;
+    gap: 4px;
+  }
+  .seg-btn {
+    font-size: 13px;
+    padding: 5px 10px;
   }
   .online-choice {
     padding: 10px 12px;
