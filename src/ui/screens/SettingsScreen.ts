@@ -3,6 +3,7 @@ import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
 import type { LanguageChoice, SettingsV1 } from '../../save/schema';
 import { dec, t } from '../../i18n';
+import { keyBindScreen } from './KeyBindScreen';
 
 function slider(
   label: string,
@@ -99,6 +100,14 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
       0.1,
       (v) => dec(v),
     ),
+    [
+      el('label', {}, t('Teclas do teclado')),
+      el(
+        'button',
+        { class: 'btn small', data: { nav: '' }, onclick: () => host.screens.push(keyBindScreen(host)) },
+        `⌨️ ${t('Trocar teclas')}`,
+      ),
+    ] as const,
     check(
       t('Travar o ponteiro do mouse no jogo'),
       () => st().controls.pointerLock,

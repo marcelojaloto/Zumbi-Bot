@@ -54,6 +54,25 @@ export const TOUCH_HINTS: Record<string, string> = {
     'O botão ⇄ troca arma e cajado • ESPECIAL = {special}',
 };
 
+/**
+ * Dicas do tutorial que citam teclas: versão com as teclas atuais do jogador (configuráveis). `{specialKey}` é a
+ * tecla do especial; `{special}`, o nome do golpe.
+ */
+export const KEY_HINTS: Record<string, string> = {
+  'A/D andam • W/S mudam de plano (profundidade)':
+    '{left}/{right} andam • {up}/{down} mudam de plano (profundidade)',
+  'J = soco • K = chute • J, J, J, J = combo com uppercut':
+    '{punch} = soco • {kick} = chute • {punch}, {punch}, {punch}, {punch} = combo com uppercut',
+  'Espaço pula — aperte de novo no ar para o pulo duplo':
+    '{jump} pula — aperte de novo no ar para o pulo duplo',
+  'Clique (ou L) atira • botão direito mira para crítico':
+    'Clique (ou {fire}) atira • {aim} mira para crítico • botão direito = especial',
+  'Shift ou toque duplo corre • correndo + K = voadora':
+    '{run}, rodinha do mouse ou toque duplo corre • correndo + {kick} = voadora',
+  '2 = modo cajado • 1 = armas • U (ou J+K) = {special}':
+    '{modeStaff} = modo cajado • {modeGun} = armas • {specialKey}, botão direito ou {punch}+{kick} = {special}',
+};
+
 /** HUD em HTML sobre o canvas: vida, mana, vidas, XP, pontuação, combo, arma, minimapa, chefe e avisos. */
 export class Hud {
   readonly root: HTMLDivElement;
@@ -108,6 +127,8 @@ export class Hud {
   localSlot = 0;
   /** Partida online (o painel deste aparelho é marcado "você"). */
   online = false;
+  /** Tecla principal de cada ação (dicas com as teclas que o jogador escolheu). */
+  keyNames: Record<string, string> = {};
   /** Controles de toque ativos: dicas do tutorial viram a versão de toque. */
   touchMode = false;
 
@@ -218,7 +239,10 @@ export class Hud {
 
   showHint(text: string): void {
     if (!this.showHints) return;
-    this.hint.textContent = t((this.touchMode && TOUCH_HINTS[text]) || text, {
+    const tpl = this.touchMode ? TOUCH_HINTS[text] : KEY_HINTS[text];
+    this.hint.textContent = t(tpl || text, {
+      ...this.keyNames,
+      specialKey: this.keyNames.special ?? 'U',
       special: t(this.specialName),
     });
     this.hint.classList.add('show');

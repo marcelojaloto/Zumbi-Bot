@@ -11,6 +11,7 @@ import type { TouchControls } from './TouchControls';
 import type { DeviceRef } from './devices';
 import { DEFAULT_KEYS, keyboardFrame, layoutKeys, type Action } from './keymap';
 import { padFrame, type PadLike, type PadRead } from './pads';
+import { mouseButtons, wheelRun } from './mouse';
 
 export type { Action } from './keymap';
 export { DEFAULT_KEYS } from './keymap';
@@ -50,6 +51,8 @@ export class InputManager implements InputSource {
   private pressedOnce = new Set<string>();
   private mouseButtons = 0;
   private wheel = 0;
+  /** Corrida ligada pela rodinha do mouse (ticks restantes parado). */
+  private wheelLatch = 0;
   cursorX = 0;
   cursorY = 0;
   /** Cursor virtual quando o ponteiro está travado. */
@@ -217,10 +220,8 @@ export class InputManager implements InputSource {
       mz = kf.mz;
       b = kf.buttons;
       if (dev.layout === 'full') {
-        if (this.mouseButtons & 1) b |= Btn.Fire;
-        if (this.mouseButtons & 2) b |= Btn.Aim;
-        if (this.wheel < 0) b |= Btn.Prev;
-        if (this.wheel > 0) b |= Btn.Next;
+        b |= mouseButtons(this.mouseButtons);
+        if (this.mouseRun(mx !== 0 || mz !== 0)) b |= Btn.Run;
       }
     } else if (dev.k === 'touch') {
       const tc = this.touch?.read();
@@ -264,6 +265,13 @@ export class InputManager implements InputSource {
     return f;
   }
 
+  /** Rodinha do mouse: liga a corrida até o jogador parar. */
+  private mouseRun(moving: boolean): boolean {
+    const r = wheelRun(this.wheelLatch, this.wheel, moving);
+    this.wheelLatch = r.latch;
+    return r.run;
+  }
+
   private mouseAiming(): boolean {
     return this.mouseActive && performance.now() - this.lastMouseMove < 8000;
   }
@@ -278,11 +286,7 @@ export class InputManager implements InputSource {
     let mx = kf.mx;
     let mz = kf.mz;
     // botões são "segurados"; taps curtos entre ticks não se perdem
-    let b = kf.buttons;
-    if (this.mouseButtons & 1) b |= Btn.Fire;
-    if (this.mouseButtons & 2) b |= Btn.Aim;
-    if (this.wheel < 0) b |= Btn.Prev;
-    if (this.wheel > 0) b |= Btn.Next;
+    let b = kf.buttons | mouseButtons(this.mouseButtons);
 
     // toque (celular/tablet): mesmo papel do gamepad
     if (this.touch) {
@@ -300,6 +304,7 @@ export class InputManager implements InputSource {
       b |= gp.buttons;
     }
 
+    if (this.mouseRun(Math.abs(mx) > 0.2 || Math.abs(mz) > 0.2)) b |= Btn.Run;
     const len = Math.hypot(mx, mz);
     if (len > 1) {
       mx /= len;

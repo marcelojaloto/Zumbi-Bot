@@ -130,3 +130,174 @@ export function keyboardFrame(
   if (tap('toggleMode')) b |= Btn.ToggleMode;
   return { mx, mz, buttons: b };
 }
+
+// ------------------------------------------------------------------ teclas configuráveis
+
+const ACTIONS = Object.keys(DEFAULT_KEYS) as Action[];
+
+/** Até duas teclas por ação (a principal e uma alternativa). */
+export const MAX_KEYS_PER_ACTION = 2;
+/** Esc sempre pausa e volta nos menus: não pode ser trocado nem usado em outra ação. */
+export const RESERVED_KEYS: readonly string[] = ['Escape'];
+/** Sem tecla nestas ações não dá para jogar: a tela de teclas avisa. */
+export const ESSENTIAL_ACTIONS: readonly Action[] = ['left', 'right', 'up', 'down', 'jump', 'punch'];
+
+const CODE_RE = /^[A-Za-z0-9]{1,24}$/;
+
+function withReserved(a: Action, keys: string[]): string[] {
+  return a === 'pause' ? ['Escape', ...keys] : keys;
+}
+
+/** Teclas de uma ação que o jogador pode trocar (sem o Esc da pausa). */
+export function editableKeys(map: KeyMap, a: Action): string[] {
+  return map[a].filter((k) => !RESERVED_KEYS.includes(k));
+}
+
+/** Tabela em uso: a padrão com as ações que o jogador trocou (o Esc sempre pausa). */
+export function bindingsFrom(custom?: Partial<KeyMap> | null): KeyMap {
+  const out = {} as KeyMap;
+  for (const a of ACTIONS) {
+    const keys = custom?.[a]
+      ? custom[a]!.filter((k) => !RESERVED_KEYS.includes(k))
+      : editableKeys(DEFAULT_KEYS, a);
+    out[a] = withReserved(a, keys.slice(0, MAX_KEYS_PER_ACTION));
+  }
+  return out;
+}
+
+/**
+ * Coloca `code` na posição `slot` da ação. Se a tecla estava em outra ação, sai de lá (`from` diz qual); se já
+ * estava na mesma ação em outra posição, as duas trocam de lugar.
+ */
+export function rebind(
+  map: KeyMap,
+  action: Action,
+  slot: number,
+  code: string,
+): { map: KeyMap; from: Action | null } {
+  if (RESERVED_KEYS.includes(code)) return { map, from: null };
+  const out = {} as KeyMap;
+  let from: Action | null = null;
+  for (const a of ACTIONS) {
+    out[a] = [...map[a]];
+    if (a !== action && out[a].includes(code)) {
+      out[a] = out[a].filter((k) => k !== code);
+      from = a;
+    }
+  }
+  const cur = editableKeys(out, action);
+  const j = cur.indexOf(code);
+  if (j >= 0 && j !== slot) cur[j] = cur[slot] ?? '';
+  if (slot < cur.length) cur[slot] = code;
+  else cur.push(code);
+  out[action] = withReserved(action, cur.filter(Boolean).slice(0, MAX_KEYS_PER_ACTION));
+  return { map: out, from };
+}
+
+/** Tira a tecla da posição `slot` da ação. */
+export function clearKey(map: KeyMap, action: Action, slot: number): KeyMap {
+  const out = bindingsFrom(map);
+  const cur = editableKeys(out, action);
+  cur.splice(slot, 1);
+  out[action] = withReserved(action, cur);
+  return out;
+}
+
+/** O que guardar nas configurações: só existe se for diferente do padrão. */
+export function customKeys(map: KeyMap): Partial<KeyMap> | undefined {
+  const def = bindingsFrom();
+  if (ACTIONS.every((a) => map[a].join() === def[a].join())) return undefined;
+  const out: Partial<KeyMap> = {};
+  for (const a of ACTIONS) out[a] = editableKeys(map, a);
+  return out;
+}
+
+/** Valida as teclas salvas: ações conhecidas, códigos válidos, no máximo 2 por ação e sem repetir entre ações. */
+export function sanitizeKeys(raw: unknown): Partial<KeyMap> | undefined {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined;
+  const r = raw as Record<string, unknown>;
+  const used = new Set<string>();
+  const out: Partial<KeyMap> = {};
+  let any = false;
+  for (const a of ACTIONS) {
+    const v = r[a];
+    if (!Array.isArray(v)) continue;
+    const keys: string[] = [];
+    for (const k of v)
+      if (typeof k === 'string' && CODE_RE.test(k) && !RESERVED_KEYS.includes(k) && !used.has(k)) {
+        if (keys.length >= MAX_KEYS_PER_ACTION) break;
+        keys.push(k);
+        used.add(k);
+      }
+    out[a] = keys;
+    any = true;
+  }
+  return any ? out : undefined;
+}
+
+const KEY_NAMES: Record<string, string> = {
+  Space: 'Espaço',
+  ShiftLeft: 'Shift esq.',
+  ShiftRight: 'Shift dir.',
+  ControlLeft: 'Ctrl esq.',
+  ControlRight: 'Ctrl dir.',
+  AltLeft: 'Alt',
+  AltRight: 'AltGr',
+  MetaLeft: 'Win',
+  MetaRight: 'Win',
+  ArrowLeft: '←',
+  ArrowRight: '→',
+  ArrowUp: '↑',
+  ArrowDown: '↓',
+  Enter: 'Enter',
+  NumpadEnter: 'Num Enter',
+  Tab: 'Tab',
+  CapsLock: 'Caps Lock',
+  Escape: 'Esc',
+  Backquote: '`',
+  Minus: '-',
+  Equal: '=',
+  BracketLeft: '[',
+  BracketRight: ']',
+  Backslash: '\\',
+  IntlBackslash: '\\',
+  IntlRo: '/',
+  Semicolon: ';',
+  Quote: "'",
+  Comma: ',',
+  Period: '.',
+  Slash: '/',
+  NumpadAdd: 'Num +',
+  NumpadSubtract: 'Num -',
+  NumpadMultiply: 'Num *',
+  NumpadDivide: 'Num /',
+  NumpadDecimal: 'Num ,',
+  PageUp: 'PgUp',
+  PageDown: 'PgDn',
+  Insert: 'Ins',
+  Delete: 'Del',
+};
+
+/** Rótulos que dependem do idioma (traduzidos pela interface). */
+export const KEY_NAMES_TO_TRANSLATE = ['Espaço', 'Shift esq.', 'Shift dir.', 'Ctrl esq.', 'Ctrl dir.'];
+
+/**
+ * Nome curto de uma tecla (`KeyboardEvent.code`). `layout` (quando o navegador informa o teclado do jogador) mostra o
+ * caractere impresso na tecla — num teclado ABNT2, "Semicolon" vira "Ç".
+ */
+export function keyLabel(code: string, layout?: ReadonlyMap<string, string> | null): string {
+  const printed = layout?.get(code);
+  if (
+    printed &&
+    printed.trim() &&
+    /^(Key|Digit|Semicolon|Quote|Comma|Period|Slash|Backslash|Bracket|Minus|Equal|Backquote|Intl)/.test(code)
+  )
+    return printed.toUpperCase();
+  let m = /^Key([A-Z])$/.exec(code);
+  if (m) return m[1]!;
+  m = /^Digit(\d)$/.exec(code);
+  if (m) return m[1]!;
+  m = /^Numpad(\d)$/.exec(code);
+  if (m) return `Num ${m[1]}`;
+  return KEY_NAMES[code] ?? code;
+}

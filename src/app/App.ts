@@ -1,5 +1,7 @@
 import { hashString } from '../core/rng';
 import { InputManager } from '../input/InputManager';
+import { bindingsFrom } from '../input/keymap';
+import { actionKeyNames, loadKeyboardLayout, moveKeys } from '../input/keyLabels';
 import { TouchControls } from '../input/TouchControls';
 import { deviceKind, isPortrait, type DeviceKind } from '../input/device';
 import { Renderer } from '../render/Renderer';
@@ -175,6 +177,8 @@ export class App implements LobbyHost, OnlineHost {
       }
     });
     this.installNativeBack();
+    // nomes das teclas como estão impressos no teclado do jogador (quando o navegador informa)
+    void loadKeyboardLayout();
     this.renderer.onContextLost = () => {
       this.ui.appendChild(
         el(
@@ -442,12 +446,19 @@ export class App implements LobbyHost, OnlineHost {
       el(
         'div',
         { class: 'menu-footer muted' },
-        this.touchOn
-          ? t('Direcional à esquerda • botões de ação à direita • ⏸ pausa')
-          : t('WASD mover • J soco • K chute • Espaço pula • Mouse mira e atira • Esc pausa'),
+        this.touchOn ? t('Direcional à esquerda • botões de ação à direita • ⏸ pausa') : this.keyHelp(),
       ),
     );
     this.screens.push({ el: e, id: 'menu', onBack: () => false });
+  }
+
+  /** Resumo das teclas no rodapé do menu (com as teclas que o jogador escolheu). */
+  private keyHelp(): string {
+    const n = actionKeyNames(this.input.bindings);
+    return t(
+      '{move} anda • {punch} soco • {kick} chute • {jump} pula • clique atira • botão direito: especial • rodinha corre • Esc pausa',
+      { move: moveKeys(n), punch: n.punch, kick: n.kick, jump: n.jump },
+    );
   }
 
   /** Primeiro nível desbloqueado e não concluído (ou o último desbloqueado). */
@@ -494,11 +505,13 @@ export class App implements LobbyHost, OnlineHost {
     this.audio.muted = s.audio.muted;
     this.audio.applyVolumes();
     this.input.sensitivity = s.controls.mouseSensitivity;
+    this.input.bindings = bindingsFrom(s.controls.keys);
     this.renderer.cam.shakeScale = s.graphics.screenShake;
     this.renderer.post.flashScale = s.graphics.reduceFlashes ? 0.3 : 1;
     this.renderer.renderScale = s.graphics.renderScale;
     this.renderer.resize();
     if (this.hud) {
+      this.hud.keyNames = actionKeyNames(this.input.bindings);
       this.hud.showFps = s.graphics.showFps || this.flags.fps;
       this.hud.showHints = s.controls.hints;
     }
