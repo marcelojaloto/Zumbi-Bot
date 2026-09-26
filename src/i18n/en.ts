@@ -762,4 +762,57 @@ export const EN: Record<string, string> = {
     '{run}, the mouse wheel or a double tap runs • running + {kick} = flying kick',
   '{modeStaff} = modo cajado • {modeGun} = armas • {specialKey}, botão direito ou {punch}+{kick} = {special}':
     '{modeStaff} = staff mode • {modeGun} = guns • {specialKey}, right button or {punch}+{kick} = {special}',
+  // chat de voz e opções da sala
+  'Chat de voz indisponível neste aparelho.': 'Voice chat is not available on this device.',
+  'Chat de voz desligado pelo anfitrião.': 'Voice chat was turned off by the host.',
+  Microfone: 'Microphone',
+  'Microfone (chat de voz online)': 'Microphone (online voice chat)',
+  'Ligando…': 'Turning on…',
+  'Microfone ligado': 'Mic on',
+  'Microfone mudo': 'Mic muted',
+  'Ligar microfone': 'Turn mic on',
+  'Desligar microfone': 'Turn mic off',
+  'Para liberar: Configurações do Android → Apps → Zumbi Bot → Permissões → Microfone → Permitir.':
+    'To allow it: Android Settings → Apps → Zumbi Bot → Permissions → Microphone → Allow.',
+  'Para liberar no iPhone: toque em "aA" na barra de endereço → Ajustes do Site → Microfone → Permitir (ou Ajustes → Apps → Safari → Microfone) e recarregue a página.':
+    'To allow it on iPhone: tap "aA" in the address bar → Website Settings → Microphone → Allow (or Settings → Apps → Safari → Microphone) and reload the page.',
+  'Para liberar: toque no ícone ao lado do endereço → Permissões → Microfone → Permitir, e recarregue a página.':
+    'To allow it: tap the icon next to the address → Permissions → Microphone → Allow, and reload the page.',
+  'Para liberar: clique no ícone ao lado do endereço do site → Microfone → Permitir, e recarregue a página.':
+    'To allow it: click the icon next to the site address → Microphone → Allow, and reload the page.',
+  'O microfone está bloqueado.': 'The microphone is blocked.',
+  'Nenhum microfone encontrado neste aparelho.': 'No microphone was found on this device.',
+  'O microfone está sendo usado por outro app. Feche o outro app e tente de novo.':
+    'Another app is using the microphone. Close the other app and try again.',
+  'O navegador só libera o microfone em páginas seguras (https).':
+    'The browser only allows the microphone on secure pages (https).',
+  'Este navegador não deixa usar o microfone. Use o Chrome, Edge, Firefox ou Safari atualizados.':
+    "This browser doesn't allow the microphone. Use an up-to-date Chrome, Edge, Firefox or Safari.",
+  'Não deu para ligar o microfone. Tente de novo.': "Couldn't turn the microphone on. Try again.",
+  'Chat de voz desligado nesta sala.': 'Voice chat is off in this room.',
+  'Chat de voz indisponível neste aparelho ou navegador. Você joga normalmente.':
+    'Voice chat is not available on this device or browser. You can still play normally.',
+  'Toque em "Permitir" quando o aparelho pedir o microfone.':
+    'Tap "Allow" when the device asks for the microphone.',
+  'Microfone ligado: todos da sala ouvem você.': 'Mic on: everyone in the room can hear you.',
+  'Todos da sala se ouvem. Para falar, ligue o microfone (o aparelho pede permissão na primeira vez).':
+    'Everyone in the room can hear each other. To talk, turn your mic on (the device asks for permission the first time).',
+  'Todos da sala se ouvem. Ligue o microfone para falar.':
+    'Everyone in the room can hear each other. Turn your mic on to talk.',
+  'CRIAR SALA': 'CREATE ROOM',
+  'Escolha como vai ser a partida. Dá para mudar depois, na sala.':
+    'Choose how the match will be. You can change it later, in the room.',
+  'Chat de voz': 'Voice chat',
+  Permitido: 'Allowed',
+  Desligado: 'Off',
+  'Com o chat de voz, todos da sala conversam juntos. Cada um liga ou desliga o próprio microfone.':
+    'With voice chat, everyone in the room talks together. Each player turns their own mic on or off.',
+  'Este aparelho não tem chat de voz, mas os outros jogadores podem conversar entre si.':
+    "This device doesn't support voice chat, but the other players can still talk to each other.",
+  'Toque para ouvir a conversa': 'Tap to hear the conversation',
+  'Vozes (chat de voz online)': 'Voices (online voice chat)',
+  // iPhone
+  'Tela cheia no iPhone': 'Full screen on iPhone',
+  'Para jogar em tela cheia: toque em Compartilhar (□↑) → "Adicionar à Tela de Início" e abra o Zumbi Bot por lá.':
+    'To play in full screen: tap Share (□↑) → "Add to Home Screen" and open Zumbi Bot from there.',
 };

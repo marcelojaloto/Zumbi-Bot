@@ -1,5 +1,6 @@
 import { Btn } from '../sim/InputFrame';
 import { t } from '../i18n';
+import { isStandalone } from './device';
 
 type BtnId = 'punch' | 'jump' | 'kick' | 'fire' | 'special' | 'reload' | 'next' | 'mode';
 
@@ -58,11 +59,12 @@ export class TouchControls {
   private tapped = 0;
   private visible = false;
   private scale = 1;
+  private micBtn: HTMLButtonElement;
   haptics = true;
 
   constructor(
     parent: HTMLElement,
-    private hooks: { onPause: () => void; onFullscreen: () => void },
+    private hooks: { onPause: () => void; onFullscreen: () => void; onMic?: () => void },
   ) {
     const div = (cls: string) => {
       const d = document.createElement('div');
@@ -99,7 +101,10 @@ export class TouchControls {
       return b;
     };
     mk('t-pause', '⏸', () => this.hooks.onPause());
-    if (!__NATIVE__) mk('t-fs', '⛶', () => this.hooks.onFullscreen());
+    // aberto pela Tela de Início já está em tela cheia
+    if (!__NATIVE__ && !isStandalone()) mk('t-fs', '⛶', () => this.hooks.onFullscreen());
+    this.micBtn = mk('t-mic', '🔇', () => this.hooks.onMic?.());
+    this.micBtn.hidden = true;
     this.root.append(this.zone, this.pad, top);
     parent.appendChild(this.root);
     this.relabel();
@@ -124,6 +129,15 @@ export class TouchControls {
     const top = this.root.querySelector('.t-top');
     top?.querySelector('.t-pause')?.setAttribute('aria-label', t('Pausa'));
     top?.querySelector('.t-fs')?.setAttribute('aria-label', t('Tela cheia'));
+    this.micBtn?.setAttribute('aria-label', t('Microfone'));
+  }
+
+  /** Botão do microfone (chat de voz online): null esconde. */
+  setMic(on: boolean | null, talking = false): void {
+    this.micBtn.hidden = on === null;
+    this.micBtn.textContent = on ? '🎤' : '🔇';
+    this.micBtn.classList.toggle('on', !!on);
+    this.micBtn.classList.toggle('talking', talking);
   }
 
   setVisible(v: boolean): void {

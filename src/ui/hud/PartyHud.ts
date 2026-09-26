@@ -7,6 +7,7 @@ import type { Entity } from '../../sim/Entity';
 import type { World } from '../../sim/World';
 import { el } from '../dom';
 import { t } from '../../i18n';
+import type { VoiceHud } from './Hud';
 
 interface Panel {
   root: HTMLDivElement;
@@ -15,10 +16,12 @@ interface Panel {
   hp: HTMLDivElement;
   mana: HTMLDivElement;
   lives: HTMLSpanElement;
+  mic: HTMLSpanElement;
   weapon: HTMLSpanElement;
   powers: HTMLSpanElement;
   note: HTMLDivElement;
   key: string;
+  voiceKey: string;
 }
 
 const POWER_ICONS = { doubleDamage: '✖2', turbo: '⚡', invulnerable: '🛡', rage: '😡' } as const;
@@ -50,6 +53,7 @@ export class PartyHud {
     const hp = el('div', { class: 'bar-fill hp' });
     const mana = el('div', { class: 'bar-fill mana' });
     const lives = el('span', { class: 'ph-lives' });
+    const mic = el('span', { class: 'ph-mic' });
     const weapon = el('span', { class: 'ph-weapon' });
     const powers = el('span', { class: 'ph-powers' });
     const note = el('div', { class: 'ph-note' });
@@ -60,7 +64,7 @@ export class PartyHud {
       el(
         'div',
         { class: 'ph-body' },
-        el('div', { class: 'ph-head' }, el('b', {}, playerTag(slot)), name, lives),
+        el('div', { class: 'ph-head' }, el('b', {}, playerTag(slot)), name, mic, lives),
         el('div', { class: 'bar hpbar' }, hp),
         el('div', { class: 'bar manabar' }, mana),
         el('div', { class: 'ph-foot' }, weapon, powers),
@@ -68,14 +72,14 @@ export class PartyHud {
       ),
     );
     if (this.me === slot) root.classList.add('me');
-    p = { root, portrait, name, hp, mana, lives, weapon, powers, note, key: '' };
+    p = { root, portrait, name, hp, mana, lives, mic, weapon, powers, note, key: '', voiceKey: '' };
     this.panels.set(slot, p);
     const order = [...this.panels.keys()].sort((a, b) => a - b);
     this.root.replaceChildren(...order.map((s) => this.panels.get(s)!.root));
     return p;
   }
 
-  update(w: World, dt: number): void {
+  update(w: World, dt: number, voice: VoiceHud | null = null): void {
     const players = w.playerEntities();
     for (const e of players) {
       const pc = e.player!;
@@ -91,6 +95,15 @@ export class PartyHud {
     for (const e of players) {
       const pc = e.player!;
       const p = this.panel(e);
+      // chat de voz: 🎤 com o microfone ligado e o painel brilha enquanto a pessoa fala
+      const on = !!voice?.mine() && voice.mic(pc.slot);
+      const talking = on && voice!.speaking(pc.slot);
+      const vk = `${on}|${talking}`;
+      if (vk !== p.voiceKey) {
+        p.voiceKey = vk;
+        p.mic.textContent = talking ? '🔊' : on ? '🎤' : '';
+        p.root.classList.toggle('talking', talking);
+      }
       if (p.portrait.dataset.char !== pc.character) {
         p.portrait.dataset.char = pc.character;
         p.name.textContent =

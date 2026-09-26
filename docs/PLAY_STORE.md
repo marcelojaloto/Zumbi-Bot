@@ -78,15 +78,23 @@ No repositório: **Settings → Secrets and variables → Actions → New reposi
    - **Anúncios:** o app não contém anúncios.
    - **Classificação do conteúdo:** responda o questionário (categoria Jogo). O jogo tem violência de fantasia/desenho
      contra zumbis e robôs, sem sangue realista, sem conteúdo sexual, sem apostas. Há **jogo online com amigos**
-     (sala com código, sem bate-papo; o único texto que os outros veem é o nome do jogador): responda que os
-     usuários **podem interagir** e que não há compartilhamento de localização nem compras.
+     (sala com código, sem bate-papo por texto; o único texto que os outros veem é o nome do jogador) com
+     **chat de voz** entre os jogadores da sala: responda que os usuários **podem interagir e se comunicar (voz)**
+     e que não há compartilhamento de localização nem compras. O chat de voz é opcional: quem cria a sala pode
+     desligá-lo, cada jogador liga o próprio microfone e a voz não é gravada.
    - **Público-alvo:** escolha faixas de **13 anos ou mais** (marcar menores de 13 exige cumprir a política de
      Famílias).
    - **Segurança dos dados:** o progresso fica salvo só no aparelho. No jogo online (iniciado pelo usuário), o
      nome no jogo, o personagem e os comandos vão para os outros jogadores da sala, e o serviço de conexão do
      PeerJS recebe o código da sala e o IP, só enquanto a sala está aberta (processamento temporário, nada é
-     guardado). Com isso dá para declarar **"nenhum dado coletado"**; marque também que os dados são
-     **criptografados em trânsito** (WebRTC usa DTLS).
+     guardado). A **voz** (só com o microfone ligado pelo jogador) vai direto para os aparelhos da sala,
+     criptografada de ponta a ponta (WebRTC/DTLS-SRTP), e não é gravada — nem o servidor de retransmissão
+     consegue ouvi-la. Com isso dá para declarar **"nenhum dado coletado"**; marque também que os dados são
+     **criptografados em trânsito**. Se preferir declarar de forma conservadora: **Áudio → Gravações de voz ou
+     som**: coletado, processado temporariamente, opcional, para funcionalidade do app, não compartilhado.
+   - **Permissões:** o app declara **microfone** (`RECORD_AUDIO`, para o chat de voz; o Android só pergunta quando
+     o jogador toca em "Ligar microfone") e vibração. O microfone não exige formulário no Play Console, mas
+     precisa estar na política de privacidade (já está).
    - **Apps governamentais, recursos financeiros, saúde:** não.
 3. **Presença na loja → Página principal da loja**: use os textos e imagens de [`store/android/`](../store/android/)
    ([`listing.md`](../store/android/listing.md), ícone 512×512, recurso gráfico 1024×500 e capturas de tela).

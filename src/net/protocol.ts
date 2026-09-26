@@ -37,9 +37,26 @@ export interface RoomPlayer {
   char: CharacterId;
   ready: boolean;
   level: number;
+  /** Id de voz (PeerJS) do aparelho — para a malha de áudio. */
+  pid?: string;
+  /** Microfone ligado. */
+  mic?: boolean;
 }
 
 export type RoomPhase = 'lobby' | 'playing' | 'result';
+
+/** Opções da sala, escolhidas pelo anfitrião na criação (e mudáveis antes de começar). */
+export interface RoomOptions {
+  difficulty: Difficulty;
+  /** Chat de voz permitido. */
+  voice: boolean;
+}
+
+const DIFFICULTIES: readonly Difficulty[] = ['veryEasy', 'easy', 'normal', 'hard'];
+
+export function isDifficulty(v: unknown): v is Difficulty {
+  return DIFFICULTIES.includes(v as Difficulty);
+}
 
 /** Entrada compacta: [botões, andar X, andar Z, mira (0..1023), modo de mira]. */
 export type PackedInput = [number, number, number, number, 0 | 1];
@@ -88,6 +105,8 @@ export type GuestMsg =
   | { t: 'loaded' }
   /** Ficou para trás (aba em segundo plano, fila cheia): pede um quadro completo. */
   | { t: 'key' }
+  /** Ligou ou desligou o microfone (para os outros verem 🎤/🔇). */
+  | { t: 'mic'; on: boolean }
   | { t: 'ping' }
   | { t: 'bye' };
 
@@ -95,7 +114,13 @@ export type GuestMsg =
 export type HostMsg =
   | { t: 'welcome'; slot: PlayerSlot }
   | { t: 'reject'; why: 'full' | 'started' | 'version' }
-  | { t: 'room'; players: RoomPlayer[]; phase: RoomPhase; mapId: string; levelIdx: number }
+  | ({
+      t: 'room';
+      players: RoomPlayer[];
+      phase: RoomPhase;
+      mapId: string;
+      levelIdx: number;
+    } & RoomOptions)
   | StartMsg
   | { t: 'snap'; s: SnapDelta; ev: GameEvent[] }
   | { t: 'ping' }

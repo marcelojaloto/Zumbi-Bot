@@ -30,6 +30,8 @@ export class AudioEngine {
   private master!: GainNode;
   private buses = {} as Record<Bus, GainNode>;
   private reverbSend!: GainNode;
+  /** Música mais baixa enquanto alguém fala no chat de voz. */
+  private talk!: GainNode;
   private convolver!: ConvolverNode;
   private buffers = new Map<string, AudioBuffer[]>();
   private baking: Promise<void> | null = null;
@@ -68,9 +70,11 @@ export class AudioEngine {
       this.master = ctx.createGain();
       this.master.connect(limiter);
       limiter.connect(ctx.destination);
+      this.talk = ctx.createGain();
+      this.talk.connect(this.master);
       for (const b of ['music', 'sfx', 'ui'] as Bus[]) {
         const g = ctx.createGain();
-        g.connect(this.master);
+        g.connect(b === 'music' ? this.talk : this.master);
         this.buses[b] = g;
       }
       this.convolver = ctx.createConvolver();
@@ -81,7 +85,8 @@ export class AudioEngine {
       this.applyVolumes();
       this.bake();
     }
-    if (this.ctx.state === 'suspended') void this.ctx.resume();
+    // Safari: "interrupted" depois de uma ligação ou do microfone; volta no próximo toque
+    if (this.ctx.state !== 'running' && this.ctx.state !== 'closed') void this.ctx.resume().catch(() => {});
   }
 
   setReverb(kind: Reverb): void {
@@ -195,6 +200,13 @@ export class AudioEngine {
     g.cancelScheduledValues(now);
     g.setValueAtTime(base * amount, now);
     g.linearRampToValueAtTime(base, now + seconds);
+  }
+
+  /** Chat de voz: abaixa a música enquanto alguém fala e volta devagar depois. */
+  setTalking(on: boolean): void {
+    const ctx = this.ctx;
+    if (!ctx) return;
+    this.talk.gain.setTargetAtTime(on ? 0.35 : 1, ctx.currentTime, on ? 0.08 : 0.5);
   }
 
   musicBus(): GainNode | null {

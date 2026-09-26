@@ -74,6 +74,16 @@ export const KEY_HINTS: Record<string, string> = {
 };
 
 /** HUD em HTML sobre o canvas: vida, mana, vidas, XP, pontuação, combo, arma, minimapa, chefe e avisos. */
+/** Chat de voz online visto pelo HUD (botão do microfone e quem está falando). */
+export interface VoiceHud {
+  /** Microfone deste aparelho; null quando a partida não tem chat de voz. */
+  mine(): { on: boolean; busy: boolean } | null;
+  /** Microfone ligado de um jogador. */
+  mic(slot: number): boolean;
+  speaking(slot: number): boolean;
+  toggle(): void;
+}
+
 export class Hud {
   readonly root: HTMLDivElement;
   readonly minimap: Minimap;
@@ -131,6 +141,10 @@ export class Hud {
   keyNames: Record<string, string> = {};
   /** Controles de toque ativos: dicas do tutorial viram a versão de toque. */
   touchMode = false;
+  /** Chat de voz da partida online (null = sem voz). */
+  voice: VoiceHud | null = null;
+  private voiceBtn: HTMLButtonElement;
+  private voiceKey = '';
 
   constructor(parent: HTMLElement) {
     this.hpFill = el('div', { class: 'bar-fill hp' });
@@ -157,7 +171,8 @@ export class Hud {
     this.mapName = el('div', { class: 'mapname' });
     this.pips = el('div', { class: 'pips' });
     this.go = el('div', { class: 'go' }, t('SIGA ➜'));
-    const tc = el('div', { class: 'hud-tc' }, this.mapName, this.pips, this.go);
+    this.voiceBtn = el('button', { class: 'hud-voice', hidden: true, onclick: () => this.voice?.toggle() });
+    const tc = el('div', { class: 'hud-tc' }, this.mapName, this.pips, this.voiceBtn, this.go);
     this.score = el('div', { class: 'score' }, '0');
     this.combo = el('div', { class: 'combo' });
     const tr = el('div', { class: 'hud-tr' }, this.score, this.combo);
@@ -210,8 +225,28 @@ export class Hud {
     parent.appendChild(this.root);
   }
 
+  /** Botão do microfone (online): ligado/mudo, a tecla e o brilho enquanto você fala. */
+  private updateVoice(): void {
+    const m = this.voice?.mine() ?? null;
+    const talking = !!m?.on && !!this.voice?.speaking(this.localSlot);
+    const key = m ? `${m.on}|${m.busy}|${talking}|${this.touchMode}|${this.keyNames.voice ?? ''}` : '';
+    if (key === this.voiceKey) return;
+    this.voiceKey = key;
+    this.voiceBtn.hidden = !m;
+    if (!m) return;
+    const k = !this.touchMode && this.keyNames.voice ? ` (${this.keyNames.voice})` : '';
+    this.voiceBtn.textContent = m.busy
+      ? `🎤 ${t('Ligando…')}`
+      : m.on
+        ? `🎤 ${t('Microfone ligado')}${k}`
+        : `🔇 ${t('Microfone mudo')}${k}`;
+    this.voiceBtn.classList.toggle('on', m.on);
+    this.voiceBtn.classList.toggle('talking', talking);
+  }
+
   /** Rótulos fixos depois de trocar o idioma (o resto é atualizado a cada quadro). */
   relabel(): void {
+    this.voiceKey = '';
     this.go.textContent = t('SIGA ➜');
     this.bossName.dataset.id = '';
     this.lastKey = '';
@@ -383,7 +418,7 @@ export class Hud {
       this.party = new PartyHud(this.root, this.online ? this.localSlot : null);
       this.root.classList.add('party-mode');
     }
-    this.party?.update(w, dt);
+    this.party?.update(w, dt, this.voice);
     if (this.portrait.dataset.char !== pc.character) {
       this.portrait.dataset.char = pc.character;
       this.specialName = getCharacter(pc.character).specialName;
@@ -410,6 +445,7 @@ export class Hud {
     if (this.acc < 0.05) return;
     this.acc = 0;
     this.hpText.textContent = `${Math.ceil(h.hp)}/${h.max}${h.shield > 0 ? ` +${Math.ceil(h.shield)}` : ''}`;
+    this.updateVoice();
     const livesKey = `${pc.lives}`;
     if (this.lives.dataset.v !== livesKey) {
       this.lives.dataset.v = livesKey;

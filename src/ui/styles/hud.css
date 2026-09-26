@@ -274,6 +274,29 @@
 .pips i.boss.active {
   background: #ff2a6a;
 }
+/* chat de voz online: microfone deste aparelho (clique ou tecla V) */
+.hud-voice {
+  display: block;
+  margin: 6px auto 0;
+  padding: 3px 10px;
+  font: 700 12px var(--ui-font);
+  color: var(--fg);
+  background: rgba(8, 10, 16, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.hud-voice[hidden],
+body.touch .hud-voice {
+  display: none;
+}
+.hud-voice.on {
+  border-color: #5aff9a;
+}
+.hud-voice.talking {
+  box-shadow: 0 0 12px rgba(90, 255, 154, 0.7);
+}
 .go {
   margin-top: 26px;
   font-family: var(--title-font);
@@ -769,6 +792,18 @@
 }
 .ph.out {
   opacity: 0.65;
+}
+.ph-mic {
+  font-size: 11px;
+}
+.ph-mic:empty {
+  display: none;
+}
+/* quem está falando no chat de voz */
+.ph.talking {
+  box-shadow:
+    0 0 0 2px #5aff9a,
+    0 0 14px rgba(90, 255, 154, 0.6);
 }
 /* barra do chefe e dicas sobem para não cobrir os painéis */
 .hud.party-mode .hud-boss {
