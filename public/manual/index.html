@@ -343,7 +343,8 @@
         <div class="note">
           <b>No celular:</b> deite o aparelho. Os controles de toque aparecem sozinhos — direcional à esquerda
           e botões à direita. Para jogar em tela cheia, use "Adicionar à tela inicial" no menu do navegador e
-          abra pelo ícone.
+          abra pelo ícone. <b>No iPhone</b> (Safari): toque em Compartilhar → "Adicionar à Tela de Início" — é
+          o único jeito de jogar em tela cheia no iPhone.
         </div>
         <div class="note">
           <b>App para Android:</b> baixe o
@@ -354,11 +355,18 @@
           O app abre em tela cheia e deitado, e o progresso fica salvo no aparelho.
         </div>
         <div class="note">
-          <b>Jogar online com amigos (até 5):</b> uma pessoa toca em <b>Jogar online → Criar sala</b> e recebe
-          um código de 4 letras (ou um link). Os outros tocam em <b>Jogar online → Entrar numa sala</b> e
-          digitam o código. Cada um escolhe o personagem e toca em <b>Pronto</b>; quem criou a sala toca em
-          <b>Começar</b>. Precisa de internet, e cada um guarda o próprio progresso no seu aparelho. Funciona
-          entre navegador e app.
+          <b>Jogar online com amigos (até 5):</b> uma pessoa toca em <b>Jogar online → Criar sala</b>, escolhe
+          a dificuldade e se o chat de voz é permitido, e recebe um código de 4 letras (ou um link). Os outros
+          tocam em <b>Jogar online → Entrar numa sala</b> e digitam o código. Cada um escolhe o personagem e
+          toca em <b>Pronto</b>; quem criou a sala toca em <b>Começar</b>. Precisa de internet, e cada um
+          guarda o próprio progresso no seu aparelho. Funciona entre computador, Android (navegador e app) e
+          iPhone.
+        </div>
+        <div class="note">
+          <b>Chat de voz:</b> numa sala com voz, todos conversam com todos. Toque em
+          <b>🎤 Ligar microfone</b> (na sala), no botão do microfone (na partida) ou aperte <b>V</b> para
+          falar; de novo para ficar mudo. Na primeira vez o aparelho pede permissão para o microfone — toque
+          em Permitir. O volume das vozes fica em Configurações → Áudio.
         </div>
 
         <h2><span class="n">2</span>O que você precisa</h2>
@@ -544,11 +552,25 @@ npm install</pre>
             Tente outra rede, como os dados do celular. Quem criou a sala deve deixar o jogo aberto na tela: é
             o aparelho dele que conduz a partida de todos.
           </dd>
+          <dt>Chat de voz: "O microfone está bloqueado"</dt>
+          <dd>
+            A permissão do microfone foi negada. No computador, clique no ícone ao lado do endereço do site →
+            Microfone → Permitir. No Android (navegador), toque no ícone ao lado do endereço → Permissões →
+            Microfone. No app Android: Configurações → Apps → Zumbi Bot → Permissões → Microfone. No iPhone:
+            "aA" na barra do Safari → Ajustes do Site → Microfone (ou Ajustes → Apps → Safari → Microfone).
+            Depois recarregue a página.
+          </dd>
+          <dt>Chat de voz: não ouço os outros</dt>
+          <dd>
+            Se aparecer <b>🔈 Toque para ouvir a conversa</b>, toque nele (o navegador, principalmente no
+            iPhone, só toca som depois de um toque). Confira o volume das vozes em Configurações → Áudio e se
+            "Silenciar tudo" está desligado. No iPhone, a chave de silencioso também deixa o jogo mudo.
+          </dd>
           <dt>Testar o jogo online no próprio computador</dt>
           <dd>
             Abra duas abas com <code>?net=local</code> no endereço (por exemplo
             <code>localhost:5173/Zumbi-Bot/?net=local</code>): uma cria a sala e a outra entra com o código,
-            sem precisar de internet.
+            sem precisar de internet (o chat de voz não funciona nesse modo de teste).
           </dd>
         </dl>
       </main>
@@ -577,7 +599,8 @@ npm install</pre>
         <div class="note">
           <b>On a phone:</b> turn the device sideways. The touch controls appear on their own — D-pad on the
           left and buttons on the right. For full screen, use "Add to Home Screen" in the browser menu and
-          open the game from the icon.
+          open the game from the icon. <b>On iPhone</b> (Safari): tap Share → "Add to Home Screen" — it is the
+          only way to play full screen on an iPhone.
         </div>
         <div class="note">
           <b>Android app:</b> download
@@ -588,11 +611,17 @@ npm install</pre>
           The app opens full screen in landscape, and your progress is saved on the device.
         </div>
         <div class="note">
-          <b>Play online with friends (up to 5):</b> one person taps <b>Play online → Create room</b> and gets
-          a 4-letter code (or a link). The others tap <b>Play online → Join a room</b> and type the code.
-          Everyone picks a character and taps <b>Ready</b>; whoever created the room taps <b>Start</b>. It
-          needs internet, and everyone keeps their own progress on their own device. Browser and app can play
+          <b>Play online with friends (up to 5):</b> one person taps <b>Play online → Create room</b>, picks
+          the difficulty and whether voice chat is allowed, and gets a 4-letter code (or a link). The others
+          tap <b>Play online → Join a room</b> and type the code. Everyone picks a character and taps
+          <b>Ready</b>; whoever created the room taps <b>Start</b>. It needs internet, and everyone keeps
+          their own progress on their own device. Computers, Android (browser and app) and iPhone play
           together.
+        </div>
+        <div class="note">
+          <b>Voice chat:</b> in a room with voice, everyone talks with everyone. Tap <b>🎤 Turn mic on</b> (in
+          the room), the mic button (in the match) or press <b>V</b> to talk; again to mute. The first time,
+          the device asks for microphone permission — tap Allow. The voice volume is in Settings → Audio.
         </div>
 
         <h2><span class="n">2</span>What you need</h2>
@@ -776,11 +805,25 @@ npm install</pre>
             another network, such as mobile data. Whoever created the room should keep the game open on
             screen: their device runs the match for everyone.
           </dd>
+          <dt>Voice chat: "The microphone is blocked"</dt>
+          <dd>
+            Microphone permission was denied. On a computer, click the icon next to the site address →
+            Microphone → Allow. On Android (browser), tap the icon next to the address → Permissions →
+            Microphone. In the Android app: Settings → Apps → Zumbi Bot → Permissions → Microphone. On iPhone:
+            "aA" in the Safari bar → Website Settings → Microphone (or Settings → Apps → Safari → Microphone).
+            Then reload the page.
+          </dd>
+          <dt>Voice chat: I can't hear the others</dt>
+          <dd>
+            If <b>🔈 Tap to hear the conversation</b> appears, tap it (browsers, especially on iPhone, only
+            play sound after a tap). Check the voice volume in Settings → Audio and that "Mute all" is off. On
+            iPhone, the silent switch also mutes the game.
+          </dd>
           <dt>Testing online play on your own computer</dt>
           <dd>
             Open two tabs with <code>?net=local</code> in the address (for example
             <code>localhost:5173/Zumbi-Bot/?net=local</code>): one creates the room and the other joins with
-            the code, no internet needed.
+            the code, no internet needed (voice chat does not work in this test mode).
           </dd>
         </dl>
       </main>
