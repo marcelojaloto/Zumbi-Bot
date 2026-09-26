@@ -11,7 +11,7 @@ import { moveMultiplier, canAct, canMove, regenBlocked } from './status';
 import { playerMeleeInput } from '../combat/fighter';
 import { playerWeaponsInput } from './weapons';
 import { playerStaffInput } from './staffs';
-import { playerRespawnTick } from './lives';
+import { borrowLife, playerRespawnTick } from './lives';
 
 const GROUND_ACCEL = 60;
 const AIR_ACCEL = 60 * PLAYER.airControl;
@@ -37,7 +37,10 @@ export function playerControl(w: World, inputs: ReadonlyMap<PlayerSlot, InputFra
     tickPlayerTimers(w, e);
     const fi = e.fighter!;
     if (fi.hitstop > 0) continue;
-    if (fi.state === 'dead') continue;
+    if (fi.state === 'dead') {
+      if (p.lives <= 0 && pressed(p.buttons, p.prevButtons, Btn.Jump)) borrowLife(w, e);
+      continue;
+    }
 
     // congelado: apertar botões reduz a duração
     if (fi.state === 'frozen') {

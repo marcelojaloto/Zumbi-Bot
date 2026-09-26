@@ -1,8 +1,8 @@
 import { secToTicks } from '../../core/time';
-import { NG_PLUS, coopScaling, xpToNext } from '../../data/balance';
+import { NG_PLUS, coopCapMult, coopScaling, xpToNext } from '../../data/balance';
 import { getBoss } from '../../data/bosses';
 import type { SegmentDef, SpawnFrom, StaffId, WaveDef, WeaponId } from '../../data/types';
-import type { RunStats } from '../events';
+import type { PlayerRunStats, RunStats } from '../events';
 import type { World } from '../World';
 import { spawnEnemy } from '../ai/spawnEnemy';
 import { spawnBoss } from '../systems/boss';
@@ -31,9 +31,10 @@ export interface LevelState {
   bossDeadTick: number;
   hintsShown: number;
   timeTicks: number;
-  startXp: number;
+  /** XP total e armas de cada jogador no início (índice = slot). */
+  startXp: number[];
   unlockedStaff: StaffId | null;
-  startGuns: WeaponId[];
+  startGuns: WeaponId[][];
   levelHazards: boolean;
   bossCosmetics: string[];
 }
@@ -45,7 +46,12 @@ export function totalXp(level: number, xp: number): number {
 }
 
 export function createLevelState(w: World): LevelState {
-  const lo = w.opts.loadouts[0];
+  const startXp: number[] = [];
+  const startGuns: WeaponId[][] = [];
+  for (const lo of w.opts.loadouts) {
+    startXp[lo.slot] = totalXp(lo.level, lo.xp);
+    startGuns[lo.slot] = [...lo.guns];
+  }
   return {
     segmentIdx: 0,
     active: false,
@@ -61,9 +67,9 @@ export function createLevelState(w: World): LevelState {
     bossDeadTick: 0,
     hintsShown: 0,
     timeTicks: 0,
-    startXp: lo ? totalXp(lo.level, lo.xp) : 0,
+    startXp,
     unlockedStaff: null,
-    startGuns: lo ? [...lo.guns] : [],
+    startGuns,
     levelHazards: false,
     bossCosmetics: [],
   };
@@ -203,7 +209,7 @@ export function levelSystem(w: World): void {
     }
     // surgimentos pendentes respeitando o limite de vivos
     const wave = seg.waves[Math.max(0, ls.wavesStarted - 1)];
-    const cap = Math.min(wave?.maxAlive ?? 99, w.enemyCap);
+    const cap = Math.min(Math.round((wave?.maxAlive ?? 99) * coopCapMult(w.playerCount)), w.enemyCap);
     let alive = w.enemiesAlive();
     for (let k = 0; k < ls.pending.length && alive < cap;) {
       const p = ls.pending[k]!;
@@ -259,35 +265,60 @@ export function finishRun(w: World, victory: boolean): void {
   w.finished = victory ? 'victory' : 'gameOver';
   w.finishedTick = w.tick;
   const ls = w.levelState;
-  const p = w.get(1)?.player;
-  if (!p) return;
+  const ps = w.playerEntities().map((e) => e.player!);
+  if (!ps.length) return;
   const timeS = ls.timeTicks / 60;
-  const star = { completed: victory, livesLost: p.livesLost, timeS, parTimeS: w.level.parTimeS };
-  const bonus = levelEndBonus(star);
-  p.score += bonus;
-  if (w.ngPlus) {
-    p.score = Math.round(p.score * NG_PLUS.score);
-    p.scrap = Math.round(p.scrap * NG_PLUS.scrap);
+  const livesLost = ps.reduce((a, p) => a + p.livesLost, 0);
+  const star = { completed: victory, livesLost, timeS, parTimeS: w.level.parTimeS };
+  let bonus = levelEndBonus(star);
+  // solo: o bônus de fim de fase entra na pontuação do jogador; em grupo, só no total da equipe
+  if (ps.length === 1) {
+    ps[0]!.score += bonus;
+    bonus = 0;
   }
-  const stats: RunStats = {
-    mapId: w.map.id,
-    levelId: w.level.id,
+  if (w.ngPlus) {
+    for (const p of ps) {
+      p.score = Math.round(p.score * NG_PLUS.score);
+      p.scrap = Math.round(p.scrap * NG_PLUS.scrap);
+    }
+    bonus = Math.round(bonus * NG_PLUS.score);
+  }
+  const players: PlayerRunStats[] = ps.map((p) => ({
+    slot: p.slot,
+    name: p.name,
+    character: p.character,
     score: p.score,
     kills: p.kills,
     maxCombo: p.maxCombo,
-    timeMs: Math.round(timeS * 1000),
     livesLost: p.livesLost,
     damageTaken: Math.round(p.damageTaken),
-    xpGained: Math.max(0, totalXp(p.level, p.xp) - ls.startXp),
+    xpGained: Math.max(0, totalXp(p.level, p.xp) - (ls.startXp[p.slot] ?? 0)),
     bossKills: p.bossKills,
-    stars: computeStars(star),
-    loot: [...p.loot],
     scrap: p.scrap,
+    level: p.level,
+  }));
+  const sum = (f: (p: PlayerRunStats) => number) => players.reduce((a, p) => a + f(p), 0);
+  const union = <T>(lists: T[][]) => [...new Set(lists.flat())];
+  const stats: RunStats = {
+    mapId: w.map.id,
+    levelId: w.level.id,
+    score: sum((p) => p.score) + bonus,
+    kills: sum((p) => p.kills),
+    maxCombo: Math.max(...players.map((p) => p.maxCombo)),
+    timeMs: Math.round(timeS * 1000),
+    livesLost,
+    damageTaken: sum((p) => p.damageTaken),
+    xpGained: Math.max(...players.map((p) => p.xpGained)),
+    bossKills: Math.max(...players.map((p) => p.bossKills)),
+    stars: computeStars(star),
+    loot: union(ps.map((p) => p.loot)),
+    scrap: sum((p) => p.scrap),
     unlockedStaff: ls.unlockedStaff ?? undefined,
-    unlockedGuns: p.guns.filter((g) => !ls.startGuns.includes(g)),
+    unlockedGuns: union(ps.map((p) => p.guns.filter((g) => !(ls.startGuns[p.slot] ?? []).includes(g)))),
     victory,
     ngPlus: w.ngPlus || undefined,
-    chars: w.playerEntities().map((e) => e.player!.character),
+    chars: ps.map((p) => p.character),
+    players,
   };
   w.emit(victory ? { t: 'victory', stats } : { t: 'gameOver', stats });
 }

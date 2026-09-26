@@ -86,9 +86,22 @@ export function comboMultiplier(combo: number): number {
 
 export const COMBO_TIMEOUT_TICKS = 120;
 
-/** Escala de co-op (costura para o futuro). */
+/**
+ * Escala do multijogador local (n jogadores): inimigos mais resistentes e em maior número, chefe com mais vida.
+ * Com 1 jogador tudo vale 1 (o jogo solo não muda).
+ */
 export function coopScaling(n: number): { hp: number; count: number; bossHp: number } {
-  return { hp: 1 + 0.5 * (n - 1), count: 1 + 0.35 * (n - 1), bossHp: 1 + 0.75 * (n - 1) };
+  const k = Math.max(0, n - 1);
+  return { hp: 1 + 0.3 * k, count: 1 + 0.3 * k, bossHp: 1 + 0.6 * k };
+}
+
+/** Mais inimigos vivos ao mesmo tempo com mais jogadores (até +60%). */
+export function coopCapMult(n: number): number {
+  return Math.min(1.6, 1 + 0.15 * Math.max(0, n - 1));
+}
+
+export function coopEnemyCap(base: number, n: number): number {
+  return Math.round(base * coopCapMult(n));
 }
 
 export function mapScaling(index: number): { hp: number; dmg: number } {

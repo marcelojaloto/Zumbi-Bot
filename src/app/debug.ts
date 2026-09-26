@@ -97,25 +97,53 @@ export function installDebug(app: App): void {
     setPaused(b: boolean) {
       if (app.session) app.session.paused = b;
     },
-    /** Mantém uma entrada fixa por N ticks e avança a simulação imediatamente. */
-    input(f: Partial<InputFrame>, ticks: number) {
+    /** Mantém uma entrada fixa por N ticks (do jogador `slot`) e avança a simulação imediatamente. */
+    input(f: Partial<InputFrame>, ticks: number, slot = 0) {
       const s = app.session;
       if (!s) return;
       const src: InputSource = {
-        slot: 0 as PlayerSlot,
+        slot: slot as PlayerSlot,
         sample: (t) => ({ ...emptyFrame(t), ...f, tick: t }),
       };
-      s.setInputOverride(src);
+      s.net.setOverride(src, slot as PlayerSlot);
       s.stepTicks(ticks);
-      s.setInputOverride(app.autopilotSource);
+      s.net.setOverride(slot === 0 ? app.autopilotSource : null, slot as PlayerSlot);
       app.renderOnce();
+    },
+    /**
+     * Equipe para as próximas partidas (multijogador local): lista de personagens; o jogador 1 fica com o
+     * teclado e os outros com os controles 1, 2... Lista com um só volta ao jogo solo.
+     */
+    setParty(chars: string[]) {
+      const ok = chars.filter(isCharacterId);
+      app.party =
+        ok.length > 1
+          ? ok.map((c, i) => ({
+              slot: i as PlayerSlot,
+              character: c,
+              device: i === 0 ? { k: 'kb', layout: 'full' } : { k: 'pad', index: i - 1 },
+            }))
+          : null;
+      if (ok[0]) app.profile.setCharacter(ok[0]);
+    },
+    /** Todos os jogadores (multijogador). */
+    players() {
+      return (app.session?.world.playerEntities() ?? []).map((p) => ({
+        slot: p.player!.slot,
+        character: p.player!.character,
+        x: p.t.x,
+        z: p.t.z,
+        hp: p.health!.hp,
+        lives: p.player!.lives,
+        state: p.fighter!.state,
+        score: p.player!.score,
+      }));
     },
     autopilot(on: boolean) {
       app.setAutopilot(on);
     },
     god(on: boolean) {
-      const p = app.session?.world.get(1);
-      if (p?.player) p.player.god = on;
+      for (const p of app.session?.world.playerEntities() ?? []) p.player!.god = on;
     },
     spawn(enemyId: string, x?: number, z?: number): number {
       const w = app.session?.world;

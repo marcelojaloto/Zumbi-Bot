@@ -20,15 +20,16 @@ test('seleção de personagem antes da partida e o especial de cada um', async (
   await page.goto(`./${DEBUG_QUERY}`);
   await page.waitForFunction(() => (window as unknown as { __game?: G }).__game?.isReady());
 
-  // menu → Jogar abre a seleção; → troca para a Maga; Enter começa com ela
+  // menu → Jogar abre a seleção; → troca para a Maga; Enter (pronto) começa com ela
   await page.getByRole('button', { name: 'Jogar' }).click();
   await page.locator('.menu .btn.primary').click();
   await expect(page.getByText('ESCOLHA SEU PERSONAGEM')).toBeVisible();
-  await expect(page.locator('.char-chip')).toHaveCount(5);
-  await expect(page.locator('.char-info h3')).toHaveText('Zumbi Bot');
+  await expect(page.locator('.lobby-card')).toHaveCount(5);
+  const p1 = page.locator('.lobby-card[data-slot="0"]');
+  await expect(p1.locator('.lc-name')).toHaveText('Zumbi Bot');
   await page.keyboard.press('ArrowRight');
-  await expect(page.locator('.char-info h3')).toHaveText('Maga');
-  await expect(page.getByText('Especial: Nova Arcana')).toBeVisible();
+  await expect(p1.locator('.lc-name')).toHaveText('Maga');
+  await expect(p1.getByText('Nova Arcana')).toBeVisible();
   await page.keyboard.press('Enter');
   await page.waitForFunction(() => (window as unknown as { __game: G }).__game.state().screen === 'playing');
   expect(

@@ -73,6 +73,18 @@ J e K atacam.
 Os tiros sempre saem para a frente, na faixa de profundidade do robô (o mouse escolhe o lado): alinhe-se com o
 inimigo usando W/S e a mira ajusta sozinha para acertar quem estiver à frente, na mesma faixa.
 
+**Multijogador local (até 5 jogadores na mesma tela):** na tela "Escolha seu personagem", cada controle entra
+apertando **A** (ou Start) e uma segunda pessoa no teclado entra com **J** — o teclado se divide em dois:
+
+| Lado     | Andar | Soco | Chute | Pular  | Atirar | Especial | Mirar | Recarregar | Correr     | Trocar arma |
+| -------- | ----- | ---- | ----- | ------ | ------ | -------- | ----- | ---------- | ---------- | ----------- |
+| Esquerda | WASD  | F    | G     | Espaço | R      | T        | V     | C          | Shift esq. | Q / E       |
+| Direita  | setas | J    | K     | L      | O      | I        | ;     | U          | Shift dir. | , / .       |
+
+Cada um escolhe o personagem (←/→) e confirma; com todos prontos, a partida começa. Os inimigos e chefes ficam
+mais fortes conforme o número de jogadores, cada um tem suas vidas e quem ficar sem vidas aperta **Pular** para
+pegar uma emprestada de um colega. No fim, o resultado mostra a equipe e cada jogador.
+
 No celular e no tablet: direcional à esquerda (empurrar até a borda corre) e botões Soco, Pular, Chute,
 Atirar/Conjurar (mira sozinho), Especial, Recarregar, Próxima arma e Arma ⇄ Cajado à direita; pausa e tela cheia no
 topo. Tamanho, opacidade e vibração dos controles ficam em Configurações → Controles.
@@ -133,13 +145,14 @@ contador de FPS também são configuráveis.
 ## Estrutura
 
 - `src/sim` — simulação determinística (passo fixo de 60 Hz, sem Three.js nem DOM): combate, IA, chefes,
-  níveis e progressão. Um teste garante essa separação, que deixa o jogo pronto para o co-op.
+  níveis e progressão. Um teste garante essa separação, que deixa o jogo pronto para o multijogador online.
 - `src/data` — tudo o que é conteúdo: armas, cajados, inimigos, chefes (uma pequena linguagem de passos),
   mapas, itens, cosméticos e músicas.
 - `src/render` — cena Three.js, personagens montados com juntas, cenários procedurais, luzes, partículas e
   pós-processamento.
 - `src/audio`, `src/ui`, `src/input`, `src/save` — som, telas em HTML/CSS, controles e salvamento.
-- `src/net` — interfaces para o co-op futuro (até 4 jogadores, com o anfitrião como autoridade).
+- `src/net` — entrada dos jogadores locais (até 5) e a costura para o multijogador online futuro (anfitrião
+  como autoridade).
 
 ## Publicação (GitHub Pages)
 

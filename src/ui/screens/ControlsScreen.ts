@@ -48,6 +48,33 @@ export function controlsScreen(host: UiHost): Screen {
   for (const [btn, what] of TOUCH_ROWS)
     touch.append(el('span', {}, el('kbd', {}, t(btn))), el('span', {}, t(what)));
 
+  // multijogador local: duas pessoas no mesmo teclado
+  const split = el(
+    'div',
+    { class: 'panel split-keys' },
+    el(
+      'p',
+      {},
+      el('b', {}, t('Esquerda')),
+      ' — ',
+      t('WASD andam • F soco • G chute • Espaço pula • R atira • T especial'),
+    ),
+    el(
+      'p',
+      {},
+      el('b', {}, t('Direita')),
+      ' — ',
+      t('Setas andam • J soco • K chute • L pula • O atira • I especial'),
+    ),
+    el(
+      'p',
+      { class: 'muted' },
+      t(
+        'Até 5 jogadores: na seleção, cada controle entra com A e uma segunda pessoa no teclado entra com J.',
+      ),
+    ),
+  );
+
   const panels = host.touchActive
     ? [
         el('h3', {}, t('Toque')),
@@ -61,6 +88,8 @@ export function controlsScreen(host: UiHost): Screen {
     { class: 'screen dim controls-screen' },
     el('h2', {}, t('CONTROLES')),
     ...panels,
+    el('h3', {}, t('Multijogador: teclado dividido')),
+    split,
     el(
       'p',
       { class: 'muted' },

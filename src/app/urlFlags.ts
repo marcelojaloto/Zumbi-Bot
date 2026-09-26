@@ -13,6 +13,8 @@ export interface UrlFlags {
   fps: boolean;
   /** Personagem do jogador 1 (ex.: ?char=mage). */
   char: string | null;
+  /** Equipe local (ex.: ?party=robot,mage,mutant). */
+  party: string[];
 }
 
 export function readFlags(search = location.search): UrlFlags {
@@ -33,5 +35,6 @@ export function readFlags(search = location.search): UrlFlags {
     autopilot: b('autopilot'),
     fps: b('fps'),
     char: q.get('char'),
+    party: (q.get('party') ?? '').split(',').filter(Boolean).slice(0, 5),
   };
 }
