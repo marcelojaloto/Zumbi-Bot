@@ -1,6 +1,7 @@
 import { BOSSES } from '../data/bosses';
+import { getCharacter } from '../data/characters';
 import { ENEMIES } from '../data/enemies';
-import type { BossDef, EnemyDef, Resist, StatusId } from '../data/types';
+import type { BossDef, CharacterDef, EnemyDef, Resist, StatusId } from '../data/types';
 import type { Entity } from './Entity';
 
 /** Consultas às definições de dados a partir de uma entidade. */
@@ -16,7 +17,13 @@ export function isBossEntity(e: Entity): boolean {
   return e.kind === 'boss';
 }
 
+/** Personagem de um jogador (robô para qualquer outra entidade). */
+export function characterDef(e: Entity): CharacterDef {
+  return getCharacter(e.player?.character);
+}
+
 export function getResist(e: Entity): Resist | undefined {
+  if (e.player) return characterDef(e).resist;
   return enemyDef(e)?.resist ?? bossDef(e)?.resist;
 }
 

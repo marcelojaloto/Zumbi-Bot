@@ -83,6 +83,77 @@
   background: #39e6ff;
   box-shadow: 0 0 10px #39e6ff;
 }
+/* retrato por personagem */
+.portrait::before {
+  content: '';
+  position: absolute;
+  display: none;
+}
+.portrait[data-char='mage'] {
+  background: linear-gradient(160deg, #e8b894 55%, #5a2d91 55%);
+  border-color: #c07aff;
+}
+.portrait[data-char='mage']::before {
+  display: block;
+  left: 3px;
+  right: 3px;
+  top: 3px;
+  height: 14px;
+  border-radius: 7px 7px 2px 2px;
+  background: #c84a2a;
+}
+.portrait[data-char='mage'] .visor {
+  left: 14px;
+  right: 14px;
+  top: 22px;
+  height: 5px;
+  background: #c07aff;
+  box-shadow: 0 0 8px #c07aff;
+}
+.portrait[data-char='military'] {
+  background: linear-gradient(160deg, #c68a5a 60%, #4b5a2a 60%);
+  border-color: #9aba4a;
+}
+.portrait[data-char='military']::before {
+  display: block;
+  left: 4px;
+  right: 8px;
+  top: 2px;
+  height: 11px;
+  border-radius: 6px 6px 2px 2px;
+  background: #8a1a1a;
+  transform: rotate(-6deg);
+}
+.portrait[data-char='military'] .visor {
+  top: 21px;
+  height: 8px;
+  background: #151515;
+  box-shadow: none;
+}
+.portrait[data-char='cyborg'] {
+  background: linear-gradient(90deg, #d8a888 50%, #9aa6b8 50%);
+  border-color: #ff3a4a;
+}
+.portrait[data-char='cyborg'] .visor {
+  left: 32px;
+  right: 10px;
+  top: 21px;
+  height: 7px;
+  background: #ff2a3a;
+  box-shadow: 0 0 10px #ff2a3a;
+}
+.portrait[data-char='mutant'] {
+  background: linear-gradient(160deg, #6fba4a, #2e5a22);
+  border-color: #5aff5a;
+}
+.portrait[data-char='mutant'] .visor {
+  left: 12px;
+  right: 12px;
+  top: 20px;
+  height: 6px;
+  background: #ffe04a;
+  box-shadow: 0 0 10px #ffe04a;
+}
 .bars {
   display: flex;
   flex-direction: column;

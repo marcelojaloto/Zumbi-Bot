@@ -1,4 +1,5 @@
 import { PLAYER } from '../../data/balance';
+import { RAGE } from '../../data/characters';
 import { MELEE_WEAPONS, MOVES } from '../../data/melee';
 import type { MeleeMoveDef } from '../../data/types';
 import { isCharacter, isHostile, type Entity } from '../Entity';
@@ -8,6 +9,8 @@ import { applyHit } from './applyHit';
 import { isAoe, meleeHits } from './hitbox';
 import { tryManualPickup } from '../systems/pickups';
 import { LOCOMOTION } from '../systems/playerControl';
+import { characterDef } from '../defs';
+import { runMoveEffects } from './moveEffects';
 
 const FRICTION = 16;
 
@@ -61,7 +64,7 @@ export function playerMeleeInput(w: World, e: Entity): void {
   if (!LOCOMOTION.has(fi.state)) return;
 
   if (sP && grounded) {
-    startMove(w, e, 'giroTurbo');
+    startMove(w, e, characterDef(e).special);
     return;
   }
   if (jP && tryManualPickup(w, e)) return;
@@ -219,6 +222,7 @@ function updateAttack(w: World, e: Entity): void {
   if (st >= activeStart && st < activeEnd) {
     if (m.rehitEvery && (st - activeStart) % m.rehitEvery === 0) fi.hitSet.length = 0;
     resolveMeleeHits(w, e, m);
+    if (m.effects || m.sfx) runMoveEffects(w, e, m, st - activeStart);
   }
 
   // aéreo termina ao pousar
@@ -292,14 +296,22 @@ export function resolveMeleeHits(w: World, e: Entity, m: MeleeMoveDef): void {
     const hgt = o.body?.height ?? 1;
     if (!meleeHits(a, m.hitbox, { x: o.t.x, y: o.t.y, z: o.t.z, radius: r, height: hgt }, scale)) continue;
     fi.hitSet.push(o.id);
-    const dmg = applyHit(w, e, o, m.hit, { dirX: e.t.facing, dirZ: 0, element: undefined });
-    if (dmg > 0 && e.player) onPlayerMeleeConnect(w, e, m);
+    const dmg = applyHit(w, e, o, m.hit, {
+      dirX: e.t.facing,
+      dirZ: 0,
+      element: undefined,
+      source: e.player ? (m.special ? 'special' : 'melee') : undefined,
+    });
+    if (dmg > 0 && e.player) onPlayerMeleeConnect(w, e, m, dmg);
     if (m.hit.heavy && dmg > 0) w.emit({ t: 'shake', trauma: 0.25 });
   }
 }
 
-function onPlayerMeleeConnect(w: World, e: Entity, _m: MeleeMoveDef): void {
+function onPlayerMeleeConnect(w: World, e: Entity, _m: MeleeMoveDef, dmg: number): void {
   const p = e.player!;
+  // fúria mutante: rouba vida a cada golpe que conecta
+  if (p.powers.rage > 0 && e.health && e.health.hp > 0)
+    e.health.hp = Math.min(e.health.max, e.health.hp + dmg * RAGE.lifesteal);
   // durabilidade da arma branca
   if (p.melee && _m.id.startsWith(p.melee.id)) {
     p.melee.durability--;

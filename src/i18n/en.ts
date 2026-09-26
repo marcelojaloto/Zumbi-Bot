@@ -86,7 +86,7 @@ export const EN: Record<string, string> = {
   'Pular / pulo duplo': 'Jump / double jump',
   'Soco / arma branca / pegar item': 'Punch / melee weapon / pick up item',
   'Chute (correndo: voadora)': 'Kick (running: flying kick)',
-  'Especial: Giro Turbo': 'Special: Turbo Spin',
+  'Especial do personagem': 'Character special',
   'Atirar / conjurar': 'Shoot / cast',
   'Mirar (precisão, crítico)': 'Aim (accuracy, critical hits)',
   Recarregar: 'Reload',
@@ -112,7 +112,7 @@ export const EN: Record<string, string> = {
   'Atira ou conjura o cajado, mirando sozinho no inimigo à frente':
     'Shoots or casts the staff, auto-aiming at the enemy ahead',
   ESPECIAL: 'SPECIAL',
-  'Giro Turbo (gasta mana)': 'Turbo Spin (costs mana)',
+  'Especial do personagem (gasta mana)': 'Character special (costs mana)',
   '⟳': '⟳',
   '▶▶': '▶▶',
   'Próxima arma ou cajado': 'Next weapon or staff',
@@ -293,8 +293,8 @@ export const EN: Record<string, string> = {
   'Quebre caixas e barris para achar itens': 'Break crates and barrels to find items',
   'Shift ou toque duplo corre • correndo + K = voadora':
     'Shift or double tap runs • running + K = flying kick',
-  '2 = modo cajado • 1 = armas • U (ou J+K) = Giro Turbo':
-    '2 = staff mode • 1 = firearms • U (or J+K) = Turbo Spin',
+  '2 = modo cajado • 1 = armas • U (ou J+K) = {special}':
+    '2 = staff mode • 1 = firearms • U (or J+K) = {special}',
   'Chefe à frente! Pule as ondas de choque da pá': 'Boss ahead! Jump over the shovel shockwaves',
   'Arraste o direcional para andar • para cima e para baixo muda de plano (profundidade)':
     'Drag the D-pad to walk • up and down changes lanes (depth)',
@@ -304,8 +304,53 @@ export const EN: Record<string, string> = {
   'ATIRAR dispara e mira sozinho no inimigo à frente': 'SHOOT fires and auto-aims at the enemy ahead',
   'Empurre o direcional até a borda para correr • correndo + CHUTE = voadora':
     'Push the D-pad to the edge to run • running + KICK = flying kick',
-  'O botão ⇄ troca arma e cajado • ESPECIAL = Giro Turbo':
-    'The ⇄ button switches firearm and staff • SPECIAL = Turbo Spin',
+  'O botão ⇄ troca arma e cajado • ESPECIAL = {special}':
+    'The ⇄ button switches firearm and staff • SPECIAL = {special}',
+  // --- personagens ---
+  'ESCOLHA SEU PERSONAGEM': 'CHOOSE YOUR CHARACTER',
+  '←/→ trocam de personagem • Enter começa • Esc volta':
+    '←/→ change character • Enter starts • Esc goes back',
+  Começar: 'Start',
+  Especial: 'Special',
+  Vida: 'Health',
+  Força: 'Strength',
+  Armas: 'Guns',
+  Magia: 'Magic',
+  Velocidade: 'Speed',
+  'Zumbi Bot': 'Zumbi Bot',
+  'O robô rebelde': 'The rebel robot',
+  'Equilibrado em tudo: bom de briga, de tiro e de magia.': 'Balanced at everything: fists, guns and magic.',
+  'Giro Turbo': 'Turbo Spin',
+  'Gira com os braços abertos acertando todos em volta, sem levar dano.':
+    'Spins with arms wide open, hitting everyone around without taking damage.',
+  Maga: 'Mage',
+  'Feiticeira arcana': 'Arcane sorceress',
+  'Mestra dos cajados: magias muito mais fortes e mana de sobra, mas aguenta pouco.':
+    'Master of staffs: much stronger spells and plenty of mana, but fragile.',
+  'Nova Arcana': 'Arcane Nova',
+  'Explosão de energia em volta que derruba e empurra todos os inimigos.':
+    'A burst of energy all around that knocks down and pushes every enemy.',
+  Militar: 'Soldier',
+  'Soldado super forte': 'Super-strong soldier',
+  'Muita vida e socos devastadores; quase não é empurrado. Mais lento e fraco em magia.':
+    'Lots of health and devastating punches; hard to push around. Slower and weak at magic.',
+  'Soco Sísmico': 'Seismic Punch',
+  'Soca o chão e solta uma onda de choque que derruba quem estiver em volta.':
+    'Punches the ground, releasing a shockwave that knocks down everyone around.',
+  Ciborgue: 'Cyborg',
+  'Meio humano, meio máquina': 'Half human, half machine',
+  'Especialista em armas: tiros mais fortes e recarga rápida. Sofre com choques elétricos.':
+    'Weapons expert: stronger shots and fast reloads. Suffers from electric shocks.',
+  'Raio Laser': 'Laser Beam',
+  'Dispara um raio reto que atravessa todos os inimigos à frente e queima.':
+    'Fires a straight beam that pierces every enemy ahead and burns them.',
+  Mutante: 'Mutant',
+  'Fera regenerativa': 'Regenerating beast',
+  'Rápido, pula alto e se regenera quando fica sem apanhar. Ruim de mira.':
+    'Fast, jumps high and heals when not taking hits. Bad aim.',
+  'Fúria Mutante': 'Mutant Fury',
+  'Rugido que derruba e envenena; por 6 s bate mais forte, corre mais e rouba vida.':
+    'A roar that knocks down and poisons; for 6 s hits harder, runs faster and steals life.',
   'Interior da Torre': 'Tower Interior',
   'Engrenagens rangem e o vento uiva pelos vitrais':
     'Gears creak and the wind howls through the stained glass',

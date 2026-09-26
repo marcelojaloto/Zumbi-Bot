@@ -10,6 +10,8 @@ export interface Screen {
   onKey?(code: string): boolean;
   /** Esc / B: voltar. Retorna false para impedir. */
   onBack?(): boolean;
+  /** Setas / D-pad antes da navegação padrão por foco. Retorna true se tratou. */
+  onNav?(dx: number, dy: number): boolean;
   update?(dt: number): void;
 }
 
@@ -110,6 +112,10 @@ export class ScreenManager {
 
   /** Move o foco espacialmente (setas / D-pad). */
   move(dx: number, dy: number): void {
+    if (this.top?.onNav?.(dx, dy)) {
+      this.onNavSound?.('hover');
+      return;
+    }
     const items = this.navItems();
     if (!items.length) return;
     const cur = document.activeElement as HTMLElement | null;

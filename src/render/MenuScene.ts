@@ -2,12 +2,15 @@ import { Vector3 } from 'three';
 import { damp } from '../core/math';
 import { getMap } from '../data/maps';
 import { ENEMIES } from '../data/enemies';
-import type { CosmeticId, CosmeticSlot } from '../data/types';
+import { getCharacter } from '../data/characters';
+import { MOVES } from '../data/melee';
+import type { CharacterId, CosmeticId, CosmeticSlot } from '../data/types';
 import { makeFighter, makeTransform, type Entity } from '../sim/Entity';
 import { buildEnvironment, type BuiltEnv } from './env/EnvironmentBuilder';
 import { Lighting } from './Lighting';
 import type { Renderer } from './Renderer';
-import { enemyRig, robotPlayerRig } from './rig/rigs';
+import { enemyRig } from './rig/rigs';
+import { characterRig, characterStyle } from './rig/characterRigs';
 import { CharacterView } from './views/CharacterView';
 import { CosmeticRig } from './views/Attachments';
 import { BlobShadows } from './fx/BlobShadows';
@@ -19,13 +22,20 @@ interface Walker {
   speed: number;
 }
 
-/** Cenário 3D atrás dos menus: o robô no mapa atual do jogador, zumbis vagando e prévia do guarda-roupa. */
+/**
+ * Cenário 3D atrás dos menus: o personagem do jogador no mapa atual, zumbis vagando, prévia do guarda-roupa e da
+ * tela de seleção.
+ */
 export class MenuScene {
   private env: BuiltEnv;
   private lighting: Lighting;
   private robot: CharacterView;
   private robotE: Entity;
   private cos: CosmeticRig;
+  private character: CharacterId = 'robot';
+  private eq: Partial<Record<CosmeticSlot, CosmeticId>> = {};
+  /** Tempo (ticks) do golpe especial em exibição. */
+  private moveT = 0;
   private walkers: Walker[] = [];
   private blobs: BlobShadows;
   private t = 0;
@@ -38,6 +48,7 @@ export class MenuScene {
   constructor(
     private r: Renderer,
     mapId = 'vila',
+    character: CharacterId = 'robot',
   ) {
     const map = getMap(mapId);
     const level = {
@@ -55,11 +66,8 @@ export class MenuScene {
     this.lighting.setStaticLights(this.env.lights);
     r.post.applyEnv(map.env);
     this.blobs = new BlobShadows(r.scene, 16);
-    this.robot = new CharacterView(robotPlayerRig(), r.quality.standardMaterials, {
-      hunch: 0,
-      zombieArms: false,
-      heavy: false,
-    });
+    this.character = character;
+    this.robot = this.makeHero(character);
     this.robotE = this.fake(20, 0.4, -1);
     r.scene.add(this.robot.group);
     this.cos = new CosmeticRig(this.robot);
@@ -93,8 +101,40 @@ export class MenuScene {
     };
   }
 
+  private makeHero(id: CharacterId): CharacterView {
+    const st = characterStyle(id);
+    return new CharacterView(
+      characterRig(id),
+      this.r.quality.standardMaterials,
+      { hunch: st.hunch, zombieArms: false, heavy: false },
+      st.scale,
+    );
+  }
+
   setCosmetics(eq: Partial<Record<CosmeticSlot, CosmeticId>>): void {
+    this.eq = { ...eq };
     this.cos.set(eq);
+  }
+
+  /** Troca o personagem em exibição (mantém os cosméticos) e mostra o golpe especial dele. */
+  setCharacter(id: CharacterId, showSpecial = true): void {
+    if (id !== this.character) {
+      this.character = id;
+      this.cos.dispose();
+      this.r.scene.remove(this.robot.group);
+      this.robot.dispose();
+      this.robot = this.makeHero(id);
+      this.r.scene.add(this.robot.group);
+      this.cos = new CosmeticRig(this.robot);
+      this.cos.set(this.eq);
+    }
+    if (showSpecial) {
+      const fi = this.robotE.fighter!;
+      fi.state = 'attack';
+      fi.moveId = getCharacter(id).special;
+      fi.st = 0;
+      this.moveT = 0;
+    }
   }
 
   frame(dt: number): void {
@@ -104,6 +144,17 @@ export class MenuScene {
     const e = this.robotE;
     e.t.px = e.t.x;
     e.t.pz = e.t.z;
+    const fi = e.fighter!;
+    if (fi.state === 'attack' && fi.moveId) {
+      const m = MOVES[fi.moveId];
+      this.moveT += dt * 60;
+      fi.st = Math.floor(this.moveT);
+      if (!m || fi.st >= m.startup + m.active + m.recovery) {
+        fi.state = 'idle';
+        fi.moveId = null;
+        fi.st = 0;
+      }
+    }
     this.robot.sync(e, 1, dt, null);
     this.spin += dt * 0.6 * this.focusV;
     this.robot.yaw.rotation.y =

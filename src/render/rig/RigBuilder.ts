@@ -33,6 +33,8 @@ export interface SocketSpec {
   j: number;
   at: [number, number, number];
   rot?: [number, number, number];
+  /** Escala do que for preso aqui (cosméticos em corpos de tamanhos diferentes). */
+  scale?: number;
 }
 
 export interface RigSpec {
@@ -157,6 +159,7 @@ export function instantiate(built: BuiltRig, standard: boolean): RigInstance {
     o.name = name;
     o.position.set(...s.at);
     if (s.rot) o.rotation.set(...s.rot);
+    if (s.scale) o.scale.setScalar(s.scale);
     bones[s.j]!.add(o);
     sockets[name] = o;
   }

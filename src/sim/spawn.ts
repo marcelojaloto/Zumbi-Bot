@@ -1,4 +1,5 @@
 import { PLAYER, maxHpForLevel, maxManaForLevel } from '../data/balance';
+import { getCharacter } from '../data/characters';
 import type { AmmoType } from '../data/types';
 import { makeFighter, makeHealth, makeTransform, type Entity, type PlayerComp } from './Entity';
 import type { PlayerLoadout, World } from './World';
@@ -9,10 +10,12 @@ export function emptyAmmo(): Record<AmmoType, number> {
 }
 
 export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
-  const manaMax = maxManaForLevel(lo.level);
+  const ch = getCharacter(lo.character);
+  const manaMax = maxManaForLevel(lo.level, ch.stats.mana);
   return {
     slot: lo.slot,
     name: lo.name,
+    character: ch.id,
     level: lo.level,
     xp: lo.xp,
     mana: manaMax,
@@ -41,7 +44,7 @@ export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
     tapRun: false,
     tapDir: 0,
     tapTick: -999,
-    mode: 'gun',
+    mode: ch.startMode === 'staff' && lo.staffs.length > 0 ? 'staff' : 'gun',
     guns: [...lo.guns],
     gunIdx: 0,
     ammoMag: {},
@@ -63,7 +66,7 @@ export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
     castStaff: null,
     castFired: false,
     melee: null,
-    powers: { doubleDamage: 0, turbo: 0, invulnerable: 0 },
+    powers: { doubleDamage: 0, turbo: 0, invulnerable: 0, rage: 0 },
     aiming: false,
     respawn: 0,
     aimTicks: 0,
@@ -77,18 +80,25 @@ export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
 }
 
 export function spawnPlayer(w: World, lo: PlayerLoadout): Entity {
+  const ch = getCharacter(lo.character);
   const start = w.level.playerStart;
   const zOff = lo.slot * 0.8 - 1.2;
   const e = w.add({
     id: lo.slot + 1,
     kind: 'player',
     team: 'players',
-    defId: 'robot',
+    defId: ch.id,
     alive: true,
     age: 0,
     t: makeTransform(start.x - lo.slot * 0.6, 0, w.playerCount > 0 ? start.z + zOff : start.z, 1),
-    body: { radius: PLAYER.radius, height: PLAYER.height, mass: 1.2, grounded: true, gravityScale: 1 },
-    health: makeHealth(maxHpForLevel(lo.level), 0),
+    body: {
+      radius: PLAYER.radius,
+      height: PLAYER.height,
+      mass: ch.stats.mass,
+      grounded: true,
+      gravityScale: 1,
+    },
+    health: makeHealth(maxHpForLevel(lo.level, ch.stats.hp), 0),
     fighter: makeFighter('idle'),
     statuses: [],
     player: makePlayerComp(lo),

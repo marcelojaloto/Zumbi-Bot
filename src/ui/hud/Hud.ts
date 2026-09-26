@@ -13,6 +13,7 @@ import { ELEMENT_COLORS } from '../../render/views/staffRecipe';
 import { el, fmtInt, hexColor } from '../dom';
 import { Minimap } from './Minimap';
 import type { Element } from '../../data/types';
+import { getCharacter } from '../../data/characters';
 import { t } from '../../i18n';
 
 export const ELEMENT_NAMES: Record<Element, string> = {
@@ -32,6 +33,7 @@ const POWER_INFO = {
   doubleDamage: { icon: '✖2', color: '#ff4a3a' },
   turbo: { icon: '⚡', color: '#ffd24a' },
   invulnerable: { icon: '🛡', color: '#ffffff' },
+  rage: { icon: '😡', color: '#5aff5a' },
 } as const;
 
 /** Dicas do tutorial que citam teclas: versão para os controles de toque. */
@@ -46,8 +48,8 @@ export const TOUCH_HINTS: Record<string, string> = {
     'ATIRAR dispara e mira sozinho no inimigo à frente',
   'Shift ou toque duplo corre • correndo + K = voadora':
     'Empurre o direcional até a borda para correr • correndo + CHUTE = voadora',
-  '2 = modo cajado • 1 = armas • U (ou J+K) = Giro Turbo':
-    'O botão ⇄ troca arma e cajado • ESPECIAL = Giro Turbo',
+  '2 = modo cajado • 1 = armas • U (ou J+K) = {special}':
+    'O botão ⇄ troca arma e cajado • ESPECIAL = {special}',
 };
 
 /** HUD em HTML sobre o canvas: vida, mana, vidas, XP, pontuação, combo, arma, minimapa, chefe e avisos. */
@@ -62,6 +64,7 @@ export class Hud {
   private lives: HTMLDivElement;
   private level: HTMLSpanElement;
   private xpFill: HTMLDivElement;
+  private portrait: HTMLDivElement;
   private score: HTMLDivElement;
   private combo: HTMLDivElement;
   private mapName: HTMLDivElement;
@@ -95,6 +98,8 @@ export class Hud {
   crosshairVisible = true;
   /** Configuração "Mostrar dicas". */
   showHints = true;
+  /** Nome do especial do personagem do jogador 1 (para as dicas). */
+  private specialName = 'Giro Turbo';
   /** Controles de toque ativos: dicas do tutorial viram a versão de toque. */
   touchMode = false;
 
@@ -107,10 +112,11 @@ export class Hud {
     this.lives = el('div', { class: 'lives' });
     this.level = el('span', { class: 'lvl' });
     this.xpFill = el('div', { class: 'xp-fill' });
+    this.portrait = el('div', { class: 'portrait' }, el('div', { class: 'visor' }));
     const tl = el(
       'div',
       { class: 'hud-tl' },
-      el('div', { class: 'portrait' }, el('div', { class: 'visor' })),
+      this.portrait,
       el(
         'div',
         { class: 'bars' },
@@ -204,7 +210,9 @@ export class Hud {
 
   showHint(text: string): void {
     if (!this.showHints) return;
-    this.hint.textContent = t((this.touchMode && TOUCH_HINTS[text]) || text);
+    this.hint.textContent = t((this.touchMode && TOUCH_HINTS[text]) || text, {
+      special: t(this.specialName),
+    });
     this.hint.classList.add('show');
     this.hintTimer = 5;
   }
@@ -307,6 +315,10 @@ export class Hud {
     if (!p?.player || !p.health) return;
     const pc = p.player;
     const h = p.health;
+    if (this.portrait.dataset.char !== pc.character) {
+      this.portrait.dataset.char = pc.character;
+      this.specialName = getCharacter(pc.character).specialName;
+    }
     // barras (todo quadro)
     const hpf = Math.max(0, h.hp / h.max);
     this.hpLagV = Math.max(hpf, this.hpLagV - dt * 0.5);
@@ -439,7 +451,7 @@ export class Hud {
   private updatePowers(p: Entity): void {
     const pc = p.player!;
     const parts: string[] = [];
-    for (const k of ['doubleDamage', 'turbo', 'invulnerable'] as const) {
+    for (const k of ['doubleDamage', 'turbo', 'invulnerable', 'rage'] as const) {
       const t = pc.powers[k];
       if (t > 0)
         parts.push(

@@ -47,7 +47,7 @@ export const vila: MapDef = {
         { x: 30, text: 'Clique (ou L) atira • botão direito mira para crítico' },
         { x: 42, text: 'Quebre caixas e barris para achar itens' },
         { x: 60, text: 'Shift ou toque duplo corre • correndo + K = voadora' },
-        { x: 78, text: '2 = modo cajado • 1 = armas • U (ou J+K) = Giro Turbo' },
+        { x: 78, text: '2 = modo cajado • 1 = armas • U (ou J+K) = {special}' },
         { x: 134, text: 'Chefe à frente! Pule as ondas de choque da pá' },
       ],
       segments: [

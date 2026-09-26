@@ -1,3 +1,4 @@
+import { isCharacterId } from '../data/characters';
 import { COSMETICS, SELL_VALUE } from '../data/cosmetics';
 import { STAFFS } from '../data/staffs';
 import { FIREARMS } from '../data/weapons';
@@ -112,6 +113,7 @@ export function sanitizeSave(raw: unknown): SaveV1 {
       level: Math.round(num(profile.level, 1, 1, 50)),
       xp: num(profile.xp, 0, 0),
       scrap,
+      character: isCharacterId(profile.character) ? profile.character : 'robot',
     },
     progress: { unlockedLevels: [...new Set(unlockedLevels)], levels },
     unlocks: { firearms: [...new Set(firearms)], staffs: [...new Set(staffs)] },
@@ -202,6 +204,9 @@ export function sanitizeRanking(raw: unknown): RankingV1 {
       date: num(r.date, 0, 0),
       victory: bool(r.victory, false),
       ...(r.ngPlus === true ? { ngPlus: true } : {}),
+      ...(Array.isArray(r.chars) && r.chars.length > 0 && r.chars.every(isCharacterId)
+        ? { chars: r.chars.slice(0, 5) }
+        : {}),
     });
   }
   return { version: 1, entries: entries.sort((a, b) => b.score - a.score).slice(0, 20) };

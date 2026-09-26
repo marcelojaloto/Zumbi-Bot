@@ -287,6 +287,7 @@ export function finishRun(w: World, victory: boolean): void {
     unlockedGuns: p.guns.filter((g) => !ls.startGuns.includes(g)),
     victory,
     ngPlus: w.ngPlus || undefined,
+    chars: w.playerEntities().map((e) => e.player!.character),
   };
   w.emit(victory ? { t: 'victory', stats } : { t: 'gameOver', stats });
 }

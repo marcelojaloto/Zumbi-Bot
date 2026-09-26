@@ -11,6 +11,8 @@ export interface UrlFlags {
   nopointerlock: boolean;
   autopilot: boolean;
   fps: boolean;
+  /** Personagem do jogador 1 (ex.: ?char=mage). */
+  char: string | null;
 }
 
 export function readFlags(search = location.search): UrlFlags {
@@ -30,5 +32,6 @@ export function readFlags(search = location.search): UrlFlags {
     nopointerlock: b('nopointerlock'),
     autopilot: b('autopilot'),
     fps: b('fps'),
+    char: q.get('char'),
   };
 }

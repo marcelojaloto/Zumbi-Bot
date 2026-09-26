@@ -67,12 +67,13 @@ export function xpToNext(level: number): number {
   return Math.floor(100 * Math.pow(level, 1.5));
 }
 
-export function maxHpForLevel(level: number): number {
-  return PLAYER.hp + PLAYER.hpPerLevel * (level - 1);
+/** Vida máxima no nível; `base` = vida do personagem no nível 1 (robô: 100). */
+export function maxHpForLevel(level: number, base: number = PLAYER.hp): number {
+  return base + PLAYER.hpPerLevel * (level - 1);
 }
 
-export function maxManaForLevel(level: number): number {
-  return PLAYER.mana + PLAYER.manaPerLevel * (level - 1);
+export function maxManaForLevel(level: number, base: number = PLAYER.mana): number {
+  return base + PLAYER.manaPerLevel * (level - 1);
 }
 
 export function levelDamageMult(level: number): number {

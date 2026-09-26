@@ -1,4 +1,5 @@
 import { BOSSES } from './bosses';
+import { CHARACTERS } from './characters';
 import { COSMETICS } from './cosmetics';
 import { ENEMIES } from './enemies';
 import { ITEMS, LOOT_TABLES } from './items';
@@ -90,5 +91,11 @@ export function validateData(): string[] {
   for (const t of Object.values(LOOT_TABLES))
     for (const en of t.entries)
       if (en.item && !ITEMS[en.item]) errs.push(`loot ${t.id}: item desconhecido ${en.item}`);
+  for (const c of Object.values(CHARACTERS)) {
+    const m = MOVES[c.special];
+    if (!m) errs.push(`personagem ${c.id}: especial não registrado ${c.special}`);
+    else if (!m.special || !m.manaCost) errs.push(`personagem ${c.id}: especial ${m.id} sem marca/custo`);
+    if (c.stats.hp <= 0 || c.stats.mana <= 0) errs.push(`personagem ${c.id}: vida/mana inválidas`);
+  }
   return errs;
 }
