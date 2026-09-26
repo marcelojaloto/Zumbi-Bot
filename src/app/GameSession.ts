@@ -3,6 +3,7 @@ import { getMap } from '../data/maps';
 import type { Difficulty } from '../data/types';
 import type { InputManager } from '../input/InputManager';
 import { LocalAdapter } from '../net/LocalAdapter';
+import type { NetAdapter } from '../net/types';
 import { buildEnvironment, type BuiltEnv } from '../render/env/EnvironmentBuilder';
 import { Lighting } from '../render/Lighting';
 import type { Renderer } from '../render/Renderer';
@@ -29,6 +30,10 @@ export interface SessionOptions {
   difficulty: Difficulty;
   noLevel?: boolean;
   ngPlus?: boolean;
+  /** Limite de inimigos vivos (online: o do anfitrião). */
+  enemyCap?: number;
+  /** Online: adaptador do anfitrião ou de quem entrou na sala (padrão: jogo local). */
+  net?: NetAdapter;
 }
 
 export interface SessionHooks {
@@ -44,7 +49,7 @@ export interface SessionHooks {
  */
 export class GameSession {
   readonly world: World;
-  readonly net: LocalAdapter;
+  readonly net: NetAdapter;
   readonly view: SceneView;
   readonly env: BuiltEnv;
   readonly lighting: Lighting;
@@ -53,6 +58,8 @@ export class GameSession {
   readonly projectiles: ProjectileRenderer;
   readonly hazards: HazardRenderer;
   paused = false;
+  /** Online: o anfitrião espera todos carregarem antes de a partida andar. */
+  hold = false;
   ended = false;
   frameEvents: GameEvent[] = [];
   time = 0;
@@ -71,7 +78,7 @@ export class GameSession {
       levelIdx: opts.levelIdx,
       loadouts: opts.loadouts,
       difficulty: opts.difficulty,
-      enemyCap: r.quality.enemyCap,
+      enemyCap: opts.enemyCap ?? r.quality.enemyCap,
       noLevel: opts.noLevel,
       ngPlus: opts.ngPlus,
     });
@@ -80,7 +87,9 @@ export class GameSession {
     for (const p of level.pickups) spawnPickup(this.world, p.item, p.x, p.z, false);
     this.world.drainEvents();
 
-    this.net = opts.sources ? new LocalAdapter(opts.sources, () => input.endTick()) : new LocalAdapter(input);
+    this.net =
+      opts.net ??
+      (opts.sources ? new LocalAdapter(opts.sources, () => input.endTick()) : new LocalAdapter(input));
     this.env = buildEnvironment(r.scene, map, level, r.quality);
     this.lighting = new Lighting(r.scene, r.gl, r.quality);
     this.lighting.applyEnv(map.env);
@@ -104,8 +113,13 @@ export class GameSession {
       return r.projectAim(sx, sy, p.t.x, p.t.y + 1.3, p.t.z);
     };
 
-    const p = this.world.get(1)!;
-    r.cam.snap(this.world.camX, 0, p.t.z * 0.3);
+    const p = this.world.get((opts.mouseSlot ?? 0) + 1) ?? this.world.get(1);
+    r.cam.snap(this.world.camX, 0, (p?.t.z ?? 0) * 0.3);
+  }
+
+  /** Quem entrou numa sala online só mostra o que o anfitrião manda. */
+  get isClient(): boolean {
+    return this.net.role === 'client';
   }
 
   setInputOverride(src: InputSource | null): void {
@@ -115,10 +129,11 @@ export class GameSession {
   private step(): void {
     const w = this.world;
     const inputs = this.net.collectInputs(w.tick);
+    if (this.isClient) return;
     w.step(inputs);
     const ev = w.drainEvents();
     if (ev.length) this.frameEvents.push(...ev);
-    this.net.publish();
+    this.net.publish(w.tick, w, ev);
   }
 
   /** Avança N ticks imediatamente (debug/testes). */
@@ -128,11 +143,16 @@ export class GameSession {
 
   frame(dt: number): void {
     const w = this.world;
-    this.loop.paused = this.paused;
-    this.loop.timeScale = w.slowmo > 0 ? 0.3 : 1;
+    const stopped = this.paused || this.hold;
+    this.loop.paused = stopped;
+    this.loop.timeScale = w.slowmo > 0 && !this.isClient ? 0.3 : 1;
     this.loop.advance(dt);
-    const alpha = this.paused ? 1 : this.loop.alpha;
-    this.time += this.paused ? 0 : dt;
+    if (this.net.receive) {
+      const ev = this.net.receive(w);
+      if (ev.length) this.frameEvents.push(...ev);
+    }
+    const alpha = this.net.alpha ? this.net.alpha() : stopped ? 1 : this.loop.alpha;
+    this.time += stopped ? 0 : dt;
 
     if (this.frameEvents.length) {
       const ev = this.frameEvents;
@@ -153,7 +173,7 @@ export class GameSession {
       py /= ps.length;
       pz /= ps.length;
     }
-    const rdt = this.paused ? 0 : dt;
+    const rdt = stopped ? 0 : dt;
     // chefes muito altos: a câmera recua para caber o corpo inteiro
     let zoom = 1;
     for (const e of w.entities)

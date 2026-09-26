@@ -25,6 +25,8 @@ export interface ResultInfo {
   next: { mapId: string; levelIdx: number } | null;
   unlockedNext: string | null;
   ngPlusUnlocked?: boolean;
+  /** Online: o anfitrião escolhe o que vem depois; quem entrou espera. */
+  online?: 'host' | 'guest';
 }
 
 /** Tela de vitória ("MAPA CONCLUÍDO!") ou derrota ("VOCÊ FOI DESATIVADO"). */
@@ -183,22 +185,28 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
   const btns = el('div', { class: 'row-btns' });
   const b = (label: string, fn: () => void, cls = 'btn') =>
     el('button', { class: cls, onclick: fn, data: { nav: '' } }, label);
-  if (win && r.next)
+  const guest = r.online === 'guest';
+  if (guest) btns.appendChild(b(t('Sair da sala'), () => host.quitToMenu()));
+  else if (win && r.next)
     btns.appendChild(
       b(t('Próximo mapa'), () => host.startLevel(r.next!.mapId, r.next!.levelIdx), 'btn primary'),
     );
-  btns.appendChild(
-    b(
-      win ? t('Jogar de novo') : t('Tentar novamente'),
-      () => host.restartLevel(),
-      win && r.next ? 'btn' : 'btn primary',
-    ),
-  );
-  btns.appendChild(b(t('Menu principal'), () => host.quitToMenu()));
+  if (!guest) {
+    btns.appendChild(
+      b(
+        win ? t('Jogar de novo') : t('Tentar novamente'),
+        () => host.restartLevel(),
+        win && r.next ? 'btn' : 'btn primary',
+      ),
+    );
+    btns.appendChild(
+      b(r.online === 'host' ? t('Voltar para a sala') : t('Menu principal'), () => host.quitToMenu()),
+    );
+  }
 
   // derrota: oferece tentar de novo numa dificuldade menor
   let easier: HTMLElement | null = null;
-  const lower = win ? null : easierThan(host.profile.settings.gameplay.difficulty);
+  const lower = win || guest ? null : easierThan(host.profile.settings.gameplay.difficulty);
   if (lower)
     easier = el(
       'div',
@@ -235,6 +243,7 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     rewards.childElementCount ? rewards : null,
     rankBox,
     easier,
+    guest ? el('p', { class: 'online-wait' }, t('Esperando o anfitrião escolher a próxima fase…')) : null,
     btns,
   );
   return { el: e, id: win ? 'victory' : 'gameover', onBack: () => false };

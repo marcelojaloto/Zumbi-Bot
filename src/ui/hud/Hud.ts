@@ -102,8 +102,12 @@ export class Hud {
   showHints = true;
   /** Nome do especial do personagem do jogador 1 (para as dicas). */
   private specialName = 'Giro Turbo';
-  /** Painéis por jogador (multijogador local). */
+  /** Painéis por jogador (multijogador). */
   private party: PartyHud | null = null;
+  /** Jogador deste aparelho (online: o slot recebido na sala). */
+  localSlot = 0;
+  /** Partida online (o painel deste aparelho é marcado "você"). */
+  online = false;
   /** Controles de toque ativos: dicas do tutorial viram a versão de toque. */
   touchMode = false;
 
@@ -253,7 +257,7 @@ export class Hud {
                 t('Nova arma: {name}', { name: t(FIREARMS[ev.id as keyof typeof FIREARMS]?.name ?? ev.id) }),
               '#ffb02a',
             );
-          else if (!multi || w.get(ev.player)?.player?.slot === 0)
+          else if (!multi || w.get(ev.player)?.player?.slot === this.localSlot)
             this.toast(
               t('Novo cajado: {name}', { name: t(STAFFS[ev.id as keyof typeof STAFFS]?.name ?? ev.id) }),
               hexColor(ELEMENT_COLORS[ev.id as keyof typeof ELEMENT_COLORS] ?? 0xffffff),
@@ -346,13 +350,13 @@ export class Hud {
   }
 
   update(w: World, dt: number, fps: number, cursor: { x: number; y: number; visible: boolean }): void {
-    const p = w.get(1);
+    const p = w.get(this.localSlot + 1);
     if (!p?.player || !p.health) return;
     const pc = p.player;
     const h = p.health;
     const multi = w.playerCount > 1;
     if (multi && !this.party) {
-      this.party = new PartyHud(this.root);
+      this.party = new PartyHud(this.root, this.online ? this.localSlot : null);
       this.root.classList.add('party-mode');
     }
     this.party?.update(w, dt);

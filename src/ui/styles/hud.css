@@ -709,6 +709,10 @@
   border-top: 3px solid var(--pc);
   border-radius: 8px;
 }
+.ph.me {
+  background: rgba(8, 10, 16, 0.85);
+  box-shadow: 0 0 0 2px var(--pc);
+}
 .ph .portrait {
   flex: none;
   zoom: 0.66;

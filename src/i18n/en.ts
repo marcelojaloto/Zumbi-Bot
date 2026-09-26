@@ -618,4 +618,94 @@ export const EN: Record<string, string> = {
   Raro: 'Rare',
   Épico: 'Epic',
   Lendário: 'Legendary',
+
+  // jogo online
+  'Jogar online': 'Play online',
+  'JOGAR ONLINE': 'PLAY ONLINE',
+  'Jogue com até 4 amigos, cada um no seu celular ou computador.':
+    'Play with up to 4 friends, each on their own phone or computer.',
+  'Criar sala': 'Create room',
+  'Você recebe um código de 4 letras para passar aos amigos.':
+    'You get a 4-letter code to give your friends.',
+  'Entrar numa sala': 'Join a room',
+  'Um amigo criou a sala? Digite o código que aparece na tela dele.':
+    'Did a friend create a room? Type the code shown on their screen.',
+  'Precisa de internet. Cada um guarda o próprio progresso (nível, armas e itens) no seu aparelho.':
+    'Needs internet. Everyone keeps their own progress (level, weapons and items) on their own device.',
+  'Criando a sala…': 'Creating the room…',
+  'ENTRAR NUMA SALA': 'JOIN A ROOM',
+  'Digite o código de 4 letras que aparece na tela de quem criou a sala.':
+    'Type the 4-letter code shown on the screen of whoever created the room.',
+  'Código da sala': 'Room code',
+  'O código tem 4 letras.': 'The code has 4 letters.',
+  'Procurando a sala {code}…': 'Looking for room {code}…',
+  'Sem internet. Conecte-se e tente de novo.': 'No internet. Connect and try again.',
+  'Não existe sala com esse código. Confira as letras — a sala precisa estar aberta na tela de quem criou.':
+    'There is no room with that code. Check the letters — the room must be open on the creator’s screen.',
+  'Essa sala já está cheia (5 jogadores).': 'That room is already full (5 players).',
+  'A partida dessa sala já começou. Espere a fase acabar e tente de novo.':
+    'That room’s match has already started. Wait for the stage to end and try again.',
+  'Vocês estão com versões diferentes do jogo. Atualizem a página (ou o app) e tentem de novo.':
+    'You have different versions of the game. Refresh the page (or update the app) and try again.',
+  'A rede não deixou os aparelhos se conectarem. Tente outra rede (por exemplo, os dados do celular).':
+    'The network did not let the devices connect. Try another network (for example, mobile data).',
+  'Demorou demais para conectar. Tente de novo.': 'Connecting took too long. Try again.',
+  'Este navegador não tem suporte a jogo online. Use o Chrome, Edge, Firefox ou Safari atualizados.':
+    'This browser does not support online play. Use an up-to-date Chrome, Edge, Firefox or Safari.',
+  'A conexão caiu. Tente de novo.': 'The connection dropped. Try again.',
+  'Não deu para falar com o serviço de conexão. Tente de novo daqui a pouco.':
+    'Could not reach the connection service. Try again in a moment.',
+  'SUA SALA': 'YOUR ROOM',
+  'VOCÊ ESTÁ NA SALA': 'YOU ARE IN ROOM',
+  'Você entrou na sala!': 'You joined the room!',
+  'Passe o código (ou o link) para os amigos.': 'Give the code (or the link) to your friends.',
+  'Cada um abre o Zumbi Bot, toca em "Jogar online" → "Entrar numa sala" e digita o código.':
+    'Each one opens Zumbi Bot, taps "Play online" → "Join a room" and types the code.',
+  'Todos escolhem o personagem e tocam em "Pronto". Aí é só tocar em "Começar"!':
+    'Everyone picks a character and taps "Ready". Then just tap "Start"!',
+  'Escolha seu personagem (◀ ▶).': 'Pick your character (◀ ▶).',
+  'Toque em "Pronto".': 'Tap "Ready".',
+  'Espere o anfitrião (P1) começar a partida.': 'Wait for the host (P1) to start the match.',
+  'Copiar link': 'Copy link',
+  'Link copiado!': 'Link copied!',
+  'Enviar convite': 'Send invite',
+  'Vem jogar Zumbi Bot comigo! Código da sala: {code}': 'Come play Zumbi Bot with me! Room code: {code}',
+  'Ou aponte a câmera do celular aqui': 'Or point your phone camera here',
+  'Vaga livre — esperando alguém entrar…': 'Free spot — waiting for someone to join…',
+  Anfitrião: 'Host',
+  Pronto: 'Ready',
+  'Escolhendo…': 'Choosing…',
+  você: 'you',
+  'Seu personagem': 'Your character',
+  Fase: 'Stage',
+  'Esperando os amigos entrarem com o código {code}…': 'Waiting for friends to join with code {code}…',
+  'Esperando {who} tocar em Pronto…': 'Waiting for {who} to tap Ready…',
+  'Todos prontos! Toque em Começar.': 'Everyone is ready! Tap Start.',
+  'toque para mudar': 'tap to change',
+  'Tudo certo! Esperando o anfitrião (P1) começar a partida…':
+    'All set! Waiting for the host (P1) to start the match…',
+  'Escolha seu personagem e toque em Pronto.': 'Pick your character and tap Ready.',
+  'O anfitrião está terminando uma fase. Você entra na próxima!':
+    'The host is finishing a stage. You will join the next one!',
+  'Fechar a sala? Todos os jogadores vão sair.': 'Close the room? All players will leave.',
+  'Fechar sala': 'Close room',
+  'Sair da sala': 'Leave room',
+  'Deixe o jogo aberto nesta tela durante a partida: é o seu aparelho que conduz o jogo de todos.':
+    'Keep the game open on this screen during the match: your device runs the game for everyone.',
+  'Seu progresso (nível, armas e itens) fica salvo neste aparelho.':
+    'Your progress (level, weapons and items) is saved on this device.',
+  'Esperando os amigos carregarem…': 'Waiting for friends to load…',
+  '{p} entrou na sala': '{p} joined the room',
+  '{p} saiu da sala': '{p} left the room',
+  'Saiu da partida': 'Left the match',
+  'Jogador {n}': 'Player {n}',
+  'O anfitrião fechou a sala.': 'The host closed the room.',
+  'A conexão com a sala caiu. Confira a internet e entre de novo.':
+    'The connection to the room dropped. Check your internet and join again.',
+  MENU: 'MENU',
+  'O jogo continua rodando para os outros jogadores.': 'The game keeps running for the other players.',
+  'Reiniciar fase (para todos)': 'Restart stage (for everyone)',
+  'Voltar para a sala (todos)': 'Back to the room (everyone)',
+  'Voltar para a sala': 'Back to the room',
+  'Esperando o anfitrião escolher a próxima fase…': 'Waiting for the host to choose the next stage…',
 };
