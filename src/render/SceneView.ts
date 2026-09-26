@@ -1,4 +1,5 @@
-import { Group, Object3D, type Scene } from 'three';
+import { Group, Mesh, MeshBasicMaterial, Object3D, RingGeometry, type Scene } from 'three';
+import { SLOT_COLOR_HEX } from '../app/party';
 import { lerp } from '../core/math';
 import { ENEMIES } from '../data/enemies';
 import { MELEE_WEAPONS } from '../data/melee';
@@ -33,6 +34,9 @@ export class SceneView {
   private simple = new Map<EntityId, SimpleView>();
   readonly blobs: BlobShadows;
   private cosmetics = new Map<EntityId, CosmeticRig>();
+  /** Anel colorido no chão sob cada jogador (multijogador). */
+  private rings = new Map<EntityId, Mesh>();
+  private ringGeo: RingGeometry | null = null;
   private time = 0;
   /** Extensões: outras camadas (projéteis, perigos) registram sincronizadores. */
   extraSync: ((w: World, alpha: number, dt: number) => void)[] = [];
@@ -94,6 +98,7 @@ export class SceneView {
         this.cosmetics.delete(id);
       }
     }
+    if (w.playerCount > 1) this.syncRings(w, alpha);
     for (const [id, v] of this.chars) {
       if (!seen.has(id)) {
         this.root.remove(v.group);
@@ -215,7 +220,36 @@ export class SceneView {
     if (v) v.flash = Math.max(v.flash, amount);
   }
 
+  /** Anéis coloridos sob os jogadores (quem é quem no multijogador). */
+  private syncRings(w: World, alpha: number): void {
+    this.ringGeo ??= new RingGeometry(0.42, 0.56, 28).rotateX(-Math.PI / 2);
+    for (const e of w.playerEntities()) {
+      let m = this.rings.get(e.id);
+      if (!m) {
+        const mat = new MeshBasicMaterial({
+          color: SLOT_COLOR_HEX[e.player!.slot] ?? 0xffffff,
+          transparent: true,
+          opacity: 0.85,
+          depthWrite: false,
+        });
+        m = new Mesh(this.ringGeo, mat);
+        m.renderOrder = 2;
+        this.rings.set(e.id, m);
+        this.root.add(m);
+      }
+      const gone = e.player!.respawn > 0 || e.fighter?.state === 'dead';
+      m.visible = !gone;
+      m.position.set(lerp(e.t.px, e.t.x, alpha), 0.03, lerp(e.t.pz, e.t.z, alpha));
+    }
+  }
+
   dispose(): void {
+    for (const m of this.rings.values()) {
+      this.root.remove(m);
+      (m.material as MeshBasicMaterial).dispose();
+    }
+    this.rings.clear();
+    this.ringGeo?.dispose();
     for (const c of this.cosmetics.values()) c.dispose();
     this.cosmetics.clear();
     for (const v of this.chars.values()) v.dispose();

@@ -227,7 +227,9 @@ export class FxDirector {
             this.post.pulseChroma(0.5);
           } else this.cam.addTrauma(0.06);
           if (dst?.player && ev.amount > 0) {
-            this.damagePulse = Math.min(0.8, this.damagePulse + 0.3 + (ev.heavy ? 0.2 : 0));
+            // multijogador: a tela é de todos, o aviso vermelho fica mais discreto
+            const k = w.playerCount > 1 ? 0.35 : 1;
+            this.damagePulse = Math.min(0.8, this.damagePulse + (0.3 + (ev.heavy ? 0.2 : 0)) * k);
             this.cam.addTrauma(0.2);
           }
           break;

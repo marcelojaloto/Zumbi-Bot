@@ -937,11 +937,13 @@ export function onBossKilled(w: World, e: Entity, killer: EntityId): void {
     if (o.kind === 'hazard' && o.hazard && !o.hazard.env) w.remove(o.id);
     if (o.kind === 'projectile' && o.team === 'enemies') w.remove(o.id);
   }
+  // pontos e sucata do chefe divididos pela equipe (XP e desbloqueios são de todos)
+  const n = Math.max(1, w.playerCount);
   for (const p of w.playerEntities()) {
     const pc = p.player!;
     pc.bossKills++;
-    pc.score += def.rewards.score;
-    pc.scrap += def.rewards.scrap;
+    pc.score += Math.ceil(def.rewards.score / n);
+    pc.scrap += Math.ceil(def.rewards.scrap / n);
     grantXp(w, p, def.rewards.xp);
     if (def.rewards.unlockStaff && !pc.staffs.includes(def.rewards.unlockStaff)) {
       pc.staffs.push(def.rewards.unlockStaff);

@@ -20,6 +20,9 @@ import { shopScreen, wardrobeScreen } from '../ui/screens/WardrobeScreen';
 import type { CharacterId, CosmeticId, CosmeticSlot } from '../data/types';
 import { lobbyScreen, type LobbyHost } from '../ui/screens/LobbyScreen';
 import { isCharacterId } from '../data/characters';
+import { SLOT_COLORS, aggregateParty, playerTag, type PartyMember } from './party';
+import type { DeviceRef } from '../input/devices';
+import type { PlayerSlot } from '../sim/Entity';
 import { pauseScreen } from '../ui/screens/PauseScreen';
 import { settingsScreen } from '../ui/screens/SettingsScreen';
 import { controlsScreen } from '../ui/screens/ControlsScreen';
@@ -72,6 +75,14 @@ export class App implements LobbyHost {
     this.ui = ui;
     this.profile = new Profile();
     if (isCharacterId(this.flags.char)) this.profile.setCharacter(this.flags.char);
+    // ?party=robot,mage,... : equipe local (P1 no teclado, os outros nos controles 1, 2...)
+    const party = this.flags.party.filter(isCharacterId);
+    if (party.length > 1)
+      this.party = party.map((c, i) => ({
+        slot: i as PlayerSlot,
+        character: c,
+        device: i === 0 ? { k: 'kb', layout: 'full' } : { k: 'pad', index: i - 1 },
+      }));
     const q = this.flags.quality ?? this.profile.settings.graphics.quality;
     this.renderer = new Renderer(canvas, resolveQuality(q, this.device));
     this.input = new InputManager(canvas);
@@ -101,11 +112,27 @@ export class App implements LobbyHost {
       if (this.profile.settings.controls.touch.mode === 'auto' && this.device === 'desktop' && this.touchOn)
         this.setTouchMode(false);
     });
+    // multijogador: controle de um jogador desconectado pausa a partida
+    addEventListener('gamepaddisconnected', (e) => {
+      const idx = (e as GamepadEvent).gamepad.index;
+      const m = this.party?.find((p) => p.device.k === 'pad' && p.device.index === idx);
+      if (!m || this.screen !== 'playing') return;
+      this.pause();
+      this.hud?.toast(t('{p}: controle desconectado', { p: playerTag(m.slot) }), SLOT_COLORS[m.slot]);
+    });
+    // último dispositivo usado nos menus: quem abre a seleção de personagem vira o jogador 1
+    addEventListener('keydown', () => (this.lastDevice = { k: 'kb', layout: 'full' }), { capture: true });
+    addEventListener(
+      'pointerdown',
+      (e) => (this.lastDevice = e.pointerType === 'touch' ? { k: 'touch' } : { k: 'kb', layout: 'full' }),
+      { capture: true },
+    );
     this.input.onPause = () => this.togglePause();
     this.input.onMap = () => this.hud?.minimap.toggle();
     this.audio = new AudioEngine(this.flags.mute);
     this.music = new MusicPlayer(this.audio);
     this.screens = new ScreenManager(ui);
+    this.screens.onPadActivity = (index) => (this.lastDevice = { k: 'pad', index });
     this.screens.onNavSound = (k) =>
       this.playUi(k === 'hover' ? 'ui_hover' : k === 'back' ? 'ui_back' : 'ui_click');
     const unlock = () => {
@@ -142,6 +169,10 @@ export class App implements LobbyHost {
 
   /** Controles de toque ativos (celular/tablet ou toque na tela). */
   touchOn = false;
+  /** Equipe do multijogador local (null = um jogador só). Mantida em "tentar de novo" e "próximo mapa". */
+  party: PartyMember[] | null = null;
+  /** Último dispositivo usado nos menus (quem abre a seleção vira o jogador 1). */
+  lastDevice: DeviceRef = { k: 'kb', layout: 'full' };
 
   /** Liga/desliga o modo toque: controles na tela, HUD adaptado e sem travar o ponteiro. */
   setTouchMode(on: boolean): void {
@@ -290,8 +321,24 @@ export class App implements LobbyHost {
     if (this.menuScene) this.menuScene.focus = f;
   }
 
-  previewCharacter(id: CharacterId): void {
-    this.menuScene?.setCharacter(id, true);
+  setMenuStage(on: boolean): void {
+    if (this.menuScene) this.menuScene.stage = on;
+  }
+
+  /** Começa a fase com a equipe escolhida na seleção (1 jogador = jogo solo de sempre). */
+  startParty(members: PartyMember[], mapId: string, levelIdx = 0): void {
+    this.party = members.length > 1 ? members : null;
+    if (members[0]) this.profile.setCharacter(members[0].character);
+    void this.startLevel(mapId, levelIdx);
+  }
+
+  /** Personagens escolhidos na seleção, em 3D atrás da tela. */
+  previewLineup(chars: CharacterId[]): void {
+    if (!this.menuScene) return;
+    if (chars.length <= 1) {
+      this.menuScene.setLineup([]);
+      this.menuScene.setCharacter(chars[0] ?? this.profile.save.profile.character, true);
+    } else this.menuScene.setLineup(chars);
   }
 
   /** Seleção de personagem antes de começar a fase. */
@@ -486,17 +533,32 @@ export class App implements LobbyHost {
     this.showLoading(map.index >= 0 ? `${map.index + 1}. ${t(map.name)}` : t(map.name));
     await new Promise((r) => requestAnimationFrame(() => r(null)));
     const seed = this.flags.seed ?? (hashString(mapId) ^ Date.now()) >>> 0;
+    const party = this.party;
+    const base = this.profile.loadout();
+    const loadouts = party
+      ? party.map((m) => ({
+          ...base,
+          slot: m.slot,
+          character: m.character,
+          name: m.slot === 0 ? base.name : playerTag(m.slot),
+          // convidados jogam com o nível e as armas do perfil, sem os cosméticos do jogador 1
+          cosmetics: m.slot === 0 ? base.cosmetics : {},
+        }))
+      : [base];
+    const mouseSlot = party?.find((m) => m.device.k === 'kb' && m.device.layout === 'full')?.slot ?? 0;
     const session = new GameSession(this.renderer, this.input, {
       mapId,
       levelIdx,
       seed,
-      loadout: this.profile.loadout(),
+      loadouts,
+      sources: party?.map((m) => this.input.source(m.slot, m.device)),
+      mouseSlot,
       difficulty: this.profile.settings.gameplay.difficulty,
       noLevel: mapId === 'sandbox',
       ngPlus: mapId !== 'sandbox' && this.profile.save.flags.ngPlusOn,
     });
     this.session = session;
-    if (this.flags.god) session.world.get(1)!.player!.god = true;
+    if (this.flags.god) for (const p of session.world.playerEntities()) p.player!.god = true;
     const director = new AudioDirector(this.audio, this.music);
     this.music.play(map.music, 0);
     this.overlay = new WorldOverlay(this.ui);
@@ -526,7 +588,7 @@ export class App implements LobbyHost {
     });
     this.applySettings();
     this.audio.setReverb(session.world.map.env.reverb);
-    session.setInputOverride(this.autopilotSource);
+    if (this.autopilotSource) this.setAutopilot(true);
     // pré-compila shaders para evitar travadas na primeira aparição de efeitos
     try {
       session.frame(0);
@@ -545,21 +607,14 @@ export class App implements LobbyHost {
   }
 
   protected onSessionEnd(s: GameSession, victory: boolean): void {
-    const p = s.world.get(1)?.player;
+    const p = aggregateParty(s.world);
     const stats = this.lastStats;
     if (!p || !stats) return;
     const beforeLevel = this.profile.save.profile.level;
     const res =
       s.world.map.id === 'sandbox'
         ? { newRecord: false, unlockedNext: null, ngPlusUnlocked: false, finalBoss: false }
-        : this.profile.applyRun(stats, {
-            level: p.level,
-            xp: p.xp,
-            guns: p.guns,
-            loot: p.loot,
-            scrap: p.scrap,
-            pity: p.pity,
-          });
+        : this.profile.applyRun(stats, p);
     this.screen = victory ? 'victory' : 'gameover';
     this.input.enabled = false;
     this.input.exitPointerLock();
@@ -586,8 +641,9 @@ export class App implements LobbyHost {
 
   /** Sair no meio da fase preserva XP, sucata e loot obtidos. */
   private saveProgressOnQuit(): void {
-    const p = this.session?.world.get(1)?.player;
-    if (!p || this.session?.world.map.id === 'sandbox') return;
+    const w = this.session?.world;
+    const p = w ? aggregateParty(w) : null;
+    if (!p || w?.map.id === 'sandbox') return;
     const s = this.profile.save;
     s.profile.level = p.level;
     s.profile.xp = p.xp;
@@ -647,6 +703,12 @@ export class App implements LobbyHost {
   setAutopilot(on: boolean): void {
     this.autopilotSource = on ? this.makeAutopilot() : null;
     this.session?.setInputOverride(this.autopilotSource);
+    // multijogador: um piloto automático por jogador
+    for (const p of this.session?.world.playerEntities() ?? []) {
+      const slot = p.player!.slot;
+      if (slot === 0) continue;
+      this.session!.net.setOverride(on ? new Autopilot(() => this.session?.world ?? null, slot) : null, slot);
+    }
   }
 
   protected makeAutopilot(): InputSource | null {

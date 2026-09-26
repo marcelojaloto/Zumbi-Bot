@@ -20,7 +20,12 @@ export interface SessionOptions {
   mapId: string;
   levelIdx: number;
   seed: number;
-  loadout: PlayerLoadout;
+  /** Um por jogador (slot 0 = jogador 1). */
+  loadouts: PlayerLoadout[];
+  /** Entrada de cada jogador; padrão: o InputManager inteiro para um jogador só. */
+  sources?: InputSource[];
+  /** Jogador que mira com o mouse (quem está com o teclado inteiro). */
+  mouseSlot?: number;
   difficulty: Difficulty;
   noLevel?: boolean;
   ngPlus?: boolean;
@@ -64,7 +69,7 @@ export class GameSession {
       seed: opts.seed,
       map,
       levelIdx: opts.levelIdx,
-      loadouts: [opts.loadout],
+      loadouts: opts.loadouts,
       difficulty: opts.difficulty,
       enemyCap: r.quality.enemyCap,
       noLevel: opts.noLevel,
@@ -75,7 +80,7 @@ export class GameSession {
     for (const p of level.pickups) spawnPickup(this.world, p.item, p.x, p.z, false);
     this.world.drainEvents();
 
-    this.net = new LocalAdapter(input);
+    this.net = opts.sources ? new LocalAdapter(opts.sources, () => input.endTick()) : new LocalAdapter(input);
     this.env = buildEnvironment(r.scene, map, level, r.quality);
     this.lighting = new Lighting(r.scene, r.gl, r.quality);
     this.lighting.applyEnv(map.env);
@@ -94,7 +99,7 @@ export class GameSession {
     });
 
     input.aimProjector = (sx, sy) => {
-      const p = this.world.get(1);
+      const p = this.world.get((opts.mouseSlot ?? 0) + 1);
       if (!p) return null;
       return r.projectAim(sx, sy, p.t.x, p.t.y + 1.3, p.t.z);
     };

@@ -1,5 +1,5 @@
 import { Rng } from '../core/rng';
-import { DIFFICULTY, NG_PLUS, VIEW_HALF_WIDTH } from '../data/balance';
+import { DIFFICULTY, NG_PLUS, VIEW_HALF_WIDTH, coopEnemyCap } from '../data/balance';
 import type {
   CharacterId,
   CosmeticId,
@@ -10,7 +10,7 @@ import type {
   StaffId,
   WeaponId,
 } from '../data/types';
-import type { Entity, EntityId, EntityKind, PlayerSlot } from './Entity';
+import { MAX_PLAYERS, type Entity, type EntityId, type EntityKind, type PlayerSlot } from './Entity';
 import type { GameEvent } from './events';
 import type { InputFrame } from './InputFrame';
 import { runSystems } from './systems';
@@ -91,7 +91,7 @@ export class World {
   /** Escala de tempo solicitada pelo sim (slow-mo); aplicada pelo loop. */
   slowmo = 0;
 
-  private nextId = 5;
+  private nextId = MAX_PLAYERS + 1;
 
   constructor(readonly opts: WorldOptions) {
     this.rng = new Rng(opts.seed);
@@ -109,7 +109,7 @@ export class World {
           enemyDmg: d.enemyDmg * NG_PLUS.enemyDmg,
         }
       : d;
-    this.enemyCap = opts.enemyCap;
+    this.enemyCap = coopEnemyCap(opts.enemyCap, opts.loadouts.length);
     this.loadouts = opts.loadouts;
     this.noLevel = !!opts.noLevel;
     this.zBand = [...this.level.zBand];
@@ -128,7 +128,7 @@ export class World {
     return this.byId.get(id);
   }
 
-  /** Adiciona uma entidade (ids 1..4 são reservados aos slots de jogador). */
+  /** Adiciona uma entidade (ids 1..MAX_PLAYERS são reservados aos slots de jogador). */
   add(e: Omit<Entity, 'id'> & { id?: EntityId }): Entity {
     const id = e.id ?? this.nextId++;
     const ent = e as Entity;
