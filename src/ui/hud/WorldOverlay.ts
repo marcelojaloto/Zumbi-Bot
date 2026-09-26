@@ -5,6 +5,7 @@ import type { DamageType } from '../../data/types';
 import type { GameEvent } from '../../sim/events';
 import type { World } from '../../sim/World';
 import { el } from '../dom';
+import { SLOT_COLORS, playerTag } from '../../app/party';
 
 interface Num {
   el: HTMLDivElement;
@@ -46,6 +47,8 @@ export class WorldOverlay {
   readonly root: HTMLDivElement;
   private nums: Num[] = [];
   private bars = new Map<number, Bar>();
+  /** Etiquetas P1..P5 sobre os jogadores (multijogador). */
+  private tags = new Map<number, HTMLDivElement>();
   showNumbers = true;
   private time = 0;
 
@@ -133,6 +136,21 @@ export class WorldOverlay {
       r.toScreen(n.x + n.dx * k, n.y + k * 0.9, n.z, _p);
       n.el.style.transform = `translate(${_p.x}px, ${_p.y}px) translate(-50%, -50%) scale(${1 + Math.max(0, 0.3 - n.t) * 2})`;
       n.el.style.opacity = String(1 - Math.max(0, k - 0.6) / 0.4);
+    }
+    if (w.playerCount > 1) {
+      for (const e of w.playerEntities()) {
+        const slot = e.player!.slot;
+        let tag = this.tags.get(slot);
+        if (!tag) {
+          tag = el('div', { class: 'ptag', style: `--pc:${SLOT_COLORS[slot]}` }, playerTag(slot));
+          this.root.appendChild(tag);
+          this.tags.set(slot, tag);
+        }
+        const hide = e.player!.respawn > 0 || (e.fighter?.state === 'dead' && e.player!.lives <= 0);
+        r.toScreen(e.t.x, e.t.y + (e.body?.height ?? 1.8) + 0.45, e.t.z, _p);
+        tag.style.display = hide || !_p.visible ? 'none' : 'block';
+        tag.style.transform = `translate(${_p.x}px, ${_p.y}px) translate(-50%, -50%)`;
+      }
     }
     const seen = new Set<number>();
     for (const e of w.entities) {

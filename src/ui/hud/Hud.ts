@@ -15,6 +15,8 @@ import { Minimap } from './Minimap';
 import type { Element } from '../../data/types';
 import { getCharacter } from '../../data/characters';
 import { t } from '../../i18n';
+import { SLOT_COLORS, playerTag } from '../../app/party';
+import { PartyHud } from './PartyHud';
 
 export const ELEMENT_NAMES: Record<Element, string> = {
   heal: 'Cura',
@@ -100,6 +102,8 @@ export class Hud {
   showHints = true;
   /** Nome do especial do personagem do jogador 1 (para as dicas). */
   private specialName = 'Giro Turbo';
+  /** Painéis por jogador (multijogador local). */
+  private party: PartyHud | null = null;
   /** Controles de toque ativos: dicas do tutorial viram a versão de toque. */
   touchMode = false;
 
@@ -218,21 +222,38 @@ export class Hud {
   }
 
   onEvents(events: GameEvent[], w: World): void {
+    // multijogador: avisos de um jogador levam a etiqueta dele (P1..P5)
+    const multi = w.playerCount > 1;
+    const who = (id: number) => {
+      const slot = w.get(id)?.player?.slot;
+      return multi && slot !== undefined ? `${playerTag(slot)}: ` : '';
+    };
     for (const ev of events) {
       switch (ev.t) {
         case 'go':
           this.goTimer = 4;
           break;
         case 'levelUp':
-          this.toast(t('NÍVEL {n}!', { n: ev.level }), '#ffd24a', t('Vida e mana aumentaram'));
+          this.toast(
+            who(ev.player) + t('NÍVEL {n}!', { n: ev.level }),
+            '#ffd24a',
+            t('Vida e mana aumentaram'),
+          );
           break;
+        case 'lifeShare': {
+          const a = w.get(ev.to)?.player?.slot ?? 0;
+          const b = w.get(ev.from)?.player?.slot ?? 0;
+          this.toast(t('{a} pegou uma vida de {b}', { a: playerTag(a), b: playerTag(b) }), SLOT_COLORS[a]);
+          break;
+        }
         case 'unlock':
           if (ev.kind === 'gun')
             this.toast(
-              t('Nova arma: {name}', { name: t(FIREARMS[ev.id as keyof typeof FIREARMS]?.name ?? ev.id) }),
+              who(ev.player) +
+                t('Nova arma: {name}', { name: t(FIREARMS[ev.id as keyof typeof FIREARMS]?.name ?? ev.id) }),
               '#ffb02a',
             );
-          else
+          else if (!multi || w.get(ev.player)?.player?.slot === 0)
             this.toast(
               t('Novo cajado: {name}', { name: t(STAFFS[ev.id as keyof typeof STAFFS]?.name ?? ev.id) }),
               hexColor(ELEMENT_COLORS[ev.id as keyof typeof ELEMENT_COLORS] ?? 0xffffff),
@@ -245,27 +266,41 @@ export class Hud {
               const col = hexColor(RARITY_COLORS[c.rarity]);
               if (ev.duplicate)
                 this.toast(
-                  t('{name} (repetido)', { name: t(c.name) }),
+                  who(ev.player) + t('{name} (repetido)', { name: t(c.name) }),
                   col,
                   t('+{n} sucata', { n: ev.scrap ?? 0 }),
                 );
               else
-                this.toast(t(c.name), col, t('{rarity} • novo item!', { rarity: t(RARITY_NAMES[c.rarity]) }));
+                this.toast(
+                  who(ev.player) + t(c.name),
+                  col,
+                  t('{rarity} • novo item!', { rarity: t(RARITY_NAMES[c.rarity]) }),
+                );
             }
-          } else if (ev.scrap) this.toast(t('+{n} sucata', { n: ev.scrap }), '#c8d0d8');
+          } else if (ev.scrap) this.toast(who(ev.player) + t('+{n} sucata', { n: ev.scrap }), '#c8d0d8');
           break;
         }
         case 'pickup': {
           const d = ITEMS[ev.item];
           if (d && (d.effect.k === 'power' || d.effect.k === 'melee'))
-            this.toast(t(d.name), hexColor(d.color));
+            this.toast(who(ev.player) + t(d.name), hexColor(d.color));
           break;
         }
         case 'meleeBreak':
-          this.toast(t('{name} quebrou!', { name: t(MELEE_WEAPONS[ev.melee].name) }), '#ff7a5a');
+          this.toast(who(ev.id) + t('{name} quebrou!', { name: t(MELEE_WEAPONS[ev.melee].name) }), '#ff7a5a');
           break;
         case 'playerDown':
-          if (ev.livesLeft > 0)
+          if (multi)
+            this.toast(
+              who(ev.player) + t('DESATIVADO'),
+              '#ff5a4a',
+              ev.livesLeft === 1
+                ? t('1 vida restante')
+                : ev.livesLeft > 0
+                  ? t('{n} vidas restantes', { n: ev.livesLeft })
+                  : t('Sem vidas'),
+            );
+          else if (ev.livesLeft > 0)
             this.showBanner(
               t('DESATIVADO'),
               ev.livesLeft === 1 ? t('1 vida restante') : t('{n} vidas restantes', { n: ev.livesLeft }),
@@ -315,6 +350,12 @@ export class Hud {
     if (!p?.player || !p.health) return;
     const pc = p.player;
     const h = p.health;
+    const multi = w.playerCount > 1;
+    if (multi && !this.party) {
+      this.party = new PartyHud(this.root);
+      this.root.classList.add('party-mode');
+    }
+    this.party?.update(w, dt);
     if (this.portrait.dataset.char !== pc.character) {
       this.portrait.dataset.char = pc.character;
       this.specialName = getCharacter(pc.character).specialName;
@@ -348,11 +389,14 @@ export class Hud {
     }
     this.level.textContent = t('Nv {n}', { n: pc.level });
     this.xpFill.style.width = `${Math.min(1, pc.xp / xpToNext(pc.level)) * 100}%`;
-    this.score.textContent = fmtInt(pc.score);
-    if (pc.combo !== this.lastCombo) {
-      this.lastCombo = pc.combo;
-      if (pc.combo >= 3) {
-        this.combo.textContent = `x${pc.combo} COMBO`;
+    // multijogador: pontuação da equipe e o maior combo em andamento
+    const ps = multi ? w.playerEntities().map((e) => e.player!) : [pc];
+    const combo = Math.max(...ps.map((x) => x.combo));
+    this.score.textContent = fmtInt(ps.reduce((a, x) => a + x.score, 0));
+    if (combo !== this.lastCombo) {
+      this.lastCombo = combo;
+      if (combo >= 3) {
+        this.combo.textContent = `x${combo} COMBO`;
         this.combo.classList.remove('pop');
         void this.combo.offsetWidth;
         this.combo.classList.add('pop', 'show');
@@ -512,6 +556,7 @@ export class Hud {
   }
 
   dispose(): void {
+    this.party?.dispose();
     this.root.remove();
   }
 }

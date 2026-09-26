@@ -8,7 +8,6 @@ import type { World } from './World';
  * quando perto, atira de longe, cura com pouca vida e pula ondas de choque.
  */
 export class Autopilot implements InputSource {
-  readonly slot: PlayerSlot = 0;
   private t = 0;
   private stuck = 0;
   private lastX = 0;
@@ -20,12 +19,15 @@ export class Autopilot implements InputSource {
   private bestX = -Infinity;
   private idleTicks = 0;
 
-  constructor(private getWorld: () => World | null) {}
+  constructor(
+    private getWorld: () => World | null,
+    readonly slot: PlayerSlot = 0,
+  ) {}
 
   sample(tick: number): InputFrame {
     const f = emptyFrame(tick);
     const w = this.getWorld();
-    const p = w?.get(1);
+    const p = w?.get(this.slot + 1);
     if (!w || !p?.player || p.player.respawn > 0) return f;
     this.t++;
     const pc = p.player;

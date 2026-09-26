@@ -682,3 +682,111 @@
     display: none;
   }
 }
+
+/* ---------------------------------------------------------------- multijogador local */
+.hud.party-mode .hud-tl,
+.hud.party-mode .hud-br,
+.hud.party-mode .hud-bl {
+  display: none;
+}
+.party-hud {
+  position: absolute;
+  left: max(12px, env(safe-area-inset-left, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  pointer-events: none;
+}
+.ph {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 8px;
+  background: rgba(8, 10, 16, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid var(--pc);
+  border-radius: 8px;
+}
+.ph .portrait {
+  flex: none;
+  zoom: 0.66;
+  border-color: var(--pc);
+}
+.ph-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ph-head {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  font-size: 12px;
+}
+.ph-head b {
+  color: var(--pc);
+}
+.ph-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ph-lives {
+  color: #ff5a6a;
+  letter-spacing: -1px;
+}
+.ph .bar {
+  height: 8px;
+}
+.ph .manabar {
+  height: 5px;
+}
+.ph-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.ph-note {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--pc);
+}
+.ph-note:empty {
+  display: none;
+}
+.ph.out {
+  opacity: 0.65;
+}
+/* barra do chefe e dicas sobem para não cobrir os painéis */
+.hud.party-mode .hud-boss {
+  bottom: 96px;
+}
+.hud.party-mode .hint {
+  bottom: 170px;
+}
+body.touch .party-hud {
+  bottom: auto;
+  top: calc(env(safe-area-inset-top, 0px) + 60px);
+}
+.ptag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--pc);
+  color: #111;
+  font-weight: 900;
+  font-size: 12px;
+  pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}

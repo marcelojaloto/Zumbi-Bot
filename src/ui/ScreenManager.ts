@@ -7,7 +7,12 @@ export interface Screen {
   onShow?(): void;
   onHide?(): void;
   /** Retorna true se tratou a tecla. */
-  onKey?(code: string): boolean;
+  onKey?(code: string, e?: KeyboardEvent): boolean;
+  /**
+   * A tela lê teclado e controles por conta própria (seleção com vários jogadores): a navegação padrão por foco
+   * não reage a eles (cliques e toques continuam funcionando).
+   */
+  ownsInput?: boolean;
   /** Esc / B: voltar. Retorna false para impedir. */
   onBack?(): boolean;
   /** Setas / D-pad antes da navegação padrão por foco. Retorna true se tratou. */
@@ -20,8 +25,10 @@ export class ScreenManager {
   readonly root: HTMLDivElement;
   private stack: Screen[] = [];
   onNavSound: ((kind: 'hover' | 'click' | 'back') => void) | null = null;
-  private gpPrev: boolean[] = [];
+  private gpPrev = new Map<number, boolean[]>();
   private gpRepeat = 0;
+  /** Um controle apertou algo (para saber qual dispositivo abriu uma tela). */
+  onPadActivity: ((index: number) => void) | null = null;
 
   constructor(parent: HTMLElement) {
     this.root = document.createElement('div');
@@ -160,10 +167,12 @@ export class ScreenManager {
     if (!t) return;
     const target = e.target as HTMLElement;
     const typing = target.tagName === 'INPUT' && (target as HTMLInputElement).type === 'text';
-    if (t.onKey?.(e.code)) {
+    if (t.onKey?.(e.code, e)) {
       e.preventDefault();
+      e.stopPropagation();
       return;
     }
+    if (t.ownsInput) return;
     if (typing && e.code !== 'Escape' && e.code !== 'Enter') return;
     switch (e.code) {
       case 'ArrowUp':
@@ -226,35 +235,54 @@ export class ScreenManager {
     return true;
   }
 
-  /** Navegação por gamepad (chamada a cada quadro). */
+  /** Navegação por gamepad (chamada a cada quadro): qualquer controle conectado navega nos menus. */
   pollGamepad(dt: number): void {
-    if (!this.top) return;
-    const gp = (navigator.getGamepads?.() ?? []).find((p) => p && p.connected);
-    if (!gp) return;
-    const bt = (i: number) => !!gp.buttons[i]?.pressed;
-    const edge = (i: number) => bt(i) && !this.gpPrev[i];
-    const ax = gp.axes[0] ?? 0;
-    const ay = gp.axes[1] ?? 0;
+    const pads = (navigator.getGamepads?.() ?? []).filter((p): p is Gamepad => !!p && p.connected);
+    if (!pads.length) return;
+    const top = this.top;
+    let dirX = 0;
+    let dirY = 0;
+    let a = false;
+    let b = false;
+    let lb = false;
+    let rb = false;
+    for (const gp of pads) {
+      const prev = this.gpPrev.get(gp.index) ?? [];
+      const bt = (i: number) => !!gp.buttons[i]?.pressed;
+      const edge = (i: number) => bt(i) && !prev[i];
+      if (gp.buttons.some((x, i) => x.pressed && !prev[i])) this.onPadActivity?.(gp.index);
+      this.gpPrev.set(
+        gp.index,
+        gp.buttons.map((x) => x.pressed),
+      );
+      if (!top || top.ownsInput) continue;
+      const ax = gp.axes[0] ?? 0;
+      const ay = gp.axes[1] ?? 0;
+      dirX ||= bt(15) || ax > 0.6 ? 1 : bt(14) || ax < -0.6 ? -1 : 0;
+      dirY ||= bt(13) || ay > 0.6 ? 1 : bt(12) || ay < -0.6 ? -1 : 0;
+      a ||= edge(0);
+      b ||= edge(1);
+      lb ||= edge(4);
+      rb ||= edge(5);
+    }
+    if (!top || top.ownsInput) return;
     this.gpRepeat -= dt;
-    const dirX = bt(15) || ax > 0.6 ? 1 : bt(14) || ax < -0.6 ? -1 : 0;
-    const dirY = bt(13) || ay > 0.6 ? 1 : bt(12) || ay < -0.6 ? -1 : 0;
     if ((dirX || dirY) && this.gpRepeat <= 0) {
-      const a = document.activeElement as HTMLInputElement | null;
-      if (dirX && a?.type === 'range') {
-        a.value = String(Number(a.value) + dirX * Number(a.step || 0.05));
-        a.dispatchEvent(new Event('input', { bubbles: true }));
-      } else if (dirX && a instanceof HTMLSelectElement) {
-        const n = a.options.length;
-        a.selectedIndex = (a.selectedIndex + dirX + n) % n;
-        a.dispatchEvent(new Event('change', { bubbles: true }));
+      const el = document.activeElement as HTMLInputElement | null;
+      if (dirX && el?.type === 'range') {
+        el.value = String(Number(el.value) + dirX * Number(el.step || 0.05));
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+      } else if (dirX && el instanceof HTMLSelectElement) {
+        const n = el.options.length;
+        el.selectedIndex = (el.selectedIndex + dirX + n) % n;
+        el.dispatchEvent(new Event('change', { bubbles: true }));
       } else this.move(dirX, dirY);
       this.gpRepeat = 0.18;
     }
     if (!dirX && !dirY) this.gpRepeat = 0;
-    if (edge(0)) (document.activeElement as HTMLElement | null)?.click();
-    if (edge(1)) this.back();
-    if (edge(4)) this.cycleTab(-1);
-    if (edge(5)) this.cycleTab(1);
-    this.gpPrev = gp.buttons.map((b) => b.pressed);
+    if (a) (document.activeElement as HTMLElement | null)?.click();
+    if (b) this.back();
+    if (lb) this.cycleTab(-1);
+    if (rb) this.cycleTab(1);
   }
 }

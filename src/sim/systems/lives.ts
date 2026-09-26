@@ -21,6 +21,29 @@ export function onPlayerDown(w: World, e: Entity): void {
   }
 }
 
+/** Colega que pode doar uma vida (tem 2 ou mais); empate → menor slot. */
+export function lifeDonor(w: World, e: Entity): Entity | undefined {
+  let best: Entity | undefined;
+  for (const o of w.playerEntities()) {
+    if (o === e || o.player!.lives < 2) continue;
+    if (!best || o.player!.lives > best.player!.lives) best = o;
+  }
+  return best;
+}
+
+/** Sem vidas e com colegas na partida: apertar PULAR pega uma vida emprestada e renasce. */
+export function borrowLife(w: World, e: Entity): boolean {
+  const p = e.player!;
+  if (p.lives > 0 || w.finished) return false;
+  const donor = lifeDonor(w, e);
+  if (!donor) return false;
+  donor.player!.lives--;
+  p.lives = 1;
+  p.respawn = 1;
+  w.emit({ t: 'lifeShare', from: donor.id, to: e.id });
+  return true;
+}
+
 export function playerRespawnTick(w: World, e: Entity): void {
   const p = e.player!;
   p.respawn--;

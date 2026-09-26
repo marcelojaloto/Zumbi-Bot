@@ -15,6 +15,14 @@ import { CharacterView } from './views/CharacterView';
 import { CosmeticRig } from './views/Attachments';
 import { BlobShadows } from './fx/BlobShadows';
 
+/** Personagem extra na fila da seleção (jogadores 2 a 5). */
+interface Actor {
+  id: CharacterId;
+  v: CharacterView;
+  e: Entity;
+  moveT: number;
+}
+
 interface Walker {
   e: Entity;
   v: CharacterView;
@@ -36,12 +44,17 @@ export class MenuScene {
   private eq: Partial<Record<CosmeticSlot, CosmeticId>> = {};
   /** Tempo (ticks) do golpe especial em exibição. */
   private moveT = 0;
+  /** Jogadores 2..5 na seleção, lado a lado com o jogador 1. */
+  private extras: Actor[] = [];
   private walkers: Walker[] = [];
   private blobs: BlobShadows;
   private t = 0;
   private spin = 0;
   /** 0 = menu (plano geral), 1 = guarda-roupa (close no robô). */
   focus = 0;
+  /** Seleção de jogadores: personagens de frente, no alto da tela (os cartões ficam embaixo). */
+  stage = false;
+  private stageV = 0;
   private focusV = 0;
   private tmp = new Vector3();
 
@@ -129,12 +142,33 @@ export class MenuScene {
       this.cos.set(this.eq);
     }
     if (showSpecial) {
-      const fi = this.robotE.fighter!;
-      fi.state = 'attack';
-      fi.moveId = getCharacter(id).special;
-      fi.st = 0;
+      playSpecial(this.robotE, id);
       this.moveT = 0;
     }
+  }
+
+  /**
+   * Fila de personagens da seleção com vários jogadores (o primeiro é o jogador 1). Lista vazia ou com um só
+   * volta ao personagem sozinho. Quem mudou de personagem mostra o especial.
+   */
+  setLineup(chars: CharacterId[]): void {
+    const want = chars.slice(1);
+    for (let i = 0; i < Math.max(want.length, this.extras.length); i++) {
+      const id = want[i];
+      const cur = this.extras[i];
+      if (cur && cur.id === id) continue;
+      if (cur) {
+        this.r.scene.remove(cur.v.group);
+        cur.v.dispose();
+      }
+      if (!id) continue;
+      const a: Actor = { id, v: this.makeHero(id), e: this.fake(20, 0.4, -1), moveT: 0 };
+      this.r.scene.add(a.v.group);
+      playSpecial(a.e, id);
+      this.extras[i] = a;
+    }
+    this.extras.length = want.length;
+    if (chars[0]) this.setCharacter(chars[0], chars[0] !== this.character);
   }
 
   frame(dt: number): void {
@@ -142,26 +176,33 @@ export class MenuScene {
     this.focusV = damp(this.focusV, this.focus, 0.15, dt);
     // robô: parado, levemente virado para a câmera; no guarda-roupa gira devagar
     const e = this.robotE;
-    e.t.px = e.t.x;
-    e.t.pz = e.t.z;
-    const fi = e.fighter!;
-    if (fi.state === 'attack' && fi.moveId) {
-      const m = MOVES[fi.moveId];
-      this.moveT += dt * 60;
-      fi.st = Math.floor(this.moveT);
-      if (!m || fi.st >= m.startup + m.active + m.recovery) {
-        fi.state = 'idle';
-        fi.moveId = null;
-        fi.st = 0;
-      }
-    }
+    // com vários jogadores, todos lado a lado (P1 à esquerda), centrados no enquadramento
+    const n = 1 + this.extras.length;
+    const place = (a: Entity, i: number) => {
+      a.t.x = n > 1 || this.stage ? 21 + (i - (n - 1) / 2) * 1.15 : 20;
+      a.t.z = n > 1 ? 0.5 - (i % 2) * 0.45 : 0.4;
+      a.t.px = a.t.x;
+      a.t.pz = a.t.z;
+    };
+    place(e, 0);
+    this.moveT = advanceMove(e, this.moveT, dt);
     this.robot.sync(e, 1, dt, null);
-    this.spin += dt * 0.6 * this.focusV;
-    this.robot.yaw.rotation.y =
-      Math.PI / 2 - 0.35 - (Math.PI / 2 - 0.35) * this.focusV * 0.9 + Math.sin(this.spin) * 0.8 * this.focusV;
+    this.spin += dt * 0.6 * this.focusV * (n > 1 ? 0 : 1);
+    this.stageV = damp(this.stageV, this.stage ? 1 : 0, 0.15, dt);
+    const face =
+      (Math.PI / 2 - 0.35 - (Math.PI / 2 - 0.35) * this.focusV * 0.9) * (1 - this.stageV) +
+      0.12 * this.stageV;
+    this.robot.yaw.rotation.y = face + Math.sin(this.spin) * 0.8 * this.focusV;
     this.cos.update(dt, 0.3 + Math.sin(this.t) * 0.3, 0, 1);
     this.blobs.begin();
     this.blobs.add(e.t.x, e.t.z, 0.4, 0);
+    this.extras.forEach((a, i) => {
+      place(a.e, i + 1);
+      a.moveT = advanceMove(a.e, a.moveT, dt);
+      a.v.sync(a.e, 1, dt, null);
+      a.v.yaw.rotation.y = face;
+      this.blobs.add(a.e.t.x, a.e.t.z, 0.4, 0);
+    });
     for (const w of this.walkers) {
       const t = w.e.t;
       t.px = t.x;
@@ -178,8 +219,11 @@ export class MenuScene {
     // câmera: plano geral (robô à esquerda) ↔ close do guarda-roupa
     const f = this.focusV;
     const cam = this.r.cam;
-    cam.zoom = 1 - f * 0.6;
-    cam.update(e.t.x + 2.5 - f * 2.4, f * 0.9, e.t.z * 0.3 + f * 0.2, dt);
+    const sv = this.stageV;
+    cam.zoom = (1 - f * 0.6) * (1 - sv) + 0.8 * sv;
+    // seleção: fila centralizada e mais alta na tela; senão robô à esquerda (menu) ou em close (guarda-roupa)
+    const menuX = n > 1 ? 21 : e.t.x + 2.5 - f * 2.4;
+    cam.update(menuX * (1 - sv) + 21 * sv, f * 0.9 * (1 - sv) - 1.2 * sv, e.t.z * 0.3 + f * 0.2, dt);
     this.lighting.update(cam.x, 0, dt);
     this.lighting.request({
       x: e.t.x + 1,
@@ -196,6 +240,10 @@ export class MenuScene {
 
   dispose(): void {
     this.r.cam.zoom = 1;
+    for (const a of this.extras) {
+      this.r.scene.remove(a.v.group);
+      a.v.dispose();
+    }
     this.cos.dispose();
     this.r.scene.remove(this.robot.group);
     this.robot.dispose();
@@ -207,4 +255,28 @@ export class MenuScene {
     this.lighting.dispose();
     this.env.dispose();
   }
+}
+
+/** Começa a mostrar o golpe especial do personagem numa entidade de fachada. */
+function playSpecial(e: Entity, id: CharacterId): void {
+  const fi = e.fighter!;
+  fi.state = 'attack';
+  fi.moveId = getCharacter(id).special;
+  fi.st = 0;
+}
+
+/** Avança o golpe em exibição (60 quadros por segundo); devolve o novo tempo. */
+function advanceMove(e: Entity, moveT: number, dt: number): number {
+  const fi = e.fighter!;
+  if (fi.state !== 'attack' || !fi.moveId) return 0;
+  const m = MOVES[fi.moveId];
+  const t = moveT + dt * 60;
+  fi.st = Math.floor(t);
+  if (!m || fi.st >= m.startup + m.active + m.recovery) {
+    fi.state = 'idle';
+    fi.moveId = null;
+    fi.st = 0;
+    return 0;
+  }
+  return t;
 }

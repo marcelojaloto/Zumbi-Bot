@@ -738,143 +738,242 @@ a.btn {
   justify-content: center;
 }
 
-/* ---------------------------------------------------------------- seleção de personagem */
+/* ---------------------------------------------------------------- seleção de personagem / jogadores */
 .screen.lobby {
-  align-items: flex-end;
-  justify-content: center;
-  padding: 16px;
-  background: linear-gradient(90deg, transparent 35%, rgba(4, 5, 10, 0.6));
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 10px;
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) 14px max(16px, env(safe-area-inset-left, 0px));
+  background: linear-gradient(0deg, rgba(4, 5, 10, 0.88) 0%, rgba(4, 5, 10, 0.25) 58%, transparent 80%);
 }
-.lobby-panel {
-  width: min(560px, 54vw);
-  height: auto;
-  max-height: 100%;
-  overflow-y: auto;
+.lobby-top {
+  text-align: center;
 }
-.lobby-panel h2 {
+.lobby-top h2 {
   font-size: 30px;
   margin: 0;
 }
-.char-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+.lobby-help {
+  font-size: 13px;
 }
-.char-chip {
-  padding-left: 12px;
-  padding-right: 12px;
+.lobby-count {
+  min-height: 1.2em;
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 20px;
 }
-.char-chip.on {
-  border-color: var(--cc);
-  color: var(--cc);
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.12);
+.lobby-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: auto;
 }
-.char-info {
+.lobby-card {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
+  padding: 10px;
+  background: rgba(10, 12, 20, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-top: 4px solid var(--pc);
+  border-radius: 10px;
 }
-.char-info h3 {
-  margin: 4px 0 0;
+.lobby-card.ready {
+  border-color: var(--pc);
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.12);
+}
+.lobby-card.empty {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-style: dashed;
+  border-top-style: solid;
+  background: rgba(10, 12, 20, 0.55);
+  font-size: 13px;
+}
+.lc-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+.lc-tag {
+  font-weight: 900;
+  font-size: 18px;
+  color: var(--pc);
+}
+.lc-dev {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lc-pick {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lc-name {
+  flex: 1;
+  text-align: center;
   font-family: var(--title-font);
-  font-size: 30px;
-  letter-spacing: 0.05em;
+  font-size: 22px;
+  letter-spacing: 0.04em;
   color: var(--cc);
 }
-.char-info .ci-title {
-  color: var(--muted);
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.lc-arrow {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--fg);
+  cursor: pointer;
 }
-.char-info .ci-desc {
-  margin: 2px 0 4px;
+.lc-arrow:hover {
+  border-color: var(--cc);
+}
+.lobby-card .ci-title {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.lobby-card .ci-desc {
+  margin: 0;
+  font-size: 12px;
   color: var(--fg);
 }
-.ci-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 18px;
+.lc-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 .stat-row {
   display: grid;
-  grid-template-columns: 88px 1fr;
+  grid-template-columns: 70px 1fr;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 11px;
   color: var(--muted);
 }
 .stat-bar {
-  height: 9px;
+  height: 8px;
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 5px;
+  border-radius: 4px;
   overflow: hidden;
 }
 .stat-bar i {
   display: block;
   height: 100%;
   background: var(--cc);
-  border-radius: 5px;
+  border-radius: 4px;
 }
 .ci-special {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  margin-top: 4px;
-  padding: 8px 12px;
+  padding: 6px 8px;
   border-left: 3px solid var(--cc);
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.04);
+  font-size: 12px;
 }
 .ci-special b {
   color: var(--cc);
 }
-.lobby-help {
-  font-size: 12px;
+.lc-keys {
+  font-size: 11px;
 }
-@media (max-width: 800px) {
-  .screen.lobby {
-    align-items: stretch;
-    justify-content: flex-end;
-  }
-  .lobby-panel {
-    width: 100%;
-    max-height: 70%;
-  }
+.lc-ready {
+  margin-top: auto;
+}
+.lc-ready.on {
+  background: var(--pc);
+  border-color: var(--pc);
+  color: #111;
+}
+.lc-join {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--pc);
+}
+.lobby-btns {
+  justify-content: center;
 }
 @media (max-height: 500px) {
   .screen.lobby {
-    padding: 8px max(12px, env(safe-area-inset-right, 0px)) 8px 12px;
-  }
-  .lobby-panel {
-    width: min(460px, 54vw);
-    max-height: 100%;
+    padding-top: 8px;
+    padding-bottom: 8px;
     gap: 6px;
-    padding: 10px 12px;
   }
-  .lobby-panel h2 {
+  .lobby-top h2 {
     font-size: 18px;
-    margin: 0;
   }
-  .char-chips .btn {
-    min-height: 34px;
-    padding: 4px 10px;
-    font-size: 12px;
-  }
-  .char-info h3 {
-    font-size: 22px;
-    margin: 0;
-  }
-  .char-info .ci-desc,
   .lobby-help {
     display: none;
   }
-  .stat-row {
-    grid-template-columns: 70px 1fr;
-    font-size: 11px;
+  .lobby-count {
+    font-size: 14px;
   }
-  .ci-special {
-    padding: 4px 8px;
+  .lobby-card {
+    padding: 6px;
+    gap: 4px;
+  }
+  .lobby-card .ci-desc,
+  .lobby-card .lc-stats,
+  .ci-special span,
+  .lc-keys {
+    display: none;
+  }
+  .lc-name {
+    font-size: 16px;
+  }
+  .lc-arrow {
+    width: 30px;
+    height: 30px;
+  }
+  .lobby-card .btn {
+    min-height: 32px;
+    padding: 2px 8px;
     font-size: 12px;
+  }
+  .lobby-btns .btn {
+    min-height: 36px;
+  }
+}
+
+/* ---------------------------------------------------------------- resultado da equipe */
+.party-results {
+  max-width: 640px;
+  width: 100%;
+  overflow-x: auto;
+}
+.party-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.party-table th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 12px;
+  text-align: left;
+  padding: 2px 8px;
+}
+.party-table td {
+  padding: 4px 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+@media (max-height: 500px) {
+  .party-table {
+    font-size: 12px;
+  }
+  .party-table td {
+    padding: 2px 6px;
   }
 }

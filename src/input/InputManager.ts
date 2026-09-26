@@ -8,47 +8,12 @@ import {
 } from '../sim/InputFrame';
 import type { PlayerSlot } from '../sim/Entity';
 import type { TouchControls } from './TouchControls';
+import type { DeviceRef } from './devices';
+import { DEFAULT_KEYS, keyboardFrame, layoutKeys, type Action } from './keymap';
+import { padFrame, type PadLike, type PadRead } from './pads';
 
-export type Action =
-  | 'left'
-  | 'right'
-  | 'up'
-  | 'down'
-  | 'jump'
-  | 'punch'
-  | 'kick'
-  | 'special'
-  | 'fire'
-  | 'aim'
-  | 'reload'
-  | 'run'
-  | 'prev'
-  | 'next'
-  | 'modeGun'
-  | 'modeStaff'
-  | 'map'
-  | 'pause';
-
-export const DEFAULT_KEYS: Record<Action, string[]> = {
-  left: ['KeyA', 'ArrowLeft'],
-  right: ['KeyD', 'ArrowRight'],
-  up: ['KeyW', 'ArrowUp'],
-  down: ['KeyS', 'ArrowDown'],
-  jump: ['Space'],
-  punch: ['KeyJ'],
-  kick: ['KeyK'],
-  special: ['KeyU'],
-  fire: ['KeyL'],
-  aim: ['KeyI'],
-  reload: ['KeyR'],
-  run: ['ShiftLeft', 'ShiftRight'],
-  prev: ['KeyQ'],
-  next: ['KeyE'],
-  modeGun: ['Digit1'],
-  modeStaff: ['Digit2'],
-  map: ['KeyM'],
-  pause: ['Escape', 'KeyP'],
-};
+export type { Action } from './keymap';
+export { DEFAULT_KEYS } from './keymap';
 
 export const ACTION_LABELS: Record<Action, string> = {
   left: 'Mover para a esquerda',
@@ -67,6 +32,7 @@ export const ACTION_LABELS: Record<Action, string> = {
   next: 'Próxima arma',
   modeGun: 'Modo arma de fogo',
   modeStaff: 'Modo cajado',
+  toggleMode: 'Arma ⇄ Cajado',
   map: 'Mapa ampliado',
   pause: 'Pausa',
 };
@@ -97,7 +63,10 @@ export class InputManager implements InputSource {
   mouseActive = false;
   private lastMouseMove = 0;
   private lastAimYaw = 0;
-  private gpPrev: boolean[] = [];
+  /** Botões da leitura anterior de cada controle (índice do navegador). */
+  private padPrev = new Map<number, boolean[]>();
+  /** Última mira de cada dispositivo (multijogador). */
+  private devAim = new Map<string, number>();
   gamepadConnected = false;
   onPause: (() => void) | null = null;
   onMap: (() => void) | null = null;
@@ -214,41 +183,106 @@ export class InputManager implements InputSource {
     if (document.pointerLockElement) document.exitPointerLock();
   }
 
-  private down(a: Action): boolean {
-    for (const k of this.bindings[a]) if (this.keys.has(k)) return true;
-    return false;
-  }
-
-  private tapped(a: Action): boolean {
-    for (const k of this.bindings[a]) if (this.pressedOnce.has(k)) return true;
-    return false;
-  }
-
-  /** Amostra o quadro de entrada do tick. */
+  /** Amostra o quadro de entrada do tick (jogo solo: todos os dispositivos juntos). */
   sample(tick: number): InputFrame {
+    const f = this.sampleAuto(tick);
+    this.endTick();
+    return f;
+  }
+
+  /** Fim do tick: toques curtos e a roda do mouse já foram lidos por todos os jogadores. */
+  endTick(): void {
+    this.pressedOnce.clear();
+    this.wheel = 0;
+  }
+
+  /** Fonte de entrada de um jogador local num dispositivo (multijogador). */
+  source(slot: PlayerSlot, dev: DeviceRef): InputSource {
+    return { slot, sample: (tick) => this.sampleFor(dev, tick) };
+  }
+
+  /** Quadro de um dispositivo. Não limpa os toques (use `endTick` depois de ler todos os jogadores). */
+  sampleFor(dev: DeviceRef, tick: number): InputFrame {
+    if (dev.k === 'auto') return this.sampleAuto(tick);
+    const f = emptyFrame(tick);
+    if (!this.enabled) return f;
+    let mx = 0;
+    let mz = 0;
+    let b = 0;
+    let key = 'touch';
+    if (dev.k === 'kb') {
+      key = `kb:${dev.layout}`;
+      const kf = keyboardFrame(this.keys, this.pressedOnce, layoutKeys(dev.layout, this.bindings));
+      mx = kf.mx;
+      mz = kf.mz;
+      b = kf.buttons;
+      if (dev.layout === 'full') {
+        if (this.mouseButtons & 1) b |= Btn.Fire;
+        if (this.mouseButtons & 2) b |= Btn.Aim;
+        if (this.wheel < 0) b |= Btn.Prev;
+        if (this.wheel > 0) b |= Btn.Next;
+      }
+    } else if (dev.k === 'touch') {
+      const tc = this.touch?.read();
+      if (tc) {
+        mx = tc.mx;
+        mz = tc.mz;
+        b = tc.buttons;
+      }
+    } else {
+      key = `pad:${dev.index}`;
+      const gp = this.readPad(dev.index);
+      if (gp) {
+        mx = gp.mx;
+        mz = gp.mz;
+        b = gp.buttons;
+        if (gp.aiming) {
+          this.devAim.set(key, gp.aimYaw);
+          f.aimMode = 1;
+        }
+      }
+    }
+    const len = Math.hypot(mx, mz);
+    if (len > 1) {
+      mx /= len;
+      mz /= len;
+    }
+    f.moveX = quantizeAxis(mx);
+    f.moveZ = quantizeAxis(mz);
+    f.buttons = b;
+    // mira com o mouse só para quem está com o teclado inteiro
+    if (dev.k === 'kb' && dev.layout === 'full' && this.mouseAiming() && this.aimProjector) {
+      const yaw = this.aimProjector(this.cursorX, this.cursorY);
+      if (yaw !== null) {
+        this.devAim.set(key, yaw);
+        f.aimMode = 1;
+      }
+    }
+    if (f.aimMode === 0 && (Math.abs(mx) > 0.2 || Math.abs(mz) > 0.2))
+      this.devAim.set(key, Math.atan2(mz * 0.7, mx || 0.0001));
+    f.aimYaw = quantizeYaw(this.devAim.get(key) ?? 0);
+    return f;
+  }
+
+  private mouseAiming(): boolean {
+    return this.mouseActive && performance.now() - this.lastMouseMove < 8000;
+  }
+
+  private sampleAuto(tick: number): InputFrame {
     const f = emptyFrame(tick);
     if (!this.enabled) {
       this.pressedOnce.clear();
       return f;
     }
-    let mx = (this.down('right') ? 1 : 0) - (this.down('left') ? 1 : 0);
-    let mz = (this.down('down') ? 1 : 0) - (this.down('up') ? 1 : 0);
-    let b = 0;
+    const kf = keyboardFrame(this.keys, this.pressedOnce, this.bindings);
+    let mx = kf.mx;
+    let mz = kf.mz;
     // botões são "segurados"; taps curtos entre ticks não se perdem
-    if (this.down('jump') || this.tapped('jump')) b |= Btn.Jump;
-    if (this.down('punch') || this.tapped('punch')) b |= Btn.Punch;
-    if (this.down('kick') || this.tapped('kick')) b |= Btn.Kick;
-    if (this.down('special') || this.tapped('special')) b |= Btn.Special;
-    if (this.down('fire') || this.tapped('fire') || this.mouseButtons & 1) b |= Btn.Fire;
-    if (this.down('aim') || this.mouseButtons & 2) b |= Btn.Aim;
-    if (this.down('reload') || this.tapped('reload')) b |= Btn.Reload;
-    if (this.down('run')) b |= Btn.Run;
-    if (this.tapped('prev') || this.wheel < 0) b |= Btn.Prev;
-    if (this.tapped('next') || this.wheel > 0) b |= Btn.Next;
-    if (this.tapped('modeGun')) b |= Btn.ModeGun;
-    if (this.tapped('modeStaff')) b |= Btn.ModeStaff;
-    this.wheel = 0;
-    this.pressedOnce.clear();
+    let b = kf.buttons;
+    if (this.mouseButtons & 1) b |= Btn.Fire;
+    if (this.mouseButtons & 2) b |= Btn.Aim;
+    if (this.wheel < 0) b |= Btn.Prev;
+    if (this.wheel > 0) b |= Btn.Next;
 
     // toque (celular/tablet): mesmo papel do gamepad
     if (this.touch) {
@@ -276,7 +310,7 @@ export class InputManager implements InputSource {
     f.buttons = b;
 
     // mira
-    const useMouse = this.mouseActive && !gp?.aiming && performance.now() - this.lastMouseMove < 8000;
+    const useMouse = this.mouseAiming() && !gp?.aiming;
     if (useMouse && this.aimProjector) {
       const yaw = this.aimProjector(this.cursorX, this.cursorY);
       if (yaw !== null) {
@@ -294,34 +328,21 @@ export class InputManager implements InputSource {
     return f;
   }
 
-  private readGamepad(): { mx: number; mz: number; buttons: number; aiming: boolean; aimYaw: number } | null {
-    const pads = navigator.getGamepads?.() ?? [];
-    const gp = pads.find((p) => p && p.connected);
-    if (!gp) return null;
-    const dz = (v: number) => (Math.abs(v) < 0.18 ? 0 : (v - Math.sign(v) * 0.18) / 0.82);
-    const lx = dz(gp.axes[0] ?? 0);
-    const ly = dz(gp.axes[1] ?? 0);
-    const rx = dz(gp.axes[2] ?? 0);
-    const ry = dz(gp.axes[3] ?? 0);
-    const bt = (i: number) => !!gp.buttons[i]?.pressed;
-    const edge = (i: number) => bt(i) && !this.gpPrev[i];
-    let b = 0;
-    if (bt(0)) b |= Btn.Jump;
-    if (bt(2)) b |= Btn.Punch;
-    if (bt(3)) b |= Btn.Kick;
-    if (bt(1)) b |= Btn.Special;
-    if (bt(7) || (gp.buttons[7]?.value ?? 0) > 0.3) b |= Btn.Fire;
-    if (bt(6) || (gp.buttons[6]?.value ?? 0) > 0.3) b |= Btn.Aim;
-    if (bt(13)) b |= Btn.Reload;
-    if (bt(10) || Math.hypot(lx, ly) > 0.95) b |= Btn.Run;
-    if (edge(4)) b |= Btn.Prev;
-    if (edge(5)) b |= Btn.Next;
-    if (edge(12)) b |= Btn.ToggleMode;
-    if (edge(9)) this.onPause?.();
-    if (edge(8)) this.onMap?.();
-    this.gpPrev = gp.buttons.map((x) => x.pressed);
-    const aiming = Math.hypot(rx, ry) > 0.3;
-    return { mx: lx, mz: ly, buttons: b, aiming, aimYaw: Math.atan2(ry * 0.8, rx) };
+  /** Primeiro controle conectado (jogo solo). */
+  private readGamepad(): PadRead | null {
+    const gp = (navigator.getGamepads?.() ?? []).find((p) => p && p.connected);
+    return gp ? this.readPad(gp.index) : null;
+  }
+
+  /** Lê o controle de índice `index`, com pausa/mapa pelo Start/Select. */
+  private readPad(index: number): PadRead | null {
+    const gp = (navigator.getGamepads?.() ?? [])[index] as PadLike | null | undefined;
+    if (!gp || !gp.connected) return null;
+    const r = padFrame(gp, this.padPrev.get(index) ?? []);
+    this.padPrev.set(index, r.pressed);
+    if (r.pause) this.onPause?.();
+    if (r.map) this.onMap?.();
+    return r;
   }
 
   /** Vibração em golpes pesados. */
