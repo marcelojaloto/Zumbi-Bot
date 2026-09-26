@@ -48,6 +48,7 @@ export function runMoveEffects(w: World, e: Entity, m: MeleeMoveDef, rel: number
         w.emit({ t: 'shake', trauma: 0.45 });
         break;
       case 'beam': {
+        if (rel === 0) w.emit({ t: 'shake', trauma: 0.25 });
         if (rel % fx.every !== 0) break;
         const f = e.t.facing;
         const y = e.t.y + fx.y;

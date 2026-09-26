@@ -52,6 +52,9 @@ export class MenuScene {
   private spin = 0;
   /** 0 = menu (plano geral), 1 = guarda-roupa (close no robô). */
   focus = 0;
+  /** Prévia de um item das costas (capa, asas): o boneco se vira de costas. */
+  back = false;
+  private backV = 0;
   /** Seleção de jogadores: personagens de frente, no alto da tela (os cartões ficam embaixo). */
   stage = false;
   private stageV = 0;
@@ -171,6 +174,21 @@ export class MenuScene {
     if (chars[0]) this.setCharacter(chars[0], chars[0] !== this.character);
   }
 
+  /**
+   * Close do guarda-roupa e da loja: o painel ocupa a direita da tela, então a câmera anda para o boneco ficar no
+   * meio do espaço livre à esquerda. Em telas estreitas o painel fica embaixo, na largura toda: sem deslocar.
+   */
+  private panelShift(e: Entity): number {
+    const W = innerWidth;
+    if (W <= 800) return 0;
+    const panel = Math.min(600, 0.56 * W) + 32;
+    const center = (W - panel) / 2 / W;
+    const c = this.r.cam.camera;
+    this.tmp.set(e.t.x, 1, e.t.z);
+    const halfW = Math.tan((c.fov * Math.PI) / 360) * c.aspect * c.position.distanceTo(this.tmp);
+    return (0.5 - center) * 2 * halfW - 0.1;
+  }
+
   frame(dt: number): void {
     this.t += dt;
     this.focusV = damp(this.focusV, this.focus, 0.15, dt);
@@ -192,7 +210,9 @@ export class MenuScene {
     const face =
       (Math.PI / 2 - 0.35 - (Math.PI / 2 - 0.35) * this.focusV * 0.9) * (1 - this.stageV) +
       0.12 * this.stageV;
-    this.robot.yaw.rotation.y = face + Math.sin(this.spin) * 0.8 * this.focusV;
+    this.backV = damp(this.backV, this.back ? 1 : 0, 0.2, dt);
+    this.robot.yaw.rotation.y =
+      face + Math.sin(this.spin) * 0.8 * this.focusV * (1 - this.backV) + this.backV * Math.PI;
     this.cos.update(dt, 0.3 + Math.sin(this.t) * 0.3, 0, 1);
     this.blobs.begin();
     this.blobs.add(e.t.x, e.t.z, 0.4, 0);
@@ -220,10 +240,11 @@ export class MenuScene {
     const f = this.focusV;
     const cam = this.r.cam;
     const sv = this.stageV;
-    cam.zoom = (1 - f * 0.6) * (1 - sv) + 0.8 * sv;
+    cam.zoom = (1 - f * 0.45) * (1 - sv) + 0.8 * sv;
     // seleção: fila centralizada e mais alta na tela; senão robô à esquerda (menu) ou em close (guarda-roupa)
-    const menuX = n > 1 ? 21 : e.t.x + 2.5 - f * 2.4;
-    cam.update(menuX * (1 - sv) + 21 * sv, f * 0.9 * (1 - sv) - 1.2 * sv, e.t.z * 0.3 + f * 0.2, dt);
+    const menuX = n > 1 ? 21 : e.t.x + 2.5 - f * 2.4 + f * this.panelShift(e);
+    // close: o boneco inteiro, da cabeça (itens da cabeça) aos pés
+    cam.update(menuX * (1 - sv) + 21 * sv, f * 0.45 * (1 - sv) - 1.2 * sv, e.t.z * 0.3 + f * 0.2, dt);
     this.lighting.update(cam.x, 0, dt);
     this.lighting.request({
       x: e.t.x + 1,
@@ -235,7 +256,6 @@ export class MenuScene {
       priority: 3,
     });
     this.env.update(cam.x, this.t);
-    void this.tmp;
   }
 
   dispose(): void {

@@ -1,6 +1,7 @@
 import {
   AdditiveBlending,
   Color,
+  DoubleSide,
   DynamicDrawUsage,
   InstancedBufferAttribute,
   InstancedBufferGeometry,
@@ -56,6 +57,9 @@ export class Tracers {
     const mat = new ShaderMaterial({
       transparent: true,
       depthWrite: false,
+      // a fita é montada virada para a câmera, mas o giro dela depende do sentido do traço: sem DoubleSide os
+      // traços na horizontal (raio do ciborgue, rastro do rifle, mira laser) eram descartados e não apareciam
+      side: DoubleSide,
       blending: AdditiveBlending,
       vertexShader: /* glsl */ `
         attribute vec3 iA; attribute vec3 iB; attribute vec3 iCol; attribute float iW;

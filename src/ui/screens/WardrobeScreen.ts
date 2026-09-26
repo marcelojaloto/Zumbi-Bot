@@ -19,7 +19,8 @@ export const SLOT_NAMES: Record<CosmeticSlot, string> = {
 const SLOTS: CosmeticSlot[] = ['head', 'eyes', 'mask', 'body', 'back'];
 
 export interface WardrobeHost extends UiHost {
-  previewCosmetics(eq: Partial<Record<CosmeticSlot, string>>): void;
+  /** Veste o boneco do menu; `back` vira o boneco de costas. */
+  previewCosmetics(eq: Partial<Record<CosmeticSlot, string>>, back?: boolean): void;
   setMenuFocus(f: number): void;
 }
 
@@ -33,7 +34,7 @@ function card(
     {
       class: `cos-card ${opts.equipped ? 'on' : ''} ${opts.owned === false ? 'unowned' : ''}`,
       style: `--rc:${col}`,
-      data: { nav: '' },
+      data: { nav: '', id: c.id },
       onclick: opts.onClick,
       title: t(c.desc ?? c.name),
     },
@@ -62,7 +63,7 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
 
   const render = () => {
     refreshScrap();
-    host.previewCosmetics(prof.save.cosmetics.equipped);
+    host.previewCosmetics(prof.save.cosmetics.equipped, tab === 'back');
     body.innerHTML = '';
     for (const b of tabs.children) b.classList.toggle('on', (b as HTMLElement).dataset.k === tab);
     if (tab === 'arsenal') {
@@ -226,7 +227,10 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
       host.setMenuFocus(1);
       render();
     },
-    onHide: () => host.setMenuFocus(0),
+    onHide: () => {
+      host.previewCosmetics(prof.save.cosmetics.equipped);
+      host.setMenuFocus(0);
+    },
     onBack: () => {
       host.screens.pop();
       return true;
@@ -234,40 +238,131 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
   };
 }
 
-/** Loja: ofertas do dia (-20%) e catálogo completo por encaixe, comprados com sucata. */
+/**
+ * Loja: ofertas do dia (-20%) e catálogo completo por encaixe, comprados com sucata. Tocar num item veste o
+ * boneco com ele (prévia) e abre a barra de confirmação: nada é comprado sem apertar "Comprar".
+ */
 export function shopScreen(host: WardrobeHost): Screen {
   const prof = host.profile;
   const body = el('div', { class: 'wr-body' });
   const scrap = el('div', { class: 'scrap' });
-  const msg = el('div', { class: 'muted' });
+  const msg = el('div', { class: 'shop-msg' });
+  const bar = el('div', { class: 'buy-bar', hidden: true });
+  /** Item em prévia (vestido no boneco, esperando a confirmação). */
+  let sel: CosmeticDef | null = null;
+  let msgTimer = 0;
+  const say = (text: string) => {
+    msg.textContent = text;
+    msg.classList.add('show');
+    clearTimeout(msgTimer);
+    msgTimer = window.setTimeout(() => msg.classList.remove('show'), 3000);
+  };
+  const preview = () =>
+    host.previewCosmetics(
+      sel ? { ...prof.save.cosmetics.equipped, [sel.slot]: sel.id } : prof.save.cosmetics.equipped,
+      sel?.slot === 'back',
+    );
+  const close = () => {
+    sel = null;
+    render();
+  };
+  const renderBar = () => {
+    bar.hidden = !sel;
+    bar.innerHTML = '';
+    if (!sel) return;
+    const c = sel;
+    const col = hexColor(RARITY_COLORS[c.rarity]);
+    const owned = prof.owns(c.id);
+    const equipped = prof.save.cosmetics.equipped[c.slot] === c.id;
+    const price = prof.priceOf(c.id) ?? 0;
+    const have = prof.save.profile.scrap;
+    let main: HTMLButtonElement;
+    if (owned)
+      main = el(
+        'button',
+        {
+          class: 'btn primary small',
+          data: { nav: '' },
+          disabled: equipped,
+          onclick: () => {
+            prof.equip(c.slot, c.id);
+            say(t('{name} equipado.', { name: t(c.name) }));
+            close();
+          },
+        },
+        equipped ? t('Equipado') : t('Equipar'),
+      );
+    else if (have >= price)
+      main = el(
+        'button',
+        {
+          class: 'btn primary small',
+          data: { nav: '' },
+          onclick: () => {
+            if (!prof.buy(c.id)) {
+              say(t('Sucata insuficiente.'));
+              return;
+            }
+            prof.equip(c.slot, c.id);
+            host.playUi('loot');
+            say(t('Você comprou {name}!', { name: t(c.name) }));
+            close();
+          },
+        },
+        t('Comprar por ⚙ {n}', { n: fmtInt(price) }),
+      );
+    else
+      main = el(
+        'button',
+        { class: 'btn small', disabled: true },
+        t('Faltam ⚙ {n}', { n: fmtInt(price - have) }),
+      );
+    bar.append(
+      el(
+        'div',
+        { class: 'bb-info' },
+        el('b', { style: `color:${col}` }, t(c.name)),
+        el(
+          'span',
+          {},
+          `${t(RARITY_NAMES[c.rarity])} • ${t(SLOT_NAMES[c.slot])} • ${owned ? t('Já possui') : t('Prévia no boneco')}`,
+        ),
+      ),
+      el(
+        'div',
+        { class: 'row-btns' },
+        main,
+        el('button', { class: 'btn small', data: { nav: '' }, onclick: close }, t('Cancelar')),
+      ),
+    );
+    if (!main.disabled) main.focus();
+  };
   const render = () => {
     scrap.textContent = t('Sucata: {n}', { n: fmtInt(prof.save.profile.scrap) });
-    host.previewCosmetics(prof.save.cosmetics.equipped);
+    preview();
+    const top = body.scrollTop;
     body.innerHTML = '';
-    const buy = (c: CosmeticDef) => {
-      if (prof.owns(c.id)) {
-        prof.equip(c.slot, c.id);
-        msg.textContent = t('{name} equipado.', { name: t(c.name) });
-      } else if (prof.buy(c.id)) {
-        prof.equip(c.slot, c.id);
-        host.playUi('loot');
-        msg.textContent = t('Você comprou {name}!', { name: t(c.name) });
-      } else msg.textContent = t('Sucata insuficiente.');
+    const pick = (c: CosmeticDef) => {
+      sel = sel?.id === c.id ? null : c;
       render();
+    };
+    const shopCard = (c: CosmeticDef) => {
+      const owned = prof.owns(c.id);
+      const b = card(c, {
+        owned,
+        equipped: prof.save.cosmetics.equipped[c.slot] === c.id,
+        price: owned ? undefined : prof.priceOf(c.id),
+        note: owned ? t('Já possui') : undefined,
+        onClick: () => pick(c),
+      });
+      if (sel?.id === c.id) b.classList.add('sel');
+      return b;
     };
     body.appendChild(el('h3', {}, t('Ofertas do dia (−20%)')));
     const deals = el('div', { class: 'cos-grid' });
     for (const id of dailyDeals()) {
       const c = COSMETICS[id];
-      if (!c) continue;
-      deals.appendChild(
-        card(c, {
-          owned: prof.owns(id),
-          price: prof.owns(id) ? undefined : prof.priceOf(id),
-          note: prof.owns(id) ? t('Já possui') : undefined,
-          onClick: () => buy(c),
-        }),
-      );
+      if (c) deals.appendChild(shopCard(c));
     }
     body.appendChild(deals);
     for (const s of SLOTS) {
@@ -276,17 +371,11 @@ export function shopScreen(host: WardrobeHost): Screen {
         .sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
       body.appendChild(el('h3', {}, t(SLOT_NAMES[s])));
       const g = el('div', { class: 'cos-grid' });
-      for (const c of items)
-        g.appendChild(
-          card(c, {
-            owned: prof.owns(c.id),
-            price: prof.owns(c.id) ? undefined : prof.priceOf(c.id),
-            note: prof.owns(c.id) ? t('Já possui') : undefined,
-            onClick: () => buy(c),
-          }),
-        );
+      for (const c of items) g.appendChild(shopCard(c));
       body.appendChild(g);
     }
+    body.scrollTop = top;
+    renderBar();
   };
   const e = el(
     'div',
@@ -295,9 +384,10 @@ export function shopScreen(host: WardrobeHost): Screen {
       'div',
       { class: 'wr-panel' },
       el('h2', {}, t('LOJA')),
-      scrap,
-      msg,
+      el('div', { class: 'shop-head' }, scrap, msg),
+      el('p', { class: 'muted shop-tip' }, t('Escolha um item para ver no boneco antes de comprar.')),
       body,
+      bar,
       el(
         'div',
         { class: 'row-btns' },
@@ -313,8 +403,17 @@ export function shopScreen(host: WardrobeHost): Screen {
       host.setMenuFocus(1);
       render();
     },
-    onHide: () => host.setMenuFocus(0),
+    onHide: () => {
+      // sai sem comprar: o boneco volta com o que está equipado
+      sel = null;
+      host.previewCosmetics(prof.save.cosmetics.equipped);
+      host.setMenuFocus(0);
+    },
     onBack: () => {
+      if (sel) {
+        close();
+        return true;
+      }
       host.screens.pop();
       return true;
     },

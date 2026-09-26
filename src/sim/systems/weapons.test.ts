@@ -97,6 +97,37 @@ describe('armas de fogo', () => {
   });
 });
 
+describe('arma pega no chão', () => {
+  it('sem munição nenhuma, volta sozinho para a pistola', () => {
+    const w = makeWorld();
+    const p = player(w);
+    const pc = p.player!;
+    giveFirearm(w, p, 'shotgun');
+    pc.ammoMag.shotgun = 1;
+    pc.ammo.shell = 0;
+    w.drainEvents();
+    run(w, 1, { buttons: Btn.Fire });
+    const ev = w.drainEvents();
+    expect(countShots(ev)).toBe(1);
+    expect(pc.guns[pc.gunIdx]).toBe('pistol');
+    expect(ev.some((e) => e.t === 'weaponSwap' && e.weapon === 'pistol')).toBe(true);
+    // com reserva, recarrega em vez de trocar
+    pc.gunIdx = pc.guns.indexOf('shotgun');
+    pc.ammoMag.shotgun = 1;
+    pc.ammo.shell = 4;
+    fireFor(w, 30, 0);
+    fireFor(w, 1);
+    expect(pc.guns[pc.gunIdx]).toBe('shotgun');
+    // trocou para uma arma vazia: ao apertar o gatilho, vai para a pistola
+    pc.ammoMag.shotgun = 0;
+    pc.ammo.shell = 0;
+    pc.fire.reload = 0;
+    fireFor(w, 30, 0);
+    fireFor(w, 1);
+    expect(pc.guns[pc.gunIdx]).toBe('pistol');
+  });
+});
+
 describe('mira', () => {
   it('tiro mirado com o mouse na diagonal sai reto para a frente', () => {
     const w = makeWorld();

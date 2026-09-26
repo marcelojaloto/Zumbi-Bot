@@ -14,7 +14,7 @@ export const ROWS: [string, string[], string][] = [
   ['Mover (frente/fundo e lados)', ['@move'], 'Analógico esquerdo'],
   ['Correr', ['@run', 'Rodinha do mouse', '2× ← →'], 'L3'],
   ['Pular / pulo duplo', ['@jump'], 'A'],
-  ['Soco / arma branca / pegar item', ['@punch'], 'X'],
+  ['Soco / arma branca / cajado / pegar item', ['@punch'], 'X'],
   ['Chute (correndo: voadora)', ['@kick'], 'Y'],
   ['Especial do personagem', ['@special', 'Mouse dir.', '@punch+@kick'], 'B'],
   ['Atirar / conjurar', ['Mouse esq.', '@fire'], 'RT'],
@@ -32,15 +32,15 @@ export const ROW_KEY_TEXTS = ROWS.flatMap((r) => r[1]).filter((k) => !k.startsWi
 /** Controles de toque: [botão na tela, o que faz]. */
 export const TOUCH_ROWS: [string, string][] = [
   ['Direcional (esquerda)', 'Anda e muda de plano; empurrar até a borda corre'],
-  ['SOCO', 'Soco, arma branca e pegar itens; 4 seguidos = combo'],
+  ['SOCO', 'Soco (com o cajado, bate com ele), arma branca e pegar itens; seguidos = combo'],
   ['CHUTE', 'Chute; correndo = voadora'],
   ['PULAR', 'Pulo; toque de novo no ar para o pulo duplo'],
   ['ATIRAR', 'Atira ou conjura o cajado, mirando sozinho no inimigo à frente'],
   ['ESPECIAL', 'Especial do personagem (gasta mana)'],
-  ['⟳', 'Recarregar'],
-  ['▶▶', 'Próxima arma ou cajado'],
+  ['▶▶', 'Próxima arma ou cajado (a arma recarrega sozinha)'],
   ['⇄', 'Alterna entre arma de fogo e cajado'],
   ['⏸', 'Pausa'],
+  ['🗺', 'Mostra ou esconde o minimapa'],
 ];
 
 export function controlsScreen(host: UiHost): Screen {

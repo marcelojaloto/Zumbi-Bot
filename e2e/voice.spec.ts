@@ -138,10 +138,13 @@ test('chat de voz: opções da sala, todos ouvem todos (3 aparelhos), microfone,
   expect(
     await guest.evaluate(() => (window as unknown as { __game: G }).__game.app.session!.world.difficulty),
   ).toBe('hard');
-  await expect(host.locator('.hud-voice')).toContainText('Microfone mudo');
+  // no computador o botão mostra só o ícone e a tecla; o nome fica na dica
+  await expect(host.locator('.hud-voice')).toHaveText('🔇 V');
+  await expect(host.locator('.hud-voice')).toHaveAttribute('title', 'Microfone mudo (V)');
   await host.bringToFront();
   await host.keyboard.press('KeyV');
-  await expect(host.locator('.hud-voice')).toContainText('Microfone ligado');
+  await expect(host.locator('.hud-voice')).toHaveText('🎤 V');
+  await expect(host.locator('.hud-voice')).toHaveAttribute('title', 'Microfone ligado (V)');
   await expect(guest.locator('.ph').first().locator('.ph-mic')).toHaveText(/🎤|🔊/);
   await expect
     .poll(async () => (await voice(guest)).speaking, { timeout: 20_000, intervals: [100] })

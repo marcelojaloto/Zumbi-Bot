@@ -1,11 +1,14 @@
 import type { Difficulty } from './types';
 
 /**
- * A câmera inclinada achata a profundidade: no meio da faixa, 1 m em Z aparece na tela ~2,3× menor que 1 m em X.
- * Para cima/para baixo anda essa razão mais rápido em metros, e na tela fica na mesma velocidade que para os lados
- * (um teste confere o valor com a câmera de verdade).
+ * A câmera inclinada achata a profundidade: 1 m em Z aparece na tela menor que 1 m em X — ~3× no fundo da faixa
+ * e ~2,2× na frente (perspectiva). Para cima/para baixo anda essa razão mais rápido em metros e fica na mesma
+ * velocidade na tela que para os lados, em qualquer profundidade; as diagonais ficam iguais também (um teste
+ * confere a conta com a câmera de verdade).
  */
-export const DEPTH_SPEED = 2.3;
+export function depthSpeed(z: number): number {
+  return Math.min(3.2, Math.max(2, 2.5 - 0.15 * z));
+}
 
 /** Constantes de balanceamento do jogador e da progressão. */
 export const PLAYER = {
@@ -17,10 +20,9 @@ export const PLAYER = {
   manaRegenDelayS: 1.5,
   dmgPerLevel: 0.02,
   maxLevel: 50,
+  /** Velocidade para os lados; em Z é a mesma na tela (`depthSpeed`). */
   walkX: 4.0,
-  walkZ: 4.0 * DEPTH_SPEED,
   runX: 7.5,
-  runZ: 7.5 * DEPTH_SPEED,
   jumpV: 8.5,
   doubleJumpV: 7.5,
   gravity: 26,
