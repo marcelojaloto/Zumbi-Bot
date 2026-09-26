@@ -130,6 +130,9 @@ Atirar/Conjurar (mira sozinho), Especial, Recarregar, Próxima arma e Arma ⇄ C
 - **App para Android:** baixe o [zumbi-bot.apk](https://github.com/marcelojaloto/Zumbi-Bot/releases/latest/download/zumbi-bot.apk)
   no celular e instale (o Android pede para permitir apps dessa fonte). Como publicar na Play Store:
   [docs/PLAY_STORE.md](docs/PLAY_STORE.md).
+- **App para iPhone:** o projeto está pronto e é compilado no GitHub (workflow iOS). Para instalar pelo TestFlight e
+  publicar na App Store é preciso uma conta de desenvolvedor Apple — passo a passo em
+  [docs/APP_STORE.md](docs/APP_STORE.md). Até lá, jogue no Safari (acima).
 - **Idiomas:** português e inglês, escolhidos pelo idioma do navegador e trocáveis em Configurações → Jogo.
 - **Dificuldade:** Muito fácil, Fácil, Normal (padrão) e Difícil — escolha na tela de mapas ou em Configurações →
   Jogo. Nas mais fáceis os chefes têm menos vida e atacam com mais pausa; ao perder, o jogo oferece tentar de
@@ -202,6 +205,14 @@ O workflow `.github/workflows/android.yml` gera o app com o mesmo jogo (projeto 
 teste em todo PR e, na `main`, a release "Android" com o `zumbi-bot.apk`. Com os segredos da chave de upload, gera
 também o AAB assinado para a Play Store. O passo a passo da publicação está em [docs/PLAY_STORE.md](docs/PLAY_STORE.md)
 e os textos e imagens da loja em [store/android/](store/android/).
+
+## App de iPhone
+
+O workflow `.github/workflows/ios.yml` gera o app de iPhone num Mac do GitHub (projeto em `ios/`, Capacitor): compila
+para o simulador, abre o app num iPhone simulado e fotografa a tela, e gera um `.ipa` sem assinatura. Com os segredos
+da conta Apple, assina e envia para o TestFlight. O passo a passo (conta, certificado, TestFlight e App Store) está em
+[docs/APP_STORE.md](docs/APP_STORE.md) e as capturas da App Store em [store/ios/](store/ios/)
+(`npm run store:shots:ios`).
 
 ## Licença
 
