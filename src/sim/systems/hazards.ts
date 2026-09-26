@@ -80,6 +80,7 @@ export function hazardSystem(w: World): void {
           ignoreInvuln: hz.tickEvery > 0,
           noReact: hz.tickEvery > 0 && hz.hit.knockback <= 0,
           noCombo: hz.tickEvery > 0,
+          source: hz.source,
         });
       }
     }

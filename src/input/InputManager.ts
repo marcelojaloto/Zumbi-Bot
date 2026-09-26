@@ -58,7 +58,7 @@ export const ACTION_LABELS: Record<Action, string> = {
   jump: 'Pular / pulo duplo',
   punch: 'Soco / arma branca / pegar',
   kick: 'Chute',
-  special: 'Especial (Giro Turbo)',
+  special: 'Especial do personagem',
   fire: 'Atirar / conjurar',
   aim: 'Mirar (precisão)',
   reload: 'Recarregar',

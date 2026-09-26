@@ -5,7 +5,7 @@ import { HUMAN, J, humanoidJoints, type Proportions } from './skeleton';
 const H = Math.PI / 2;
 
 /** Encaixes padrão do humanoide (armas, chapéus, óculos, máscaras, capas). */
-function humanSockets(headH: number, headD: number, chestD: number): Record<string, SocketSpec> {
+export function humanSockets(headH: number, headD: number, chestD: number): Record<string, SocketSpec> {
   return {
     head_top: { j: J.head, at: [0, headH + 0.02, 0] },
     face: { j: J.head, at: [0, headH * 0.55, headD / 2 + 0.005] },
@@ -20,7 +20,7 @@ function humanSockets(headH: number, headD: number, chestD: number): Record<stri
   };
 }
 
-function limbs(p: {
+export function limbs(p: {
   upper: number;
   fore: number;
   hand: number;

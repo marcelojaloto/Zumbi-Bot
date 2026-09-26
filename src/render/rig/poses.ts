@@ -597,6 +597,50 @@ const K: Record<string, [Key, Key]> = {
       p.y = -0.2;
     },
   ],
+  nova: [
+    (p) => {
+      p.set(J.upperArmL, -2.2, 0, 0.2)
+        .set(J.upperArmR, -2.2, 0, -0.2)
+        .set(J.foreArmL, -1.2)
+        .set(J.foreArmR, -1.2)
+        .set(J.spine, 0.3)
+        .set(J.thighL, -0.5)
+        .set(J.shinL, 0.8)
+        .set(J.thighR, -0.5)
+        .set(J.shinR, 0.8);
+      p.y = -0.1;
+    },
+    (p) => {
+      p.set(J.upperArmL, -2.4, 0, 1.2)
+        .set(J.upperArmR, -2.4, 0, -1.2)
+        .set(J.foreArmL, -0.2)
+        .set(J.foreArmR, -0.2)
+        .set(J.spine, -0.25)
+        .set(J.neck, -0.3);
+      p.y = 0.05;
+    },
+  ],
+  laser: [
+    (p) =>
+      p
+        .set(J.upperArmR, -1.3)
+        .set(J.foreArmR, -0.6)
+        .set(J.upperArmL, -1.2, 0, 0.3)
+        .set(J.foreArmL, -0.9)
+        .set(J.chest, 0, -0.15)
+        .set(J.thighL, -0.3)
+        .set(J.shinL, 0.4),
+    (p) =>
+      p
+        .set(J.upperArmR, -1.57)
+        .set(J.foreArmR, 0)
+        .set(J.upperArmL, -1.45, 0, 0.35)
+        .set(J.foreArmL, -0.5)
+        .set(J.chest, 0, -0.2)
+        .set(J.spine, -0.1)
+        .set(J.thighL, -0.35)
+        .set(J.shinL, 0.45),
+  ],
   cast: [
     (p) =>
       p

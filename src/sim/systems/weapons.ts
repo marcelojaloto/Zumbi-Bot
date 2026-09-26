@@ -9,6 +9,7 @@ import { applyHit } from '../combat/applyHit';
 import { falloff } from '../combat/damage';
 import { shootDown, spawnProjectile } from './projectiles';
 import { LOCOMOTION } from './playerControl';
+import { characterDef } from '../defs';
 
 /** Munição inicial de cada arma desbloqueada: 1 pente cheio + 1 pente de reserva. */
 export function initAmmo(p: PlayerComp): void {
@@ -89,7 +90,7 @@ function tickReload(w: World, e: Entity, d: FirearmDef): void {
   const p = e.player!;
   if (p.fire.reload <= 0) return;
   const turbo = p.powers.turbo > 0 ? 1.3 : 1;
-  p.fire.reload -= turbo;
+  p.fire.reload -= turbo * characterDef(e).stats.reload;
   if (p.fire.reload > 0) return;
   if (d.reload.kind === 'mag') {
     const need = d.mag - (p.ammoMag[d.id] ?? 0);
@@ -249,6 +250,7 @@ function fire(w: World, e: Entity, d: FirearmDef): void {
           onImpact: { explosion: del.explosion },
         },
         fuseS: del.fuseS,
+        weapon: d.id,
       });
       // lança um pouco para cima
       gr.t.vy = 4.5;
@@ -347,6 +349,7 @@ function hitscan(
       x: x + dx * h.t,
       y,
       z: z + dz * h.t,
+      source: 'gun',
     });
     n++;
     if (h.e.kind === 'prop' || n > pierce) {

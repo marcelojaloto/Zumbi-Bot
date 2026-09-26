@@ -8,6 +8,7 @@ import { STAFF_ORDER } from '../data/staffs';
 import { WEAPON_ORDER } from '../data/weapons';
 import { killEntity } from '../sim/combat/applyHit';
 import type { App } from './App';
+import { isCharacterId } from '../data/characters';
 
 export interface DebugState {
   screen: string;
@@ -28,6 +29,7 @@ export interface DebugState {
     state: string;
     ammo: string;
     score: number;
+    character: string;
   };
   fps: number;
   drawCalls: number;
@@ -71,6 +73,7 @@ export function installDebug(app: App): void {
               state: p.fighter!.state,
               ammo: `${p.player!.ammoMag[p.player!.guns[p.player!.gunIdx]!] ?? 0}`,
               score: p.player!.score,
+              character: p.player!.character,
             }
           : undefined,
         fps: app.fps,
@@ -82,6 +85,10 @@ export function installDebug(app: App): void {
     },
     async startLevel(mapId: string, levelIdx = 0) {
       await app.startLevel(mapId, levelIdx);
+    },
+    /** Personagem do jogador 1 nas próximas partidas. */
+    setCharacter(id: string) {
+      if (isCharacterId(id)) app.profile.setCharacter(id);
     },
     step(ticks: number) {
       app.session?.stepTicks(ticks);

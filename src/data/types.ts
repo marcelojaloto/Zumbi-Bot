@@ -131,6 +131,78 @@ export interface MeleeMoveDef {
   air?: boolean;
   /** Múltiplos acertos: re-arma o hitSet a cada N ticks ativos. */
   rehitEvery?: number;
+  /** Especial de personagem (conta como origem 'special' no dano). */
+  special?: boolean;
+  /** Efeitos extras disparados no primeiro quadro ativo (ou em intervalo, no raio). */
+  effects?: MoveEffect[];
+  /** Som tocado no primeiro quadro ativo. */
+  sfx?: string;
+}
+
+/** Efeitos de golpes especiais além da caixa de acerto. */
+export type MoveEffect =
+  /** Anel só visual em volta do lutador. */
+  | { k: 'ring'; r: number; ticks: number; fx: string }
+  /** Onda de choque no chão que cresce a partir do lutador e acerta quem estiver no chão. */
+  | {
+      k: 'shockwave';
+      r0: number;
+      grow: number;
+      width: number;
+      ticks: number;
+      height: number;
+      hit: HitSpec;
+      fx: string;
+    }
+  /** Raio visual para a frente, repetido a cada `every` ticks ativos. */
+  | { k: 'beam'; length: number; y: number; every: number }
+  /** Poder temporário no próprio jogador. */
+  | { k: 'power'; power: PowerId; s: number };
+
+// ---------------------------------------------------------------------------
+// Personagens jogáveis
+// ---------------------------------------------------------------------------
+export type CharacterId = 'robot' | 'mage' | 'military' | 'cyborg' | 'mutant';
+/** Origem do dano causado por um jogador (para os multiplicadores do personagem). */
+export type HitSource = 'melee' | 'gun' | 'staff' | 'special';
+
+export interface CharacterDef {
+  id: CharacterId;
+  /** Textos em português (chaves de tradução). */
+  name: string;
+  title: string;
+  desc: string;
+  specialName: string;
+  specialDesc: string;
+  /** Cor de destaque na interface. */
+  color: number;
+  stats: {
+    /** Vida e mana no nível 1 (o robô tem 100/100). */
+    hp: number;
+    mana: number;
+    /** Multiplicadores em relação ao robô. */
+    manaRegen: number;
+    speed: number;
+    jump: number;
+    dmg: Record<HitSource, number>;
+    /** Velocidade de recarga (>1 = mais rápida). */
+    reload: number;
+    /** Regeneração de vida (HP/s) depois de `hpRegenDelayS` sem apanhar. */
+    hpRegen: number;
+    hpRegenDelayS: number;
+    /** Massa do corpo (empurrões diminuem com a massa). */
+    mass: number;
+    /** Multiplicador do atordoamento recebido. */
+    hitstun: number;
+  };
+  /** Multiplicadores do dano recebido por tipo (<1 resiste). */
+  resist: Resist;
+  /** Golpe especial (id em MOVES). */
+  special: string;
+  /** Modo inicial (a maga começa no cajado). */
+  startMode: 'gun' | 'staff';
+  /** Corpo metálico (sons e faíscas ao apanhar). */
+  metal: boolean;
 }
 
 export interface ExplosionSpec {
@@ -679,7 +751,7 @@ export interface MapDef {
 // ---------------------------------------------------------------------------
 // Itens, cosméticos e loot
 // ---------------------------------------------------------------------------
-export type PowerId = 'doubleDamage' | 'turbo' | 'invulnerable';
+export type PowerId = 'doubleDamage' | 'turbo' | 'invulnerable' | 'rage';
 
 export type ItemEffect =
   | { k: 'heal'; amount: number }
