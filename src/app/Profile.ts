@@ -2,7 +2,7 @@ import { t } from '../i18n';
 import { PLAYER, xpToNext } from '../data/balance';
 import { getMap, MAPS } from '../data/maps';
 import { STAFFS } from '../data/staffs';
-import type { CosmeticId, CosmeticSlot, StaffId, WeaponId } from '../data/types';
+import type { CharacterId, CosmeticId, CosmeticSlot, StaffId, WeaponId } from '../data/types';
 import { COSMETICS, SELL_VALUE } from '../data/cosmetics';
 import { Rng } from '../core/rng';
 import { insertRank } from '../save/ranking';
@@ -55,6 +55,7 @@ export class Profile {
     return {
       slot: 0,
       name: s.profile.name,
+      character: s.profile.character,
       level: s.profile.level,
       xp: s.profile.xp,
       guns: [...s.unlocks.firearms] as WeaponId[],
@@ -158,9 +159,17 @@ export class Profile {
       date: Date.now(),
       victory: stats.victory,
       ...(stats.ngPlus ? { ngPlus: true } : {}),
+      ...(stats.chars?.length ? { chars: [...stats.chars] } : {}),
     });
     if (pos >= 0) this.storage.writeRanking(this.ranking);
     return pos;
+  }
+
+  /** Personagem escolhido pelo jogador 1 (fica para a próxima partida). */
+  setCharacter(id: CharacterId): void {
+    if (this.save.profile.character === id) return;
+    this.save.profile.character = id;
+    this.persistSoon();
   }
 
   // ------------------------------------------------------------ cosméticos

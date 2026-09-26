@@ -6,6 +6,7 @@ import { STATUS } from '../data/statusEffects';
 import { MELEE_WEAPONS } from '../data/melee';
 import { ITEMS } from '../data/items';
 import { COSMETICS, RARITY_NAMES } from '../data/cosmetics';
+import { CHARACTERS } from '../data/characters';
 
 /**
  * Todos os textos de dados que aparecem na tela (chaves do dicionário). Usado pelo teste de cobertura
@@ -46,6 +47,13 @@ export function dataKeys(): string[] {
     add(c.desc);
   }
   for (const r of Object.values(RARITY_NAMES)) add(r);
+  for (const c of Object.values(CHARACTERS)) {
+    add(c.name);
+    add(c.title);
+    add(c.desc);
+    add(c.specialName);
+    add(c.specialDesc);
+  }
   return [...out];
 }
 

@@ -1,4 +1,5 @@
 import type {
+  CharacterId,
   DamageType,
   Element,
   ItemId,
@@ -31,6 +32,8 @@ export interface RunStats {
   victory: boolean;
   /** Partida no Novo Jogo+. */
   ngPlus?: boolean;
+  /** Personagem de cada jogador. */
+  chars?: CharacterId[];
 }
 
 /**

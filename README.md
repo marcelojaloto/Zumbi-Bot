@@ -26,6 +26,16 @@ Web Audio.
   | 9   | Campo de Guerra    | General Criotanque                     | Cajado do Gelo                        |
   | 10  | Arena Final        | **OMEGA-Z**, ciborgue zumbi de 4 fases | Coroa do Ômega, créditos e Novo Jogo+ |
 
+- **5 personagens**, escolhidos antes de cada partida, cada um com atributos e especial próprios:
+
+  | Personagem | Ponto forte                                             | Especial                                                |
+  | ---------- | ------------------------------------------------------- | ------------------------------------------------------- |
+  | Zumbi Bot  | equilibrado                                             | **Giro Turbo**: gira acertando todos em volta           |
+  | Maga       | magias muito mais fortes e mana de sobra; aguenta pouco | **Nova Arcana**: explosão em volta que derruba          |
+  | Militar    | muita vida, socos fortes, quase não é empurrado; lento  | **Soco Sísmico**: onda de choque no chão                |
+  | Ciborgue   | tiros mais fortes e recarga rápida                      | **Raio Laser**: atravessa todos os inimigos à frente    |
+  | Mutante    | rápido, pula alto e se regenera; ruim de mira           | **Fúria Mutante**: rugido + 6 s de fúria que rouba vida |
+
 - **7 armas de fogo** (pistola, escopeta, submetralhadora, fuzil de assalto, rifle de precisão, metralhadora e
   lança-granadas), com dano, cadência, recuo, munição e recarga próprios. As armas novas aparecem em caixas
   pelos mapas.
@@ -48,7 +58,7 @@ Web Audio.
 | Pular / pulo duplo                | Espaço                 | A                  |
 | Soco / arma branca / pegar item   | J                      | X                  |
 | Chute (correndo: voadora)         | K                      | Y                  |
-| Especial: Giro Turbo              | U ou J+K               | B                  |
+| Especial do personagem            | U ou J+K               | B                  |
 | Atirar / conjurar                 | botão esquerdo ou L    | RT                 |
 | Mirar (precisão e crítico)        | botão direito ou I     | LT                 |
 | Recarregar                        | R                      | D-pad ↓            |

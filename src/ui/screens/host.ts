@@ -9,6 +9,8 @@ export interface UiHost {
   restartLevel(): void;
   quitToMenu(): void;
   startLevel(mapId: string, levelIdx: number): void;
+  /** Tela de seleção de personagem antes de começar a fase. */
+  openLobby(mapId: string, levelIdx: number): void;
   applySettings(): void;
   /** Refaz as telas abertas depois de trocar o idioma. */
   relocalize(): void;

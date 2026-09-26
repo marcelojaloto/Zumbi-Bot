@@ -1,5 +1,5 @@
 import { DT, secToTicks } from '../../core/time';
-import type { ProjectileSpec } from '../../data/types';
+import type { HitSource, ProjectileSpec } from '../../data/types';
 import {
   isCharacter,
   isHostile,
@@ -141,8 +141,9 @@ function impact(w: World, p: Entity, x: number, y: number, z: number): void {
   const pc = p.projectile!;
   w.emit({ t: 'impact', x, y, z, visual: pc.visual, element: undefined });
   const oi = pc.onImpact;
-  if (oi?.explosion) explode(w, x, Math.max(0.3, y), z, oi.explosion, pc.owner, p.team);
-  if (oi?.zone) spawnZone(w, x, z, oi.zone, pc.owner, p.team);
+  const source = projSource(pc);
+  if (oi?.explosion) explode(w, x, Math.max(0.3, y), z, oi.explosion, pc.owner, p.team, undefined, source);
+  if (oi?.zone) spawnZone(w, x, z, oi.zone, pc.owner, p.team, undefined, source);
   w.remove(p.id);
 }
 
@@ -229,6 +230,7 @@ export function projectileSystem(w: World): void {
         x: cx,
         y: cy,
         z: cz,
+        source: projSource(pc),
       });
       if (pc.special) applySpecial(w, p, e);
       if (pc.pierce > 0) {
@@ -285,6 +287,11 @@ export function projectileSystem(w: World): void {
       w.remove(p.id);
     }
   }
+}
+
+/** Origem do dano de um projétil de jogador (cajado ou arma de fogo). */
+function projSource(pc: ProjectileComp): HitSource | undefined {
+  return pc.staff ? 'staff' : pc.weapon ? 'gun' : undefined;
 }
 
 function applySpecial(w: World, p: Entity, e: Entity): void {

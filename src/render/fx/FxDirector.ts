@@ -1,5 +1,6 @@
 import type { Scene } from 'three';
 import { BOSSES } from '../../data/bosses';
+import { getCharacter } from '../../data/characters';
 import { ENEMIES } from '../../data/enemies';
 import type { Element } from '../../data/types';
 import type { GameEvent } from '../../sim/events';
@@ -148,7 +149,9 @@ export class FxDirector {
             kind === 'enemy'
               ? ENEMIES[dst!.defId]?.family
               : kind === 'player'
-                ? 'player'
+                ? getCharacter(dst!.player?.character).metal
+                  ? 'player'
+                  : 'fleshPlayer'
                 : kind === 'boss'
                   ? 'boss'
                   : kind;
@@ -186,6 +189,21 @@ export class FxDirector {
               4,
             );
             if (ev.heavy) this.debris.emit(ev.x, ev.y, ev.z, 3, 0x5a6270, 3, 0.07, this.rnd);
+          } else if (fam === 'fleshPlayer') {
+            // personagens de carne e osso: estrelas de impacto em vez de faíscas
+            this.burst(
+              ev.x,
+              ev.y,
+              ev.z,
+              ev.heavy ? 12 : 7,
+              0xffe2a8,
+              ev.heavy ? 5 : 4,
+              0.1,
+              0.3,
+              true,
+              12,
+              3,
+            );
           } else if (dst?.kind === 'prop') {
             this.debris.emit(ev.x, ev.y, ev.z, 3, 0x6a4a2a, 2.5, 0.1, this.rnd);
           }
@@ -237,9 +255,11 @@ export class FxDirector {
             this.smoke(ev.x, ev.y + 1, ev.z, 5);
             this.flash(ev.x, ev.y + 1, ev.z, 0xffa04a, 12, 6, 0.25);
           } else if (ev.family === 'player') {
-            this.burst(ev.x, ev.y + 1, ev.z, 30, 0x39e6ff, 6, 0.15, 0.7, true, 8, 4);
-            this.debris.emit(ev.x, ev.y + 1, ev.z, 10, 0x7a8aa0, 4, 0.12, this.rnd);
-            this.flash(ev.x, ev.y + 1, ev.z, 0x39e6ff, 14, 8, 0.4);
+            const ch = getCharacter(e?.player?.character);
+            const c = ch.id === 'robot' ? 0x39e6ff : ch.color;
+            this.burst(ev.x, ev.y + 1, ev.z, 30, c, 6, 0.15, 0.7, true, 8, 4);
+            if (ch.metal) this.debris.emit(ev.x, ev.y + 1, ev.z, 10, 0x7a8aa0, 4, 0.12, this.rnd);
+            this.flash(ev.x, ev.y + 1, ev.z, c, 14, 8, 0.4);
           }
           void e;
           break;

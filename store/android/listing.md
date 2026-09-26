@@ -21,7 +21,8 @@ Os zumbis tomaram a cidade e só um robô pode detê-los. Zumbi Bot é um beat '
 ruas, pule, soque, chute e atire para limpar 10 mapas cheios de mortos-vivos e robôs rebeldes.
 
 • 10 mapas, da Vila Assombrada à Arena Final, cada um com seu chefe gigante e seus próprios ataques
-• Combos de socos e chutes, voadora, pulo duplo e o Giro Turbo especial
+• 5 personagens para escolher — robô, maga, militar, ciborgue e mutante — cada um com seu golpe especial
+• Combos de socos e chutes, voadora e pulo duplo
 • 7 armas de fogo — pistola, escopeta, submetralhadora, fuzil, sniper, metralhadora e lança-granadas
 • 10 cajados mágicos com elementos: fogo, gelo, água, raio, veneno, vento, terra e mais
 • Poderes, itens e armas brancas espalhados pelas fases
@@ -54,7 +55,8 @@ Zombies have taken over the city and only one robot can stop them. Zumbi Bot is 
 streets, jump, punch, kick and shoot your way through 10 maps packed with the undead and rogue robots.
 
 • 10 maps, from the Haunted Village to the Final Arena, each with its own giant boss and attacks
-• Punch and kick combos, flying kick, double jump and the Turbo Spin special
+• 5 characters to pick — robot, mage, soldier, cyborg and mutant — each with a special move
+• Punch and kick combos, flying kick and double jump
 • 7 firearms — pistol, shotgun, SMG, assault rifle, sniper, machine gun and grenade launcher
 • 10 magic staffs with elements: fire, ice, water, lightning, poison, wind, earth and more
 • Powers, items and melee weapons scattered across the levels

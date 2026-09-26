@@ -1,4 +1,13 @@
-import type { CosmeticId, CosmeticSlot, Difficulty, LevelId, MapId, StaffId, WeaponId } from '../data/types';
+import type {
+  CharacterId,
+  CosmeticId,
+  CosmeticSlot,
+  Difficulty,
+  LevelId,
+  MapId,
+  StaffId,
+  WeaponId,
+} from '../data/types';
 
 export const SAVE_VERSION = 1;
 export const SETTINGS_VERSION = 1;
@@ -15,7 +24,8 @@ export interface SaveV1 {
   version: 1;
   createdAt: number;
   updatedAt: number;
-  profile: { name: string; level: number; xp: number; scrap: number };
+  /** character = último personagem escolhido pelo jogador 1. */
+  profile: { name: string; level: number; xp: number; scrap: number; character: CharacterId };
   progress: { unlockedLevels: LevelId[]; levels: Record<LevelId, LevelProgress> };
   unlocks: { firearms: WeaponId[]; staffs: StaffId[] };
   cosmetics: {
@@ -80,6 +90,8 @@ export interface RankEntry {
   date: number;
   victory: boolean;
   ngPlus?: boolean;
+  /** Personagens da partida (um por jogador). */
+  chars?: CharacterId[];
 }
 
 export interface RankingV1 {
@@ -92,7 +104,7 @@ export function defaultSave(now = 0): SaveV1 {
     version: 1,
     createdAt: now,
     updatedAt: now,
-    profile: { name: 'Zumbi Bot', level: 1, xp: 0, scrap: 0 },
+    profile: { name: 'Zumbi Bot', level: 1, xp: 0, scrap: 0, character: 'robot' },
     progress: { unlockedLevels: ['vila-1'], levels: {} },
     unlocks: { firearms: ['pistol'], staffs: ['heal'] },
     cosmetics: { owned: [], equipped: {}, seen: [], pity: 0 },

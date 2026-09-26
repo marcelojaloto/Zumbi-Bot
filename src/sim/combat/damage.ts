@@ -8,7 +8,14 @@ export interface DamageInput {
   falloffMult?: number;
   crit?: boolean;
   critMult?: number;
-  attacker?: { levelMult?: number; powerDouble?: boolean; diffMult?: number; mapMult?: number };
+  attacker?: {
+    levelMult?: number;
+    powerDouble?: boolean;
+    diffMult?: number;
+    mapMult?: number;
+    /** Multiplicador do personagem do jogador para a origem do dano. */
+    charMult?: number;
+  };
   target: {
     resist?: Resist;
     phaseResist?: Resist;
@@ -48,6 +55,7 @@ export function computeDamage(i: DamageInput): DamageResult {
   dmg *= a.powerDouble ? 2 : 1;
   dmg *= a.diffMult ?? 1;
   dmg *= a.mapMult ?? 1;
+  dmg *= a.charMult ?? 1;
   if (i.crit) dmg *= i.critMult ?? 1.5;
   dmg *= tgt.resist?.[i.dtype] ?? 1;
   dmg *= tgt.phaseResist?.[i.dtype] ?? 1;

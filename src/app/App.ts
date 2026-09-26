@@ -16,8 +16,10 @@ import { Hud } from '../ui/hud/Hud';
 import { ScreenManager } from '../ui/ScreenManager';
 import { Profile } from './Profile';
 import { MenuScene } from '../render/MenuScene';
-import { shopScreen, wardrobeScreen, type WardrobeHost } from '../ui/screens/WardrobeScreen';
-import type { CosmeticId, CosmeticSlot } from '../data/types';
+import { shopScreen, wardrobeScreen } from '../ui/screens/WardrobeScreen';
+import type { CharacterId, CosmeticId, CosmeticSlot } from '../data/types';
+import { lobbyScreen, type LobbyHost } from '../ui/screens/LobbyScreen';
+import { isCharacterId } from '../data/characters';
 import { pauseScreen } from '../ui/screens/PauseScreen';
 import { settingsScreen } from '../ui/screens/SettingsScreen';
 import { controlsScreen } from '../ui/screens/ControlsScreen';
@@ -35,7 +37,7 @@ import { detectLang, setLang, t, type Lang } from '../i18n';
 export type Screen = 'boot' | 'splash' | 'menu' | 'loading' | 'playing' | 'paused' | 'gameover' | 'victory';
 
 /** Aplicação: renderer único, entrada, perfil salvo, telas, HUD e a partida em andamento. */
-export class App implements WardrobeHost {
+export class App implements LobbyHost {
   readonly renderer: Renderer;
   readonly input: InputManager;
   readonly flags: UrlFlags;
@@ -69,6 +71,7 @@ export class App implements WardrobeHost {
     this.flags = readFlags();
     this.ui = ui;
     this.profile = new Profile();
+    if (isCharacterId(this.flags.char)) this.profile.setCharacter(this.flags.char);
     const q = this.flags.quality ?? this.profile.settings.graphics.quality;
     this.renderer = new Renderer(canvas, resolveQuality(q, this.device));
     this.input = new InputManager(canvas);
@@ -271,7 +274,11 @@ export class App implements WardrobeHost {
 
   private ensureMenuScene(): void {
     if (this.session || this.menuScene) return;
-    this.menuScene = new MenuScene(this.renderer, this.continueTarget().mapId);
+    this.menuScene = new MenuScene(
+      this.renderer,
+      this.continueTarget().mapId,
+      this.profile.save.profile.character,
+    );
     this.menuScene.setCosmetics(this.profile.save.cosmetics.equipped);
   }
 
@@ -281,6 +288,15 @@ export class App implements WardrobeHost {
 
   setMenuFocus(f: number): void {
     if (this.menuScene) this.menuScene.focus = f;
+  }
+
+  previewCharacter(id: CharacterId): void {
+    this.menuScene?.setCharacter(id, true);
+  }
+
+  /** Seleção de personagem antes de começar a fase. */
+  openLobby(mapId: string, levelIdx = 0): void {
+    this.screens.push(lobbyScreen(this, { mapId, levelIdx }));
   }
 
   showMainMenu(): void {
@@ -311,7 +327,7 @@ export class App implements WardrobeHost {
         { class: 'menu' },
         b(
           s.stats.runs > 0 ? t('Continuar: {map}', { map: t(contMap.name) }) : t('Jogar'),
-          () => void this.startLevel(cont.mapId, cont.levelIdx),
+          () => this.openLobby(cont.mapId, cont.levelIdx),
           'btn primary',
         ),
         b(t('Mapas'), () => this.screens.push(mapSelectScreen(this))),

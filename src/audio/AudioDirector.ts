@@ -1,3 +1,4 @@
+import { getCharacter } from '../data/characters';
 import { ENEMIES } from '../data/enemies';
 import { ITEMS } from '../data/items';
 import { FIREARMS } from '../data/weapons';
@@ -30,7 +31,9 @@ export class AudioDirector {
           if (ev.amount <= 0) break;
           const src = w.get(ev.src);
           const kind = dst?.kind;
-          const robot = kind === 'player' || (kind === 'enemy' && ENEMIES[dst!.defId]?.family === 'robot');
+          const robot =
+            (kind === 'player' && getCharacter(dst!.player?.character).metal) ||
+            (kind === 'enemy' && ENEMIES[dst!.defId]?.family === 'robot');
           const vol = Math.min(1, 0.5 + ev.amount / 40);
           if (ev.dtype === 'blade') a.play('blade', { x: ev.x, vol });
           else if (ev.dtype === 'blunt')

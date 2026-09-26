@@ -282,6 +282,11 @@ export class CharacterView {
       _c.b += k * 0.3;
     }
     if (e.player && e.player.powers.doubleDamage > 0) _c.r += 0.25 + Math.sin(this.time * 10) * 0.1;
+    if (e.player && e.player.powers.rage > 0) {
+      const k = 0.22 + Math.sin(this.time * 14) * 0.1;
+      _c.g += k;
+      _c.r += k * 0.35;
+    }
     if (this.flash > 0) {
       _c.r += this.flash;
       _c.g += this.flash;
