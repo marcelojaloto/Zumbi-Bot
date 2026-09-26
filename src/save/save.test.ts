@@ -74,11 +74,14 @@ describe('save', () => {
     const s = sanitizeSettings({
       controls: { mouseSensitivity: 99 },
       graphics: { quality: 'ultra' },
-      audio: { master: -1 },
+      audio: { master: -1, voice: 7 },
     });
     expect(s.controls.mouseSensitivity).toBe(3);
     expect(s.graphics.quality).toBe('auto');
     expect(s.audio.master).toBe(0);
+    expect(s.audio.voice).toBe(1);
+    // configurações antigas (sem o volume das vozes) ganham o padrão
+    expect(sanitizeSettings({ audio: { master: 0.5 } }).audio.voice).toBe(1);
     expect(s.controls.keys).toBeUndefined();
   });
 

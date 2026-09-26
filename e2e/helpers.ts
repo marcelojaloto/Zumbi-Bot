@@ -21,3 +21,15 @@ export function collectErrors(page: Page): string[] {
 }
 
 export const DEBUG_QUERY = '?debug=1&quality=low&mute=1&seed=1&nopointerlock=1';
+
+/** Jogo online: "Criar sala" abre as opções da sala (dificuldade e chat de voz); o botão de lá cria. */
+export async function createRoom(
+  page: Page,
+  opts: { difficulty?: string; voice?: 'Permitido' | 'Desligado' } = {},
+): Promise<void> {
+  await page.getByRole('button', { name: /Criar sala/ }).click();
+  const box = page.locator('.create-room');
+  if (opts.difficulty) await box.getByRole('button', { name: opts.difficulty, exact: true }).click();
+  if (opts.voice) await box.getByRole('button', { name: new RegExp(opts.voice) }).click();
+  await box.getByRole('button', { name: /Criar sala/ }).click();
+}

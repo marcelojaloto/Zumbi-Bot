@@ -84,6 +84,15 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
       0.05,
       pct,
     ),
+    slider(
+      t('Vozes (chat de voz online)'),
+      () => st().audio.voice,
+      (v) => ((st().audio.voice = v), apply()),
+      0,
+      1,
+      0.05,
+      pct,
+    ),
     check(
       t('Silenciar tudo'),
       () => st().audio.muted,

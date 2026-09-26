@@ -157,6 +157,7 @@ export function sanitizeSettings(raw: unknown): SettingsV1 {
       master: num(a.master, def.audio.master, 0, 1),
       music: num(a.music, def.audio.music, 0, 1),
       sfx: num(a.sfx, def.audio.sfx, 0, 1),
+      voice: num(a.voice, def.audio.voice, 0, 1),
       muted: bool(a.muted, false),
     },
     controls: {

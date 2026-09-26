@@ -1,11 +1,16 @@
 import { CHARACTERS, CHARACTER_ORDER } from '../../data/characters';
+import { DIFFICULTY_ORDER } from '../../data/balance';
 import { MAPS, getMap } from '../../data/maps';
+import type { Difficulty } from '../../data/types';
 import { SLOT_COLORS, playerTag } from '../../app/party';
-import { cleanCode, type RoomPlayer } from '../../net/protocol';
+import { isAndroid, isIOS } from '../../input/device';
+import { cleanCode, type RoomOptions, type RoomPlayer } from '../../net/protocol';
 import { defaultSave } from '../../save/schema';
 import type { GuestRoom, HostRoom } from '../../net/room';
 import { NetError } from '../../net/transport';
+import type { MicProblem, VoiceChat } from '../../net/voice';
 import { MAX_PLAYERS } from '../../sim/Entity';
+import { difficultyName } from '../difficulty';
 import { el, hexColor } from '../dom';
 import { t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
@@ -18,7 +23,14 @@ export interface OnlineHost extends LobbyHost {
   readonly online: HostRoom | GuestRoom | null;
   /** Avisos de mudança na sala (quem entrou, personagem, pronto...). */
   readonly roomListeners: Set<() => void>;
-  createRoom(): Promise<HostRoom>;
+  /** Avisos do chat de voz (microfone, quem fala, permissão). */
+  readonly voiceListeners: Set<() => void>;
+  /** Chat de voz da sala (null: voz desligada na sala ou indisponível aqui). */
+  readonly voice: VoiceChat | null;
+  /** Este aparelho consegue participar do chat de voz. */
+  readonly voiceSupported: boolean;
+  toggleMic(on?: boolean): Promise<boolean>;
+  createRoom(opts: RoomOptions): Promise<HostRoom>;
   joinRoom(code: string): Promise<GuestRoom>;
   leaveRoom(): void;
   startOnline(): void;
@@ -65,6 +77,66 @@ export function roomName(name: string, slot: number): string {
   return name === DEFAULT_NAME ? t('Jogador {n}', { n: slot + 1 }) : name;
 }
 
+/** Como liberar o microfone neste aparelho (app Android, iPhone, Android no navegador, computador). */
+export function micHelp(): string {
+  if (__NATIVE__)
+    return t(
+      'Para liberar: Configurações do Android → Apps → Zumbi Bot → Permissões → Microfone → Permitir.',
+    );
+  if (isIOS())
+    return t(
+      'Para liberar no iPhone: toque em "aA" na barra de endereço → Ajustes do Site → Microfone → Permitir (ou Ajustes → Apps → Safari → Microfone) e recarregue a página.',
+    );
+  if (isAndroid())
+    return t(
+      'Para liberar: toque no ícone ao lado do endereço → Permissões → Microfone → Permitir, e recarregue a página.',
+    );
+  return t(
+    'Para liberar: clique no ícone ao lado do endereço do site → Microfone → Permitir, e recarregue a página.',
+  );
+}
+
+/** Por que o microfone não ligou, e o que fazer. */
+export function micProblemText(p: MicProblem | null): string {
+  switch (p) {
+    case 'denied':
+      return `${t('O microfone está bloqueado.')} ${micHelp()}`;
+    case 'no-mic':
+      return t('Nenhum microfone encontrado neste aparelho.');
+    case 'busy':
+      return t('O microfone está sendo usado por outro app. Feche o outro app e tente de novo.');
+    case 'insecure':
+      return t('O navegador só libera o microfone em páginas seguras (https).');
+    case 'unsupported':
+      return t(
+        'Este navegador não deixa usar o microfone. Use o Chrome, Edge, Firefox ou Safari atualizados.',
+      );
+    default:
+      return t('Não deu para ligar o microfone. Tente de novo.');
+  }
+}
+
+/** Linha de ajuda do chat de voz na sala (permissão checada antes de pedir). */
+function voiceStatus(host: OnlineHost): string {
+  const r = host.online;
+  if (!r) return '';
+  if (!r.voice)
+    return r.role === 'host'
+      ? t('Chat de voz desligado nesta sala.')
+      : t('Chat de voz desligado pelo anfitrião.');
+  const v = host.voice;
+  if (!v) return t('Chat de voz indisponível neste aparelho ou navegador. Você joga normalmente.');
+  if (v.starting) return t('Toque em "Permitir" quando o aparelho pedir o microfone.');
+  if (v.micOn) return t('Microfone ligado: todos da sala ouvem você.');
+  if (v.problem) return micProblemText(v.problem);
+  if (v.permission === 'denied') return micProblemText('denied');
+  if (v.permission === 'prompt')
+    return t(
+      'Todos da sala se ouvem. Para falar, ligue o microfone (o aparelho pede permissão na primeira vez).',
+    );
+  return t('Todos da sala se ouvem. Ligue o microfone para falar.');
+}
+
 function levelLabel(mapId: string, levelIdx: number): string {
   const m = getMap(mapId);
   const l = m.levels[levelIdx];
@@ -74,24 +146,6 @@ function levelLabel(mapId: string, levelIdx: number): string {
 
 /** Tela "Jogar online": criar uma sala ou entrar na sala de um amigo. */
 export function onlineScreen(host: OnlineHost, notice?: string): Screen {
-  const status = el('p', { class: 'online-status' });
-  let busy = false;
-  const create = async () => {
-    if (busy) return;
-    busy = true;
-    status.className = 'online-status';
-    status.textContent = t('Criando a sala…');
-    try {
-      await host.createRoom();
-      busy = false;
-      status.textContent = '';
-      host.showRoom();
-    } catch (e) {
-      busy = false;
-      status.className = 'online-status error';
-      status.textContent = netErrorText(e);
-    }
-  };
   const choice = (icon: string, title: string, desc: string, fn: () => void, cls = '') =>
     el(
       'button',
@@ -113,7 +167,7 @@ export function onlineScreen(host: OnlineHost, notice?: string): Screen {
         '🏠',
         t('Criar sala'),
         t('Você recebe um código de 4 letras para passar aos amigos.'),
-        () => void create(),
+        () => host.screens.push(createRoomScreen(host)),
         'primary',
       ),
       choice(
@@ -123,7 +177,6 @@ export function onlineScreen(host: OnlineHost, notice?: string): Screen {
         () => host.openJoin(),
       ),
     ),
-    status,
     el(
       'p',
       { class: 'muted online-note' },
@@ -132,6 +185,103 @@ export function onlineScreen(host: OnlineHost, notice?: string): Screen {
     el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
   );
   return { el: e, id: 'online' };
+}
+
+/** Botões de escolha única (um aceso). */
+function segmented<T>(options: [T, string][], get: () => T, set: (v: T) => void): HTMLElement {
+  const btns = options.map(([v, label]) =>
+    el(
+      'button',
+      {
+        class: 'seg-btn',
+        data: { nav: '' },
+        onclick: () => {
+          set(v);
+          refresh();
+        },
+      },
+      label,
+    ),
+  );
+  const refresh = () =>
+    btns.forEach((b, i) => {
+      const on = options[i]![0] === get();
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+  refresh();
+  return el('div', { class: 'seg', role: 'group' }, ...btns);
+}
+
+/** Antes de criar a sala: dificuldade da partida e se o chat de voz é permitido (dá para mudar depois). */
+export function createRoomScreen(host: OnlineHost): Screen {
+  let difficulty: Difficulty = host.profile.settings.gameplay.difficulty;
+  let voice = true;
+  const status = el('p', { class: 'online-status' });
+  const go = el('button', { class: 'btn primary', data: { nav: '' } }, `🏠 ${t('Criar sala')}`);
+  let busy = false;
+  go.addEventListener('click', () => {
+    if (busy) return;
+    busy = true;
+    go.disabled = true;
+    status.className = 'online-status';
+    status.textContent = t('Criando a sala…');
+    host
+      .createRoom({ difficulty, voice })
+      .then(
+        () => host.showRoom(),
+        (e: unknown) => {
+          status.className = 'online-status error';
+          status.textContent = netErrorText(e);
+        },
+      )
+      .finally(() => {
+        busy = false;
+        go.disabled = false;
+      });
+  });
+  const e = el(
+    'div',
+    { class: 'screen dim online create-room' },
+    el('h2', {}, t('CRIAR SALA')),
+    el('p', { class: 'subtitle' }, t('Escolha como vai ser a partida. Dá para mudar depois, na sala.')),
+    el(
+      'div',
+      { class: 'panel room-opts' },
+      el('div', { class: 'opt-label' }, t('Dificuldade')),
+      segmented(
+        DIFFICULTY_ORDER.map((d) => [d, difficultyName(d)]),
+        () => difficulty,
+        (d) => (difficulty = d),
+      ),
+      el('div', { class: 'opt-label' }, t('Chat de voz')),
+      segmented(
+        [
+          [true, `🎤 ${t('Permitido')}`],
+          [false, `🔇 ${t('Desligado')}`],
+        ],
+        () => voice,
+        (v) => (voice = v),
+      ),
+      el(
+        'p',
+        { class: 'muted opt-note' },
+        t('Com o chat de voz, todos da sala conversam juntos. Cada um liga ou desliga o próprio microfone.'),
+        host.voiceSupported ? null : el('br'),
+        host.voiceSupported
+          ? null
+          : t('Este aparelho não tem chat de voz, mas os outros jogadores podem conversar entre si.'),
+      ),
+    ),
+    status,
+    el(
+      'div',
+      { class: 'row-btns' },
+      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
+      go,
+    ),
+  );
+  return { el: e, id: 'create-room' };
 }
 
 /** Digitar o código da sala (4 letras). */
@@ -245,6 +395,63 @@ export function roomScreen(host: OnlineHost): Screen {
   const mainBtn = el('button', { class: 'btn primary', data: { nav: '' } });
   let lastChar = '';
 
+  // opções da sala: o anfitrião muda, os outros só veem
+  const arrow = (text: string, title: string, fn: () => void) =>
+    el('button', { class: 'lc-arrow', title, data: { nav: '' }, onclick: fn }, text);
+  const diffVal = el('b');
+  const diffLine = el(
+    'div',
+    { class: 'room-level room-diff' },
+    el('span', { class: 'muted' }, `${t('Dificuldade')}: `),
+    ...(isHost
+      ? [
+          arrow('◀', t('Anterior'), () => cycleDiff(-1)),
+          diffVal,
+          arrow('▶', t('Próximo'), () => cycleDiff(1)),
+        ]
+      : [diffVal]),
+  );
+  const voiceVal = isHost
+    ? el('button', {
+        class: 'btn small voice-allow',
+        data: { nav: '' },
+        onclick: () => {
+          const r = host.online;
+          if (r?.role !== 'host') return;
+          host.playUi('ui_click');
+          r.setOptions({ voice: !r.voice });
+        },
+      })
+    : el('b');
+  const voiceLine = el(
+    'div',
+    { class: 'room-level room-voice-opt' },
+    el('span', { class: 'muted' }, `${t('Chat de voz')}: `),
+    voiceVal,
+  );
+  const cycleDiff = (dir: number) => {
+    const r = host.online;
+    if (r?.role !== 'host') return;
+    const n = DIFFICULTY_ORDER.length;
+    const i = DIFFICULTY_ORDER.indexOf(r.difficulty);
+    host.playUi('ui_hover');
+    r.setOptions({ difficulty: DIFFICULTY_ORDER[(((i + dir) % n) + n) % n]! });
+  };
+
+  // chat de voz: microfone, ajuda (permissão) e "toque para ouvir"
+  const micBtn = el('button', {
+    class: 'btn mic-btn',
+    data: { nav: '' },
+    onclick: () => void host.toggleMic(),
+  });
+  const voiceText = el('span', { class: 'room-voice-text' });
+  const hearBtn = el(
+    'button',
+    { class: 'btn small hear-btn', hidden: true, data: { nav: '' }, onclick: () => host.voice?.unlock() },
+    `🔈 ${t('Toque para ouvir a conversa')}`,
+  );
+  const voiceBar = el('div', { class: 'room-voice' }, voiceText, hearBtn);
+
   const players = (): RoomPlayer[] => {
     const r = host.online;
     return r ? (r.role === 'host' ? r.players() : r.players) : [];
@@ -276,6 +483,7 @@ export function roomScreen(host: OnlineHost): Screen {
       );
     const c = CHARACTERS[p.char];
     const you = p.slot === mySlot();
+    const mic = el('span', { class: 'rp-mic' });
     const state =
       p.slot === 0
         ? el('span', { class: 'rp-state host' }, `👑 ${t('Anfitrião')}`)
@@ -292,9 +500,42 @@ export function roomScreen(host: OnlineHost): Screen {
         roomName(p.name, p.slot) + (you ? ` (${t('você')})` : ''),
         el('small', { class: 'muted' }, ` · ${t('Nv {n}', { n: p.level })}`),
       ),
+      mic,
       el('span', { class: 'rp-char', style: `color:${hexColor(c.color)}` }, t(c.name)),
       state,
     );
+  }
+
+  /** Só o que muda com a voz (quem fala, microfones, botão): não refaz a tela toda. */
+  function renderVoice(): void {
+    const r = host.online;
+    if (!r) return;
+    const v = host.voice;
+    for (const p of players()) {
+      const rowEl = list.querySelector<HTMLElement>(`.rp[data-slot="${p.slot}"]`);
+      const m = rowEl?.querySelector<HTMLElement>('.rp-mic');
+      if (!rowEl || !m) continue;
+      const talking = !!(r.voice && p.mic && v?.speaking(p.slot));
+      m.textContent = !r.voice ? '' : talking ? '🔊' : p.mic ? '🎤' : '🔇';
+      m.title = p.mic ? t('Microfone ligado') : t('Microfone mudo');
+      m.classList.toggle('off', !p.mic);
+      rowEl.classList.toggle('talking', talking);
+    }
+    micBtn.hidden = !(r.voice && v);
+    if (v) {
+      micBtn.textContent = v.starting
+        ? `🎤 ${t('Ligando…')}`
+        : v.micOn
+          ? `🔇 ${t('Desligar microfone')}`
+          : `🎤 ${t('Ligar microfone')}`;
+      micBtn.classList.toggle('on', v.micOn);
+      micBtn.classList.toggle('talking', v.micOn && v.speaking(mySlot()));
+      micBtn.disabled = v.starting;
+    }
+    const text = voiceStatus(host);
+    if (voiceText.textContent !== text) voiceText.textContent = text;
+    voiceBar.classList.toggle('error', !!v && !v.micOn && (!!v.problem || v.permission === 'denied'));
+    hearBtn.hidden = !(r.voice && v?.blocked);
   }
 
   function render(): void {
@@ -369,6 +610,9 @@ export function roomScreen(host: OnlineHost): Screen {
           ]
         : [el('b', {}, r.mapId ? levelLabel(r.mapId, r.levelIdx) : '…')]),
     );
+    diffVal.textContent = difficultyName(r.difficulty);
+    voiceVal.textContent = r.voice ? `🎤 ${t('Permitido')}` : `🔇 ${t('Desligado')}`;
+    voiceVal.classList.toggle('on', r.voice);
     if (r.role === 'host') {
       const waiting = ps.filter((x) => x.slot !== 0 && !x.ready).map((x) => playerTag(x.slot));
       mainBtn.textContent = `▶ ${t('Começar')}`;
@@ -391,6 +635,7 @@ export function roomScreen(host: OnlineHost): Screen {
             : t('Escolha seu personagem e toque em Pronto.')
           : t('O anfitrião está terminando uma fase. Você entra na próxima!');
     }
+    renderVoice();
   }
 
   const stage = (dir: number) => {
@@ -517,10 +762,12 @@ export function roomScreen(host: OnlineHost): Screen {
         steps,
         share,
         isHost ? qr : null,
+        el('div', { class: 'room-opts-box' }, diffLine, voiceLine),
       ),
       el('div', { class: 'room-side' }, list, el('div', { class: 'panel' }, mine, stageText)),
     ),
     status,
+    voiceBar,
     el(
       'div',
       { class: 'row-btns' },
@@ -529,6 +776,7 @@ export function roomScreen(host: OnlineHost): Screen {
         { class: 'btn danger', data: { nav: '' }, onclick: leave },
         isHost ? t('Fechar sala') : t('Sair da sala'),
       ),
+      micBtn,
       mainBtn,
     ),
     el(
@@ -544,11 +792,13 @@ export function roomScreen(host: OnlineHost): Screen {
     id: 'room',
     onShow: () => {
       host.roomListeners.add(render);
+      host.voiceListeners.add(renderVoice);
       lastChar = '';
       render();
     },
     onHide: () => {
       host.roomListeners.delete(render);
+      host.voiceListeners.delete(renderVoice);
     },
     onBack: () => {
       leave();

@@ -21,6 +21,16 @@ describe('teclas configuráveis', () => {
     expect(editableKeys(c, 'pause')).toEqual(['KeyO']);
   });
 
+  it('ação nova (microfone) ganha a tecla padrão só se ela estiver livre nas teclas salvas', () => {
+    const saved = customKeys(rebind(bindingsFrom(), 'punch', 1, 'KeyH').map)!;
+    delete saved.voice;
+    expect(bindingsFrom(saved).voice).toEqual(['KeyV']);
+    const taken = customKeys(rebind(bindingsFrom(), 'aim', 0, 'KeyV').map)!;
+    delete taken.voice;
+    expect(bindingsFrom(taken).voice).toEqual([]);
+    expect(bindingsFrom(taken).aim).toEqual(['KeyV']);
+  });
+
   it('trocar uma tecla tira ela da outra ação e vale no jogo', () => {
     const { map, from } = rebind(bindingsFrom(), 'jump', 0, 'KeyK');
     expect(from).toBe('kick');

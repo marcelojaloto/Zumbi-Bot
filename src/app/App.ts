@@ -3,7 +3,7 @@ import { InputManager } from '../input/InputManager';
 import { bindingsFrom } from '../input/keymap';
 import { actionKeyNames, loadKeyboardLayout, moveKeys } from '../input/keyLabels';
 import { TouchControls } from '../input/TouchControls';
-import { deviceKind, isPortrait, type DeviceKind } from '../input/device';
+import { canFullscreen, deviceKind, isIOS, isPortrait, isStandalone, type DeviceKind } from '../input/device';
 import { Renderer } from '../render/Renderer';
 import { downgrade, resolveQuality, type QualityLevel } from '../render/quality';
 import type { InputSource } from '../sim/InputFrame';
@@ -24,13 +24,21 @@ import { lobbyScreen, type LobbyHost } from '../ui/screens/LobbyScreen';
 import { isCharacterId } from '../data/characters';
 import { SLOT_COLORS, aggregateParty, playerProgress, playerTag, type PartyMember } from './party';
 import { ClientAdapter, GuestRoom, HostRoom } from '../net/room';
-import type { StartMsg } from '../net/protocol';
+import type { RoomOptions, RoomPlayer, StartMsg } from '../net/protocol';
 import { createTransport, type Transport } from '../net/transport';
+import { VoiceChat } from '../net/voice';
 import type { NetAdapter } from '../net/types';
 import { retirePlayer } from '../sim/systems/lives';
 import type { PlayerLoadout, World } from '../sim/World';
 import type { Difficulty } from '../data/types';
-import { joinScreen, onlineScreen, roomName, roomScreen, type OnlineHost } from '../ui/screens/OnlineScreen';
+import {
+  joinScreen,
+  micProblemText,
+  onlineScreen,
+  roomName,
+  roomScreen,
+  type OnlineHost,
+} from '../ui/screens/OnlineScreen';
 import type { DeviceRef } from '../input/devices';
 import type { PlayerSlot } from '../sim/Entity';
 import { pauseScreen } from '../ui/screens/PauseScreen';
@@ -49,6 +57,13 @@ import { detectLang, setLang, t, type Lang } from '../i18n';
 
 /** Endereço do jogo no navegador (links de sala enviados pelo app Android). */
 const SITE_URL = 'https://marcelojaloto.github.io/Zumbi-Bot/';
+
+/** Como jogar em tela cheia no iPhone (a página sozinha não consegue). */
+function homeScreenTip(): string {
+  return t(
+    'Para jogar em tela cheia: toque em Compartilhar (□↑) → "Adicionar à Tela de Início" e abra o Zumbi Bot por lá.',
+  );
+}
 
 export type Screen = 'boot' | 'splash' | 'menu' | 'loading' | 'playing' | 'paused' | 'gameover' | 'victory';
 
@@ -116,6 +131,7 @@ export class App implements LobbyHost, OnlineHost {
     this.touch = new TouchControls(ui, {
       onPause: () => this.togglePause(),
       onFullscreen: () => this.toggleFullscreen(),
+      onMic: () => void this.toggleMic(),
     });
     this.rotateEl = el(
       'div',
@@ -156,6 +172,9 @@ export class App implements LobbyHost, OnlineHost {
     );
     this.input.onPause = () => this.togglePause();
     this.input.onMap = () => this.hud?.minimap.toggle();
+    this.input.onVoice = () => {
+      if (this.online) void this.toggleMic();
+    };
     this.audio = new AudioEngine(this.flags.mute);
     this.music = new MusicPlayer(this.audio);
     this.screens = new ScreenManager(ui);
@@ -168,6 +187,12 @@ export class App implements LobbyHost, OnlineHost {
     };
     addEventListener('pointerdown', unlock);
     addEventListener('keydown', unlock);
+    // iPhone: o som só é liberado no fim do toque (ou no clique)
+    addEventListener('touchend', unlock);
+    addEventListener('click', unlock);
+    // iPhone: o Safari ignora "sem zoom" da página; a pinça no jogo não pode dar zoom
+    for (const ev of ['gesturestart', 'gesturechange'])
+      document.addEventListener(ev, (e) => e.preventDefault(), { passive: false });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden && this.screen === 'playing') this.pause();
       // app Android: sem som com o app em segundo plano
@@ -206,6 +231,11 @@ export class App implements LobbyHost, OnlineHost {
   online: HostRoom | GuestRoom | null = null;
   /** Telas que acompanham a sala (lista de jogadores). */
   readonly roomListeners = new Set<() => void>();
+  /** Telas que acompanham o chat de voz (microfone, quem fala). */
+  readonly voiceListeners = new Set<() => void>();
+  /** Chat de voz da sala (null: sem sala, voz desligada pelo anfitrião ou indisponível aqui). */
+  voice: VoiceChat | null = null;
+  readonly voiceSupported = VoiceChat.supported();
   private transport: Transport | null = null;
   /** Anfitrião: tempo máximo esperando os outros carregarem a fase. */
   private holdTimer = 0;
@@ -239,9 +269,17 @@ export class App implements LobbyHost, OnlineHost {
     };
   }
 
-  /** Tela cheia + paisagem travada (Android); no iPhone a API não existe e o aviso de girar resolve. */
+  /**
+   * Tela cheia + paisagem travada (Android). No iPhone a página não pode entrar em tela cheia: o botão explica
+   * como adicionar à Tela de Início (de lá o jogo abre em tela cheia).
+   */
   toggleFullscreen(force?: boolean): void {
     if (__NATIVE__) return; // o app já abre em tela cheia e deitado
+    if (!canFullscreen()) {
+      if (force === undefined && !isStandalone())
+        this.hud?.toast(t('Tela cheia no iPhone'), '#39e6ff', homeScreenTip());
+      return;
+    }
     const d = document as Document & { webkitFullscreenElement?: Element };
     const on = force ?? !(document.fullscreenElement || d.webkitFullscreenElement);
     try {
@@ -341,6 +379,8 @@ export class App implements LobbyHost, OnlineHost {
       el('div', { class: 'subtitle' }, t('A revolução dos robôs no apocalipse zumbi')),
       el('button', { class: 'btn primary', onclick: start, data: { nav: '', autofocus: '' } }, t('Jogar')),
       el('p', { class: 'muted' }, t('Clique ou pressione Enter')),
+      // iPhone no Safari: tela cheia só pela Tela de Início
+      !__NATIVE__ && isIOS() && !isStandalone() ? el('p', { class: 'muted ios-tip' }, homeScreenTip()) : null,
     );
     this.screens.push({ el: e, id: 'splash', onBack: () => false });
     for (const n of this.profile.notices) setTimeout(() => this.hud?.toast(n, '#ffb02a'), 500);
@@ -504,6 +544,7 @@ export class App implements LobbyHost, OnlineHost {
     this.audio.volumes.sfx = s.audio.sfx;
     this.audio.muted = s.audio.muted;
     this.audio.applyVolumes();
+    this.voice?.setVolume(s.audio.voice * s.audio.master, s.audio.muted);
     this.input.sensitivity = s.controls.mouseSensitivity;
     this.input.bindings = bindingsFrom(s.controls.keys);
     this.renderer.cam.shakeScale = s.graphics.screenShake;
@@ -584,7 +625,8 @@ export class App implements LobbyHost, OnlineHost {
     if (room) {
       room.me = { ...this.profile.loadout(), slot: 0 };
       room.setTarget(mapId, levelIdx);
-      const msg = room.start({ seed, difficulty, ngPlus, enemyCap: this.renderer.quality.enemyCap });
+      // online: a dificuldade é a da sala (escolhida pelo anfitrião)
+      const msg = room.start({ seed, ngPlus, enemyCap: this.renderer.quality.enemyCap });
       const net = room.adapter(this.input.source(0, { k: 'auto' }), () => this.input.endTick());
       await this.launch({ ...this.fromStart(msg), net });
       if (this.session?.net === net && room.guestCount > 0) {
@@ -666,7 +708,15 @@ export class App implements LobbyHost, OnlineHost {
     this.hud = new Hud(this.ui);
     this.hud.touchMode = this.touchOn;
     this.hud.online = !!c.net;
-    if (c.net) this.hud.localSlot = c.mouseSlot ?? 0;
+    if (c.net) {
+      this.hud.localSlot = c.mouseSlot ?? 0;
+      this.hud.voice = {
+        mine: () => (this.voice ? { on: this.voice.micOn, busy: this.voice.starting } : null),
+        mic: (slot) => !!this.roomPlayers().find((p) => p.slot === slot)?.mic,
+        speaking: (slot) => this.voice?.speaking(slot as PlayerSlot) ?? false,
+        toggle: () => void this.toggleMic(),
+      };
+    }
     this.ui.appendChild(this.touch.root);
     this.ui.appendChild(this.screens.root);
     const overlay = this.overlay;
@@ -820,12 +870,13 @@ export class App implements LobbyHost, OnlineHost {
     return this.transport;
   }
 
-  async createRoom(): Promise<HostRoom> {
+  async createRoom(opts: RoomOptions): Promise<HostRoom> {
     this.leaveRoomQuiet();
     const room = await HostRoom.open(
       await this.getTransport(),
       this.profile.loadout(),
       this.continueTarget(),
+      opts,
     );
     this.online = room;
     room.onChange = () => this.roomChanged();
@@ -843,6 +894,7 @@ export class App implements LobbyHost, OnlineHost {
       const e = w?.get(slot + 1);
       if (w && e?.player) retirePlayer(w, e);
     };
+    this.syncVoice();
     return room;
   }
 
@@ -856,6 +908,7 @@ export class App implements LobbyHost, OnlineHost {
       if (this.online !== room) return;
       if (this.midLevel) this.saveProgressOnQuit();
       this.online = null;
+      this.stopVoice();
       this.endSession();
       this.showMainMenu();
       this.openOnline(
@@ -864,6 +917,7 @@ export class App implements LobbyHost, OnlineHost {
           : t('A conexão com a sala caiu. Confira a internet e entre de novo.'),
       );
     };
+    this.syncVoice();
     return room;
   }
 
@@ -886,7 +940,72 @@ export class App implements LobbyHost, OnlineHost {
       this.endSession();
       this.showRoom();
     }
+    this.syncVoice();
     for (const f of this.roomListeners) f();
+  }
+
+  private roomPlayers(): RoomPlayer[] {
+    const r = this.online;
+    return r ? (r.role === 'host' ? r.players() : r.players) : [];
+  }
+
+  /** Chat de voz acompanha a sala: existe enquanto o anfitrião permite e sabe quem está nela. */
+  private syncVoice(): void {
+    const room = this.online;
+    const peer = room?.voice && this.voiceSupported ? room.voicePeer : undefined;
+    if (!room || !peer) {
+      this.stopVoice();
+      return;
+    }
+    if (!this.voice) {
+      const v = new VoiceChat(peer, room.code, room.mySlot);
+      this.voice = v;
+      v.onChange = () => this.voiceChanged();
+      v.onTalking = (on) => this.audio.setTalking(on);
+      const a = this.profile.settings.audio;
+      v.setVolume(a.voice * a.master, a.muted);
+    }
+    this.voice.setMembers(this.roomPlayers());
+  }
+
+  private stopVoice(): void {
+    const v = this.voice;
+    if (!v) return;
+    this.voice = null;
+    v.dispose();
+    this.audio.setTalking(false);
+    this.voiceChanged();
+    // voz desligada pelo anfitrião: os outros veem o microfone desligado
+    this.online?.setMic(false);
+  }
+
+  private voiceChanged(): void {
+    const v = this.voice;
+    this.touch.setMic(v ? v.micOn : null, !!v?.micOn && v.speaking(v.mySlot));
+    for (const f of this.voiceListeners) f();
+  }
+
+  /** Liga/desliga o microfone (botão, tecla V). `on` força o estado. */
+  async toggleMic(on?: boolean): Promise<boolean> {
+    const room = this.online;
+    if (!room) return false;
+    const v = this.voice;
+    if (!v) {
+      this.hud?.toast(
+        room.voice
+          ? t('Chat de voz indisponível neste aparelho.')
+          : t('Chat de voz desligado pelo anfitrião.'),
+        '#ffb02a',
+      );
+      return false;
+    }
+    const want = on ?? !(v.micOn || v.starting);
+    this.playUi(want ? 'ui_click' : 'ui_back');
+    const ok = await v.setMic(want);
+    if (this.voice !== v || this.online !== room) return false;
+    room.setMic(v.micOn);
+    if (!ok && want) this.hud?.toast(micProblemText(v.problem), '#ff5a5a');
+    return ok;
   }
 
   /** Tela da sala: código, quem está nela, personagem e começar. */
@@ -906,6 +1025,7 @@ export class App implements LobbyHost, OnlineHost {
   private leaveRoomQuiet(): void {
     const room = this.online;
     this.online = null;
+    this.stopVoice();
     if (room?.role === 'host') room.close();
     else room?.leave();
   }
