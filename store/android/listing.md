@@ -85,4 +85,8 @@ You can also play in the browser: marcelojaloto.github.io/Zumbi-Bot
 | `screenshots/pt-*.jpg`                             | Capturas de tela do celular (pt-BR), 1920×1080         |
 | `screenshots/en-*.jpg`                             | Phone screenshots (en-US), 1920×1080                   |
 
+Capturas (7 por idioma): menu, equipe de 5 personagens, seleção de personagem, sala online, magia, chefe e robôs.
+Para gerar de novo: `npm run store:shots`. / Screenshots (7 per language): menu, team of 5 characters, character
+select, online room, magic, boss and robots. To regenerate: `npm run store:shots`.
+
 As capturas também servem para tablets de 7" e 10". / The screenshots also work for 7" and 10" tablets.
