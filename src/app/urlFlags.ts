@@ -15,6 +15,12 @@ export interface UrlFlags {
   char: string | null;
   /** Equipe local (ex.: ?party=robot,mage,mutant). */
   party: string[];
+  /** Conexão online: 'local' = abas do mesmo navegador (testes); padrão PeerJS. */
+  net: 'peer' | 'local';
+  /** Link de sala (?sala=ABCD): abre a tela de entrar com o código. */
+  sala: string | null;
+  /** Outro servidor PeerJS (?peer=host:porta/caminho) — testes ou servidor próprio. */
+  peer: string | null;
 }
 
 export function readFlags(search = location.search): UrlFlags {
@@ -36,5 +42,8 @@ export function readFlags(search = location.search): UrlFlags {
     fps: b('fps'),
     char: q.get('char'),
     party: (q.get('party') ?? '').split(',').filter(Boolean).slice(0, 5),
+    net: q.get('net') === 'local' ? 'local' : 'peer',
+    sala: q.get('sala'),
+    peer: q.get('peer'),
   };
 }

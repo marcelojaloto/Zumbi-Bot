@@ -20,7 +20,15 @@ import { shopScreen, wardrobeScreen } from '../ui/screens/WardrobeScreen';
 import type { CharacterId, CosmeticId, CosmeticSlot } from '../data/types';
 import { lobbyScreen, type LobbyHost } from '../ui/screens/LobbyScreen';
 import { isCharacterId } from '../data/characters';
-import { SLOT_COLORS, aggregateParty, playerTag, type PartyMember } from './party';
+import { SLOT_COLORS, aggregateParty, playerProgress, playerTag, type PartyMember } from './party';
+import { ClientAdapter, GuestRoom, HostRoom } from '../net/room';
+import type { StartMsg } from '../net/protocol';
+import { createTransport, type Transport } from '../net/transport';
+import type { NetAdapter } from '../net/types';
+import { retirePlayer } from '../sim/systems/lives';
+import type { PlayerLoadout, World } from '../sim/World';
+import type { Difficulty } from '../data/types';
+import { joinScreen, onlineScreen, roomName, roomScreen, type OnlineHost } from '../ui/screens/OnlineScreen';
 import type { DeviceRef } from '../input/devices';
 import type { PlayerSlot } from '../sim/Entity';
 import { pauseScreen } from '../ui/screens/PauseScreen';
@@ -37,10 +45,27 @@ import { MAPS, getMap } from '../data/maps';
 import { xpToNext } from '../data/balance';
 import { detectLang, setLang, t, type Lang } from '../i18n';
 
+/** Endereço do jogo no navegador (links de sala enviados pelo app Android). */
+const SITE_URL = 'https://marcelojaloto.github.io/Zumbi-Bot/';
+
 export type Screen = 'boot' | 'splash' | 'menu' | 'loading' | 'playing' | 'paused' | 'gameover' | 'victory';
 
+/** Tudo o que define uma partida (local ou online). */
+interface LaunchConfig {
+  mapId: string;
+  levelIdx: number;
+  seed: number;
+  loadouts: PlayerLoadout[];
+  difficulty: Difficulty;
+  ngPlus: boolean;
+  sources?: InputSource[];
+  mouseSlot?: number;
+  enemyCap?: number;
+  net?: NetAdapter;
+}
+
 /** Aplicação: renderer único, entrada, perfil salvo, telas, HUD e a partida em andamento. */
-export class App implements LobbyHost {
+export class App implements LobbyHost, OnlineHost {
   readonly renderer: Renderer;
   readonly input: InputManager;
   readonly flags: UrlFlags;
@@ -173,6 +198,13 @@ export class App implements LobbyHost {
   party: PartyMember[] | null = null;
   /** Último dispositivo usado nos menus (quem abre a seleção vira o jogador 1). */
   lastDevice: DeviceRef = { k: 'kb', layout: 'full' };
+  /** Sala online aberta (anfitrião) ou em que este aparelho entrou (convidado). */
+  online: HostRoom | GuestRoom | null = null;
+  /** Telas que acompanham a sala (lista de jogadores). */
+  readonly roomListeners = new Set<() => void>();
+  private transport: Transport | null = null;
+  /** Anfitrião: tempo máximo esperando os outros carregarem a fase. */
+  private holdTimer = 0;
 
   /** Liga/desliga o modo toque: controles na tela, HUD adaptado e sem travar o ponteiro. */
   setTouchMode(on: boolean): void {
@@ -236,7 +268,7 @@ export class App implements LobbyHost {
       }
     }
     this.touch.setVisible(this.touchOn && this.screen === 'playing' && !portrait);
-    const p = this.session?.world.get(1)?.player;
+    const p = this.session?.world.get((this.hud?.localSlot ?? 0) + 1)?.player;
     if (p) this.touch.setFireMode(p.mode);
   }
 
@@ -289,6 +321,13 @@ export class App implements LobbyHost {
       this.audio.unlock();
       if (this.device !== 'desktop') this.toggleFullscreen(true);
       this.showMainMenu();
+      // link de sala (?sala=ABCD): já abre a tela de entrar com o código
+      const code = this.flags.sala;
+      if (code) {
+        this.flags.sala = null;
+        this.openOnline();
+        this.openJoin(code);
+      }
     };
     this.music.play('menu');
     const e = el(
@@ -377,6 +416,7 @@ export class App implements LobbyHost {
           () => this.openLobby(cont.mapId, cont.levelIdx),
           'btn primary',
         ),
+        b(`🌐 ${t('Jogar online')}`, () => this.openOnline()),
         b(t('Mapas'), () => this.screens.push(mapSelectScreen(this))),
         b(t('Guarda-roupa'), () => this.screens.push(wardrobeScreen(this))),
         b(t('Loja'), () => this.screens.push(shopScreen(this))),
@@ -483,7 +523,7 @@ export class App implements LobbyHost {
     if (this.session) {
       if (this.screen === 'paused') {
         this.screens.clear();
-        this.screens.push(pauseScreen(this));
+        this.screens.push(pauseScreen(this, this.online?.role));
         this.openSettings('game');
       }
     } else if (this.screen === 'menu') {
@@ -522,17 +562,25 @@ export class App implements LobbyHost {
   }
 
   async startLevel(mapId: string, levelIdx = 0): Promise<void> {
-    this.endSession();
-    this.menuScene?.dispose();
-    this.menuScene = null;
-    this.screens.clear();
-    this.screen = 'loading';
-    this.lastLevel = { mapId, levelIdx };
-    this.lastStats = null;
-    const map = getMap(mapId);
-    this.showLoading(map.index >= 0 ? `${map.index + 1}. ${t(map.name)}` : t(map.name));
-    await new Promise((r) => requestAnimationFrame(() => r(null)));
+    const room = this.online;
+    // online: quem entrou na sala espera o anfitrião escolher
+    if (room?.role === 'guest') return;
     const seed = this.flags.seed ?? (hashString(mapId) ^ Date.now()) >>> 0;
+    const difficulty = this.profile.settings.gameplay.difficulty;
+    const ngPlus = mapId !== 'sandbox' && this.profile.save.flags.ngPlusOn;
+    if (room) {
+      room.me = { ...this.profile.loadout(), slot: 0 };
+      room.setTarget(mapId, levelIdx);
+      const msg = room.start({ seed, difficulty, ngPlus, enemyCap: this.renderer.quality.enemyCap });
+      const net = room.adapter(this.input.source(0, { k: 'auto' }), () => this.input.endTick());
+      await this.launch({ ...this.fromStart(msg), net });
+      if (this.session?.net === net && room.guestCount > 0) {
+        this.session.hold = true;
+        this.holdTimer = 15;
+        this.hud?.toast(t('Esperando os amigos carregarem…'), '#39e6ff');
+      }
+      return;
+    }
     const party = this.party;
     const base = this.profile.loadout();
     const loadouts = party
@@ -546,24 +594,66 @@ export class App implements LobbyHost {
         }))
       : [base];
     const mouseSlot = party?.find((m) => m.device.k === 'kb' && m.device.layout === 'full')?.slot ?? 0;
-    const session = new GameSession(this.renderer, this.input, {
+    await this.launch({
       mapId,
       levelIdx,
       seed,
       loadouts,
+      difficulty,
+      ngPlus,
       sources: party?.map((m) => this.input.source(m.slot, m.device)),
       mouseSlot,
-      difficulty: this.profile.settings.gameplay.difficulty,
+    });
+  }
+
+  private fromStart(m: StartMsg): LaunchConfig {
+    return {
+      mapId: m.mapId,
+      levelIdx: m.levelIdx,
+      seed: m.seed,
+      loadouts: m.loadouts,
+      difficulty: m.difficulty,
+      ngPlus: m.ngPlus,
+      enemyCap: m.enemyCap,
+    };
+  }
+
+  /** Cria a partida (cenário, HUD, som) e começa a jogar. */
+  private async launch(c: LaunchConfig): Promise<void> {
+    const { mapId, levelIdx } = c;
+    this.endSession();
+    this.menuScene?.dispose();
+    this.menuScene = null;
+    this.screens.clear();
+    this.screen = 'loading';
+    this.lastLevel = { mapId, levelIdx };
+    this.lastStats = null;
+    const map = getMap(mapId);
+    this.showLoading(map.index >= 0 ? `${map.index + 1}. ${t(map.name)}` : t(map.name));
+    await new Promise((r) => requestAnimationFrame(() => r(null)));
+    const session = new GameSession(this.renderer, this.input, {
+      mapId,
+      levelIdx,
+      seed: c.seed,
+      loadouts: c.loadouts,
+      sources: c.sources,
+      mouseSlot: c.mouseSlot,
+      difficulty: c.difficulty,
       noLevel: mapId === 'sandbox',
-      ngPlus: mapId !== 'sandbox' && this.profile.save.flags.ngPlusOn,
+      ngPlus: c.ngPlus,
+      enemyCap: c.enemyCap,
+      net: c.net,
     });
     this.session = session;
-    if (this.flags.god) for (const p of session.world.playerEntities()) p.player!.god = true;
+    if (this.flags.god && !session.isClient)
+      for (const p of session.world.playerEntities()) p.player!.god = true;
     const director = new AudioDirector(this.audio, this.music);
     this.music.play(map.music, 0);
     this.overlay = new WorldOverlay(this.ui);
     this.hud = new Hud(this.ui);
     this.hud.touchMode = this.touchOn;
+    this.hud.online = !!c.net;
+    if (c.net) this.hud.localSlot = c.mouseSlot ?? 0;
     this.ui.appendChild(this.touch.root);
     this.ui.appendChild(this.screens.root);
     const overlay = this.overlay;
@@ -606,9 +696,16 @@ export class App implements LobbyHost {
       this.input.requestPointerLock();
   }
 
+  /** Progresso deste aparelho: online só o próprio jogador; local, a equipe toda. */
+  private progressOf(w: World): ReturnType<typeof aggregateParty> {
+    const room = this.online;
+    return room ? playerProgress(w, room.role === 'guest' ? room.slot : 0) : aggregateParty(w);
+  }
+
   protected onSessionEnd(s: GameSession, victory: boolean): void {
-    const p = aggregateParty(s.world);
+    const p = this.progressOf(s.world);
     const stats = this.lastStats;
+    const room = this.online;
     if (!p || !stats) return;
     const beforeLevel = this.profile.save.profile.level;
     const res =
@@ -618,9 +715,12 @@ export class App implements LobbyHost {
     this.screen = victory ? 'victory' : 'gameover';
     this.input.enabled = false;
     this.input.exitPointerLock();
+    if (room?.role === 'host') room.toResult();
     const idx = s.world.levelIdx;
+    this.screens.clear();
     this.screens.push(
       resultScreen(this, {
+        online: room?.role,
         stats,
         playerLevel: p.level,
         levelsGained: p.level - beforeLevel,
@@ -642,7 +742,7 @@ export class App implements LobbyHost {
   /** Sair no meio da fase preserva XP, sucata e loot obtidos. */
   private saveProgressOnQuit(): void {
     const w = this.session?.world;
-    const p = w ? aggregateParty(w) : null;
+    const p = w ? this.progressOf(w) : null;
     if (!p || w?.map.id === 'sandbox') return;
     const s = this.profile.save;
     s.profile.level = p.level;
@@ -655,12 +755,28 @@ export class App implements LobbyHost {
   }
 
   restartLevel(): void {
+    if (this.online?.role === 'guest') return;
     if (this.session && this.screen === 'paused') this.saveProgressOnQuit();
     if (this.lastLevel) void this.startLevel(this.lastLevel.mapId, this.lastLevel.levelIdx);
   }
 
+  /** Sair da fase no meio guarda XP, sucata e loot (não na tela de resultado, que já guardou). */
+  private get midLevel(): boolean {
+    return !!this.session && this.screen !== 'victory' && this.screen !== 'gameover';
+  }
+
   quitToMenu(): void {
-    if (this.session && this.screen !== 'victory' && this.screen !== 'gameover') this.saveProgressOnQuit();
+    const room = this.online;
+    if (room) {
+      // online: o anfitrião leva todos de volta para a sala; quem entrou sai dela
+      if (room.role === 'guest') return this.leaveRoom();
+      if (this.midLevel) this.saveProgressOnQuit();
+      this.endSession();
+      room.toLobby();
+      this.showRoom();
+      return;
+    }
+    if (this.midLevel) this.saveProgressOnQuit();
     this.endSession();
     this.showMainMenu();
   }
@@ -675,14 +791,142 @@ export class App implements LobbyHost {
     this.session = null;
   }
 
+  // ------------------------------------------------------------------ online
+  /** Tela "Jogar online": criar sala ou entrar numa sala (com um aviso opcional no topo). */
+  openOnline(notice?: string): void {
+    this.screens.push(onlineScreen(this, notice));
+  }
+
+  /** Tela para digitar o código (com o código já preenchido quando veio de um link). */
+  openJoin(code?: string): void {
+    this.screens.push(joinScreen(this, code));
+  }
+
+  private async getTransport(): Promise<Transport> {
+    this.transport ??= await createTransport(this.flags.net, this.flags.peer);
+    return this.transport;
+  }
+
+  async createRoom(): Promise<HostRoom> {
+    this.leaveRoomQuiet();
+    const room = await HostRoom.open(
+      await this.getTransport(),
+      this.profile.loadout(),
+      this.continueTarget(),
+    );
+    this.online = room;
+    room.onChange = () => this.roomChanged();
+    room.onNotice = (n) => {
+      const who = `${playerTag(n.slot)} (${roomName(n.name, n.slot)})`;
+      this.playUi(n.kind === 'joined' ? 'ui_click' : 'ui_back');
+      this.hud?.toast(
+        n.kind === 'joined' ? t('{p} entrou na sala', { p: who }) : t('{p} saiu da sala', { p: who }),
+        SLOT_COLORS[n.slot],
+      );
+    };
+    // alguém caiu no meio da fase: o jogador dele sai e os outros continuam
+    room.onGuestLeft = (slot) => {
+      const w = this.session?.world;
+      const e = w?.get(slot + 1);
+      if (w && e?.player) retirePlayer(w, e);
+    };
+    return room;
+  }
+
+  async joinRoom(code: string): Promise<GuestRoom> {
+    this.leaveRoomQuiet();
+    const room = await GuestRoom.join(await this.getTransport(), code, this.profile.loadout());
+    this.online = room;
+    room.onChange = () => this.roomChanged();
+    room.onStart = (m) => void this.startGuest(room, m);
+    room.onClosed = (why) => {
+      if (this.online !== room) return;
+      if (this.midLevel) this.saveProgressOnQuit();
+      this.online = null;
+      this.endSession();
+      this.showMainMenu();
+      this.openOnline(
+        why === 'host-left'
+          ? t('O anfitrião fechou a sala.')
+          : t('A conexão com a sala caiu. Confira a internet e entre de novo.'),
+      );
+    };
+    return room;
+  }
+
+  /** Quem entrou na sala: a partida só mostra o que o anfitrião manda. */
+  private async startGuest(room: GuestRoom, m: StartMsg): Promise<void> {
+    // o anfitrião recomeçou a fase no meio: o que este jogador ganhou até aqui fica salvo
+    if (this.midLevel) this.saveProgressOnQuit();
+    const net = new ClientAdapter(room, this.input.source(room.slot, { k: 'auto' }), () =>
+      this.input.endTick(),
+    );
+    await this.launch({ ...this.fromStart(m), net, mouseSlot: room.slot });
+    if (this.online === room && this.session?.net === net) room.attach(net);
+  }
+
+  private roomChanged(): void {
+    const room = this.online;
+    // o anfitrião voltou para a sala: quem estava na fase volta junto
+    if (room?.role === 'guest' && room.phase === 'lobby' && this.session) {
+      if (this.midLevel) this.saveProgressOnQuit();
+      this.endSession();
+      this.showRoom();
+    }
+    for (const f of this.roomListeners) f();
+  }
+
+  /** Tela da sala: código, quem está nela, personagem e começar. */
+  showRoom(): void {
+    this.showMainMenu();
+    this.screens.push(roomScreen(this));
+  }
+
+  /** Sair da sala (quem entrou) ou fechar a sala (anfitrião). */
+  leaveRoom(): void {
+    if (this.midLevel) this.saveProgressOnQuit();
+    this.leaveRoomQuiet();
+    this.endSession();
+    this.showMainMenu();
+  }
+
+  private leaveRoomQuiet(): void {
+    const room = this.online;
+    this.online = null;
+    if (room?.role === 'host') room.close();
+    else room?.leave();
+  }
+
+  /** Anfitrião: começa a fase escolhida na sala para todos. */
+  startOnline(): void {
+    const room = this.online;
+    if (room?.role === 'host') void this.startLevel(room.mapId, room.levelIdx);
+  }
+
+  /** Link que abre o jogo já entrando na sala (no app Android, o link do site). */
+  roomLink(code: string): string {
+    const base = __NATIVE__ ? SITE_URL : `${location.origin}${location.pathname}`;
+    return `${base}?sala=${code}`;
+  }
+
+  /** Anfitrião: a fase só anda quando todos carregaram (ou depois de 15 s). */
+  private updateHold(dt: number): void {
+    const s = this.session;
+    if (!s?.hold) return;
+    this.holdTimer -= dt;
+    const room = this.online;
+    if (room?.role !== 'host' || room.allLoaded() || this.holdTimer <= 0) s.hold = false;
+  }
+
   pause(): void {
     if (!this.session || this.screen !== 'playing') return;
-    this.session.paused = true;
+    // online a partida continua para os outros: só abre o menu
+    if (!this.online) this.session.paused = true;
     this.screen = 'paused';
     this.input.enabled = false;
     this.input.exitPointerLock();
     this.music.muffle(true);
-    this.screens.push(pauseScreen(this));
+    this.screens.push(pauseScreen(this, this.online?.role));
   }
 
   resume(): void {
@@ -701,6 +945,14 @@ export class App implements LobbyHost {
   }
 
   setAutopilot(on: boolean): void {
+    const net = this.session?.net;
+    if (net && net.role !== 'solo') {
+      // online: só o jogador deste aparelho
+      const slot = net.localSlots()[0] ?? 0;
+      this.autopilotSource = on ? new Autopilot(() => this.session?.world ?? null, slot) : null;
+      net.setOverride(this.autopilotSource, slot);
+      return;
+    }
     this.autopilotSource = on ? this.makeAutopilot() : null;
     this.session?.setInputOverride(this.autopilotSource);
     // multijogador: um piloto automático por jogador
@@ -732,6 +984,7 @@ export class App implements LobbyHost {
     }
     this.screens.pollGamepad(dt);
     this.screens.update(dt);
+    this.updateHold(dt);
     this.updateTouchUi();
     this.renderer.gl.info.reset();
     if (!this.session && this.menuScene) {

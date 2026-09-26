@@ -23,14 +23,16 @@ export function playerTag(slot: number): string {
  * Progresso da equipe para o perfil salvo: nível/XP do jogador que mais evoluiu, armas e cosméticos de todos,
  * sucata somada; a "sorte" dos cosméticos é a do jogador 1.
  */
-export function aggregateParty(w: World): {
+export interface PartyProgress {
   level: number;
   xp: number;
   guns: PlayerComp['guns'];
   loot: string[];
   scrap: number;
   pity: number;
-} | null {
+}
+
+export function aggregateParty(w: World): PartyProgress | null {
   const ps = w.playerEntities().map((e) => e.player!);
   if (!ps.length) return null;
   const best = ps.reduce((a, p) => (totalXp(p.level, p.xp) > totalXp(a.level, a.xp) ? p : a));
@@ -41,5 +43,19 @@ export function aggregateParty(w: World): {
     loot: [...new Set(ps.flatMap((p) => p.loot))],
     scrap: ps.reduce((a, p) => a + p.scrap, 0),
     pity: ps.find((p) => p.slot === 0)?.pity ?? ps[0]!.pity,
+  };
+}
+
+/** Online: cada aparelho guarda só o progresso do próprio jogador. */
+export function playerProgress(w: World, slot: PlayerSlot): PartyProgress | null {
+  const p = w.get(slot + 1)?.player;
+  if (!p) return null;
+  return {
+    level: p.level,
+    xp: p.xp,
+    guns: [...p.guns],
+    loot: [...p.loot],
+    scrap: p.scrap,
+    pity: p.pity,
   };
 }

@@ -24,10 +24,19 @@ export default defineConfig({
       ],
     },
   },
-  webServer: {
-    command: 'npm run build && npm run preview',
-    url: 'http://localhost:4173/Zumbi-Bot/',
-    reuseExistingServer: !process.env.CI,
-    timeout: 240_000,
-  },
+  webServer: [
+    {
+      command: 'npm run build && npm run preview',
+      url: 'http://localhost:4173/Zumbi-Bot/',
+      reuseExistingServer: !process.env.CI,
+      timeout: 240_000,
+    },
+    // jogo online: servidor PeerJS local (o público não é usado nos testes)
+    {
+      command: 'node e2e/peer-server.cjs',
+      url: 'http://127.0.0.1:9000/zb/peerjs/id',
+      reuseExistingServer: !process.env.CI,
+      timeout: 30_000,
+    },
+  ],
 });
