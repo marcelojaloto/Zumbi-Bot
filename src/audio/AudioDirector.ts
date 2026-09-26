@@ -37,10 +37,17 @@ export class AudioDirector {
           const vol = Math.min(1, 0.5 + ev.amount / 40);
           if (ev.dtype === 'blade') a.play('blade', { x: ev.x, vol });
           else if (ev.dtype === 'blunt')
-            a.play(ev.heavy ? 'punchHeavy' : src?.player && !src.player.melee ? 'punch' : 'blunt', {
-              x: ev.x,
-              vol,
-            });
+            a.play(
+              ev.heavy
+                ? 'punchHeavy'
+                : src?.player && !src.player.melee && !src.fighter?.moveId?.startsWith('staff')
+                  ? 'punch'
+                  : 'blunt',
+              {
+                x: ev.x,
+                vol,
+              },
+            );
           else if (ev.dtype === 'electric') a.play('zap', { x: ev.x, vol: 0.5 });
           if (robot) a.play('robotHit', { x: ev.x, vol: vol * 0.6 });
           else if (kind === 'enemy' || kind === 'boss') a.play('splat', { x: ev.x, vol: vol * 0.5 });

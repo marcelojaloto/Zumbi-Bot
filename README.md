@@ -44,29 +44,30 @@ Web Audio.
   golpes fortes, fogo inflama nuvens tóxicas, o cibernético hackeia robôs e o necromante controla zumbis.
 - **Itens e power-ups**: kits médicos, escudo, mana, munição, dano dobrado, turbo e invulnerabilidade.
 - **Loot cosmético**: cerca de 40 peças dos conjuntos mago e zumbi (chapéus, óculos, máscaras, roupas e capas
-  com física), inventário no **Guarda-roupa** com prévia 3D e uma **Loja** com ofertas do dia.
+  com física), inventário no **Guarda-roupa** com prévia 3D e uma **Loja** com ofertas do dia (escolher um item
+  veste o boneco para ver antes, e a compra só acontece ao confirmar).
 - **Progressão**: XP e níveis, pontuação com combos, estrelas por nível, recordes, **ranking local** e
   **Novo Jogo+** depois de derrotar o OMEGA-Z. O progresso fica salvo no navegador (`localStorage`).
 - **Música procedural** por mapa, que ganha camadas durante as lutas e acelera contra os chefes.
 
 ## Controles
 
-| Ação                              | Teclado / mouse                        | Gamepad            |
-| --------------------------------- | -------------------------------------- | ------------------ |
-| Mover (lados e profundidade)      | W A S D / setas                        | analógico esquerdo |
-| Correr                            | Shift, toque duplo ou rodinha do mouse | L3                 |
-| Pular / pulo duplo                | Espaço                                 | A                  |
-| Soco / arma branca / pegar item   | J                                      | X                  |
-| Chute (correndo: voadora)         | K                                      | Y                  |
-| Especial do personagem            | botão direito do mouse, U ou J+K       | B                  |
-| Atirar / conjurar                 | botão esquerdo do mouse ou L           | RT                 |
-| Mirar (precisão e crítico)        | I                                      | LT                 |
-| Recarregar                        | R                                      | D-pad ↓            |
-| Arma ou cajado anterior / próximo | Q / E                                  | LB / RB            |
-| Modo arma de fogo / cajado        | 1 / 2                                  | D-pad ↑            |
-| Mapa ampliado                     | M                                      | Back               |
-| Microfone (chat de voz online)    | V                                      | —                  |
-| Pausa                             | Esc ou P                               | Start              |
+| Ação                               | Teclado / mouse                        | Gamepad            |
+| ---------------------------------- | -------------------------------------- | ------------------ |
+| Mover (lados e profundidade)       | W A S D / setas                        | analógico esquerdo |
+| Correr                             | Shift, toque duplo ou rodinha do mouse | L3                 |
+| Pular / pulo duplo                 | Espaço                                 | A                  |
+| Soco / arma branca / cajado / item | J                                      | X                  |
+| Chute (correndo: voadora)          | K                                      | Y                  |
+| Especial do personagem             | botão direito do mouse, U ou J+K       | B                  |
+| Atirar / conjurar                  | botão esquerdo do mouse ou L           | RT                 |
+| Mirar (precisão e crítico)         | I                                      | LT                 |
+| Recarregar                         | R                                      | D-pad ↓            |
+| Arma ou cajado anterior / próximo  | Q / E                                  | LB / RB            |
+| Modo arma de fogo / cajado         | 1 / 2                                  | D-pad ↑            |
+| Mapa ampliado                      | M                                      | Back               |
+| Microfone (chat de voz online)     | V                                      | —                  |
+| Pausa                              | Esc ou P                               | Start              |
 
 **Teclas do seu jeito:** em **Controles → Trocar teclas** (ou Configurações → Controles) cada ação pode ter duas
 teclas; clique numa tecla e aperte a nova (Esc cancela, Delete apaga, "Restaurar padrão" volta tudo). As dicas do
@@ -79,7 +80,15 @@ Combos: J, J, J, J termina em uppercut • J, J, K faz o chute giratório • co
 J e K atacam.
 
 Os tiros sempre saem para a frente, na faixa de profundidade do robô (o mouse escolhe o lado): alinhe-se com o
-inimigo usando W/S e a mira ajusta sozinha para acertar quem estiver à frente, na mesma faixa.
+inimigo usando W/S e a mira ajusta sozinha para acertar quem estiver à frente, na mesma faixa. Andar tem a mesma
+velocidade na tela em qualquer direção, inclusive nas diagonais (duas teclas juntas ou o direcional inclinado). No
+modo cajado, o soco vira uma pancada com o cajado; e quando a munição de uma arma pega no chão acaba, o robô volta
+sozinho para a pistola.
+
+**Na tela:** as barras de energia de cada jogador ficam no alto, no centro (sem caixa, do mesmo jeito com 1 ou 5
+jogadores); a pontuação e as mensagens (que somem em 3 segundos) à direita; o nome do mapa e o progresso embaixo, no
+centro. No computador, o microfone (ícone e tecla) e o FPS ficam no canto superior esquerdo e o mapa grande abre na
+tecla M; no celular, o minimapa começa oculto e aparece no botão 🗺.
 
 **Multijogador local (até 5 jogadores na mesma tela):** na tela "Escolha seu personagem", cada controle entra
 apertando **A** (ou Start) e uma segunda pessoa no teclado entra com **J** — o teclado se divide em dois:
@@ -116,8 +125,9 @@ PeerJS para achar a sala pelo código — sem cadastro e sem servidor próprio. 
 bloqueiam a conexão direta; nesse caso, tente outra rede, como os dados do celular.
 
 No celular e no tablet: direcional à esquerda (empurrar até a borda corre) e botões Soco, Pular, Chute,
-Atirar/Conjurar (mira sozinho), Especial, Recarregar, Próxima arma e Arma ⇄ Cajado à direita; pausa, tela cheia e
-(no jogo online com voz) microfone no topo. Tamanho, opacidade e vibração dos controles ficam em Configurações → Controles.
+Atirar/Conjurar (mira sozinho), Especial, Próxima arma e Arma ⇄ Cajado à direita (a arma recarrega sozinha quando o
+pente acaba); pausa, microfone (no jogo online com voz), tela cheia e minimapa ficam no canto superior esquerdo, um
+abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configurações → Controles.
 
 ## Jogar
 

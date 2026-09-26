@@ -46,6 +46,14 @@
 
 /* ---------------------------------------------------------------- HUD */
 .hud {
+  /* largura reservada de cada lado do topo (botões/infos à esquerda e pontuação à direita): as barras de energia
+     ficam no meio, com largura fixa calculada para caberem 5 jogadores */
+  --side: 150px;
+  --ph-gap: 12px;
+  --sl: env(safe-area-inset-left, 0px);
+  --sr: env(safe-area-inset-right, 0px);
+  --st: env(safe-area-inset-top, 0px);
+  --sb: env(safe-area-inset-bottom, 0px);
   position: absolute;
   inset: 0;
   pointer-events: none !important;
@@ -57,119 +65,124 @@
 .hud > * {
   position: absolute;
 }
-.hud-tl {
-  top: 14px;
-  left: 16px;
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-}
-.portrait {
-  width: 58px;
-  height: 58px;
-  border-radius: 10px;
-  background: linear-gradient(160deg, #8a9ab0, #4a5568);
-  border: 2px solid #ff8c1a;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
-  position: relative;
-}
-.portrait .visor {
-  position: absolute;
-  left: 9px;
-  right: 9px;
-  top: 20px;
-  height: 12px;
-  border-radius: 4px;
-  background: #39e6ff;
-  box-shadow: 0 0 10px #39e6ff;
-}
-/* retrato por personagem */
-.portrait::before {
-  content: '';
-  position: absolute;
-  display: none;
-}
-.portrait[data-char='mage'] {
-  background: linear-gradient(160deg, #e8b894 55%, #5a2d91 55%);
-  border-color: #c07aff;
-}
-.portrait[data-char='mage']::before {
-  display: block;
-  left: 3px;
-  right: 3px;
-  top: 3px;
-  height: 14px;
-  border-radius: 7px 7px 2px 2px;
-  background: #c84a2a;
-}
-.portrait[data-char='mage'] .visor {
-  left: 14px;
-  right: 14px;
-  top: 22px;
-  height: 5px;
-  background: #c07aff;
-  box-shadow: 0 0 8px #c07aff;
-}
-.portrait[data-char='military'] {
-  background: linear-gradient(160deg, #c68a5a 60%, #4b5a2a 60%);
-  border-color: #9aba4a;
-}
-.portrait[data-char='military']::before {
-  display: block;
-  left: 4px;
-  right: 8px;
-  top: 2px;
-  height: 11px;
-  border-radius: 6px 6px 2px 2px;
-  background: #8a1a1a;
-  transform: rotate(-6deg);
-}
-.portrait[data-char='military'] .visor {
-  top: 21px;
-  height: 8px;
-  background: #151515;
-  box-shadow: none;
-}
-.portrait[data-char='cyborg'] {
-  background: linear-gradient(90deg, #d8a888 50%, #9aa6b8 50%);
-  border-color: #ff3a4a;
-}
-.portrait[data-char='cyborg'] .visor {
-  left: 32px;
-  right: 10px;
-  top: 21px;
-  height: 7px;
-  background: #ff2a3a;
-  box-shadow: 0 0 10px #ff2a3a;
-}
-.portrait[data-char='mutant'] {
-  background: linear-gradient(160deg, #6fba4a, #2e5a22);
-  border-color: #5aff5a;
-}
-.portrait[data-char='mutant'] .visor {
-  left: 12px;
-  right: 12px;
-  top: 20px;
-  height: 6px;
-  background: #ffe04a;
-  box-shadow: 0 0 10px #ffe04a;
-}
-.bars {
+
+/* canto superior esquerdo: microfone (ícone + tecla), FPS e outras infos, um abaixo do outro */
+.hud-side {
+  top: calc(var(--st) + 10px);
+  left: calc(var(--sl) + 14px);
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  width: min(300px, 34vw);
+  align-items: flex-start;
+  gap: 6px;
 }
-.bar {
+.hud-voice {
+  padding: 2px 8px;
+  font: 700 13px var(--ui-font);
+  color: var(--fg);
+  text-shadow: 0 1px 2px #000;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  pointer-events: auto;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.hud-voice[hidden],
+body.touch .hud-voice {
+  display: none;
+}
+.hud-voice.on {
+  border-color: #5aff9a;
+}
+.hud-voice.talking {
+  box-shadow: 0 0 10px rgba(90, 255, 154, 0.7);
+}
+.fps {
+  font-size: 11px;
+  opacity: 0.75;
+}
+.fps[hidden] {
+  display: none;
+}
+
+/* barras de energia: no alto, centralizadas, sem caixa nem borda (também com 1 jogador) */
+.party-hud {
+  --ph-w: clamp(
+    88px,
+    calc((100vw - 2 * (var(--side) + max(var(--sl), var(--sr))) - 4 * var(--ph-gap)) / 5),
+    180px
+  );
+  top: calc(var(--st) + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  gap: var(--ph-gap);
+  pointer-events: none;
+}
+.ph {
+  width: var(--ph-w);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-shadow:
+    0 1px 2px #000,
+    0 0 4px rgba(0, 0, 0, 0.9);
+}
+.ph-head {
+  display: flex;
+  gap: 5px;
+  align-items: baseline;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.ph-head b {
+  color: var(--pc);
+  font-weight: 900;
+}
+.ph-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ph.me .ph-name {
+  color: var(--pc);
+}
+.ph-lvl {
+  color: #ffd24a;
+  font-weight: 800;
+  font-size: 11px;
+}
+.ph-lives {
+  color: #ff5a6a;
+  letter-spacing: -1px;
+}
+.ph-mic {
+  font-size: 11px;
+}
+.ph-mic:empty {
+  display: none;
+}
+.ph .bar {
   position: relative;
-  height: 16px;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 4px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 3px;
   overflow: hidden;
 }
-.manabar {
-  height: 9px;
+.ph .manabar {
+  height: 4px;
+}
+.ph-xp {
+  height: 2px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.ph-xp-fill {
+  height: 100%;
+  background: #ffd24a;
 }
 .bar-fill,
 .bar-lag {
@@ -195,133 +208,54 @@
   }
 }
 .bar-fill.shield {
-  background: linear-gradient(180deg, rgba(90, 170, 255, 0.85), rgba(40, 90, 220, 0.85));
-  height: 5px;
+  background: linear-gradient(180deg, rgba(90, 170, 255, 0.9), rgba(40, 90, 220, 0.9));
+  height: 3px;
   top: auto;
 }
 .bar-fill.mana {
   background: linear-gradient(180deg, #5ae8ff, #1a8ab0);
 }
-.bar-text {
-  position: absolute;
-  inset: 0;
+.ph-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
   font-size: 11px;
-  line-height: 16px;
-  text-align: center;
-  font-weight: 700;
+  color: rgba(232, 236, 244, 0.85);
+  white-space: nowrap;
 }
-.row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  font-size: 13px;
-}
-.lives {
-  color: #ff5a6a;
-  letter-spacing: 2px;
-  font-size: 15px;
-}
-.lvl {
-  font-weight: 800;
-  color: #ffd24a;
-}
-.xp {
-  flex: 1;
-  height: 4px;
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 2px;
+.ph-weapon {
+  min-width: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
-.xp-fill {
-  height: 100%;
-  background: #ffd24a;
+.ph-icons {
+  flex: 1;
+  text-align: right;
+  letter-spacing: 1px;
 }
-.hud-tc {
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
+.ph-note {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--pc);
 }
-.mapname {
-  font-family: var(--title-font);
-  letter-spacing: 2px;
-  font-size: 18px;
-  opacity: 0.9;
-}
-.pips {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-  margin-top: 4px;
-}
-.pips i {
-  width: 12px;
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.2);
-}
-.pips i.active {
-  background: #ff4a3a;
-  box-shadow: 0 0 6px #ff4a3a;
-}
-.pips i.done {
-  background: #5aff9a;
-}
-.pips i.boss {
-  width: 18px;
-  background: rgba(255, 60, 100, 0.35);
-}
-.pips i.boss.active {
-  background: #ff2a6a;
-}
-/* chat de voz online: microfone deste aparelho (clique ou tecla V) */
-.hud-voice {
-  display: block;
-  margin: 6px auto 0;
-  padding: 3px 10px;
-  font: 700 12px var(--ui-font);
-  color: var(--fg);
-  background: rgba(8, 10, 16, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 999px;
-  pointer-events: auto;
-  cursor: pointer;
-}
-.hud-voice[hidden],
-body.touch .hud-voice {
+.ph-note:empty {
   display: none;
 }
-.hud-voice.on {
-  border-color: #5aff9a;
+.ph.out {
+  opacity: 0.55;
 }
-.hud-voice.talking {
-  box-shadow: 0 0 12px rgba(90, 255, 154, 0.7);
+/* quem está falando no chat de voz */
+.ph.talking .ph-head b,
+.ph.talking .ph-name {
+  text-shadow:
+    0 0 6px #5aff9a,
+    0 1px 2px #000;
 }
-.go {
-  margin-top: 26px;
-  font-family: var(--title-font);
-  font-size: 34px;
-  color: #ffd24a;
-  letter-spacing: 3px;
-  opacity: 0;
-}
-.go.show {
-  animation: goblink 0.6s infinite;
-}
-@keyframes goblink {
-  0%,
-  100% {
-    opacity: 0.2;
-    transform: translateX(0);
-  }
-  50% {
-    opacity: 1;
-    transform: translateX(14px);
-  }
-}
+
+/* canto superior direito: pontuação, combo, minimapa (celular) e mensagens */
 .hud-tr {
-  top: 12px;
-  right: 16px;
+  top: calc(var(--st) + 8px);
+  right: calc(var(--sr) + 16px);
   text-align: right;
   display: flex;
   flex-direction: column;
@@ -330,15 +264,19 @@ body.touch .hud-voice {
 }
 .score {
   font-family: var(--title-font);
-  font-size: 30px;
+  font-size: 28px;
+  line-height: 1;
   letter-spacing: 1px;
 }
 .combo {
   font-family: var(--title-font);
-  font-size: 22px;
+  font-size: 20px;
   color: #ffd24a;
   opacity: 0;
   transition: opacity 0.3s;
+}
+.combo:not(.show) {
+  height: 0;
 }
 .combo.show {
   opacity: 1;
@@ -354,13 +292,19 @@ body.touch .hud-voice {
     transform: scale(1);
   }
 }
+/* minimapa: no computador só o grande (tecla M); no celular/tablet o pequeno, quando o jogador mostra (🗺) */
 .minimap {
+  display: none;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
-  width: 220px;
-  height: 70px;
+  width: 200px;
+  height: 64px;
+}
+body.touch .minimap.shown {
+  display: block;
 }
 .minimap.big {
+  display: block;
   position: fixed;
   left: 50%;
   top: 50%;
@@ -368,9 +312,180 @@ body.touch .hud-voice {
   height: auto;
   transform: translate(-50%, -50%);
 }
+/* mensagens: sem fundo, somem em 3 s */
+.toasts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+  margin-top: 4px;
+}
+.toast {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-shadow:
+    0 1px 2px #000,
+    0 0 6px rgba(0, 0, 0, 0.95);
+  animation: toastin 0.25s ease-out;
+  transition:
+    opacity 0.5s,
+    transform 0.5s;
+}
+.toast b {
+  font-size: 14px;
+}
+.toast span {
+  font-size: 11px;
+  opacity: 0.85;
+}
+.toast.out {
+  opacity: 0;
+  transform: translateX(30px);
+}
+@keyframes toastin {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+
+/* embaixo, no centro: "siga", barra do chefe, nome do mapa e traços de progresso */
+.hud-bc {
+  left: 50%;
+  bottom: calc(var(--sb) + 8px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+.mapname {
+  font-family: var(--title-font);
+  letter-spacing: 2px;
+  font-size: 15px;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+.pips {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+.pips i {
+  width: 12px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.25);
+}
+.pips i.active {
+  background: #ff4a3a;
+  box-shadow: 0 0 6px #ff4a3a;
+}
+.pips i.done {
+  background: #5aff9a;
+}
+.pips i.boss {
+  width: 18px;
+  background: rgba(255, 60, 100, 0.35);
+}
+.pips i.boss.active {
+  background: #ff2a6a;
+}
+.go {
+  font-family: var(--title-font);
+  font-size: 30px;
+  color: #ffd24a;
+  letter-spacing: 3px;
+  opacity: 0;
+}
+.go:not(.show) {
+  display: none;
+}
+.go.show {
+  animation: goblink 0.6s infinite;
+}
+@keyframes goblink {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(14px);
+  }
+}
+.hud-boss {
+  width: min(560px, 50vw);
+  margin-bottom: 4px;
+  display: none;
+}
+.hud-boss.show {
+  display: block;
+  animation: bossin 0.4s ease-out;
+}
+@keyframes bossin {
+  from {
+    opacity: 0;
+  }
+}
+.boss-name {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  justify-content: center;
+  margin-bottom: 3px;
+}
+.boss-name b {
+  font-family: var(--title-font);
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: #ff5a6a;
+}
+.boss-name span {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.boss-bar {
+  position: relative;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.boss-fill,
+.boss-lag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+.boss-lag {
+  background: #ffe08a;
+}
+.boss-fill {
+  background: linear-gradient(180deg, #ff4a6a, #a0102a);
+}
+.boss-fill.stagger {
+  background: linear-gradient(180deg, #ffd24a, #d08a10);
+}
+.boss-fill.immune {
+  background: linear-gradient(180deg, #8a8ea0, #4a4e5a);
+}
+.boss-phases i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* arma do jogador (computador, jogo solo e online): canto inferior direito */
 .hud-br {
-  right: 16px;
-  bottom: 16px;
+  right: calc(var(--sr) + 16px);
+  bottom: calc(var(--sb) + 16px);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -454,152 +569,23 @@ body.touch .hud-voice {
 .slots i.dot.on {
   outline: 2px solid #fff;
 }
-.hud-bl {
-  left: 16px;
-  bottom: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+/* multijogador local: a arma de cada um já aparece no painel dele */
+.hud.party-mode .hud-br {
+  display: none;
 }
-.powers,
-.statuses {
-  display: flex;
-  gap: 6px;
-}
-.pw,
-.st {
-  min-width: 40px;
-  height: 40px;
-  border: 2px solid;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.55);
-  display: grid;
-  place-items: center;
-  font-size: 13px;
-  line-height: 1;
-  position: relative;
-}
-.pw span {
-  font-size: 10px;
-}
-.st {
-  min-width: 30px;
-  height: 30px;
-  font-size: 15px;
-}
-.st sub {
-  position: absolute;
-  right: 2px;
-  bottom: 1px;
-  font-size: 9px;
-}
-.hud-boss {
-  left: 50%;
-  bottom: 22px;
-  transform: translateX(-50%);
-  width: min(620px, 60vw);
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-.hud-boss.show {
-  opacity: 1;
-}
-.boss-name {
-  display: flex;
-  gap: 10px;
-  align-items: baseline;
-  margin-bottom: 4px;
-}
-.boss-name b {
-  font-family: var(--title-font);
-  font-size: 20px;
-  letter-spacing: 2px;
-  color: #ff5a6a;
-}
-.boss-name span {
-  font-size: 12px;
-  opacity: 0.8;
-}
-.boss-bar {
-  position: relative;
-  height: 14px;
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(255, 90, 106, 0.6);
-  border-radius: 4px;
-  overflow: hidden;
-}
-.boss-fill,
-.boss-lag {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-}
-.boss-lag {
-  background: #ffe08a;
-}
-.boss-fill {
-  background: linear-gradient(180deg, #ff4a6a, #a0102a);
-}
-.boss-fill.stagger {
-  background: linear-gradient(180deg, #ffd24a, #d08a10);
-}
-.boss-fill.immune {
-  background: linear-gradient(180deg, #8a8ea0, #4a4e5a);
-}
-.boss-phases i {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: rgba(255, 255, 255, 0.8);
-}
-.toasts {
-  right: 16px;
-  top: 150px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: flex-end;
-}
-.toast {
-  background: rgba(8, 10, 16, 0.85);
-  border-left: 4px solid;
-  padding: 7px 12px;
-  border-radius: 6px;
-  display: flex;
-  flex-direction: column;
-  animation: toastin 0.25s ease-out;
-  transition:
-    opacity 0.5s,
-    transform 0.5s;
-  min-width: 180px;
-}
-.toast b {
-  font-size: 14px;
-}
-.toast span {
-  font-size: 11px;
-  opacity: 0.8;
-}
-.toast.out {
-  opacity: 0;
-  transform: translateX(30px);
-}
-@keyframes toastin {
-  from {
-    opacity: 0;
-    transform: translateX(40px);
-  }
-}
+
+/* dicas do tutorial: sem fundo, somem em 3 s */
 .hint {
   left: 50%;
-  bottom: 110px;
+  bottom: 130px;
   transform: translateX(-50%);
-  background: rgba(8, 10, 16, 0.8);
-  padding: 8px 18px;
-  border-radius: 20px;
-  font-size: 15px;
+  padding: 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  text-shadow:
+    0 1px 2px #000,
+    0 0 8px rgba(0, 0, 0, 0.95);
   opacity: 0;
   transition: opacity 0.4s;
   white-space: nowrap;
@@ -687,135 +673,47 @@ body.touch .hud-voice {
 .crosshair.staff i {
   background: #b8f0ff;
 }
-.fps {
-  left: 50%;
-  top: 70px;
-  transform: translateX(-50%);
-  font-size: 11px;
-  opacity: 0.7;
-}
-@media (max-width: 700px) {
-  .minimap {
-    display: none;
+
+/* telas menores e celular: menos espaço reservado nas laterais, textos menores */
+@media (max-width: 1000px), (max-height: 500px) {
+  .hud {
+    --side: 100px;
+    --ph-gap: 6px;
+  }
+  .ph-head,
+  .ph-foot,
+  .ph-note {
+    font-size: 10px;
+  }
+  .ph .bar {
+    height: 6px;
+  }
+  .ph .manabar {
+    height: 3px;
   }
   .score {
+    font-size: 20px;
+  }
+  .combo {
+    font-size: 15px;
+  }
+  .mapname {
+    font-size: 12px;
+  }
+  .go {
     font-size: 22px;
   }
-  .portrait {
-    display: none;
+  .toast b {
+    font-size: 12px;
+  }
+  .toast span {
+    font-size: 10px;
+  }
+  .banner .b-title {
+    font-size: 40px;
   }
 }
 
-/* ---------------------------------------------------------------- multijogador local */
-.hud.party-mode .hud-tl,
-.hud.party-mode .hud-br,
-.hud.party-mode .hud-bl {
-  display: none;
-}
-.party-hud {
-  position: absolute;
-  left: max(12px, env(safe-area-inset-left, 0px));
-  right: max(12px, env(safe-area-inset-right, 0px));
-  bottom: max(10px, env(safe-area-inset-bottom, 0px));
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
-  pointer-events: none;
-}
-.ph {
-  display: flex;
-  gap: 8px;
-  min-width: 0;
-  padding: 6px 8px;
-  background: rgba(8, 10, 16, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-top: 3px solid var(--pc);
-  border-radius: 8px;
-}
-.ph.me {
-  background: rgba(8, 10, 16, 0.85);
-  box-shadow: 0 0 0 2px var(--pc);
-}
-.ph .portrait {
-  flex: none;
-  zoom: 0.66;
-  border-color: var(--pc);
-}
-.ph-body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.ph-head {
-  display: flex;
-  gap: 6px;
-  align-items: baseline;
-  font-size: 12px;
-}
-.ph-head b {
-  color: var(--pc);
-}
-.ph-name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.ph-lives {
-  color: #ff5a6a;
-  letter-spacing: -1px;
-}
-.ph .bar {
-  height: 8px;
-}
-.ph .manabar {
-  height: 5px;
-}
-.ph-foot {
-  display: flex;
-  justify-content: space-between;
-  gap: 6px;
-  font-size: 11px;
-  color: var(--muted);
-  white-space: nowrap;
-}
-.ph-note {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--pc);
-}
-.ph-note:empty {
-  display: none;
-}
-.ph.out {
-  opacity: 0.65;
-}
-.ph-mic {
-  font-size: 11px;
-}
-.ph-mic:empty {
-  display: none;
-}
-/* quem está falando no chat de voz */
-.ph.talking {
-  box-shadow:
-    0 0 0 2px #5aff9a,
-    0 0 14px rgba(90, 255, 154, 0.6);
-}
-/* barra do chefe e dicas sobem para não cobrir os painéis */
-.hud.party-mode .hud-boss {
-  bottom: 96px;
-}
-.hud.party-mode .hint {
-  bottom: 170px;
-}
-body.touch .party-hud {
-  bottom: auto;
-  top: calc(env(safe-area-inset-top, 0px) + 60px);
-}
 .ptag {
   position: absolute;
   left: 0;

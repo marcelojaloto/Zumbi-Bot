@@ -183,25 +183,22 @@
   background: rgba(255, 255, 255, 0.28);
 }
 
-/* pausa e tela cheia: topo, abaixo do nome do mapa */
+/* pausa, microfone, tela cheia e minimapa: canto superior esquerdo, um abaixo do outro */
+:root {
+  --t-btn: 40px;
+}
 .t-top {
   position: absolute;
-  top: calc(var(--st) + 54px);
-  left: 50%;
-  transform: translateX(-50%);
+  top: calc(var(--st) + 8px);
+  left: calc(var(--sl) + 10px);
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 6px;
   pointer-events: auto;
 }
-/* multijogador: os painéis dos jogadores ocupam o topo; pausa, tela cheia e microfone vão para o canto */
-body.touch:has(.hud.party-mode) .t-top {
-  top: calc(var(--st) + 6px);
-  left: calc(env(safe-area-inset-left, 0px) + 12px);
-  transform: none;
-}
 .t-mini {
-  width: 40px;
-  height: 40px;
+  width: var(--t-btn);
+  height: var(--t-btn);
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.4);
   background: rgba(12, 14, 22, 0.45);
@@ -218,7 +215,8 @@ body.touch:has(.hud.party-mode) .t-top {
 .t-mini[hidden] {
   display: none;
 }
-.t-mic.on {
+.t-mic.on,
+.t-map.on {
   border-color: #5aff9a;
   opacity: 1;
 }
@@ -294,31 +292,22 @@ body.touch:has(.hud.party-mode) .t-top {
 }
 
 /* ---------------------------------------------------------------- HUD no modo toque */
-/* arma e poderes sobem para o canto superior esquerdo, sob as barras (os cantos de baixo são dos controles) */
-body.touch .hud-br {
-  top: calc(env(safe-area-inset-top, 0px) + 84px);
-  bottom: auto;
-  left: calc(env(safe-area-inset-left, 0px) + 14px);
-  right: auto;
-  transform: scale(0.8);
-  transform-origin: top left;
-  flex-direction: row;
-  align-items: center;
+/* FPS e outras infos logo abaixo da coluna de botões do canto */
+body.touch .hud-side {
+  top: calc(var(--st) + 8px + var(--t-top-n, 0) * (var(--t-btn) + 6px));
+  left: calc(var(--sl) + 10px);
 }
-body.touch .hud-bl {
-  top: calc(env(safe-area-inset-top, 0px) + 146px);
-  bottom: auto;
-  left: calc(env(safe-area-inset-left, 0px) + 14px);
+/* a arma de cada um já aparece no painel de energia; os cantos de baixo são dos controles */
+body.touch .hud-br {
+  display: none;
 }
 body.touch .toasts {
-  top: calc(env(safe-area-inset-top, 0px) + 120px);
-  max-height: 34vh;
+  max-height: 40vh;
   overflow: hidden;
 }
 /* barra do chefe embaixo, no vão entre o direcional e os botões */
 body.touch .hud-boss {
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
-  width: min(340px, 34vw);
+  width: min(300px, 30vw);
 }
 body.touch .boss-name span {
   display: none;
@@ -327,60 +316,18 @@ body.touch .hint {
   bottom: auto;
   top: 26%;
   white-space: normal;
-  max-width: 70vw;
-  text-align: center;
+  max-width: 60vw;
 }
 body.touch .crosshair {
   display: none !important;
 }
-body.touch .hud-tl {
-  left: calc(env(safe-area-inset-left, 0px) + 14px);
-}
-body.touch .hud-tr {
-  right: calc(env(safe-area-inset-right, 0px) + 14px);
-}
 
 /* ---------------------------------------------------------------- telas baixas (celular deitado) */
 @media (max-height: 500px) {
-  .hud-tl {
-    top: 8px;
-    transform: scale(0.82);
-    transform-origin: top left;
+  :root {
+    --t-btn: 34px;
   }
-  .hud-tr {
-    top: 6px;
-    transform: scale(0.8);
-    transform-origin: top right;
-  }
-  .hud-tc {
-    top: 6px;
-  }
-  .mapname {
-    font-size: 12px;
-  }
-  .toasts {
-    top: 42%;
-  }
-  .toast {
-    min-width: 140px;
-    padding: 5px 10px;
-  }
-  .banner .b-title {
-    font-size: 40px;
-  }
-  body.touch .hud-br {
-    top: calc(env(safe-area-inset-top, 0px) + 62px);
-    transform: scale(0.68);
-  }
-  body.touch .hud-bl {
-    top: calc(env(safe-area-inset-top, 0px) + 112px);
-  }
-  body.touch .toasts {
-    top: calc(env(safe-area-inset-top, 0px) + 88px);
-    transform: scale(0.85);
-    transform-origin: top right;
-  }
-  body.touch .t-top {
-    top: calc(env(safe-area-inset-top, 0px) + 40px);
+  .t-mini {
+    font-size: 16px;
   }
 }

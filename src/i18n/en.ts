@@ -41,6 +41,7 @@ export const EN: Record<string, string> = {
   'O Zumbi Bot é jogado com o celular deitado.': 'Zumbi Bot is played in landscape.',
   'Tela cheia': 'Full screen',
   Pausa: 'Pause',
+  Minimapa: 'Minimap',
 
   // ------------------------------------------------------------------ HUD
   'SIGA ➜': 'GO ➜',
@@ -84,7 +85,7 @@ export const EN: Record<string, string> = {
   'Mover (frente/fundo e lados)': 'Move (sideways and in depth)',
   Correr: 'Run',
   'Pular / pulo duplo': 'Jump / double jump',
-  'Soco / arma branca / pegar item': 'Punch / melee weapon / pick up item',
+  'Soco / arma branca / cajado / pegar item': 'Punch / melee weapon / staff / pick up item',
   'Chute (correndo: voadora)': 'Kick (running: flying kick)',
   'Especial do personagem': 'Character special',
   'Atirar / conjurar': 'Shoot / cast',
@@ -101,8 +102,8 @@ export const EN: Record<string, string> = {
   'Direcional (esquerda)': 'D-pad (left)',
   'Anda e muda de plano; empurrar até a borda corre': 'Walks and changes lanes; push to the edge to run',
   SOCO: 'PUNCH',
-  'Soco, arma branca e pegar itens; 4 seguidos = combo':
-    'Punch, melee weapon and pick up items; 4 in a row = combo',
+  'Soco (com o cajado, bate com ele), arma branca e pegar itens; seguidos = combo':
+    'Punch (holding a staff, hit with it), melee weapon and pick up items; in a row = combo',
   CHUTE: 'KICK',
   'Chute; correndo = voadora': 'Kick; while running = flying kick',
   PULAR: 'JUMP',
@@ -113,12 +114,13 @@ export const EN: Record<string, string> = {
     'Shoots or casts the staff, auto-aiming at the enemy ahead',
   ESPECIAL: 'SPECIAL',
   'Especial do personagem (gasta mana)': 'Character special (costs mana)',
-  '⟳': '⟳',
   '▶▶': '▶▶',
-  'Próxima arma ou cajado': 'Next weapon or staff',
+  'Próxima arma ou cajado (a arma recarrega sozinha)': 'Next weapon or staff (guns reload by themselves)',
+  'Mostra ou esconde o minimapa': 'Shows or hides the minimap',
   '⇄': '⇄',
   'Alterna entre arma de fogo e cajado': 'Switches between firearm and staff',
   '⏸': '⏸',
+  '🗺': '🗺',
 
   // ------------------------------------------------------------------ créditos
   'O núcleo do OMEGA-Z se apagou. Pela primeira vez desde o apocalipse, o silêncio tomou as ruas. Os robôs ainda vigiam as cidades em ruínas — mas agora, quem manda é a revolução.':
@@ -270,6 +272,12 @@ export const EN: Record<string, string> = {
   'Ofertas do dia (−20%)': "Today's deals (−20%)",
   'Já possui': 'Owned',
   LOJA: 'SHOP',
+  Equipado: 'Equipped',
+  Equipar: 'Equip',
+  'Comprar por ⚙ {n}': 'Buy for ⚙ {n}',
+  'Faltam ⚙ {n}': '⚙ {n} short',
+  'Prévia no boneco': 'Preview on the character',
+  'Escolha um item para ver no boneco antes de comprar.': 'Pick an item to try it on before buying.',
   Cabeça: 'Head',
   Olhos: 'Eyes',
   Máscara: 'Mask',

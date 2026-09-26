@@ -1,8 +1,6 @@
-import { xpToNext } from '../../data/balance';
 import { ITEMS } from '../../data/items';
 import { MELEE_WEAPONS } from '../../data/melee';
 import { STAFFS } from '../../data/staffs';
-import { STATUS } from '../../data/statusEffects';
 import { FIREARMS } from '../../data/weapons';
 import { BOSSES } from '../../data/bosses';
 import { COSMETICS, RARITY_COLORS, RARITY_NAMES } from '../../data/cosmetics';
@@ -30,13 +28,6 @@ export const ELEMENT_NAMES: Record<Element, string> = {
   earth: 'Terra',
   necro: 'Necromancia',
 };
-
-const POWER_INFO = {
-  doubleDamage: { icon: '✖2', color: '#ff4a3a' },
-  turbo: { icon: '⚡', color: '#ffd24a' },
-  invulnerable: { icon: '🛡', color: '#ffffff' },
-  rage: { icon: '😡', color: '#5aff5a' },
-} as const;
 
 /** Dicas do tutorial que citam teclas: versão para os controles de toque. */
 export const TOUCH_HINTS: Record<string, string> = {
@@ -73,7 +64,6 @@ export const KEY_HINTS: Record<string, string> = {
     '{modeStaff} = modo cajado • {modeGun} = armas • {specialKey}, botão direito ou {punch}+{kick} = {special}',
 };
 
-/** HUD em HTML sobre o canvas: vida, mana, vidas, XP, pontuação, combo, arma, minimapa, chefe e avisos. */
 /** Chat de voz online visto pelo HUD (botão do microfone e quem está falando). */
 export interface VoiceHud {
   /** Microfone deste aparelho; null quando a partida não tem chat de voz. */
@@ -84,18 +74,13 @@ export interface VoiceHud {
   toggle(): void;
 }
 
+/**
+ * HUD em HTML sobre o canvas. No alto: microfone e FPS à esquerda, barras de energia dos jogadores no centro e
+ * pontuação/mensagens à direita. Embaixo, no centro: mapa, progresso e chefe. Arma no canto inferior direito.
+ */
 export class Hud {
   readonly root: HTMLDivElement;
   readonly minimap: Minimap;
-  private hpFill: HTMLDivElement;
-  private hpLag: HTMLDivElement;
-  private shieldFill: HTMLDivElement;
-  private manaFill: HTMLDivElement;
-  private hpText: HTMLSpanElement;
-  private lives: HTMLDivElement;
-  private level: HTMLSpanElement;
-  private xpFill: HTMLDivElement;
-  private portrait: HTMLDivElement;
   private score: HTMLDivElement;
   private combo: HTMLDivElement;
   private mapName: HTMLDivElement;
@@ -106,8 +91,6 @@ export class Hud {
   private ring: HTMLDivElement;
   private meleeBox: HTMLDivElement;
   private slots: HTMLDivElement;
-  private powers: HTMLDivElement;
-  private statuses: HTMLDivElement;
   private toasts: HTMLDivElement;
   private hint: HTMLDivElement;
   readonly crosshair: HTMLDivElement;
@@ -118,20 +101,20 @@ export class Hud {
   private bossPhases: HTMLDivElement;
   private banner: HTMLDivElement;
   private fps: HTMLDivElement;
-  private hpLagV = 1;
   private bossLagV = 1;
   private lastCombo = 0;
   private acc = 0;
   private goTimer = 0;
   private hintTimer = 0;
   private lastKey = '';
+  private char = '';
   showFps = false;
   crosshairVisible = true;
   /** Configuração "Mostrar dicas". */
   showHints = true;
   /** Nome do especial do personagem do jogador 1 (para as dicas). */
   private specialName = 'Giro Turbo';
-  /** Painéis por jogador (multijogador). */
+  /** Barras de energia de todos os jogadores (no alto, centralizadas; também no jogo solo). */
   private party: PartyHud | null = null;
   /** Jogador deste aparelho (online: o slot recebido na sala). */
   localSlot = 0;
@@ -145,38 +128,37 @@ export class Hud {
   voice: VoiceHud | null = null;
   private voiceBtn: HTMLButtonElement;
   private voiceKey = '';
+  /** Celular/tablet: minimapa pequeno à mostra (começa oculto; botão 🗺 abaixo da pausa). */
+  private mapShown = false;
 
   constructor(parent: HTMLElement) {
-    this.hpFill = el('div', { class: 'bar-fill hp' });
-    this.hpLag = el('div', { class: 'bar-lag' });
-    this.shieldFill = el('div', { class: 'bar-fill shield' });
-    this.manaFill = el('div', { class: 'bar-fill mana' });
-    this.hpText = el('span', { class: 'bar-text' });
-    this.lives = el('div', { class: 'lives' });
-    this.level = el('span', { class: 'lvl' });
-    this.xpFill = el('div', { class: 'xp-fill' });
-    this.portrait = el('div', { class: 'portrait' }, el('div', { class: 'visor' }));
-    const tl = el(
-      'div',
-      { class: 'hud-tl' },
-      this.portrait,
-      el(
-        'div',
-        { class: 'bars' },
-        el('div', { class: 'bar hpbar' }, this.hpLag, this.hpFill, this.shieldFill, this.hpText),
-        el('div', { class: 'bar manabar' }, this.manaFill),
-        el('div', { class: 'row' }, this.lives, this.level, el('div', { class: 'xp' }, this.xpFill)),
-      ),
-    );
-    this.mapName = el('div', { class: 'mapname' });
-    this.pips = el('div', { class: 'pips' });
-    this.go = el('div', { class: 'go' }, t('SIGA ➜'));
+    // canto superior esquerdo: microfone (ícone e tecla) e FPS, um abaixo do outro; no toque, abaixo dos botões
     this.voiceBtn = el('button', { class: 'hud-voice', hidden: true, onclick: () => this.voice?.toggle() });
-    const tc = el('div', { class: 'hud-tc' }, this.mapName, this.pips, this.voiceBtn, this.go);
+    this.fps = el('div', { class: 'fps' });
+    const side = el('div', { class: 'hud-side' }, this.voiceBtn, this.fps);
+    // canto superior direito: pontuação, combo, minimapa (celular) e mensagens
     this.score = el('div', { class: 'score' }, '0');
     this.combo = el('div', { class: 'combo' });
     const tr = el('div', { class: 'hud-tr' }, this.score, this.combo);
     this.minimap = new Minimap(tr);
+    this.toasts = el('div', { class: 'toasts' });
+    tr.appendChild(this.toasts);
+    // embaixo, no centro: "siga", barra do chefe, nome do mapa e progresso
+    this.mapName = el('div', { class: 'mapname' });
+    this.pips = el('div', { class: 'pips' });
+    this.go = el('div', { class: 'go' }, t('SIGA ➜'));
+    this.bossName = el('div', { class: 'boss-name' });
+    this.bossFill = el('div', { class: 'boss-fill' });
+    this.bossLag = el('div', { class: 'boss-lag' });
+    this.bossPhases = el('div', { class: 'boss-phases' });
+    this.bossBar = el(
+      'div',
+      { class: 'hud-boss' },
+      this.bossName,
+      el('div', { class: 'boss-bar' }, this.bossLag, this.bossFill, this.bossPhases),
+    );
+    const bc = el('div', { class: 'hud-bc' }, this.go, this.bossBar, this.mapName, this.pips);
+    // arma do jogador (computador): canto inferior direito
     this.weaponName = el('div', { class: 'wname' });
     this.ammo = el('div', { class: 'ammo' });
     this.ring = el('div', { class: 'ring' });
@@ -189,40 +171,17 @@ export class Hud {
       this.meleeBox,
       this.slots,
     );
-    this.powers = el('div', { class: 'powers' });
-    this.statuses = el('div', { class: 'statuses' });
-    const bl = el('div', { class: 'hud-bl' }, this.powers, this.statuses);
-    this.bossName = el('div', { class: 'boss-name' });
-    this.bossFill = el('div', { class: 'boss-fill' });
-    this.bossLag = el('div', { class: 'boss-lag' });
-    this.bossPhases = el('div', { class: 'boss-phases' });
-    this.bossBar = el(
-      'div',
-      { class: 'hud-boss' },
-      this.bossName,
-      el('div', { class: 'boss-bar' }, this.bossLag, this.bossFill, this.bossPhases),
-    );
-    this.toasts = el('div', { class: 'toasts' });
     this.hint = el('div', { class: 'hint' });
     this.crosshair = el('div', { class: 'crosshair' }, el('i'), el('i'), el('i'), el('i'));
     this.banner = el('div', { class: 'banner' });
-    this.fps = el('div', { class: 'fps' });
-    this.root = el(
-      'div',
-      { class: 'hud' },
-      tl,
-      tc,
-      tr,
-      bl,
-      br,
-      this.bossBar,
-      this.toasts,
-      this.hint,
-      this.banner,
-      this.crosshair,
-      this.fps,
-    );
+    this.root = el('div', { class: 'hud' }, side, tr, bc, br, this.hint, this.banner, this.crosshair);
     parent.appendChild(this.root);
+  }
+
+  /** Celular/tablet: mostra ou oculta o minimapa pequeno. */
+  setMapShown(on: boolean): void {
+    this.mapShown = on;
+    this.minimap.canvas.classList.toggle('shown', on);
   }
 
   /** Botão do microfone (online): ligado/mudo, a tecla e o brilho enquanto você fala. */
@@ -234,12 +193,12 @@ export class Hud {
     this.voiceKey = key;
     this.voiceBtn.hidden = !m;
     if (!m) return;
-    const k = !this.touchMode && this.keyNames.voice ? ` (${this.keyNames.voice})` : '';
-    this.voiceBtn.textContent = m.busy
-      ? `🎤 ${t('Ligando…')}`
-      : m.on
-        ? `🎤 ${t('Microfone ligado')}${k}`
-        : `🔇 ${t('Microfone mudo')}${k}`;
+    // só o ícone e o atalho; o texto completo fica na dica do botão
+    const k = this.keyNames.voice ?? '';
+    const label = m.busy ? t('Ligando…') : m.on ? t('Microfone ligado') : t('Microfone mudo');
+    this.voiceBtn.textContent = `${m.busy ? '🎤…' : m.on ? '🎤' : '🔇'}${k ? ` ${k}` : ''}`;
+    this.voiceBtn.title = k ? `${label} (${k})` : label;
+    this.voiceBtn.setAttribute('aria-label', this.voiceBtn.title);
     this.voiceBtn.classList.toggle('on', m.on);
     this.voiceBtn.classList.toggle('talking', talking);
   }
@@ -255,14 +214,15 @@ export class Hud {
   toast(text: string, color = '#e8ecf4', sub?: string): void {
     const t = el(
       'div',
-      { class: 'toast', style: `border-color:${color}` },
+      { class: 'toast' },
       el('b', { style: `color:${color}` }, text),
       sub ? el('span', {}, sub) : null,
     );
     this.toasts.appendChild(t);
     while (this.toasts.children.length > 5) this.toasts.firstChild?.remove();
-    setTimeout(() => t.classList.add('out'), 2600);
-    setTimeout(() => t.remove(), 3200);
+    // some em 3 s
+    setTimeout(() => t.classList.add('out'), 2500);
+    setTimeout(() => t.remove(), 3000);
   }
 
   showBanner(title: string, sub = '', ms = 2200, cls = ''): void {
@@ -281,7 +241,7 @@ export class Hud {
       special: t(this.specialName),
     });
     this.hint.classList.add('show');
-    this.hintTimer = 5;
+    this.hintTimer = 3;
   }
 
   onEvents(events: GameEvent[], w: World): void {
@@ -412,25 +372,16 @@ export class Hud {
     const p = w.get(this.localSlot + 1);
     if (!p?.player || !p.health) return;
     const pc = p.player;
-    const h = p.health;
     const multi = w.playerCount > 1;
-    if (multi && !this.party) {
-      this.party = new PartyHud(this.root, this.online ? this.localSlot : null);
-      this.root.classList.add('party-mode');
+    if (!this.party) {
+      this.party = new PartyHud(this.root, this.online ? this.localSlot : null, !multi && !this.online);
+      this.root.classList.toggle('party-mode', multi);
     }
-    this.party?.update(w, dt, this.voice);
-    if (this.portrait.dataset.char !== pc.character) {
-      this.portrait.dataset.char = pc.character;
+    this.party.update(w, dt, this.voice);
+    if (this.char !== pc.character) {
+      this.char = pc.character;
       this.specialName = getCharacter(pc.character).specialName;
     }
-    // barras (todo quadro)
-    const hpf = Math.max(0, h.hp / h.max);
-    this.hpLagV = Math.max(hpf, this.hpLagV - dt * 0.5);
-    this.hpFill.style.width = `${hpf * 100}%`;
-    this.hpLag.style.width = `${this.hpLagV * 100}%`;
-    this.shieldFill.style.width = `${Math.min(1, h.shield / 100) * 100}%`;
-    this.manaFill.style.width = `${(pc.mana / pc.manaMax) * 100}%`;
-    this.hpFill.classList.toggle('low', hpf < 0.25);
     this.goTimer = Math.max(0, this.goTimer - dt);
     this.go.classList.toggle('show', this.goTimer > 0);
     if (this.hintTimer > 0) {
@@ -444,15 +395,7 @@ export class Hud {
     this.acc += dt;
     if (this.acc < 0.05) return;
     this.acc = 0;
-    this.hpText.textContent = `${Math.ceil(h.hp)}/${h.max}${h.shield > 0 ? ` +${Math.ceil(h.shield)}` : ''}`;
     this.updateVoice();
-    const livesKey = `${pc.lives}`;
-    if (this.lives.dataset.v !== livesKey) {
-      this.lives.dataset.v = livesKey;
-      this.lives.textContent = '♥'.repeat(Math.max(0, pc.lives));
-    }
-    this.level.textContent = t('Nv {n}', { n: pc.level });
-    this.xpFill.style.width = `${Math.min(1, pc.xp / xpToNext(pc.level)) * 100}%`;
     // multijogador: pontuação da equipe e o maior combo em andamento
     const ps = multi ? w.playerEntities().map((e) => e.player!) : [pc];
     const combo = Math.max(...ps.map((x) => x.combo));
@@ -487,9 +430,9 @@ export class Hud {
         this.pips.appendChild(el('i', { class: `boss ${w.levelState.bossSpawned ? 'active' : ''}` }));
     }
     this.updateWeapon(p);
-    this.updatePowers(p);
-    this.minimap.update(w, 0.07);
-    this.fps.style.display = this.showFps ? 'block' : 'none';
+    // minimapa: no computador só o grande (tecla M); no celular o pequeno, quando o jogador mostra
+    if (this.minimap.big || (this.touchMode && this.mapShown)) this.minimap.update(w, 0.07);
+    this.fps.hidden = !this.showFps;
     if (this.showFps) this.fps.textContent = `${fps} FPS`;
   }
 
@@ -554,28 +497,6 @@ export class Hud {
         );
       }
     }
-  }
-
-  private updatePowers(p: Entity): void {
-    const pc = p.player!;
-    const parts: string[] = [];
-    for (const k of ['doubleDamage', 'turbo', 'invulnerable', 'rage'] as const) {
-      const t = pc.powers[k];
-      if (t > 0)
-        parts.push(
-          `<div class="pw" style="border-color:${POWER_INFO[k].color}"><b>${POWER_INFO[k].icon}</b><span>${Math.ceil(t / 60)}s</span></div>`,
-        );
-    }
-    const html = parts.join('');
-    if (this.powers.innerHTML !== html) this.powers.innerHTML = html;
-    const st = (p.statuses ?? [])
-      .filter((s) => s.id !== 'regen' || true)
-      .map(
-        (s) =>
-          `<div class="st" title="${t(STATUS[s.id].name)}" style="border-color:${hexColor(STATUS[s.id].color)}">${STATUS[s.id].icon}${s.stacks > 1 ? `<sub>${s.stacks}</sub>` : ''}</div>`,
-      )
-      .join('');
-    if (this.statuses.innerHTML !== st) this.statuses.innerHTML = st;
   }
 
   private updateCrosshair(p: Entity, cursor: { x: number; y: number; visible: boolean }): void {

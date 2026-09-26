@@ -69,6 +69,20 @@ function cancelReload(p: PlayerComp): void {
   p.fire.shellReload = false;
 }
 
+/** Arma sem munição nenhuma (pente e reserva vazios): volta sozinho para a pistola, que nunca acaba. */
+function fallbackToPistol(w: World, e: Entity, d: FirearmDef): boolean {
+  const p = e.player!;
+  if (d.reserveMax === 'infinite' || (p.ammoMag[d.id] ?? 0) > 0 || reserveOf(p, d) > 0) return false;
+  const i = p.guns.indexOf('pistol');
+  if (i < 0 || i === p.gunIdx) return false;
+  p.gunIdx = i;
+  cancelReload(p);
+  p.fire.spin = 0;
+  p.fire.cd = Math.max(p.fire.cd, 0.25);
+  w.emit({ t: 'weaponSwap', id: e.id, mode: 'gun', weapon: 'pistol' });
+  return true;
+}
+
 function startReload(w: World, e: Entity, d: FirearmDef): boolean {
   const p = e.player!;
   const mag = p.ammoMag[d.id] ?? 0;
@@ -187,6 +201,7 @@ export function playerWeaponsInput(w: World, e: Entity): void {
 
   const mag = p.ammoMag[d.id] ?? 0;
   if (mag <= 0) {
+    if (fallbackToPistol(w, e, d)) return;
     if (edge) w.emit({ t: 'dryfire', id: e.id });
     startReload(w, e, d);
     return;
@@ -200,7 +215,7 @@ export function playerWeaponsInput(w: World, e: Entity): void {
   p.ammoMag[d.id] = mag - 1;
   f.cd += 60 / d.rpm;
   if (f.cd < 0) f.cd = 0;
-  if ((p.ammoMag[d.id] ?? 0) <= 0) startReload(w, e, d);
+  if ((p.ammoMag[d.id] ?? 0) <= 0 && !fallbackToPistol(w, e, d)) startReload(w, e, d);
 }
 
 /** Dispara a arma atual (projéteis, hitscan ou granada). */

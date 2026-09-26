@@ -2,7 +2,9 @@ import type { Scene } from 'three';
 import { BOSSES } from '../../data/bosses';
 import { getCharacter } from '../../data/characters';
 import { ENEMIES } from '../../data/enemies';
+import { MOVES } from '../../data/melee';
 import type { Element } from '../../data/types';
+import type { Entity } from '../../sim/Entity';
 import type { GameEvent } from '../../sim/events';
 import type { World } from '../../sim/World';
 import { resolveAim } from '../../sim/systems/weapons';
@@ -361,6 +363,10 @@ export class FxDirector {
           this.tracers.add(ev.x0, ev.y0, ev.z0, ev.x1, ev.y1, ev.z1, ev.color, 0.1, 5);
           break;
         case 'beam':
+          if (ev.element === 'laser') {
+            this.laserBeam(ev.x0, ev.y0, ev.z0, ev.x1, ev.y1, ev.z1);
+            break;
+          }
           if (ev.element === 'electric')
             this.tracers.bolt(ev.x0, ev.y0, ev.z0, ev.x1, ev.y1, ev.z1, 0xfff15a, this.rnd, 8);
           else
@@ -371,7 +377,7 @@ export class FxDirector {
               ev.x1,
               ev.y1,
               ev.z1,
-              ev.element === 'laser' ? 0xff2a2a : (ELEMENT_COLORS[ev.element as Element] ?? 0xffffff),
+              ELEMENT_COLORS[ev.element] ?? 0xffffff,
               0.15,
               6,
             );
@@ -519,6 +525,113 @@ export class FxDirector {
     }
   }
 
+  /**
+   * Raio Laser (especial do ciborgue): brilho largo, feixe vermelho e núcleo branco em camadas. O sim manda um
+   * trecho a cada 3 quadros e cada traço dura um pouco mais: na tela é um raio contínuo, com faíscas na boca,
+   * calor subindo ao longo do raio e respingos na ponta.
+   */
+  private laserBeam(x0: number, y0: number, z0: number, x1: number, y1: number, z1: number): void {
+    const dir = Math.sign(x1 - x0) || 1;
+    this.tracers.add(x0, y0, z0, x1, y1, z1, 0xff1a2a, 0.11, 2.4, 0.75);
+    this.tracers.add(x0, y0, z0, x1, y1, z1, 0xff4a3a, 0.1, 4, 0.3);
+    this.tracers.add(x0, y0, z0, x1, y1, z1, 0xfff0e8, 0.09, 5, 0.09);
+    this.flash(x0, y0, z0 + 0.4, 0xff3a3a, 14, 7, 0.12, 2);
+    this.flash((x0 + x1) / 2, y0, z0 + 0.8, 0xff2a2a, 8, 7, 0.12, 3);
+    for (let i = 0; i < 3; i++)
+      this.add.emit(
+        {
+          x: x0,
+          y: y0,
+          z: z0,
+          vx: dir * (2 + this.rnd() * 3),
+          vy: (this.rnd() - 0.3) * 3,
+          spread: 1.2,
+          life: 0.18,
+          size: 0.1,
+          sizeEnd: 0.02,
+          color: 0xffd0a0,
+          intensity: 4,
+          drag: 4,
+        },
+        this.rnd,
+      );
+    for (let i = 0; i < 4; i++) {
+      const k = this.rnd();
+      this.add.emit(
+        {
+          x: x0 + (x1 - x0) * k,
+          y: y0 + (this.rnd() - 0.5) * 0.2,
+          z: z0 + (z1 - z0) * k,
+          vy: 1 + this.rnd(),
+          spread: 0.3,
+          life: 0.35,
+          size: 0.2,
+          sizeEnd: 0.02,
+          color: 0xff5a2a,
+          colorEnd: 0x6a0a0a,
+          intensity: 3,
+        },
+        this.rnd,
+      );
+    }
+    this.burst(x1, y1, z1, 3, 0xff8a4a, 3, 0.09, 0.22, true, 4, 3);
+  }
+
+  /** Ciborgue carregando o Raio Laser: brilho vermelho que cresce na mão e faíscas sendo puxadas para ela. */
+  private laserCharge(e: Entity, every: (hz: number) => boolean): void {
+    const fi = e.fighter!;
+    const m = MOVES.raioLaser!;
+    const hx = e.t.x + e.t.facing * 0.55;
+    const hy = e.t.y + 1.3;
+    const hz = e.t.z;
+    if (fi.st < m.startup) {
+      const k = fi.st / m.startup;
+      this.lighting.request({
+        x: hx,
+        y: hy,
+        z: hz + 0.6,
+        color: 0xff2a3a,
+        intensity: 4 + 18 * k,
+        distance: 5,
+        priority: 2,
+      });
+      this.add.emit(
+        { x: hx, y: hy, z: hz, life: 0.05, size: 0.18 + 0.4 * k, color: 0xff3a3a, intensity: 4 },
+        this.rnd,
+      );
+      if (every(90)) {
+        const a = this.rnd() * Math.PI * 2;
+        const r = 0.9 - 0.4 * k;
+        this.add.emit(
+          {
+            x: hx + Math.cos(a) * r,
+            y: hy + Math.sin(a) * r,
+            z: hz + (this.rnd() - 0.5) * 0.4,
+            vx: -Math.cos(a) * r * 6,
+            vy: -Math.sin(a) * r * 6,
+            life: 0.15,
+            size: 0.09,
+            sizeEnd: 0.02,
+            color: 0xff7a5a,
+            intensity: 4,
+          },
+          this.rnd,
+        );
+      }
+    } else if (fi.st < m.startup + m.active) {
+      this.lighting.request({
+        x: hx,
+        y: hy,
+        z: hz + 0.6,
+        color: 0xff3a3a,
+        intensity: 24,
+        distance: 7,
+        priority: 1,
+      });
+      this.add.emit({ x: hx, y: hy, z: hz, life: 0.05, size: 0.55, color: 0xffb0a0, intensity: 5 }, this.rnd);
+    }
+  }
+
   private dust(w: World, id: number, n: number): void {
     const e = w.get(id);
     if (!e) return;
@@ -644,6 +757,7 @@ export class FxDirector {
             );
         }
       }
+      if (e.fighter?.state === 'attack' && e.fighter.moveId === 'raioLaser') this.laserCharge(e, every);
       // mira laser ao segurar o botão de mirar
       if (e.player && e.player.mode === 'gun' && (e.player.buttons & 32) !== 0 && e.player.respawn <= 0) {
         const yaw = resolveAim(w, e, 14);

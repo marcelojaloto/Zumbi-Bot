@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEPTH_SPEED } from '../data/balance';
+import { PLAYER, depthSpeed } from '../data/balance';
 import { Btn } from './InputFrame';
 import { makeWorld, player, run } from './test/helpers';
 
@@ -49,17 +49,44 @@ describe('World / movimento do jogador', () => {
       const a = makeWorld();
       const b = makeWorld();
       player(b).t.z = b.zBand[0];
-      const vx: number[] = [];
-      const vz: number[] = [];
-      for (let i = 0; i < 12; i++) {
-        run(a, 1, { moveX: 1, buttons });
-        run(b, 1, { moveZ: 1, buttons });
-        vx.push(player(a).t.vx);
-        vz.push(player(b).t.vz);
-      }
-      // arranca no mesmo ritmo e chega na mesma velocidade (em Z, ×DEPTH_SPEED)
-      vx.forEach((v, i) => expect(vz[i]).toBeCloseTo(v * DEPTH_SPEED, 5));
+      const k0 = depthSpeed(b.zBand[0]);
+      run(a, 1, { moveX: 1, buttons });
+      run(b, 1, { moveZ: 1, buttons });
+      // arranca no mesmo ritmo...
+      expect(player(b).t.vz).toBeCloseTo(player(a).t.vx * k0, 5);
+      run(a, 10, { moveX: 1, buttons });
+      run(b, 10, { moveZ: 1, buttons });
+      // ...e chega na mesma velocidade na tela (em Z, × a razão da profundidade onde está)
+      const ratio = player(b).t.vz / depthSpeed(player(b).t.z) / player(a).t.vx;
+      expect(Math.abs(ratio - 1)).toBeLessThan(0.02);
     }
+  });
+
+  it('qualquer diagonal tem a mesma velocidade na tela (teclado: duas direções; celular: qualquer ângulo)', () => {
+    for (const deg of [20, 45, 70, -45, 135]) {
+      const w = makeWorld();
+      const p = player(w);
+      p.t.z = (w.zBand[0] + w.zBand[1]) / 2;
+      const r = (deg * Math.PI) / 180;
+      // duas teclas chegam como (1, 1): o próprio jogo corta o vetor para 1
+      const [mx, mz] = deg === 45 ? [1, 1] : [Math.cos(r), Math.sin(r)];
+      run(w, 12, { moveX: mx, moveZ: mz });
+      const onScreen = Math.hypot(p.t.vx, p.t.vz / depthSpeed(p.t.z));
+      expect(onScreen).toBeCloseTo(PLAYER.walkX, 1);
+    }
+  });
+
+  it('encostado na borda da faixa, a diagonal desliza na velocidade cheia', () => {
+    const w = makeWorld();
+    const p = player(w);
+    run(w, 60, { moveZ: 1 });
+    const z = p.t.z;
+    run(w, 30, { moveX: 1, moveZ: 1 });
+    expect(p.t.z).toBeCloseTo(z, 5);
+    expect(p.t.vx).toBeCloseTo(PLAYER.walkX, 3);
+    // quase reto contra a borda: desliza devagar
+    run(w, 30, { moveX: 0.1, moveZ: 0.99 });
+    expect(p.t.vx).toBeLessThan(PLAYER.walkX * 0.2);
   });
 
   it('não sai da faixa de profundidade', () => {
