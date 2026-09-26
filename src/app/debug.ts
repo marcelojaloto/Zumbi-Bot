@@ -50,7 +50,8 @@ export function installDebug(app: App): void {
     state(): DebugState {
       const s = app.session;
       const w = s?.world;
-      const p = w?.get(1);
+      // online: o jogador deste aparelho
+      const p = w?.get((app.hud?.localSlot ?? 0) + 1);
       const info = app.renderer.gl.info;
       const boss = w?.entities.find((e) => e.kind === 'boss');
       return {
@@ -138,6 +139,18 @@ export function installDebug(app: App): void {
         state: p.fighter!.state,
         score: p.player!.score,
       }));
+    },
+    /** Sala online (papel, código, jogadores). */
+    online() {
+      const r = app.online;
+      if (!r) return null;
+      return {
+        role: r.role,
+        code: r.code,
+        slot: r.role === 'guest' ? r.slot : 0,
+        phase: r.phase,
+        players: r.role === 'host' ? r.players() : r.players,
+      };
     },
     autopilot(on: boolean) {
       app.setAutopilot(on);

@@ -977,3 +977,346 @@ a.btn {
     padding: 2px 6px;
   }
 }
+
+/* ---------------------------------------------------------------- jogo online */
+.screen.online .subtitle {
+  max-width: 560px;
+  margin: 0;
+}
+.online-choices {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.online-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: min(280px, 86vw);
+  padding: 18px 16px;
+  color: var(--fg);
+  font-family: var(--ui-font);
+  background: linear-gradient(180deg, #232a3a, #131722);
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  cursor: pointer;
+  transition:
+    transform 0.08s,
+    border-color 0.12s,
+    box-shadow 0.12s;
+}
+.online-choice:hover,
+.online-choice:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(255, 140, 26, 0.45);
+  transform: translateY(-2px);
+}
+.online-choice.primary {
+  border-color: rgba(255, 176, 90, 0.6);
+}
+.online-choice b {
+  font-family: var(--title-font);
+  font-size: 24px;
+  letter-spacing: 2px;
+}
+.oc-icon {
+  font-size: 34px;
+  line-height: 1;
+}
+.oc-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.online-status {
+  min-height: 1.3em;
+  margin: 0;
+  max-width: 600px;
+  text-align: center;
+  color: var(--cyan);
+  font-weight: 700;
+}
+.online-status.error {
+  color: #ff7a6a;
+}
+.online-note {
+  max-width: 560px;
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+}
+.online-wait {
+  margin: 0;
+  color: var(--cyan);
+  font-weight: 700;
+}
+.join-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.code-input {
+  width: 6.2em;
+  padding: 8px 12px;
+  font-family: var(--title-font);
+  font-size: 44px;
+  letter-spacing: 0.3em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+}
+.code-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(255, 140, 26, 0.45);
+}
+.code-input::placeholder {
+  color: rgba(255, 255, 255, 0.18);
+}
+.screen.room {
+  justify-content: flex-start;
+  gap: 10px;
+}
+.room-top {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.room-code {
+  font-family: var(--title-font);
+  font-size: clamp(40px, 6vw, 64px);
+  letter-spacing: 0.25em;
+  padding: 2px 10px 2px 22px;
+  color: #111;
+  background: var(--accent);
+  border-radius: 10px;
+  box-shadow: 0 0 22px rgba(255, 140, 26, 0.5);
+  user-select: all;
+}
+.room-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 14px;
+  width: min(1000px, 96vw);
+}
+.room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 18px;
+  align-self: start;
+}
+.room-ok {
+  margin: 0;
+  font-weight: 800;
+  color: #5aff9a;
+}
+.room-steps {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  line-height: 1.35;
+}
+.room-steps li::marker {
+  color: var(--accent);
+  font-weight: 900;
+}
+.room-share {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.room-share .row-btns {
+  justify-content: flex-start;
+}
+.room-link {
+  font-size: 12px;
+  word-break: break-all;
+  user-select: all;
+}
+.room-qr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.room-qr svg {
+  width: 112px;
+  height: 112px;
+  flex: none;
+  background: #fff;
+  border-radius: 6px;
+}
+.room-side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.room-side .panel {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.room-players {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rp {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  background: rgba(10, 12, 20, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid var(--pc);
+  border-radius: 8px;
+}
+.rp.you {
+  box-shadow: 0 0 0 2px var(--pc);
+}
+.rp.empty {
+  grid-template-columns: 34px 1fr;
+  opacity: 0.6;
+  border-left-style: dashed;
+}
+.rp-tag {
+  font-size: 18px;
+  font-weight: 900;
+}
+.rp-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+.rp-char {
+  font-family: var(--title-font);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.rp-state {
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.rp-state.ok {
+  color: #5aff9a;
+}
+.rp-state.wait {
+  color: #ffd24a;
+}
+.rp-state.host {
+  color: var(--accent);
+}
+.room-me .ci-title {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.room-level {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.room-status {
+  margin: 0;
+  min-height: 1.3em;
+  text-align: center;
+  color: var(--cyan);
+  font-weight: 700;
+}
+.screen.room .btn.primary.on {
+  background: linear-gradient(180deg, #7dffb0, #22a458);
+  border-color: #b4ffd0;
+}
+@media (max-width: 640px) {
+  .room-body {
+    grid-template-columns: 1fr;
+  }
+}
+/* celular deitado: tudo numa tela só (o QR some — no celular o link é enviado pelo botão) */
+@media (max-height: 520px) {
+  .screen.room,
+  .screen.online {
+    padding: 8px 16px;
+    gap: 6px;
+  }
+  .screen.room h2,
+  .screen.online h2 {
+    font-size: 22px;
+  }
+  .room-code {
+    font-size: 28px;
+    padding: 0 6px 0 14px;
+  }
+  .room-body {
+    gap: 8px;
+  }
+  .room-info,
+  .room-side .panel {
+    padding: 8px 12px;
+    gap: 6px;
+  }
+  .room-steps {
+    font-size: 12px;
+    gap: 2px;
+  }
+  .room-qr,
+  .room-link,
+  .online-note,
+  .room-me .ci-special,
+  .room-me .ci-title,
+  .room-me > .muted {
+    display: none;
+  }
+  .room-players {
+    gap: 3px;
+  }
+  .rp {
+    padding: 2px 10px;
+    font-size: 13px;
+  }
+  .rp-tag {
+    font-size: 14px;
+  }
+  .room-side .lc-arrow {
+    width: 28px;
+    height: 28px;
+  }
+  .room-side .lc-name {
+    font-size: 18px;
+  }
+  .screen.room .btn {
+    font-size: 16px;
+    padding: 6px 16px;
+  }
+  .online-choice {
+    padding: 10px 12px;
+  }
+  .oc-icon {
+    font-size: 24px;
+  }
+  .online-choice b {
+    font-size: 20px;
+  }
+  .code-input {
+    font-size: 30px;
+    padding: 4px 10px;
+  }
+}

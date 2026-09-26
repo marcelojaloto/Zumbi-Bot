@@ -32,7 +32,11 @@ export class PartyHud {
   private panels = new Map<number, Panel>();
   private acc = 0;
 
-  constructor(parent: HTMLElement) {
+  /** `me`: jogador deste aparelho no online (painel marcado "você"); null no multijogador local. */
+  constructor(
+    parent: HTMLElement,
+    private me: number | null = null,
+  ) {
     this.root = el('div', { class: 'party-hud' });
     parent.appendChild(this.root);
   }
@@ -63,6 +67,7 @@ export class PartyHud {
         note,
       ),
     );
+    if (this.me === slot) root.classList.add('me');
     p = { root, portrait, name, hp, mana, lives, weapon, powers, note, key: '' };
     this.panels.set(slot, p);
     const order = [...this.panels.keys()].sort((a, b) => a - b);
@@ -88,7 +93,8 @@ export class PartyHud {
       const p = this.panel(e);
       if (p.portrait.dataset.char !== pc.character) {
         p.portrait.dataset.char = pc.character;
-        p.name.textContent = t(getCharacter(pc.character).name);
+        p.name.textContent =
+          t(getCharacter(pc.character).name) + (this.me === pc.slot ? ` (${t('você')})` : '');
       }
       const out = pc.lives <= 0 && e.fighter?.state === 'dead';
       let weapon: string;
@@ -102,7 +108,8 @@ export class PartyHud {
         .map((k) => POWER_ICONS[k])
         .join(' ');
       let note = '';
-      if (out) {
+      if (pc.gone) note = t('Saiu da partida');
+      else if (out) {
         const donor = lifeDonor(w, e);
         note = donor ? t('PULAR: pegar 1 vida de {p}', { p: playerTag(donor.player!.slot) }) : t('Sem vidas');
       } else if (pc.respawn > 0) note = t('Voltando...');

@@ -77,10 +77,16 @@ No repositório: **Settings → Secrets and variables → Actions → New reposi
    - **Acesso ao app:** todas as funcionalidades disponíveis sem acesso especial.
    - **Anúncios:** o app não contém anúncios.
    - **Classificação do conteúdo:** responda o questionário (categoria Jogo). O jogo tem violência de fantasia/desenho
-     contra zumbis e robôs, sem sangue realista, sem conteúdo sexual, sem apostas, sem interação entre usuários.
+     contra zumbis e robôs, sem sangue realista, sem conteúdo sexual, sem apostas. Há **jogo online com amigos**
+     (sala com código, sem bate-papo; o único texto que os outros veem é o nome do jogador): responda que os
+     usuários **podem interagir** e que não há compartilhamento de localização nem compras.
    - **Público-alvo:** escolha faixas de **13 anos ou mais** (marcar menores de 13 exige cumprir a política de
      Famílias).
-   - **Segurança dos dados:** o app **não coleta nem compartilha dados** (tudo fica salvo só no aparelho).
+   - **Segurança dos dados:** o progresso fica salvo só no aparelho. No jogo online (iniciado pelo usuário), o
+     nome no jogo, o personagem e os comandos vão para os outros jogadores da sala, e o serviço de conexão do
+     PeerJS recebe o código da sala e o IP, só enquanto a sala está aberta (processamento temporário, nada é
+     guardado). Com isso dá para declarar **"nenhum dado coletado"**; marque também que os dados são
+     **criptografados em trânsito** (WebRTC usa DTLS).
    - **Apps governamentais, recursos financeiros, saúde:** não.
 3. **Presença na loja → Página principal da loja**: use os textos e imagens de [`store/android/`](../store/android/)
    ([`listing.md`](../store/android/listing.md), ícone 512×512, recurso gráfico 1024×500 e capturas de tela).

@@ -353,6 +353,13 @@
           no celular e abra o arquivo para instalar (o Android pede para permitir instalar apps dessa fonte).
           O app abre em tela cheia e deitado, e o progresso fica salvo no aparelho.
         </div>
+        <div class="note">
+          <b>Jogar online com amigos (até 5):</b> uma pessoa toca em <b>Jogar online → Criar sala</b> e recebe
+          um código de 4 letras (ou um link). Os outros tocam em <b>Jogar online → Entrar numa sala</b> e
+          digitam o código. Cada um escolhe o personagem e toca em <b>Pronto</b>; quem criou a sala toca em
+          <b>Começar</b>. Precisa de internet, e cada um guarda o próprio progresso no seu aparelho. Funciona
+          entre navegador e app.
+        </div>
 
         <h2><span class="n">2</span>O que você precisa</h2>
         <div class="req">
@@ -526,6 +533,23 @@ npm install</pre>
           </dd>
           <dt>Sem som</dt>
           <dd>Os navegadores só liberam o áudio depois do primeiro clique ou toque: clique em "Jogar".</dd>
+          <dt>Jogo online: "Não existe sala com esse código"</dt>
+          <dd>
+            Confira as 4 letras. A sala só existe enquanto o jogo de quem a criou estiver aberto na tela da
+            sala ou na partida — se ele fechou o jogo, é preciso criar uma sala nova.
+          </dd>
+          <dt>Jogo online: acha a sala mas não conecta</dt>
+          <dd>
+            Algumas redes (de empresas e escolas, por exemplo) bloqueiam a conexão direta entre aparelhos.
+            Tente outra rede, como os dados do celular. Quem criou a sala deve deixar o jogo aberto na tela: é
+            o aparelho dele que conduz a partida de todos.
+          </dd>
+          <dt>Testar o jogo online no próprio computador</dt>
+          <dd>
+            Abra duas abas com <code>?net=local</code> no endereço (por exemplo
+            <code>localhost:5173/Zumbi-Bot/?net=local</code>): uma cria a sala e a outra entra com o código,
+            sem precisar de internet.
+          </dd>
         </dl>
       </main>
 
@@ -562,6 +586,13 @@ npm install</pre>
           >
           on your phone and open the file to install it (Android asks you to allow installs from that source).
           The app opens full screen in landscape, and your progress is saved on the device.
+        </div>
+        <div class="note">
+          <b>Play online with friends (up to 5):</b> one person taps <b>Play online → Create room</b> and gets
+          a 4-letter code (or a link). The others tap <b>Play online → Join a room</b> and type the code.
+          Everyone picks a character and taps <b>Ready</b>; whoever created the room taps <b>Start</b>. It
+          needs internet, and everyone keeps their own progress on their own device. Browser and app can play
+          together.
         </div>
 
         <h2><span class="n">2</span>What you need</h2>
@@ -734,6 +765,23 @@ npm install</pre>
           </dd>
           <dt>No sound</dt>
           <dd>Browsers only allow audio after the first click or tap: click "Play".</dd>
+          <dt>Online: "There is no room with that code"</dt>
+          <dd>
+            Check the 4 letters. The room only exists while the creator's game is open on the room screen or
+            in the match — if they closed the game, a new room has to be created.
+          </dd>
+          <dt>Online: finds the room but does not connect</dt>
+          <dd>
+            Some networks (companies and schools, for example) block direct connections between devices. Try
+            another network, such as mobile data. Whoever created the room should keep the game open on
+            screen: their device runs the match for everyone.
+          </dd>
+          <dt>Testing online play on your own computer</dt>
+          <dd>
+            Open two tabs with <code>?net=local</code> in the address (for example
+            <code>localhost:5173/Zumbi-Bot/?net=local</code>): one creates the room and the other joins with
+            the code, no internet needed.
+          </dd>
         </dl>
       </main>
 

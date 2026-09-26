@@ -34,7 +34,7 @@ export function lifeDonor(w: World, e: Entity): Entity | undefined {
 /** Sem vidas e com colegas na partida: apertar PULAR pega uma vida emprestada e renasce. */
 export function borrowLife(w: World, e: Entity): boolean {
   const p = e.player!;
-  if (p.lives > 0 || w.finished) return false;
+  if (p.lives > 0 || w.finished || p.gone) return false;
   const donor = lifeDonor(w, e);
   if (!donor) return false;
   donor.player!.lives--;
@@ -42,6 +42,30 @@ export function borrowLife(w: World, e: Entity): boolean {
   p.respawn = 1;
   w.emit({ t: 'lifeShare', from: donor.id, to: e.id });
   return true;
+}
+
+/** Online: quem saiu da sala fica fora da partida (sem vidas); os outros continuam. */
+export function retirePlayer(w: World, e: Entity): void {
+  const p = e.player!;
+  if (p.gone) return;
+  p.gone = true;
+  p.lives = 0;
+  p.respawn = 0;
+  const fi = e.fighter!;
+  if (fi.state !== 'dead') {
+    fi.state = 'dead';
+    fi.st = 0;
+    fi.moveId = null;
+    e.deadTicks = 0;
+    if (e.body) e.body.low = true;
+  }
+  e.health!.hp = 0;
+  if (
+    !w.finished &&
+    w.activePlayers().length === 0 &&
+    w.playerEntities().every((pl) => pl.player!.lives <= 0)
+  )
+    finishRun(w, false);
 }
 
 export function playerRespawnTick(w: World, e: Entity): void {
