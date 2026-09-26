@@ -70,6 +70,34 @@ describe('combate corpo a corpo', () => {
     expect(p.player!.score).toBeGreaterThan(0);
   });
 
+  it('no modo cajado, J bate com o cajado (combo de 3) em vez de socar', () => {
+    const w = makeWorld();
+    const p = player(w);
+    const pc = p.player!;
+    const z = spawnEnemy(w, 'walker', p.t.x + 1.6, p.t.z, 'right');
+    z.fighter!.state = 'idle';
+    // no modo arma, soco
+    run(w, 1, { buttons: Btn.Punch });
+    expect(p.fighter!.moveId).toBe('jab');
+    run(w, 30);
+    // modo cajado: bate com o cajado, que alcança mais longe que o soco
+    pc.mode = 'staff';
+    const hp0 = z.health!.hp;
+    w.drainEvents();
+    for (let i = 0; i < 3; i++) {
+      run(w, 1, { buttons: Btn.Punch });
+      run(w, 13);
+    }
+    const moves = w.drainEvents().flatMap((e) => (e.t === 'swing' ? [e.move] : []));
+    expect(moves).toEqual(['staff1', 'staff2', 'staff3']);
+    expect(z.health!.hp).toBeLessThan(hp0);
+    // arma branca na mão tem prioridade
+    run(w, 40);
+    pc.melee = { id: 'bat', durability: 25 };
+    run(w, 1, { buttons: Btn.Punch });
+    expect(p.fighter!.moveId).toBe('bat1');
+  });
+
   it('zumbi ataca o jogador parado', () => {
     const w = makeWorld();
     const p = player(w);

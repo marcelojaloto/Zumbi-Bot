@@ -45,6 +45,24 @@ export function startMove(w: World, e: Entity, moveId: string): boolean {
   return true;
 }
 
+/** Durante um golpe, J/K ficam guardados para o próximo golpe do combo (também no congelamento do impacto). */
+export function bufferComboInput(e: Entity): void {
+  const p = e.player!;
+  const fi = e.fighter!;
+  const jP = pressed(p.buttons, p.prevButtons, Btn.Punch);
+  const kP = pressed(p.buttons, p.prevButtons, Btn.Kick);
+  if (!jP && !kP) return;
+  fi.buffer = jP ? 'J' : 'K';
+  fi.bufferTicks = PLAYER.inputBufferTicks;
+}
+
+/** Primeiro golpe do J: arma branca na mão, o cajado (modo cajado) ou soco. */
+export function firstPunch(e: Entity): string {
+  const p = e.player!;
+  if (p.melee) return MELEE_WEAPONS[p.melee.id].combo[0]!;
+  return p.mode === 'staff' && p.staffs.length > 0 ? 'staff1' : 'jab';
+}
+
 /** Entrada de golpes do jogador (J soco / K chute / U especial). */
 export function playerMeleeInput(w: World, e: Entity): void {
   const p = e.player!;
@@ -55,10 +73,7 @@ export function playerMeleeInput(w: World, e: Entity): void {
   const grounded = e.body!.grounded;
 
   if (fi.state === 'attack') {
-    if (jP || kP) {
-      fi.buffer = jP ? 'J' : 'K';
-      fi.bufferTicks = PLAYER.inputBufferTicks;
-    }
+    bufferComboInput(e);
     return;
   }
   if (!LOCOMOTION.has(fi.state)) return;
@@ -77,8 +92,7 @@ export function playerMeleeInput(w: World, e: Entity): void {
     return;
   }
   if (jP) {
-    const first = p.melee ? MELEE_WEAPONS[p.melee.id].combo[0]! : 'jab';
-    startMove(w, e, first);
+    startMove(w, e, firstPunch(e));
   } else if (kP) {
     startMove(w, e, p.running && Math.abs(e.t.vx) > 3 ? 'flyKick' : 'kick');
   }
@@ -248,7 +262,7 @@ function updateAttack(w: World, e: Entity): void {
       const b = fi.buffer;
       toIdle(e);
       if (b === 'K') startMove(w, e, 'kick');
-      else startMove(w, e, e.player.melee ? MELEE_WEAPONS[e.player.melee.id].combo[0]! : 'jab');
+      else startMove(w, e, firstPunch(e));
       return;
     }
     toIdle(e);

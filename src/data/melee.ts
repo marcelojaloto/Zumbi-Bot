@@ -284,6 +284,11 @@ export const MOVES: Record<string, MeleeMoveDef> = {
     ],
   },
 
+  // --- cajado: no modo cajado (sem arma branca), J bate com o cajado em vez de socar ---
+  staff1: blunt('staff1', 'swing1', 6, 8, 1.3, 1.5, 'staff2'),
+  staff2: blunt('staff2', 'swing2', 6, 9, 1.3, 1.8, 'staff3'),
+  staff3: blunt('staff3', 'swing3', 8, 14, 1.4, 4, undefined, true),
+
   // --- armas brancas ---
   knife1: blade('knife1', 'slash1', 3, 12, 1.0, 0.8, 'knife2'),
   knife2: blade('knife2', 'slash2', 3, 12, 1.0, 0.8, 'knife3'),

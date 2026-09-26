@@ -132,6 +132,7 @@ export class App implements LobbyHost, OnlineHost {
       onPause: () => this.togglePause(),
       onFullscreen: () => this.toggleFullscreen(),
       onMic: () => void this.toggleMic(),
+      onMap: () => this.setTouchMap(!this.touchMap),
     });
     this.rotateEl = el(
       'div',
@@ -239,6 +240,15 @@ export class App implements LobbyHost, OnlineHost {
   private transport: Transport | null = null;
   /** Anfitrião: tempo máximo esperando os outros carregarem a fase. */
   private holdTimer = 0;
+
+  /** Celular/tablet: minimapa pequeno à mostra (começa oculto; botão 🗺 da coluna do canto). */
+  private touchMap = false;
+
+  setTouchMap(on: boolean): void {
+    this.touchMap = on;
+    this.hud?.setMapShown(on);
+    this.touch.setMap(on);
+  }
 
   /** Liga/desliga o modo toque: controles na tela, HUD adaptado e sem travar o ponteiro. */
   setTouchMode(on: boolean): void {
@@ -396,8 +406,10 @@ export class App implements LobbyHost, OnlineHost {
     this.menuScene.setCosmetics(this.profile.save.cosmetics.equipped);
   }
 
-  previewCosmetics(eq: Partial<Record<CosmeticSlot, CosmeticId>>): void {
+  /** Veste o boneco do menu (guarda-roupa e loja); `back` vira o boneco de costas (capas, asas). */
+  previewCosmetics(eq: Partial<Record<CosmeticSlot, CosmeticId>>, back = false): void {
     this.menuScene?.setCosmetics(eq);
+    if (this.menuScene) this.menuScene.back = back;
   }
 
   setMenuFocus(f: number): void {
@@ -707,6 +719,7 @@ export class App implements LobbyHost, OnlineHost {
     this.overlay = new WorldOverlay(this.ui);
     this.hud = new Hud(this.ui);
     this.hud.touchMode = this.touchOn;
+    this.hud.setMapShown(this.touchMap);
     this.hud.online = !!c.net;
     if (c.net) {
       this.hud.localSlot = c.mouseSlot ?? 0;
