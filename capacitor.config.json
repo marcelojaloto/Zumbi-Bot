@@ -11,5 +11,10 @@
     "contentInset": "never",
     "scrollEnabled": false,
     "allowsLinkPreview": false
+  },
+  "plugins": {
+    "SystemBars": {
+      "hidden": true
+    }
   }
 }
