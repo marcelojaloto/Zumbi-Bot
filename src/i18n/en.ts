@@ -708,4 +708,58 @@ export const EN: Record<string, string> = {
   'Voltar para a sala (todos)': 'Back to the room (everyone)',
   'Voltar para a sala': 'Back to the room',
   'Esperando o anfitrião escolher a próxima fase…': 'Waiting for the host to choose the next stage…',
+
+  // teclas configuráveis e mouse
+  'Mover para a esquerda': 'Move left',
+  'Mover para a direita': 'Move right',
+  'Mover para o fundo': 'Move back (depth)',
+  'Mover para a frente': 'Move forward (depth)',
+  'Soco / arma branca / pegar': 'Punch / melee weapon / pick up',
+  Chute: 'Kick',
+  'Mirar (precisão)': 'Aim (precision)',
+  'Correr (segurar)': 'Run (hold)',
+  'Arma anterior': 'Previous weapon',
+  'Próxima arma': 'Next weapon',
+  'Modo arma de fogo': 'Firearm mode',
+  'Modo cajado': 'Staff mode',
+  'Arma ⇄ Cajado': 'Weapon ⇄ Staff',
+  'Shift esq.': 'Left Shift',
+  'Shift dir.': 'Right Shift',
+  'Ctrl esq.': 'Left Ctrl',
+  'Ctrl dir.': 'Right Ctrl',
+  'Rodinha do mouse': 'Mouse wheel',
+  'Trocar teclas': 'Change keys',
+  'Teclas do teclado': 'Keyboard keys',
+  'TECLAS DO TECLADO': 'KEYBOARD KEYS',
+  'Cada ação pode ter duas teclas. Clique numa tecla e aperte a nova.':
+    'Each action can have two keys. Click a key and press the new one.',
+  'Clique numa tecla e aperte a nova.': 'Click a key and press the new one.',
+  'Aperte uma tecla…': 'Press a key…',
+  'Aperte a tecla nova para "{action}" • Esc cancela • Delete apaga':
+    'Press the new key for "{action}" • Esc cancels • Delete clears',
+  'Nada mudou.': 'Nothing changed.',
+  'Tecla apagada de "{action}".': 'Key removed from "{action}".',
+  '{key} agora é "{action}" (saiu de "{from}").': '{key} is now "{action}" (removed from "{from}").',
+  '{key} agora é "{action}".': '{key} is now "{action}".',
+  'Teclas padrão de volta.': 'Default keys restored.',
+  'Restaurar padrão': 'Restore defaults',
+  'sem tecla!': 'no key!',
+  'Mouse: botão esquerdo atira • botão direito solta o especial • a rodinha liga a corrida (até você parar).':
+    'Mouse: left button shoots • right button uses the special • the wheel turns running on (until you stop).',
+  'O teclado dividido do multijogador local continua com as teclas de sempre.':
+    'The split keyboard for local multiplayer keeps its usual keys.',
+  '{move} anda • {punch} soco • {kick} chute • {jump} pula • clique atira • botão direito: especial • rodinha corre • Esc pausa':
+    '{move} move • {punch} punch • {kick} kick • {jump} jump • click shoots • right button: special • wheel runs • Esc pauses',
+  '{left}/{right} andam • {up}/{down} mudam de plano (profundidade)':
+    '{left}/{right} walk • {up}/{down} change lanes (depth)',
+  '{punch} = soco • {kick} = chute • {punch}, {punch}, {punch}, {punch} = combo com uppercut':
+    '{punch} = punch • {kick} = kick • {punch}, {punch}, {punch}, {punch} = uppercut combo',
+  '{jump} pula — aperte de novo no ar para o pulo duplo':
+    '{jump} jumps — press again in the air for a double jump',
+  'Clique (ou {fire}) atira • {aim} mira para crítico • botão direito = especial':
+    'Click (or {fire}) shoots • {aim} aims for criticals • right button = special',
+  '{run}, rodinha do mouse ou toque duplo corre • correndo + {kick} = voadora':
+    '{run}, the mouse wheel or a double tap runs • running + {kick} = flying kick',
+  '{modeStaff} = modo cajado • {modeGun} = armas • {specialKey}, botão direito ou {punch}+{kick} = {special}':
+    '{modeStaff} = staff mode • {modeGun} = guns • {specialKey}, right button or {punch}+{kick} = {special}',
 };

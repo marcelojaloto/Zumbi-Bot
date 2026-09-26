@@ -1,23 +1,33 @@
+import { actionKeyNames } from '../../input/keyLabels';
+import { bindingsFrom, type Action } from '../../input/keymap';
 import { el } from '../dom';
 import { t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
+import { keyBindScreen } from './KeyBindScreen';
 
+/**
+ * [ação, teclas, gamepad]. Nas teclas, `@acao` vira a tecla atual da ação (configurável), `@a+@b` junta duas e o
+ * resto é texto fixo (mouse, toque duplo...).
+ */
 export const ROWS: [string, string[], string][] = [
-  ['Mover (frente/fundo e lados)', ['W', 'A', 'S', 'D'], 'Analógico esquerdo'],
-  ['Correr', ['Shift', '2× ← →'], 'L3'],
-  ['Pular / pulo duplo', ['Espaço'], 'A'],
-  ['Soco / arma branca / pegar item', ['J'], 'X'],
-  ['Chute (correndo: voadora)', ['K'], 'Y'],
-  ['Especial do personagem', ['U', 'J+K'], 'B'],
-  ['Atirar / conjurar', ['Mouse esq.', 'L'], 'RT'],
-  ['Mirar (precisão, crítico)', ['Mouse dir.', 'I'], 'LT'],
-  ['Recarregar', ['R'], 'D-pad ↓'],
-  ['Arma / cajado anterior e próximo', ['Q', 'E', 'Roda'], 'LB / RB'],
-  ['Modo arma de fogo / cajado', ['1', '2'], 'D-pad ↑'],
-  ['Mapa ampliado', ['M'], 'Back'],
-  ['Pausa', ['Esc', 'P'], 'Start'],
+  ['Mover (frente/fundo e lados)', ['@move'], 'Analógico esquerdo'],
+  ['Correr', ['@run', 'Rodinha do mouse', '2× ← →'], 'L3'],
+  ['Pular / pulo duplo', ['@jump'], 'A'],
+  ['Soco / arma branca / pegar item', ['@punch'], 'X'],
+  ['Chute (correndo: voadora)', ['@kick'], 'Y'],
+  ['Especial do personagem', ['@special', 'Mouse dir.', '@punch+@kick'], 'B'],
+  ['Atirar / conjurar', ['Mouse esq.', '@fire'], 'RT'],
+  ['Mirar (precisão, crítico)', ['@aim'], 'LT'],
+  ['Recarregar', ['@reload'], 'D-pad ↓'],
+  ['Arma / cajado anterior e próximo', ['@prev', '@next'], 'LB / RB'],
+  ['Modo arma de fogo / cajado', ['@modeGun', '@modeStaff'], 'D-pad ↑'],
+  ['Mapa ampliado', ['@map'], 'Back'],
+  ['Pausa', ['Esc', '@pause'], 'Start'],
 ];
+
+/** Textos fixos da coluna de teclas (traduzidos). */
+export const ROW_KEY_TEXTS = ROWS.flatMap((r) => r[1]).filter((k) => !k.startsWith('@'));
 
 /** Controles de toque: [botão na tela, o que faz]. */
 export const TOUCH_ROWS: [string, string][] = [
@@ -35,14 +45,33 @@ export const TOUCH_ROWS: [string, string][] = [
 
 export function controlsScreen(host: UiHost): Screen {
   const keys = el('div', { class: 'keys' });
-  keys.append(el('b', {}, t('Ação')), el('b', {}, t('Teclado / mouse')), el('b', {}, 'Gamepad'));
-  for (const [label, ks, pad] of ROWS) {
-    keys.append(
-      el('span', {}, t(label)),
-      el('span', {}, ...ks.map((k) => el('kbd', {}, t(k)))),
-      el('span', { class: 'muted' }, t(pad)),
-    );
-  }
+  const fillKeys = () => {
+    const n = actionKeyNames(bindingsFrom(host.profile.settings.controls.keys));
+    const name = (a: string) =>
+      a === 'move' ? [n.up, n.left, n.down, n.right].join(' ') : (n[a as Action] ?? '—');
+    const label = (k: string) =>
+      k.startsWith('@')
+        ? k
+            .split('+')
+            .map((p) => name(p.slice(1)))
+            .join('+')
+        : t(k);
+    keys.replaceChildren(el('b', {}, t('Ação')), el('b', {}, t('Teclado / mouse')), el('b', {}, 'Gamepad'));
+    for (const [row, ks, pad] of ROWS) {
+      const names = ks.map(label).filter((k) => !k.includes('—'));
+      keys.append(
+        el('span', {}, t(row)),
+        el('span', {}, ...names.map((k) => el('kbd', {}, k))),
+        el('span', { class: 'muted' }, t(pad)),
+      );
+    }
+  };
+  fillKeys();
+  const rebindBtn = el(
+    'button',
+    { class: 'btn small', data: { nav: '' }, onclick: () => host.screens.push(keyBindScreen(host)) },
+    `⌨️ ${t('Trocar teclas')}`,
+  );
   const touch = el('div', { class: 'keys touch-keys' });
   touch.append(el('b', {}, t('Botão')), el('b', {}, t('O que faz')));
   for (const [btn, what] of TOUCH_ROWS)
@@ -80,9 +109,13 @@ export function controlsScreen(host: UiHost): Screen {
         el('h3', {}, t('Toque')),
         el('div', { class: 'panel' }, touch),
         el('h3', {}, t('Teclado e gamepad')),
-        el('div', { class: 'panel' }, keys),
+        el('div', { class: 'panel' }, keys, el('div', { class: 'row-btns' }, rebindBtn)),
       ]
-    : [el('div', { class: 'panel' }, keys), el('h3', {}, t('Toque')), el('div', { class: 'panel' }, touch)];
+    : [
+        el('div', { class: 'panel' }, keys, el('div', { class: 'row-btns' }, rebindBtn)),
+        el('h3', {}, t('Toque')),
+        el('div', { class: 'panel' }, touch),
+      ];
   const e = el(
     'div',
     { class: 'screen dim controls-screen' },
@@ -100,6 +133,8 @@ export function controlsScreen(host: UiHost): Screen {
   return {
     el: e,
     id: 'controls',
+    // voltou da tela de teclas: mostra as teclas novas
+    onShow: fillKeys,
     onBack: () => {
       host.screens.pop();
       return true;

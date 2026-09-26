@@ -1,6 +1,6 @@
 import { approach } from '../../core/math';
 import { DT } from '../../core/time';
-import { PLAYER } from '../../data/balance';
+import { DEPTH_SPEED, PLAYER } from '../../data/balance';
 import { RAGE } from '../../data/characters';
 import { characterDef } from '../defs';
 import type { Entity, FighterState, PlayerSlot } from '../Entity';
@@ -125,7 +125,8 @@ function locomotion(w: World, e: Entity, movable: boolean): void {
   const tz = mz * (run ? PLAYER.runZ : PLAYER.walkZ) * mult;
   const acc = (b.grounded ? GROUND_ACCEL : AIR_ACCEL) * DT;
   t.vx = approach(t.vx, tx, acc * Math.max(1, Math.abs(tx) / 4));
-  t.vz = approach(t.vz, tz, acc);
+  // em Z tudo é o movimento de X ampliado por DEPTH_SPEED (arrancar e frear iguais na tela)
+  t.vz = approach(t.vz, tz, acc * Math.max(DEPTH_SPEED, Math.abs(tz) / 4));
 
   // direção: mira do mouse tem prioridade enquanto mira/atira
   const firing = held(p.buttons, Btn.Fire) || w.tick - p.lastFireTick < 20;
