@@ -65,6 +65,7 @@ Web Audio.
 | Arma ou cajado anterior / próximo | Q / E                                  | LB / RB            |
 | Modo arma de fogo / cajado        | 1 / 2                                  | D-pad ↑            |
 | Mapa ampliado                     | M                                      | Back               |
+| Microfone (chat de voz online)    | V                                      | —                  |
 | Pausa                             | Esc ou P                               | Start              |
 
 **Teclas do seu jeito:** em **Controles → Trocar teclas** (ou Configurações → Controles) cada ação pode ter duas
@@ -94,9 +95,18 @@ pegar uma emprestada de um colega. No fim, o resultado mostra a equipe e cada jo
 
 **Multijogador online (até 5 jogadores, cada um no seu aparelho):** no menu, **Jogar online**.
 
-1. Uma pessoa toca em **Criar sala** e recebe um **código de 4 letras** (e um link/QR para mandar aos amigos).
+1. Uma pessoa toca em **Criar sala**, escolhe a **dificuldade** da partida e se o **chat de voz** é permitido, e
+   recebe um **código de 4 letras** (e um link/QR para mandar aos amigos).
 2. Os outros tocam em **Entrar numa sala** e digitam o código (ou abrem o link).
-3. Cada um escolhe o personagem e toca em **Pronto**; quem criou a sala escolhe a fase e toca em **Começar**.
+3. Cada um escolhe o personagem e toca em **Pronto**; quem criou a sala escolhe a fase (e pode mudar a
+   dificuldade e o chat de voz) e toca em **Começar**.
+
+**Chat de voz:** numa sala com voz, todos falam com todos e todos ouvem todos — computador, Android (navegador ou
+app) e iPhone juntos. Cada um liga ou desliga o próprio microfone no botão **🎤 Ligar microfone** (na sala), no
+botão do microfone na partida ou com a tecla **V**; o microfone começa desligado e o aparelho pede permissão na
+primeira vez (se estiver bloqueado, o jogo explica onde liberar). A lista da sala e os painéis da partida mostram
+🎤/🔇 de cada um e acendem em quem está falando, e a música abaixa enquanto alguém fala. O volume das vozes fica em
+Configurações → Áudio. A voz vai direto entre os aparelhos (criptografada) e não é gravada.
 
 Cada um guarda o próprio progresso (nível, armas, itens) no seu aparelho, e navegador e app jogam juntos. Quem
 criou a sala é o anfitrião: o aparelho dele roda a partida e manda o estado para os outros ~20 vezes por segundo,
@@ -106,14 +116,17 @@ PeerJS para achar a sala pelo código — sem cadastro e sem servidor próprio. 
 bloqueiam a conexão direta; nesse caso, tente outra rede, como os dados do celular.
 
 No celular e no tablet: direcional à esquerda (empurrar até a borda corre) e botões Soco, Pular, Chute,
-Atirar/Conjurar (mira sozinho), Especial, Recarregar, Próxima arma e Arma ⇄ Cajado à direita; pausa e tela cheia no
-topo. Tamanho, opacidade e vibração dos controles ficam em Configurações → Controles.
+Atirar/Conjurar (mira sozinho), Especial, Recarregar, Próxima arma e Arma ⇄ Cajado à direita; pausa, tela cheia e
+(no jogo online com voz) microfone no topo. Tamanho, opacidade e vibração dos controles ficam em Configurações → Controles.
 
 ## Jogar
 
-- **No navegador:** https://marcelojaloto.github.io/Zumbi-Bot/ — computador, celular ou tablet.
+- **No navegador:** https://marcelojaloto.github.io/Zumbi-Bot/ — computador, celular ou tablet (Android e iPhone).
 - **No celular e no tablet:** deite o aparelho; os controles de toque aparecem sozinhos (direcional com setas à
   esquerda, botões de ação à direita). Em "Adicionar à tela inicial", o jogo abre em tela cheia e deitado.
+- **No iPhone (Safari):** a página não consegue entrar em tela cheia sozinha — toque em **Compartilhar → Adicionar
+  à Tela de Início** e abra o Zumbi Bot por lá. O jogo online e o chat de voz funcionam no Safari (iOS 16.4 ou
+  mais novo recomendado); se as vozes não tocarem, toque em **🔈 Toque para ouvir a conversa**.
 - **App para Android:** baixe o [zumbi-bot.apk](https://github.com/marcelojaloto/Zumbi-Bot/releases/latest/download/zumbi-bot.apk)
   no celular e instale (o Android pede para permitir apps dessa fonte). Como publicar na Play Store:
   [docs/PLAY_STORE.md](docs/PLAY_STORE.md).
@@ -174,7 +187,8 @@ contador de FPS também são configuráveis.
 - `src/audio`, `src/ui`, `src/input`, `src/save` — som, telas em HTML/CSS, controles e salvamento.
 - `src/net` — entrada dos jogadores locais (até 5) e o multijogador online: salas com código (`room.ts`),
   transporte WebRTC/PeerJS (`peerTransport.ts`) ou entre abas para testes (`localTransport.ts`, `?net=local`),
-  mensagens (`protocol.ts`) e o estado do mundo enviado só com o que mudou (`delta.ts`).
+  mensagens (`protocol.ts`), o estado do mundo enviado só com o que mudou (`delta.ts`) e o chat de voz
+  (`voice.ts`: uma chamada de áudio direta entre cada par de aparelhos da sala, microfone e quem está falando).
 
 ## Publicação (GitHub Pages)
 
