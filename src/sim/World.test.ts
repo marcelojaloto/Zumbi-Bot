@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DEPTH_SPEED } from '../data/balance';
 import { Btn } from './InputFrame';
 import { makeWorld, player, run } from './test/helpers';
 
@@ -41,6 +42,24 @@ describe('World / movimento do jogador', () => {
       max2 = Math.max(max2, player(w2).t.y);
     }
     expect(max2).toBeGreaterThan(maxY + 0.5);
+  });
+
+  it('para cima/baixo é o movimento lateral ampliado pela câmera (mesma velocidade na tela)', () => {
+    for (const buttons of [0, Btn.Run]) {
+      const a = makeWorld();
+      const b = makeWorld();
+      player(b).t.z = b.zBand[0];
+      const vx: number[] = [];
+      const vz: number[] = [];
+      for (let i = 0; i < 12; i++) {
+        run(a, 1, { moveX: 1, buttons });
+        run(b, 1, { moveZ: 1, buttons });
+        vx.push(player(a).t.vx);
+        vz.push(player(b).t.vz);
+      }
+      // arranca no mesmo ritmo e chega na mesma velocidade (em Z, ×DEPTH_SPEED)
+      vx.forEach((v, i) => expect(vz[i]).toBeCloseTo(v * DEPTH_SPEED, 5));
+    }
   });
 
   it('não sai da faixa de profundidade', () => {

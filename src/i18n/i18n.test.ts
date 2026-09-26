@@ -4,9 +4,11 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { detectLang, ordinal, setLang, t } from './index';
 import { EN } from './en';
 import { dataKeys, literalKeys } from './keys';
-import { ELEMENT_NAMES, TOUCH_HINTS } from '../ui/hud/Hud';
+import { ELEMENT_NAMES, TOUCH_HINTS, KEY_HINTS } from '../ui/hud/Hud';
 import { SLOT_NAMES } from '../ui/screens/WardrobeScreen';
-import { ROWS, TOUCH_ROWS } from '../ui/screens/ControlsScreen';
+import { ROWS, ROW_KEY_TEXTS, TOUCH_ROWS } from '../ui/screens/ControlsScreen';
+import { ACTION_LABELS } from '../input/InputManager';
+import { KEY_NAMES_TO_TRANSLATE } from '../input/keymap';
 
 function sources(dir: string, out: string[] = []): string[] {
   for (const f of readdirSync(dir)) {
@@ -73,11 +75,12 @@ describe('i18n', () => {
       ...Object.keys(TOUCH_HINTS),
       ...Object.values(SLOT_NAMES),
       ...ROWS.map((r) => r[0]),
-      'Espaço',
-      'Mouse esq.',
-      'Mouse dir.',
-      'Roda',
       'Analógico esquerdo',
+      ...ROW_KEY_TEXTS.filter((k) => /[a-zà-ú]{3}/.test(k)),
+      ...Object.values(ACTION_LABELS),
+      ...KEY_NAMES_TO_TRANSLATE,
+      ...Object.keys(KEY_HINTS),
+      ...Object.values(KEY_HINTS),
       ...TOUCH_ROWS.flat(),
     ];
     expect(keys.filter((k) => !(k in EN))).toEqual([]);

@@ -79,6 +79,22 @@ describe('save', () => {
     expect(s.controls.mouseSensitivity).toBe(3);
     expect(s.graphics.quality).toBe('auto');
     expect(s.audio.master).toBe(0);
+    expect(s.controls.keys).toBeUndefined();
+  });
+
+  it('teclas salvas são validadas', () => {
+    const s = sanitizeSettings({
+      controls: {
+        keys: {
+          jump: ['KeyH', 'KeyH', 'Space', 'KeyZ'],
+          punch: ['KeyH', 'Escape', '<script>', 7, 'KeyY'],
+          voar: ['KeyV'],
+        },
+      },
+    });
+    // até 2 por ação, sem repetir entre ações, sem Esc, só códigos válidos e ações conhecidas
+    expect(s.controls.keys).toEqual({ jump: ['KeyH', 'Space'], punch: ['KeyY'] });
+    expect(sanitizeSettings({ controls: { keys: 'x' } }).controls.keys).toBeUndefined();
   });
 });
 

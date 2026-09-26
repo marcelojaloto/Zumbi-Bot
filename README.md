@@ -51,21 +51,28 @@ Web Audio.
 
 ## Controles
 
-| Ação                              | Teclado / mouse        | Gamepad            |
-| --------------------------------- | ---------------------- | ------------------ |
-| Mover (lados e profundidade)      | W A S D / setas        | analógico esquerdo |
-| Correr                            | Shift ou toque duplo   | L3                 |
-| Pular / pulo duplo                | Espaço                 | A                  |
-| Soco / arma branca / pegar item   | J                      | X                  |
-| Chute (correndo: voadora)         | K                      | Y                  |
-| Especial do personagem            | U ou J+K               | B                  |
-| Atirar / conjurar                 | botão esquerdo ou L    | RT                 |
-| Mirar (precisão e crítico)        | botão direito ou I     | LT                 |
-| Recarregar                        | R                      | D-pad ↓            |
-| Arma ou cajado anterior / próximo | Q / E ou roda do mouse | LB / RB            |
-| Modo arma de fogo / cajado        | 1 / 2                  | D-pad ↑            |
-| Mapa ampliado                     | M                      | Back               |
-| Pausa                             | Esc ou P               | Start              |
+| Ação                              | Teclado / mouse                        | Gamepad            |
+| --------------------------------- | -------------------------------------- | ------------------ |
+| Mover (lados e profundidade)      | W A S D / setas                        | analógico esquerdo |
+| Correr                            | Shift, toque duplo ou rodinha do mouse | L3                 |
+| Pular / pulo duplo                | Espaço                                 | A                  |
+| Soco / arma branca / pegar item   | J                                      | X                  |
+| Chute (correndo: voadora)         | K                                      | Y                  |
+| Especial do personagem            | botão direito do mouse, U ou J+K       | B                  |
+| Atirar / conjurar                 | botão esquerdo do mouse ou L           | RT                 |
+| Mirar (precisão e crítico)        | I                                      | LT                 |
+| Recarregar                        | R                                      | D-pad ↓            |
+| Arma ou cajado anterior / próximo | Q / E                                  | LB / RB            |
+| Modo arma de fogo / cajado        | 1 / 2                                  | D-pad ↑            |
+| Mapa ampliado                     | M                                      | Back               |
+| Pausa                             | Esc ou P                               | Start              |
+
+**Teclas do seu jeito:** em **Controles → Trocar teclas** (ou Configurações → Controles) cada ação pode ter duas
+teclas; clique numa tecla e aperte a nova (Esc cancela, Delete apaga, "Restaurar padrão" volta tudo). As dicas do
+jogo passam a mostrar as suas teclas. No mouse, girar a rodinha liga a corrida até você parar de andar (apertar a
+rodinha também corre).
+
+Andar para cima e para baixo (mudar de plano) tem na tela a mesma velocidade de andar para os lados.
 
 Combos: J, J, J, J termina em uppercut • J, J, K faz o chute giratório • correndo + K é a voadora • no ar,
 J e K atacam.
@@ -138,6 +145,7 @@ npm run dev        # servidor de desenvolvimento (http://localhost:5173/Zumbi-Bo
 npm run build      # build de produção em dist/
 npm run preview    # serve o build em http://localhost:4173/Zumbi-Bot/
 npm test           # testes unitários (Vitest), incluindo a campanha inteira com piloto automático
+npm run store:shots  # capturas de tela da Play Store (pt e en) em store/android/screenshots/
 npm run e2e        # testes ponta a ponta (Playwright + Chromium)
 npm run check      # typecheck + testes + build
 npm run build:app  # build do jogo para o app Android em dist-app/
