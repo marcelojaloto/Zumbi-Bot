@@ -2,7 +2,7 @@ import { Btn } from '../sim/InputFrame';
 import { t } from '../i18n';
 import { isStandalone } from './device';
 
-type BtnId = 'punch' | 'jump' | 'kick' | 'fire' | 'special' | 'reload' | 'next' | 'mode';
+type BtnId = 'punch' | 'jump' | 'kick' | 'fire' | 'special' | 'next' | 'mode';
 
 interface BtnSpec {
   id: BtnId;
@@ -23,8 +23,8 @@ const BUTTONS: BtnSpec[] = [
   { id: 'kick', bit: Btn.Kick, label: 'CHUTE', size: 'mid', right: 138, bottom: 138 },
   { id: 'fire', bit: Btn.Fire, label: 'ATIRAR', size: 'mid', right: 52, bottom: 150 },
   { id: 'special', bit: Btn.Special, label: 'ESPECIAL', size: 'small', right: 232, bottom: 42 },
-  { id: 'reload', bit: Btn.Reload, label: '⟳', size: 'small', right: 222, bottom: 110 },
-  { id: 'next', bit: Btn.Next, label: '▶▶', size: 'small', right: 200, bottom: 174, tapOnly: true },
+  // sem botão de recarregar: a arma recarrega sozinha quando o pente acaba
+  { id: 'next', bit: Btn.Next, label: '▶▶', size: 'small', right: 222, bottom: 118, tapOnly: true },
   { id: 'mode', bit: Btn.ToggleMode, label: '⇄', size: 'small', right: 118, bottom: 214, tapOnly: true },
 ];
 
@@ -60,11 +60,13 @@ export class TouchControls {
   private visible = false;
   private scale = 1;
   private micBtn: HTMLButtonElement;
+  private mapBtn: HTMLButtonElement;
+  private top: HTMLDivElement;
   haptics = true;
 
   constructor(
     parent: HTMLElement,
-    private hooks: { onPause: () => void; onFullscreen: () => void; onMic?: () => void },
+    private hooks: { onPause: () => void; onFullscreen: () => void; onMic?: () => void; onMap?: () => void },
   ) {
     const div = (cls: string) => {
       const d = document.createElement('div');
@@ -88,7 +90,9 @@ export class TouchControls {
       this.btnEls.set(b.id, el);
       this.pad.appendChild(el);
     }
+    // canto superior esquerdo, um abaixo do outro: pausa, microfone (online), tela cheia (navegador) e minimapa
     const top = div('t-top');
+    this.top = top;
     const mk = (cls: string, text: string, fn: () => void) => {
       const b = document.createElement('button');
       b.className = `t-mini ${cls}`;
@@ -101,13 +105,15 @@ export class TouchControls {
       return b;
     };
     mk('t-pause', '⏸', () => this.hooks.onPause());
-    // aberto pela Tela de Início já está em tela cheia
-    if (!__NATIVE__ && !isStandalone()) mk('t-fs', '⛶', () => this.hooks.onFullscreen());
     this.micBtn = mk('t-mic', '🔇', () => this.hooks.onMic?.());
     this.micBtn.hidden = true;
+    // aberto pela Tela de Início já está em tela cheia
+    if (!__NATIVE__ && !isStandalone()) mk('t-fs', '⛶', () => this.hooks.onFullscreen());
+    this.mapBtn = mk('t-map', '🗺', () => this.hooks.onMap?.());
     this.root.append(this.zone, this.pad, top);
     parent.appendChild(this.root);
     this.relabel();
+    this.syncTop();
 
     this.zone.addEventListener('pointerdown', this.stickDown);
     this.zone.addEventListener('pointermove', this.stickMove);
@@ -130,11 +136,26 @@ export class TouchControls {
     top?.querySelector('.t-pause')?.setAttribute('aria-label', t('Pausa'));
     top?.querySelector('.t-fs')?.setAttribute('aria-label', t('Tela cheia'));
     this.micBtn?.setAttribute('aria-label', t('Microfone'));
+    this.mapBtn?.setAttribute('aria-label', t('Minimapa'));
+  }
+
+  /** Quantos botões há na coluna do canto (o HUD põe o FPS e outras infos logo abaixo deles). */
+  private syncTop(): void {
+    const n = [...this.top.children].filter((b) => !(b as HTMLElement).hidden).length;
+    document.documentElement.style.setProperty('--t-top-n', String(n));
+  }
+
+  /** Botão do minimapa aceso quando o minimapa está à mostra. */
+  setMap(on: boolean): void {
+    this.mapBtn.classList.toggle('on', on);
   }
 
   /** Botão do microfone (chat de voz online): null esconde. */
   setMic(on: boolean | null, talking = false): void {
-    this.micBtn.hidden = on === null;
+    if (this.micBtn.hidden !== (on === null)) {
+      this.micBtn.hidden = on === null;
+      this.syncTop();
+    }
     this.micBtn.textContent = on ? '🎤' : '🔇';
     this.micBtn.classList.toggle('on', !!on);
     this.micBtn.classList.toggle('talking', talking);

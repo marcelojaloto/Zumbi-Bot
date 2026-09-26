@@ -434,6 +434,65 @@
   outline: none;
   border-color: var(--accent);
 }
+/* loja: item em prévia no boneco, esperando a confirmação */
+.cos-card.sel {
+  border-color: #ffd24a;
+  box-shadow: 0 0 12px rgba(255, 210, 74, 0.45);
+}
+.shop-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-height: 1.3em;
+}
+.shop-msg {
+  color: var(--cyan);
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.shop-msg.show {
+  opacity: 1;
+}
+.shop-tip {
+  margin: 0;
+  font-size: 12px;
+}
+.buy-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 210, 74, 0.55);
+  border-radius: 10px;
+  background: rgba(40, 32, 12, 0.6);
+}
+.buy-bar[hidden] {
+  display: none;
+}
+.bb-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.bb-info b {
+  font-size: 15px;
+}
+.bb-info span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.buy-bar .row-btns {
+  margin: 0;
+  flex-wrap: nowrap;
+}
+.buy-bar .btn {
+  white-space: nowrap;
+}
 .cos-card .eq {
   position: absolute;
   right: 6px;
@@ -674,6 +733,36 @@ a.btn {
 
 /* ---------------------------------------------------------------- telas baixas (celular deitado) */
 @media (max-height: 500px) {
+  /* guarda-roupa e loja: título, barra de compra e botões compactos para sobrar espaço para a lista */
+  .wr-panel {
+    gap: 6px;
+    padding: 10px 12px;
+  }
+  .screen.wardrobe .wr-panel h2 {
+    font-size: 20px;
+    margin: 0;
+  }
+  .wr-body h3 {
+    margin: 6px 0 4px;
+    font-size: 15px;
+  }
+  .shop-tip {
+    display: none;
+  }
+  .buy-bar {
+    flex-wrap: nowrap;
+    padding: 4px 8px;
+  }
+  .bb-info b {
+    font-size: 13px;
+  }
+  .buy-bar .btn.small,
+  .wr-panel > .row-btns .btn {
+    min-height: 34px;
+    padding: 4px 12px;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
   .screen {
     gap: 8px;
     padding: 12px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px));

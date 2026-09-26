@@ -1,6 +1,6 @@
 import { approach } from '../../core/math';
 import { DT } from '../../core/time';
-import { DEPTH_SPEED, PLAYER } from '../../data/balance';
+import { PLAYER, depthSpeed } from '../../data/balance';
 import { RAGE } from '../../data/characters';
 import { characterDef } from '../defs';
 import type { Entity, FighterState, PlayerSlot } from '../Entity';
@@ -8,7 +8,7 @@ import { Btn, emptyFrame, held, pressed, type InputFrame } from '../InputFrame';
 import { updateDoubleTap } from '../doubleTap';
 import type { World } from '../World';
 import { moveMultiplier, canAct, canMove, regenBlocked } from './status';
-import { playerMeleeInput } from '../combat/fighter';
+import { bufferComboInput, playerMeleeInput } from '../combat/fighter';
 import { playerWeaponsInput } from './weapons';
 import { playerStaffInput } from './staffs';
 import { borrowLife, playerRespawnTick } from './lives';
@@ -36,7 +36,11 @@ export function playerControl(w: World, inputs: ReadonlyMap<PlayerSlot, InputFra
     }
     tickPlayerTimers(w, e);
     const fi = e.fighter!;
-    if (fi.hitstop > 0) continue;
+    if (fi.hitstop > 0) {
+      // golpe congelado no impacto: o próximo comando do combo não se perde
+      if (fi.state === 'attack') bufferComboInput(e);
+      continue;
+    }
     if (fi.state === 'dead') {
       if (p.lives <= 0 && pressed(p.buttons, p.prevButtons, Btn.Jump)) borrowLife(w, e);
       continue;
@@ -115,18 +119,20 @@ function locomotion(w: World, e: Entity, movable: boolean): void {
   const mult =
     moveMultiplier(e) * turbo * rage * st.speed * (aiming ? PLAYER.aimMoveMult : 1) * firingMoveMult(e);
   const run = p.running && !aiming;
-  let mx = movable ? p.moveX : 0;
-  let mz = movable ? p.moveZ : 0;
+  let [mx, mz] = movable ? moveDir(w, e, p.moveX, p.moveZ) : [0, 0];
   if (e.statuses?.some((s) => s.id === 'glitch')) {
     mx = -mx;
     mz = -mz;
   }
-  const tx = mx * (run ? PLAYER.runX : PLAYER.walkX) * mult;
-  const tz = mz * (run ? PLAYER.runZ : PLAYER.walkZ) * mult;
+  // velocidade do vetor pelos eixos: X anda `speed`, Z anda o mesmo na tela; qualquer diagonal fica igual
+  const speed = (run ? PLAYER.runX : PLAYER.walkX) * mult;
+  const k = depthSpeed(t.z);
+  const tx = mx * speed;
+  const tz = mz * speed * k;
   const acc = (b.grounded ? GROUND_ACCEL : AIR_ACCEL) * DT;
   t.vx = approach(t.vx, tx, acc * Math.max(1, Math.abs(tx) / 4));
-  // em Z tudo é o movimento de X ampliado por DEPTH_SPEED (arrancar e frear iguais na tela)
-  t.vz = approach(t.vz, tz, acc * Math.max(DEPTH_SPEED, Math.abs(tz) / 4));
+  // em Z tudo é o movimento de X ampliado pela profundidade (arrancar e frear iguais na tela)
+  t.vz = approach(t.vz, tz, acc * Math.max(k, Math.abs(tz) / 4));
 
   // direção: mira do mouse tem prioridade enquanto mira/atira
   const firing = held(p.buttons, Btn.Fire) || w.tick - p.lastFireTick < 20;
@@ -167,6 +173,30 @@ function locomotion(w: World, e: Entity, movable: boolean): void {
     const want = speed < 0.3 ? 'idle' : run && Math.abs(t.vx) > 1 ? 'run' : 'walk';
     if (fi.state !== want) setState(e, want);
   }
+}
+
+/**
+ * Direção do movimento (vetor de até 1: diagonais não somam velocidade). Encostado na borda da faixa ou da tela,
+ * o eixo travado não gasta velocidade: numa diagonal (45° ou mais para o lado livre) o personagem desliza pela borda
+ * na velocidade cheia; quase reto contra a borda, desliza devagar.
+ */
+export function moveDir(w: World, e: Entity, x: number, z: number): [number, number] {
+  let len = Math.hypot(x, z);
+  if (len < 1e-4) return [0, 0];
+  if (len > 1) {
+    x /= len;
+    z /= len;
+    len = 1;
+  }
+  const t = e.t;
+  const b = w.bounds;
+  const r = (e.body?.radius ?? 0.35) * 0.5;
+  const zBlocked = (z < 0 && t.z <= b.zMin + r + 1e-3) || (z > 0 && t.z >= b.zMax - r - 1e-3);
+  const xBlocked = (x < 0 && t.x <= b.minX + 0.4 + 1e-3) || (x > 0 && t.x >= b.maxX - 0.4 - 1e-3);
+  const slide = (v: number) => Math.sign(v) * len * Math.min(1, Math.abs(v) / Math.SQRT1_2);
+  if (zBlocked && !xBlocked) return [slide(x), 0];
+  if (xBlocked && !zBlocked) return [0, slide(z)];
+  return [x, z];
 }
 
 function firingMoveMult(e: Entity): number {
