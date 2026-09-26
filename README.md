@@ -85,6 +85,19 @@ Cada um escolhe o personagem (←/→) e confirma; com todos prontos, a partida 
 mais fortes conforme o número de jogadores, cada um tem suas vidas e quem ficar sem vidas aperta **Pular** para
 pegar uma emprestada de um colega. No fim, o resultado mostra a equipe e cada jogador.
 
+**Multijogador online (até 5 jogadores, cada um no seu aparelho):** no menu, **Jogar online**.
+
+1. Uma pessoa toca em **Criar sala** e recebe um **código de 4 letras** (e um link/QR para mandar aos amigos).
+2. Os outros tocam em **Entrar numa sala** e digitam o código (ou abrem o link).
+3. Cada um escolhe o personagem e toca em **Pronto**; quem criou a sala escolhe a fase e toca em **Começar**.
+
+Cada um guarda o próprio progresso (nível, armas, itens) no seu aparelho, e navegador e app jogam juntos. Quem
+criou a sala é o anfitrião: o aparelho dele roda a partida e manda o estado para os outros ~20 vezes por segundo,
+então ele deve manter o jogo aberto na tela. No fim da fase o anfitrião escolhe a próxima (ou volta todos para a
+sala); quem cair ou sair no meio fica fora e os outros continuam. A conexão usa WebRTC com o serviço gratuito do
+PeerJS para achar a sala pelo código — sem cadastro e sem servidor próprio. Algumas redes (de empresas e escolas)
+bloqueiam a conexão direta; nesse caso, tente outra rede, como os dados do celular.
+
 No celular e no tablet: direcional à esquerda (empurrar até a borda corre) e botões Soco, Pular, Chute,
 Atirar/Conjurar (mira sozinho), Especial, Recarregar, Próxima arma e Arma ⇄ Cajado à direita; pausa e tela cheia no
 topo. Tamanho, opacidade e vibração dos controles ficam em Configurações → Controles.
@@ -145,14 +158,15 @@ contador de FPS também são configuráveis.
 ## Estrutura
 
 - `src/sim` — simulação determinística (passo fixo de 60 Hz, sem Three.js nem DOM): combate, IA, chefes,
-  níveis e progressão. Um teste garante essa separação, que deixa o jogo pronto para o multijogador online.
+  níveis e progressão. Um teste garante essa separação (o anfitrião do jogo online roda essa simulação).
 - `src/data` — tudo o que é conteúdo: armas, cajados, inimigos, chefes (uma pequena linguagem de passos),
   mapas, itens, cosméticos e músicas.
 - `src/render` — cena Three.js, personagens montados com juntas, cenários procedurais, luzes, partículas e
   pós-processamento.
 - `src/audio`, `src/ui`, `src/input`, `src/save` — som, telas em HTML/CSS, controles e salvamento.
-- `src/net` — entrada dos jogadores locais (até 5) e a costura para o multijogador online futuro (anfitrião
-  como autoridade).
+- `src/net` — entrada dos jogadores locais (até 5) e o multijogador online: salas com código (`room.ts`),
+  transporte WebRTC/PeerJS (`peerTransport.ts`) ou entre abas para testes (`localTransport.ts`, `?net=local`),
+  mensagens (`protocol.ts`) e o estado do mundo enviado só com o que mudou (`delta.ts`).
 
 ## Publicação (GitHub Pages)
 
