@@ -3,7 +3,7 @@ import { DIFFICULTY_ORDER } from '../../data/balance';
 import { MAPS, getMap } from '../../data/maps';
 import type { Difficulty } from '../../data/types';
 import { SLOT_COLORS, playerTag } from '../../app/party';
-import { isAndroid, isIOS } from '../../input/device';
+import { platform, type Platform } from '../../input/device';
 import { cleanCode, type RoomOptions, type RoomPlayer } from '../../net/protocol';
 import { defaultSave } from '../../save/schema';
 import type { GuestRoom, HostRoom } from '../../net/room';
@@ -78,22 +78,27 @@ export function roomName(name: string, slot: number): string {
 }
 
 /** Como liberar o microfone neste aparelho (app Android, iPhone, Android no navegador, computador). */
-export function micHelp(): string {
-  if (__NATIVE__)
-    return t(
-      'Para liberar: Configurações do Android → Apps → Zumbi Bot → Permissões → Microfone → Permitir.',
-    );
-  if (isIOS())
-    return t(
-      'Para liberar no iPhone: toque em "aA" na barra de endereço → Ajustes do Site → Microfone → Permitir (ou Ajustes → Apps → Safari → Microfone) e recarregue a página.',
-    );
-  if (isAndroid())
-    return t(
-      'Para liberar: toque no ícone ao lado do endereço → Permissões → Microfone → Permitir, e recarregue a página.',
-    );
-  return t(
-    'Para liberar: clique no ícone ao lado do endereço do site → Microfone → Permitir, e recarregue a página.',
-  );
+export function micHelp(p: Platform = platform()): string {
+  switch (p) {
+    case 'android-app':
+      return t(
+        'Para liberar: Configurações do Android → Apps → Zumbi Bot → Permissões → Microfone → Permitir.',
+      );
+    case 'ios-app':
+      return t('Para liberar: Ajustes do iPhone → Apps → Zumbi Bot → Microfone (ligado).');
+    case 'ios-web':
+      return t(
+        'Para liberar no iPhone: toque em "aA" na barra de endereço → Ajustes do Site → Microfone → Permitir (ou Ajustes → Apps → Safari → Microfone) e recarregue a página.',
+      );
+    case 'android-web':
+      return t(
+        'Para liberar: toque no ícone ao lado do endereço → Permissões → Microfone → Permitir, e recarregue a página.',
+      );
+    default:
+      return t(
+        'Para liberar: clique no ícone ao lado do endereço do site → Microfone → Permitir, e recarregue a página.',
+      );
+  }
 }
 
 /** Por que o microfone não ligou, e o que fazer. */

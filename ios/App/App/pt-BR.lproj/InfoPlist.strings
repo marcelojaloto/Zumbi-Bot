@@ -1,0 +1,2 @@
+/* Pedido de permissão do microfone (chat de voz online) */
+"NSMicrophoneUsageDescription" = "O Zumbi Bot usa o microfone só no chat de voz do jogo online, quando você liga o microfone.";

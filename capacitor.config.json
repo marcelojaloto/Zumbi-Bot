@@ -5,5 +5,16 @@
   "backgroundColor": "#0b0d14",
   "android": {
     "backgroundColor": "#0b0d14"
+  },
+  "ios": {
+    "backgroundColor": "#0b0d14",
+    "contentInset": "never",
+    "scrollEnabled": false,
+    "allowsLinkPreview": false
+  },
+  "plugins": {
+    "SystemBars": {
+      "hidden": true
+    }
   }
 }
