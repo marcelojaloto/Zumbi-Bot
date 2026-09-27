@@ -8,6 +8,8 @@ export interface UiHost {
   resume(): void;
   restartLevel(): void;
   quitToMenu(): void;
+  /** Sai da sala online (quem fica continua; se era o anfitrião, outro jogador assume). */
+  leaveRoom(): void;
   startLevel(mapId: string, levelIdx: number): void;
   /** Tela de seleção de personagem antes de começar a fase. */
   openLobby(mapId: string, levelIdx: number): void;

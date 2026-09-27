@@ -82,13 +82,18 @@ J e K atacam.
 Os tiros sempre saem para a frente, na faixa de profundidade do robô (o mouse escolhe o lado): alinhe-se com o
 inimigo usando W/S e a mira ajusta sozinha para acertar quem estiver à frente, na mesma faixa. Andar tem a mesma
 velocidade na tela em qualquer direção, inclusive nas diagonais (duas teclas juntas ou o direcional inclinado). No
-modo cajado, o soco vira uma pancada com o cajado; e quando a munição de uma arma pega no chão acaba, o robô volta
+modo cajado, o soco vira uma pancada com o cajado, segurado pela ponta e brandido como um bastão; e quando a munição de uma arma pega no chão acaba, o robô volta
 sozinho para a pistola.
 
 **Na tela:** as barras de energia de cada jogador ficam no alto, no centro (sem caixa, do mesmo jeito com 1 ou 5
 jogadores); a pontuação e as mensagens (que somem em 3 segundos) à direita; o nome do mapa e o progresso embaixo, no
 centro. No computador, o microfone (ícone e tecla) e o FPS ficam no canto superior esquerdo e o mapa grande abre na
 tecla M; no celular, o minimapa começa oculto e aparece no botão 🗺.
+
+**Escolha do personagem:** a tela é como a loja — o personagem aparece em 3D no espaço livre e a lista e os
+detalhes (atributos e especial) ficam ao lado. Para **girar** o personagem, arraste-o para os lados com o dedo (ou
+o mouse), ou segure **←/→** no teclado ou o direcional do controle para os lados; para **trocar**, toque num nome
+ou use **↑/↓**. Na sala online, **👤 Ver os personagens** abre a mesma tela.
 
 **Multijogador local (até 5 jogadores na mesma tela):** na tela "Escolha seu personagem", cada controle entra
 apertando **A** (ou Start) e uma segunda pessoa no teclado entra com **J** — o teclado se divide em dois:
@@ -98,7 +103,8 @@ apertando **A** (ou Start) e uma segunda pessoa no teclado entra com **J** — o
 | Esquerda | WASD  | F    | G     | Espaço | R      | T        | V     | C          | Shift esq. | Q / E       |
 | Direita  | setas | J    | K     | L      | O      | I        | ;     | U          | Shift dir. | , / .       |
 
-Cada um escolhe o personagem (←/→) e confirma; com todos prontos, a partida começa. Os inimigos e chefes ficam
+Com mais de um jogador, a tela mostra um cartão por jogador: cada um escolhe o personagem (←/→) e confirma; com
+todos prontos, a partida começa. Os inimigos e chefes ficam
 mais fortes conforme o número de jogadores, cada um tem suas vidas e quem ficar sem vidas aperta **Pular** para
 pegar uma emprestada de um colega. No fim, o resultado mostra a equipe e cada jogador.
 
@@ -118,9 +124,13 @@ primeira vez (se estiver bloqueado, o jogo explica onde liberar). A lista da sal
 Configurações → Áudio. A voz vai direto entre os aparelhos (criptografada) e não é gravada.
 
 Cada um guarda o próprio progresso (nível, armas, itens) no seu aparelho, e navegador e app jogam juntos. Quem
-criou a sala é o anfitrião: o aparelho dele roda a partida e manda o estado para os outros ~20 vezes por segundo,
-então ele deve manter o jogo aberto na tela. No fim da fase o anfitrião escolhe a próxima (ou volta todos para a
-sala); quem cair ou sair no meio fica fora e os outros continuam. A conexão usa WebRTC com o serviço gratuito do
+criou a sala é o anfitrião (👑): o aparelho dele roda a partida e manda o estado para os outros ~20 vezes por
+segundo. No fim da fase o anfitrião escolhe a próxima (ou volta todos para a sala). **Se o anfitrião sair** (ou o
+aparelho dele cair), o jogador de menor número assume na hora: a sala, o código e a partida continuam para quem
+ficou — todos são avisados e o boneco de quem saiu some. Quando qualquer outro jogador sai ou cai, todos veem o
+aviso ("P3 saiu da partida") e o boneco dele sai do jogo. A tela de quem entrou mostra o jogo um pouquinho
+atrasado (~0,1 s) para andar liso mesmo com a rede oscilando, e com o chat de voz ligado o áudio usa pouca banda e
+não envia nada com o microfone desligado. A conexão usa WebRTC com o serviço gratuito do
 PeerJS para achar a sala pelo código — sem cadastro e sem servidor próprio. Algumas redes (de empresas e escolas)
 bloqueiam a conexão direta; nesse caso, tente outra rede, como os dados do celular.
 
@@ -200,8 +210,9 @@ contador de FPS também são configuráveis.
 - `src/audio`, `src/ui`, `src/input`, `src/save` — som, telas em HTML/CSS, controles e salvamento.
 - `src/net` — entrada dos jogadores locais (até 5) e o multijogador online: salas com código (`room.ts`),
   transporte WebRTC/PeerJS (`peerTransport.ts`) ou entre abas para testes (`localTransport.ts`, `?net=local`),
-  mensagens (`protocol.ts`), o estado do mundo enviado só com o que mudou (`delta.ts`) e o chat de voz
-  (`voice.ts`: uma chamada de áudio direta entre cada par de aparelhos da sala, microfone e quem está falando).
+  mensagens (`protocol.ts`), o estado do mundo enviado só com o que mudou (`delta.ts`), a troca de anfitrião
+  (`room.ts` + `src/sim/takeover.ts`, que prepara o mundo de quem assume) e o chat de voz (`voice.ts`: uma chamada
+  de áudio direta entre cada par de aparelhos da sala, microfone e quem está falando).
 
 ## Publicação (GitHub Pages)
 

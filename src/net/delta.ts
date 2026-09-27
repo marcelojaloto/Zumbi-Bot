@@ -112,25 +112,21 @@ export function reduceEntity(e: Entity): Obj {
   return out;
 }
 
-/** Dados do mundo fora das entidades que a tela usa. */
+/**
+ * Dados do mundo fora das entidades: os que a tela usa e o progresso inteiro da fase (ondas, quem ainda vai
+ * entrar...) — com eles, quem assume como anfitrião continua a fase de onde parou.
+ */
 export function worldMeta(w: World): Obj {
-  const ls = w.levelState;
   return copy({
     camX: w.camX,
     lock: w.lock,
+    limitX: Number.isFinite(w.limitX) ? w.limitX : null,
+    freeze: w.freeze,
     zBand: w.zBand,
     finished: w.finished,
     finishedTick: w.finishedTick,
     slowmo: w.slowmo,
-    ls: {
-      segmentIdx: ls.segmentIdx,
-      active: ls.active,
-      cleared: ls.cleared,
-      bossSpawned: ls.bossSpawned,
-      bossId: ls.bossId,
-      bossDead: ls.bossDead,
-      timeTicks: ls.timeTicks,
-    },
+    ls: w.levelState,
   }) as Obj;
 }
 
@@ -264,6 +260,8 @@ export function applyDelta(w: World, d: SnapDelta): Set<EntityId> {
     w.finished = (meta.finished as World['finished']) ?? null;
     w.finishedTick = meta.finishedTick as number;
     w.slowmo = meta.slowmo as number;
+    w.limitX = typeof meta.limitX === 'number' ? meta.limitX : Infinity;
+    w.freeze = (meta.freeze as number) ?? 0;
     Object.assign(w.levelState, ls);
   }
   if (d.r) for (const id of d.r) w.remove(id);

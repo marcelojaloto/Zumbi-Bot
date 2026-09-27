@@ -7,10 +7,10 @@ import { sanitizeSave } from '../save/migrations';
 import type { SnapDelta } from './delta';
 
 /**
- * Conversa entre o anfitrião (quem criou a sala e roda a partida) e os outros jogadores.
- * Cada aparelho é um jogador; o anfitrião é sempre o P1.
+ * Conversa entre o anfitrião (quem roda a partida) e os outros jogadores. Cada aparelho é um jogador. Quem cria a
+ * sala é o anfitrião (P1); se ele sair, o jogador de menor número assume e os outros se reconectam nele.
  */
-export const NET_VERSION = 1;
+export const NET_VERSION = 2;
 
 /** Letras do código da sala (sem I e O, que confundem com 1 e 0). */
 export const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
@@ -98,7 +98,8 @@ export interface StartMsg {
 
 /** Mensagens de quem entrou na sala para o anfitrião. */
 export type GuestMsg =
-  | { t: 'hello'; v: number; lo: PlayerLoadout }
+  /** `rejoin`: voltando para o novo anfitrião (troca de anfitrião), com o mesmo número de jogador. */
+  | { t: 'hello'; v: number; lo: PlayerLoadout; rejoin?: PlayerSlot }
   | { t: 'pick'; char: CharacterId; ready: boolean }
   | { t: 'in'; f: PackedInput }
   /** Terminou de carregar a fase. */
@@ -120,6 +121,8 @@ export type HostMsg =
       phase: RoomPhase;
       mapId: string;
       levelIdx: number;
+      /** Quem é o anfitrião agora. */
+      host: PlayerSlot;
     } & RoomOptions)
   | StartMsg
   | { t: 'snap'; s: SnapDelta; ev: GameEvent[] }
@@ -138,7 +141,8 @@ export class RemoteInputSource {
   constructor(
     readonly slot: PlayerSlot,
     private now: () => number = () => performance.now(),
-    private staleMs = 300,
+    // a entrada chega a cada ~100 ms; com a rede oscilando (voz ligada), meio segundo sem notícias ainda é atraso
+    private staleMs = 500,
   ) {}
 
   push(p: PackedInput): void {

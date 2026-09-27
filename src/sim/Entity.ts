@@ -194,8 +194,6 @@ export interface PlayerComp {
   mash: number;
   god: boolean;
   lastFireTick: number;
-  /** Online: saiu da sala no meio da partida (fica fora, sem vidas). */
-  gone?: boolean;
 }
 
 export type AiMode = 'approach' | 'wait' | 'windup' | 'attack' | 'recover' | 'retreat' | 'spawn' | 'idle';

@@ -137,9 +137,11 @@ export class WorldOverlay {
       n.el.style.transform = `translate(${_p.x}px, ${_p.y}px) translate(-50%, -50%) scale(${1 + Math.max(0, 0.3 - n.t) * 2})`;
       n.el.style.opacity = String(1 - Math.max(0, k - 0.6) / 0.4);
     }
+    const tagged = new Set<number>();
     if (w.playerCount > 1) {
       for (const e of w.playerEntities()) {
         const slot = e.player!.slot;
+        tagged.add(slot);
         let tag = this.tags.get(slot);
         if (!tag) {
           tag = el('div', { class: 'ptag', style: `--pc:${SLOT_COLORS[slot]}` }, playerTag(slot));
@@ -152,6 +154,13 @@ export class WorldOverlay {
         tag.style.transform = `translate(${_p.x}px, ${_p.y}px) translate(-50%, -50%)`;
       }
     }
+    // quem saiu da partida online (ou sobrou um só): sem etiqueta
+    if (this.tags.size > tagged.size)
+      for (const [slot, tag] of this.tags)
+        if (!tagged.has(slot)) {
+          tag.remove();
+          this.tags.delete(slot);
+        }
     const seen = new Set<number>();
     for (const e of w.entities) {
       if (e.kind !== 'enemy' || !e.health) continue;

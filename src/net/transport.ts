@@ -41,18 +41,29 @@ export interface Link {
   close(): void;
   onMessage: ((msg: unknown) => void) | null;
   onClose: (() => void) | null;
-  /** Id do outro aparelho no serviço de conexão (para a voz). */
+  /** Id do outro aparelho no serviço de conexão (voz e troca de anfitrião). */
   readonly peerId?: string;
-  /** Voz deste aparelho (quem entrou na sala); ausente quando o transporte não tem áudio. */
-  readonly voice?: VoicePeer;
 }
 
-/** Sala aberta pelo anfitrião: recebe as conexões de quem digita o código. */
-export interface RoomServer {
-  readonly code: string;
-  close(): void;
-  /** Voz do anfitrião; ausente quando o transporte não tem áudio. */
+/**
+ * Este aparelho no serviço de conexão. Vive a sala inteira — mesmo se a conexão com o anfitrião cair: a voz
+ * continua e, se o anfitrião sair, um dos jogadores vira o novo anfitrião e os outros se conectam nele.
+ */
+export interface Endpoint {
+  /** Id deste aparelho (para os outros ligarem: voz e troca de anfitrião). */
+  readonly id: string;
+  /** Voz deste aparelho; ausente quando o transporte não tem áudio. */
   readonly voice?: VoicePeer;
+  /** Alguém conectou neste aparelho (pelo id ou pela porta do código): só o anfitrião aceita; null recusa. */
+  onLink: ((l: Link) => void) | null;
+  /** Conecta em outro aparelho pelo id (quando o anfitrião muda). */
+  connect(to: string): Promise<Link>;
+  /**
+   * Abre a "porta" do código da sala neste aparelho: quem digitar o código chega aqui. O novo anfitrião tenta
+   * até conseguir (o endereço do código fica livre quando o antigo anfitrião sai do serviço).
+   */
+  openDoor(code: string): Promise<boolean>;
+  close(): void;
 }
 
 /** Chamadas de áudio de um aparelho (voz entre os jogadores da sala). */
@@ -71,8 +82,8 @@ export interface VoiceCall {
   readonly peer: string;
   readonly metadata: Record<string, unknown> | undefined;
   answer(stream: MediaStream): void;
-  /** Troca a trilha de áudio enviada (silêncio ⇄ microfone) sem religar. */
-  replaceTrack(track: MediaStreamTrack): void;
+  /** Troca a trilha de áudio enviada (microfone ⇄ nada) sem religar. null = não envia nada (mudo). */
+  replaceTrack(track: MediaStreamTrack | null): void;
   /** Nível do áudio recebido agora (0..1); null quando o navegador não informa. */
   audioLevel(): number | null;
   /**
@@ -86,10 +97,10 @@ export interface VoiceCall {
 }
 
 export interface Transport {
-  /** Abre uma sala com um código novo; `onLink` recebe cada pessoa que entra. */
-  host(onLink: (l: Link) => void): Promise<RoomServer>;
-  /** Conecta na sala do código. */
-  join(code: string): Promise<Link>;
+  /** Abre uma sala com um código novo; a porta do código fica neste aparelho. */
+  host(): Promise<{ code: string; ep: Endpoint }>;
+  /** Conecta na sala do código (este aparelho ganha um id próprio no serviço). */
+  join(code: string): Promise<{ ep: Endpoint; link: Link }>;
 }
 
 /** Aleatório para códigos e ids (crypto quando existe). */

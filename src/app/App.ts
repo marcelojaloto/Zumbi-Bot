@@ -23,12 +23,13 @@ import type { CharacterId, CosmeticId, CosmeticSlot } from '../data/types';
 import { lobbyScreen, type LobbyHost } from '../ui/screens/LobbyScreen';
 import { isCharacterId } from '../data/characters';
 import { SLOT_COLORS, aggregateParty, playerProgress, playerTag, type PartyMember } from './party';
-import { ClientAdapter, GuestRoom, HostRoom } from '../net/room';
+import { ClientAdapter, GuestRoom, HostRoom, type RoomNotice } from '../net/room';
 import type { RoomOptions, RoomPlayer, StartMsg } from '../net/protocol';
 import { createTransport, type Transport } from '../net/transport';
 import { VoiceChat } from '../net/voice';
 import type { NetAdapter } from '../net/types';
-import { retirePlayer } from '../sim/systems/lives';
+import { removePlayer } from '../sim/systems/lives';
+import { takeOverWorld } from '../sim/takeover';
 import type { PlayerLoadout, World } from '../sim/World';
 import type { Difficulty } from '../data/types';
 import {
@@ -202,6 +203,8 @@ export class App implements LobbyHost, OnlineHost {
         else this.audio.resume();
       }
     });
+    // fechando a aba ou o app no meio da sala: os outros ficam sabendo na hora (e um deles assume como anfitrião)
+    addEventListener('pagehide', () => this.leaveRoomQuiet());
     this.installNativeBack();
     // nomes das teclas como estão impressos no teclado do jogador (quando o navegador informa)
     void loadKeyboardLayout();
@@ -240,6 +243,8 @@ export class App implements LobbyHost, OnlineHost {
   private transport: Transport | null = null;
   /** Anfitrião: tempo máximo esperando os outros carregarem a fase. */
   private holdTimer = 0;
+  /** Avisos da sala fora da partida (quem entrou, saiu, novo anfitrião). */
+  private menuToasts: HTMLElement | null = null;
 
   /** Celular/tablet: minimapa pequeno à mostra (começa oculto; botão 🗺 da coluna do canto). */
   private touchMap = false;
@@ -413,7 +418,15 @@ export class App implements LobbyHost, OnlineHost {
   }
 
   setMenuFocus(f: number): void {
-    if (this.menuScene) this.menuScene.focus = f;
+    if (!this.menuScene) return;
+    this.menuScene.focus = f;
+    // fora do close (seleção, loja): o boneco volta à pose do menu
+    if (f === 0) this.menuScene.resetTurn();
+  }
+
+  /** Seleção de personagem: gira o boneco (arrastar para os lados, ←/→ no teclado ou no controle). */
+  turnMenuHero(delta: number): void {
+    this.menuScene?.turn(delta);
   }
 
   setMenuStage(on: boolean): void {
@@ -635,12 +648,14 @@ export class App implements LobbyHost, OnlineHost {
     const difficulty = this.profile.settings.gameplay.difficulty;
     const ngPlus = mapId !== 'sandbox' && this.profile.save.flags.ngPlusOn;
     if (room) {
-      room.me = { ...this.profile.loadout(), slot: 0 };
+      // quem assumiu a sala depois de uma troca de anfitrião continua com o próprio número
+      const slot = room.mySlot;
+      room.me = { ...this.profile.loadout(), slot };
       room.setTarget(mapId, levelIdx);
       // online: a dificuldade é a da sala (escolhida pelo anfitrião)
       const msg = room.start({ seed, ngPlus, enemyCap: this.renderer.quality.enemyCap });
-      const net = room.adapter(this.input.source(0, { k: 'auto' }), () => this.input.endTick());
-      await this.launch({ ...this.fromStart(msg), net });
+      const net = room.adapter(this.input.source(slot, { k: 'auto' }), () => this.input.endTick());
+      await this.launch({ ...this.fromStart(msg), net, mouseSlot: slot });
       if (this.session?.net === net && room.guestCount > 0) {
         this.session.hold = true;
         this.holdTimer = 15;
@@ -775,7 +790,7 @@ export class App implements LobbyHost, OnlineHost {
   /** Progresso deste aparelho: online só o próprio jogador; local, a equipe toda. */
   private progressOf(w: World): ReturnType<typeof aggregateParty> {
     const room = this.online;
-    return room ? playerProgress(w, room.role === 'guest' ? room.slot : 0) : aggregateParty(w);
+    return room ? playerProgress(w, room.mySlot) : aggregateParty(w);
   }
 
   protected onSessionEnd(s: GameSession, victory: boolean): void {
@@ -891,24 +906,97 @@ export class App implements LobbyHost, OnlineHost {
       this.continueTarget(),
       opts,
     );
-    this.online = room;
-    room.onChange = () => this.roomChanged();
-    room.onNotice = (n) => {
-      const who = `${playerTag(n.slot)} (${roomName(n.name, n.slot)})`;
-      this.playUi(n.kind === 'joined' ? 'ui_click' : 'ui_back');
-      this.hud?.toast(
-        n.kind === 'joined' ? t('{p} entrou na sala', { p: who }) : t('{p} saiu da sala', { p: who }),
-        SLOT_COLORS[n.slot],
-      );
-    };
-    // alguém caiu no meio da fase: o jogador dele sai e os outros continuam
-    room.onGuestLeft = (slot) => {
-      const w = this.session?.world;
-      const e = w?.get(slot + 1);
-      if (w && e?.player) retirePlayer(w, e);
-    };
+    this.wireHost(room);
     this.syncVoice();
     return room;
+  }
+
+  /** Sala do anfitrião (quem criou ou quem assumiu depois de uma troca). */
+  private wireHost(room: HostRoom): void {
+    this.online = room;
+    room.onChange = () => this.roomChanged();
+    room.onNotice = (n) => this.roomNotice(n);
+    // alguém saiu no meio da fase: o boneco dele sai do jogo e os outros continuam
+    room.onGuestLeft = (slot) => this.dropPlayer(slot);
+  }
+
+  /** Tira da partida o jogador de quem saiu da sala. */
+  private dropPlayer(slot: PlayerSlot): void {
+    const w = this.session?.world;
+    const e = w?.playerEntities().find((p) => p.player!.slot === slot);
+    if (w && e) removePlayer(w, e);
+  }
+
+  /** Aviso de quem entrou ou saiu (para todos da sala). */
+  private roomNotice(n: RoomNotice): void {
+    const who = `${playerTag(n.slot)} (${roomName(n.name, n.slot)})`;
+    const inGame = !!this.session && this.midLevel;
+    this.playUi(n.kind === 'joined' ? 'ui_click' : 'ui_back');
+    this.notify(
+      n.kind === 'joined'
+        ? t('{p} entrou na sala', { p: who })
+        : inGame
+          ? t('{p} saiu da partida', { p: who })
+          : t('{p} saiu da sala', { p: who }),
+      SLOT_COLORS[n.slot]!,
+      n.host ? t('Era o anfitrião: outro jogador assume a sala.') : undefined,
+    );
+  }
+
+  /** Aviso rápido: na partida, no canto do HUD; nos menus (sala), no alto da tela. Some em 3 s. */
+  private notify(text: string, color: string, sub?: string): void {
+    if (this.hud) {
+      this.hud.toast(text, color, sub);
+      return;
+    }
+    this.menuToasts ??= el('div', { class: 'toasts menu-toasts' });
+    if (this.menuToasts.parentElement !== this.ui) this.ui.appendChild(this.menuToasts);
+    const box = this.menuToasts;
+    const n = el(
+      'div',
+      { class: 'toast' },
+      el('b', { style: `color:${color}` }, text),
+      sub ? el('span', {}, sub) : null,
+    );
+    box.appendChild(n);
+    while (box.children.length > 4) box.firstChild?.remove();
+    setTimeout(() => n.classList.add('out'), 2500);
+    setTimeout(() => n.remove(), 3000);
+  }
+
+  /**
+   * O anfitrião saiu e este aparelho (o de menor número entre os que ficaram) assume: a mesma sala, o mesmo
+   * código e, no meio da fase, a partida continua daqui para todos.
+   */
+  private promote(g: GuestRoom, old: RoomPlayer | undefined): void {
+    if (this.online !== g) return;
+    const room = HostRoom.takeOver(g);
+    this.wireHost(room);
+    const s = this.session;
+    if (room.phase === 'playing' && s && !s.ended && this.screen !== 'loading') {
+      takeOverWorld(s.world);
+      if (old) this.dropPlayer(old.slot);
+      s.becomeHost(room.adapter(this.input.source(room.mySlot, { k: 'auto' }), () => this.input.endTick()));
+      // menu aberto: agora com as opções do anfitrião
+      if (this.screen === 'paused') {
+        this.screens.clear();
+        this.screens.push(pauseScreen(this, 'host'));
+      }
+    } else if (room.phase === 'playing' && this.screen === 'loading') {
+      // ainda carregando a fase: assume assim que ela abrir (`startGuest`)
+    } else {
+      // na sala ou no resultado: todos voltam para a sala, agora com este aparelho no comando
+      if (this.midLevel) this.saveProgressOnQuit();
+      this.endSession();
+      room.toLobby();
+      this.showRoom();
+    }
+    this.syncVoice();
+    this.notify(
+      t('Você agora é o anfitrião da sala.'),
+      '#ffd23a',
+      t('Deixe o jogo aberto: seu aparelho conduz a partida.'),
+    );
   }
 
   async joinRoom(code: string): Promise<GuestRoom> {
@@ -917,6 +1005,17 @@ export class App implements LobbyHost, OnlineHost {
     this.online = room;
     room.onChange = () => this.roomChanged();
     room.onStart = (m) => void this.startGuest(room, m);
+    room.onNotice = (n) => this.roomNotice(n);
+    room.onPromote = (old) => this.promote(room, old);
+    room.onReconnect = (to) => {
+      if (this.online !== room) return;
+      if (to) this.notify(t('Conectando no novo anfitrião ({p})…', { p: playerTag(to.slot) }), '#39e6ff');
+      else
+        this.notify(
+          t('{p} é o novo anfitrião.', { p: playerTag(room.hostSlot) }),
+          SLOT_COLORS[room.hostSlot]!,
+        );
+    };
     room.onClosed = (why) => {
       if (this.online !== room) return;
       if (this.midLevel) this.saveProgressOnQuit();
@@ -926,7 +1025,7 @@ export class App implements LobbyHost, OnlineHost {
       this.showMainMenu();
       this.openOnline(
         why === 'host-left'
-          ? t('O anfitrião fechou a sala.')
+          ? t('O anfitrião saiu e não deu para continuar com outro anfitrião.')
           : t('A conexão com a sala caiu. Confira a internet e entre de novo.'),
       );
     };
@@ -942,7 +1041,22 @@ export class App implements LobbyHost, OnlineHost {
       this.input.endTick(),
     );
     await this.launch({ ...this.fromStart(m), net, mouseSlot: room.slot });
-    if (this.online === room && this.session?.net === net) room.attach(net);
+    if (this.session?.net !== net) return;
+    if (this.online === room) {
+      room.attach(net);
+      return;
+    }
+    // virou anfitrião enquanto a fase carregava: assume a partida agora
+    const host = this.online;
+    if (host?.role === 'host' && host.phase === 'playing') {
+      const s = this.session;
+      takeOverWorld(s.world);
+      const old = s.world
+        .playerEntities()
+        .filter((p) => !host.players().some((x) => x.slot === p.player!.slot));
+      for (const e of old) removePlayer(s.world, e);
+      s.becomeHost(host.adapter(this.input.source(host.mySlot, { k: 'auto' }), () => this.input.endTick()));
+    }
   }
 
   private roomChanged(): void {

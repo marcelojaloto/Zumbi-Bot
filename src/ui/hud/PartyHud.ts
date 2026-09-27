@@ -110,6 +110,13 @@ export class PartyHud {
 
   update(w: World, dt: number, voice: VoiceHud | null = null): void {
     const players = w.playerEntities();
+    // quem saiu da sala online saiu do jogo: o painel dele some
+    if (this.panels.size > players.length)
+      for (const [slot, p] of this.panels)
+        if (!players.some((e) => e.player!.slot === slot)) {
+          p.root.remove();
+          this.panels.delete(slot);
+        }
     for (const e of players) {
       const pc = e.player!;
       const h = e.health!;
@@ -158,8 +165,7 @@ export class PartyHud {
         ...(e.statuses ?? []).map((s) => STATUS[s.id].icon),
       ].join('');
       let note = '';
-      if (pc.gone) note = t('Saiu da partida');
-      else if (out) {
+      if (out) {
         const donor = lifeDonor(w, e);
         note = donor ? t('PULAR: pegar 1 vida de {p}', { p: playerTag(donor.player!.slot) }) : t('Sem vidas');
       } else if (pc.respawn > 0) note = t('Voltando...');

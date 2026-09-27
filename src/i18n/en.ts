@@ -349,6 +349,16 @@ export const EN: Record<string, string> = {
   'Cada jogador: ←/→ troca • confirmar = pronto • todos prontos começa':
     'Each player: ←/→ change • confirm = ready • everyone ready starts',
   'ESCOLHA SEU PERSONAGEM': 'CHOOSE YOUR CHARACTER',
+  'Arraste o personagem para os lados para girar • toque num nome para trocar':
+    'Drag the character sideways to turn it • tap a name to switch',
+  '←/→ ou arrastar: girar • ↑/↓: trocar de personagem': '←/→ or drag: turn • ↑/↓: switch character',
+  Escolher: 'Choose',
+  'Mais jogadores: aperte A num controle': 'More players: press A on a controller',
+  'Mais jogadores: aperte A num controle ou J no teclado':
+    'More players: press A on a controller or J on the keyboard',
+  'Mais jogadores: aperte A em outro controle ou Enter no teclado':
+    'More players: press A on another controller or Enter on the keyboard',
+  'Ver os personagens': 'See the characters',
   '←/→ trocam de personagem • Enter começa • Esc volta':
     '←/→ change character • Enter starts • Esc goes back',
   Começar: 'Start',
@@ -673,7 +683,7 @@ export const EN: Record<string, string> = {
     'Everyone picks a character and taps "Ready". Then just tap "Start"!',
   'Escolha seu personagem (◀ ▶).': 'Pick your character (◀ ▶).',
   'Toque em "Pronto".': 'Tap "Ready".',
-  'Espere o anfitrião (P1) começar a partida.': 'Wait for the host (P1) to start the match.',
+  'Espere o anfitrião (👑) começar a partida.': 'Wait for the host (👑) to start the match.',
   'Copiar link': 'Copy link',
   'Link copiado!': 'Link copied!',
   'Enviar convite': 'Send invite',
@@ -690,24 +700,32 @@ export const EN: Record<string, string> = {
   'Esperando {who} tocar em Pronto…': 'Waiting for {who} to tap Ready…',
   'Todos prontos! Toque em Começar.': 'Everyone is ready! Tap Start.',
   'toque para mudar': 'tap to change',
-  'Tudo certo! Esperando o anfitrião (P1) começar a partida…':
-    'All set! Waiting for the host (P1) to start the match…',
+  'Tudo certo! Esperando o anfitrião ({p}) começar a partida…':
+    'All set! Waiting for the host ({p}) to start the match…',
   'Escolha seu personagem e toque em Pronto.': 'Pick your character and tap Ready.',
   'O anfitrião está terminando uma fase. Você entra na próxima!':
     'The host is finishing a stage. You will join the next one!',
-  'Fechar a sala? Todos os jogadores vão sair.': 'Close the room? All players will leave.',
-  'Fechar sala': 'Close room',
+  'Sair da sala? Outro jogador assume como anfitrião e a partida continua.':
+    'Leave the room? Another player becomes the host and the match goes on.',
+  'Sair da sala? Outro jogador assume como anfitrião e a sala continua.':
+    'Leave the room? Another player becomes the host and the room goes on.',
   'Sair da sala': 'Leave room',
-  'Deixe o jogo aberto nesta tela durante a partida: é o seu aparelho que conduz o jogo de todos.':
-    'Keep the game open on this screen during the match: your device runs the game for everyone.',
+  'Deixe o jogo aberto durante a partida: é o seu aparelho que conduz o jogo de todos. Se você sair, outro jogador assume.':
+    'Keep the game open during the match: your device runs the game for everyone. If you leave, another player takes over.',
   'Seu progresso (nível, armas e itens) fica salvo neste aparelho.':
     'Your progress (level, weapons and items) is saved on this device.',
   'Esperando os amigos carregarem…': 'Waiting for friends to load…',
   '{p} entrou na sala': '{p} joined the room',
   '{p} saiu da sala': '{p} left the room',
-  'Saiu da partida': 'Left the match',
+  '{p} saiu da partida': '{p} left the match',
+  'Era o anfitrião: outro jogador assume a sala.': 'They were the host: another player takes over the room.',
+  'Você agora é o anfitrião da sala.': 'You are now the room host.',
+  'Deixe o jogo aberto: seu aparelho conduz a partida.': 'Keep the game open: your device runs the match.',
+  'Conectando no novo anfitrião ({p})…': 'Connecting to the new host ({p})…',
+  '{p} é o novo anfitrião.': '{p} is the new host.',
   'Jogador {n}': 'Player {n}',
-  'O anfitrião fechou a sala.': 'The host closed the room.',
+  'O anfitrião saiu e não deu para continuar com outro anfitrião.':
+    'The host left and the room could not continue with another host.',
   'A conexão com a sala caiu. Confira a internet e entre de novo.':
     'The connection to the room dropped. Check your internet and join again.',
   MENU: 'MENU',

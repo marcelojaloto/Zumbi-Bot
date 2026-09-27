@@ -147,7 +147,8 @@ export function installDebug(app: App): void {
       return {
         role: r.role,
         code: r.code,
-        slot: r.role === 'guest' ? r.slot : 0,
+        slot: r.mySlot,
+        host: r.role === 'guest' ? r.hostSlot : r.mySlot,
         phase: r.phase,
         players: r.role === 'host' ? r.players() : r.players,
         difficulty: r.difficulty,
