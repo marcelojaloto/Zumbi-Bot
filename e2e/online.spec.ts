@@ -30,7 +30,21 @@ type G = {
 const game = (p: Page) => p.evaluate(() => (window as unknown as { __game: G }).__game.state());
 const online = (p: Page) => p.evaluate(() => (window as unknown as { __game: G }).__game.online());
 
+/** Avisos (somem em 3 s): cada aba guarda todos os que apareceram, para o teste não depender do momento. */
+function recordToasts(): void {
+  const w = window as unknown as { __toasts: string[] };
+  w.__toasts = [];
+  new MutationObserver((ms) => {
+    for (const m of ms)
+      for (const n of m.addedNodes)
+        if (n instanceof HTMLElement && n.classList.contains('toast')) w.__toasts.push(n.textContent ?? '');
+  }).observe(document, { childList: true, subtree: true });
+}
+const toasts = (p: Page) =>
+  p.evaluate(() => (window as unknown as { __toasts: string[] }).__toasts.join(' | '));
+
 async function open(page: Page, query = Q): Promise<void> {
+  await page.addInitScript(recordToasts);
   await page.goto(query);
   await page.waitForFunction(() => (window as unknown as { __game?: G }).__game?.isReady());
   await page.getByRole('button', { name: 'Jogar', exact: true }).first().click();
@@ -152,8 +166,8 @@ test('jogo online: criar sala, entrar pelo link, jogar, resultado, jogar de novo
   // o anfitrião sai da sala: o convidado assume (mesma sala, mesmo código) e é avisado
   host.once('dialog', (d) => void d.accept());
   await host.getByRole('button', { name: 'Sair da sala' }).click();
-  await expect(guest.locator('.menu-toasts')).toContainText('P1');
-  await expect(guest.locator('.menu-toasts')).toContainText('Você agora é o anfitrião');
+  await expect.poll(() => toasts(guest)).toContain('P1 (Jogador 1) saiu da sala');
+  await expect.poll(() => toasts(guest)).toContain('Você agora é o anfitrião');
   await expect(guest.locator('.room-top h2')).toHaveText('SUA SALA');
   await expect(guest.locator('.room-code')).toHaveText(code);
   expect(await online(guest)).toMatchObject({ role: 'host', slot: 1, host: 1, code });
@@ -164,7 +178,7 @@ test('jogo online: criar sala, entrar pelo link, jogar, resultado, jogar de novo
   await open(host, `${Q}&sala=${code}`);
   await expect(host.locator('.room-ok')).toBeVisible();
   expect(await online(host)).toMatchObject({ role: 'guest', slot: 0, host: 1 });
-  await expect(guest.locator('.menu-toasts')).toContainText('entrou na sala');
+  await expect.poll(() => toasts(guest)).toContain('P1 (Jogador 1) entrou na sala');
   await expect(host.locator('.rp[data-slot="1"]')).toContainText('Anfitrião');
   expect(errors).toEqual([]);
 });
@@ -208,7 +222,7 @@ test('jogo online: código errado avisa e quem sai no meio fica fora da partida'
   await guest.getByRole('button', { name: 'Sair da sala' }).click();
   await expect(guest.locator('.menu-screen')).toBeVisible();
   await expect.poll(() => slotsIn(host)).toEqual([0]);
-  await expect(host.locator('.hud-tr .toasts')).toContainText('saiu da partida');
+  await expect.poll(() => toasts(host)).toContain('P2 (Jogador 2) saiu da partida');
   await expect(host.locator('.ph')).toHaveCount(1);
   await expect(host.locator('.ptag')).toHaveCount(0);
   expect((await game(host)).screen).toBe('playing');
@@ -247,8 +261,9 @@ test('jogo online: o anfitrião sai no meio da fase, outro assume e a partida co
   // o P2 (menor número) assume; o P3 se reconecta nele; o P1 sai do jogo dos dois; ninguém sai da fase
   await expect.poll(async () => (await online(p2))?.role, { timeout: 20_000 }).toBe('host');
   await expect.poll(async () => (await online(p3))?.host, { timeout: 20_000 }).toBe(1);
-  await expect(p2.locator('.hud-tr .toasts')).toContainText('Você agora é o anfitrião');
-  await expect(p3.locator('.hud-tr .toasts')).toContainText('P2 é o novo anfitrião');
+  await expect.poll(() => toasts(p2)).toContain('Você agora é o anfitrião');
+  await expect.poll(() => toasts(p3)).toContain('P2 é o novo anfitrião');
+  await expect.poll(() => toasts(p3)).toContain('P1 (Jogador 1) saiu da partida');
   await expect.poll(() => slotsIn(p2)).toEqual([1, 2]);
   await expect.poll(() => slotsIn(p3), { timeout: 20_000 }).toEqual([1, 2]);
   await expect(p3.locator('.ph')).toHaveCount(2);
