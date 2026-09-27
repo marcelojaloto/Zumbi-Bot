@@ -98,7 +98,7 @@ export class SceneView {
         this.cosmetics.delete(id);
       }
     }
-    if (w.playerCount > 1) this.syncRings(w, alpha);
+    if (w.playerCount > 1 || this.rings.size) this.syncRings(w, alpha);
     for (const [id, v] of this.chars) {
       if (!seen.has(id)) {
         this.root.remove(v.group);
@@ -198,9 +198,17 @@ export class SceneView {
       if (v.heldKey !== key) obj = recipeMesh(key, MELEE_WEAPONS[p.melee.id].mesh);
     } else if (p.mode === 'staff') {
       const st = p.staffs[p.staffIdx] ?? 'heal';
-      key = `staff:${st}`;
-      socket = 'staffR';
-      if (v.heldKey !== key) obj = recipeMesh(key, staffRecipe(st));
+      // batendo com o cajado: segura pela ponta de baixo e bate como um taco (parado, pelo meio)
+      const swinging = e.fighter?.state === 'attack' && !!e.fighter.moveId?.startsWith('staff');
+      key = `${swinging ? 'staffbat' : 'staff'}:${st}`;
+      socket = swinging ? 'handR' : 'staffR';
+      if (v.heldKey !== key) {
+        obj = recipeMesh(`staff:${st}`, staffRecipe(st));
+        if (swinging) {
+          obj.position.y = 0.42;
+          obj = new Group().add(obj);
+        }
+      }
     } else {
       const g = p.guns[p.gunIdx] ?? 'pistol';
       key = `gun:${g}`;
@@ -222,6 +230,15 @@ export class SceneView {
 
   /** Anéis coloridos sob os jogadores (quem é quem no multijogador). */
   private syncRings(w: World, alpha: number): void {
+    // quem saiu da partida online (ou sobrou um só): o anel some
+    const multi = w.playerCount > 1;
+    for (const [id, m] of this.rings)
+      if (!multi || !w.players.includes(id)) {
+        this.root.remove(m);
+        (m.material as MeshBasicMaterial).dispose();
+        this.rings.delete(id);
+      }
+    if (!multi) return;
     this.ringGeo ??= new RingGeometry(0.42, 0.56, 28).rotateX(-Math.PI / 2);
     for (const e of w.playerEntities()) {
       let m = this.rings.get(e.id);

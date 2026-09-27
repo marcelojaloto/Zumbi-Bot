@@ -30,6 +30,17 @@ export function pauseScreen(host: UiHost, online?: 'host' | 'guest'): Screen {
         () => host.quitToMenu(),
         'btn danger',
       ),
+      // o anfitrião também pode sair: outro jogador assume e a partida continua para os outros
+      online === 'host'
+        ? b(
+            t('Sair da sala'),
+            () => {
+              if (confirm(t('Sair da sala? Outro jogador assume como anfitrião e a partida continua.')))
+                host.leaveRoom();
+            },
+            'btn danger',
+          )
+        : null,
     ),
   );
   return {

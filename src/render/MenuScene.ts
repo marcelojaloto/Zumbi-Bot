@@ -1,5 +1,5 @@
 import { Vector3 } from 'three';
-import { damp } from '../core/math';
+import { damp, wrapAngle } from '../core/math';
 import { getMap } from '../data/maps';
 import { ENEMIES } from '../data/enemies';
 import { getCharacter } from '../data/characters';
@@ -59,6 +59,11 @@ export class MenuScene {
   stage = false;
   private stageV = 0;
   private focusV = 0;
+  /** Giro dado pelo jogador (arrastar para os lados, ←/→): some o balanço automático. */
+  private userYaw = 0;
+  private userYawV = 0;
+  private autoV = 1;
+  private manual = false;
   private tmp = new Vector3();
 
   constructor(
@@ -125,6 +130,25 @@ export class MenuScene {
       { hunch: st.hunch, zombieArms: false, heavy: false },
       st.scale,
     );
+  }
+
+  /** Gira o boneco (radianos; positivo = sentido anti-horário visto de cima). */
+  turn(delta: number): void {
+    this.userYaw += delta;
+    this.manual = true;
+  }
+
+  /** Volta para a pose da tela (pelo caminho mais curto) e retoma o balanço automático. */
+  resetTurn(): void {
+    if (!this.manual && this.userYaw === 0) return;
+    this.userYawV = wrapAngle(this.userYawV);
+    this.userYaw = 0;
+    this.manual = false;
+  }
+
+  /** Quanto o jogador girou o boneco (testes). */
+  get turned(): number {
+    return this.userYaw;
   }
 
   setCosmetics(eq: Partial<Record<CosmeticSlot, CosmeticId>>): void {
@@ -205,14 +229,19 @@ export class MenuScene {
     place(e, 0);
     this.moveT = advanceMove(e, this.moveT, dt);
     this.robot.sync(e, 1, dt, null);
-    this.spin += dt * 0.6 * this.focusV * (n > 1 ? 0 : 1);
+    this.spin += dt * 0.6 * this.focusV * (n > 1 ? 0 : 1) * this.autoV;
+    this.autoV = damp(this.autoV, this.manual ? 0 : 1, 0.15, dt);
+    this.userYawV = damp(this.userYawV, this.userYaw, 0.06, dt);
     this.stageV = damp(this.stageV, this.stage ? 1 : 0, 0.15, dt);
     const face =
       (Math.PI / 2 - 0.35 - (Math.PI / 2 - 0.35) * this.focusV * 0.9) * (1 - this.stageV) +
       0.12 * this.stageV;
     this.backV = damp(this.backV, this.back ? 1 : 0, 0.2, dt);
     this.robot.yaw.rotation.y =
-      face + Math.sin(this.spin) * 0.8 * this.focusV * (1 - this.backV) + this.backV * Math.PI;
+      face +
+      Math.sin(this.spin) * 0.8 * this.focusV * (1 - this.backV) * this.autoV +
+      this.backV * Math.PI +
+      this.userYawV;
     this.cos.update(dt, 0.3 + Math.sin(this.t) * 0.3, 0, 1);
     this.blobs.begin();
     this.blobs.add(e.t.x, e.t.z, 0.4, 0);

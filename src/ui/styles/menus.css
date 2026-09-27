@@ -1053,6 +1053,110 @@ a.btn {
   }
 }
 
+/* ---------------------------------------------------------------- escolha de personagem (como a loja) */
+/* o espaço livre à esquerda é do boneco: arrastar para os lados gira (sem rolar a página) */
+.screen.char-select {
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+}
+.screen.char-select.turning {
+  cursor: grabbing;
+}
+.char-select .wr-panel {
+  cursor: default;
+}
+.char-select .wr-panel h2 {
+  font-size: clamp(18px, 2.1vw, 28px);
+  letter-spacing: 2px;
+  margin: 0;
+}
+.cs-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+.cs-card {
+  --cc: #c8c8c8;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px 10px;
+  text-align: left;
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 4px solid var(--cc);
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+.cs-card b {
+  color: var(--cc);
+  font-size: 15px;
+}
+.cs-card span {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.cs-card:hover,
+.cs-card:focus-visible {
+  border-color: var(--cc);
+}
+.cs-card.on {
+  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--cc) 22%, rgba(10, 12, 20, 0.9));
+  border-color: var(--cc);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--cc) 40%, transparent);
+}
+.cs-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+.cs-name {
+  font-family: var(--title-font);
+  font-size: 26px;
+  color: var(--cc);
+}
+.cs-info .ci-desc {
+  margin: 0;
+  font-size: 13px;
+}
+.cs-info .stat-row {
+  font-size: 12px;
+}
+.cs-join {
+  margin: 0;
+  font-size: 12px;
+}
+.room-me .cs-open {
+  margin-top: 4px;
+}
+@media (max-height: 500px) {
+  .cs-card {
+    padding: 4px 8px;
+  }
+  .cs-card span {
+    display: none;
+  }
+  .cs-info {
+    margin-top: 6px;
+    gap: 4px;
+  }
+  .cs-name {
+    font-size: 18px;
+  }
+  .cs-info .ci-desc,
+  .cs-join {
+    display: none;
+  }
+}
+
 /* ---------------------------------------------------------------- resultado da equipe */
 .party-results {
   max-width: 640px;
@@ -1147,6 +1251,21 @@ a.btn {
 }
 .online-status.error {
   color: #ff7a6a;
+}
+/* avisos da sala fora da partida (entrou, saiu, novo anfitrião): sem fundo, somem em 3 s */
+#ui > .menu-toasts {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top));
+  right: calc(16px + env(safe-area-inset-right));
+  max-width: min(420px, 60vw);
+  z-index: 20;
+  pointer-events: none;
+}
+.menu-toasts .toast {
+  text-align: right;
+}
+.menu-toasts .toast b {
+  font-size: 15px;
 }
 .online-note {
   max-width: 560px;

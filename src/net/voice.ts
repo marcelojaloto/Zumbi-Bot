@@ -4,21 +4,25 @@ import type { VoiceCall, VoicePeer } from './transport';
 
 /**
  * Chat de voz da sala: todos falam com todos e todos ouvem todos. Cada par de aparelhos tem uma chamada de áudio
- * direta (malha); os dados do jogo continuam passando pelo anfitrião. Cada aparelho sempre envia uma trilha:
- * silêncio com o microfone desligado e o microfone quando ligado (a troca não religa as chamadas).
+ * direta (malha); os dados do jogo continuam passando pelo anfitrião. A chamada é feita com uma trilha de silêncio
+ * e, conectada, só manda áudio com o microfone ligado — mudo, não gasta rede nenhuma (a troca não religa as
+ * chamadas). A voz vai em Opus leve (ver `tuneOpus`), para não disputar a rede com o estado do jogo.
  */
 
 /** Nível (amplitude 0..1) a partir do qual alguém está falando. */
 export const SPEAK_LEVEL = 0.02;
 /** Depois de parar de falar, o indicador fica aceso mais um pouco (não pisca entre as palavras). */
-export const SPEAK_HOLD = 0.35;
+export const SPEAK_HOLD = 0.4;
 /** Chamada que não trouxe áudio nesse tempo é desfeita e tentada de novo. */
 const CONNECT_MS = 15000;
 /** Chamada de alguém que ainda não aparece na lista da sala (a lista pode chegar depois da chamada). */
 const GRACE_MS = 10000;
 const RETRY_MIN_MS = 1500;
 const RETRY_MAX_MS = 20000;
-const TICK_MS = 50;
+/** Leitura dos níveis (quem está falando): 10 vezes por segundo basta e poupa o celular. */
+const TICK_MS = 100;
+/** Revisão das chamadas (quem falta ligar, quem saiu) a cada tantos ciclos (~1 s). */
+const PLAN_EVERY = 10;
 
 export interface VoiceMember {
   slot: PlayerSlot;
@@ -414,8 +418,9 @@ export class VoiceChat {
     this.micSrc = null;
     this.micAnalyser = null;
     if (s) {
+      // mudo: as chamadas conectadas param de mandar áudio (as que ainda conectam seguem com o silêncio)
       const silent = this.silentTrack();
-      if (silent) for (const r of this.remotes.values()) r.call.replaceTrack(silent);
+      for (const r of this.remotes.values()) r.call.replaceTrack(r.stream ? null : silent);
       // a luz de "gravando" do aparelho apaga
       for (const t of s.getTracks()) t.stop();
     }
@@ -428,7 +433,7 @@ export class VoiceChat {
     try {
       this.micSrc = c.createMediaStreamSource(s);
       this.micAnalyser = c.createAnalyser();
-      // ~43 ms de áudio por leitura (lida a cada 50 ms)
+      // ~43 ms de áudio por leitura (lida a cada 100 ms)
       this.micAnalyser.fftSize = 2048;
       this.micSrc.connect(this.micAnalyser);
     } catch {
@@ -495,7 +500,7 @@ export class VoiceChat {
   private tick(): void {
     if (this.disposed) return;
     const dt = TICK_MS / 1000;
-    if (++this.ticks % 20 === 0) this.plan();
+    if (++this.ticks % PLAN_EVERY === 0) this.plan();
     this.meDet.update(this.micOn && this.micAnalyser ? this.level(this.micAnalyser) : 0, dt);
     let talking = false;
     for (const r of this.remotes.values()) {
@@ -588,6 +593,8 @@ export class VoiceChat {
     if (this.remotes.get(r.pid) !== r) return;
     r.stream = s;
     this.retry.delete(r.pid);
+    // conectou com o microfone desligado: não precisa mais mandar o silêncio
+    if (!this.micOn) r.call.replaceTrack(null);
     if (!r.audio) {
       const a = document.createElement('audio');
       a.autoplay = true;

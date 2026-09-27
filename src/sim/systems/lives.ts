@@ -1,3 +1,4 @@
+import { releaseTokens } from '../ai/director';
 import { PLAYER } from '../../data/balance';
 import type { Entity } from '../Entity';
 import type { World } from '../World';
@@ -34,7 +35,7 @@ export function lifeDonor(w: World, e: Entity): Entity | undefined {
 /** Sem vidas e com colegas na partida: apertar PULAR pega uma vida emprestada e renasce. */
 export function borrowLife(w: World, e: Entity): boolean {
   const p = e.player!;
-  if (p.lives > 0 || w.finished || p.gone) return false;
+  if (p.lives > 0 || w.finished) return false;
   const donor = lifeDonor(w, e);
   if (!donor) return false;
   donor.player!.lives--;
@@ -44,24 +45,23 @@ export function borrowLife(w: World, e: Entity): boolean {
   return true;
 }
 
-/** Online: quem saiu da sala fica fora da partida (sem vidas); os outros continuam. */
-export function retirePlayer(w: World, e: Entity): void {
-  const p = e.player!;
-  if (p.gone) return;
-  p.gone = true;
-  p.lives = 0;
-  p.respawn = 0;
-  const fi = e.fighter!;
-  if (fi.state !== 'dead') {
-    fi.state = 'dead';
-    fi.st = 0;
-    fi.moveId = null;
-    e.deadTicks = 0;
-    if (e.body) e.body.low = true;
-  }
-  e.health!.hp = 0;
+/**
+ * Online: quem saiu da sala sai da partida — o boneco some e os inimigos procuram outro alvo; os outros
+ * continuam. Sem ninguém com vida ou vidas, a partida acaba.
+ */
+export function removePlayer(w: World, e: Entity): void {
+  if (!e.player || !w.get(e.id)) return;
+  for (const o of w.entities)
+    if (o.ai?.target === e.id) {
+      releaseTokens(w, o);
+      o.ai.target = 0;
+    }
+  w.director.melee.delete(e.id);
+  w.director.ranged.delete(e.id);
+  w.remove(e.id);
   if (
     !w.finished &&
+    w.playerCount > 0 &&
     w.activePlayers().length === 0 &&
     w.playerEntities().every((pl) => pl.player!.lives <= 0)
   )

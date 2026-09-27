@@ -20,16 +20,46 @@ test('seleção de personagem antes da partida e o especial de cada um', async (
   await page.goto(`./${DEBUG_QUERY}`);
   await page.waitForFunction(() => (window as unknown as { __game?: G }).__game?.isReady());
 
-  // menu → Jogar abre a seleção; → troca para a Maga; Enter (pronto) começa com ela
+  // menu → Jogar abre a seleção, como a loja: o boneco em 3D, a lista e os detalhes à direita
   await page.getByRole('button', { name: 'Jogar' }).click();
   await page.locator('.menu .btn.primary').click();
   await expect(page.getByText('ESCOLHA SEU PERSONAGEM')).toBeVisible();
-  await expect(page.locator('.lobby-card')).toHaveCount(5);
-  const p1 = page.locator('.lobby-card[data-slot="0"]');
-  await expect(p1.locator('.lc-name')).toHaveText('Zumbi Bot');
-  await page.keyboard.press('ArrowRight');
-  await expect(p1.locator('.lc-name')).toHaveText('Maga');
-  await expect(p1.getByText('Nova Arcana')).toBeVisible();
+  await expect(page.locator('.char-select .cs-card')).toHaveCount(5);
+  await expect(page.locator('.cs-card.on')).toHaveAttribute('data-char', 'robot');
+  await expect(page.locator('.cs-name')).toHaveText('Zumbi Bot');
+
+  // segurar → gira o boneco; arrastar para a esquerda no espaço livre gira de volta
+  const turned = () =>
+    page.evaluate(
+      () =>
+        ((window as unknown as { __game: G }).__game.app as unknown as { menuScene: { turned: number } })
+          .menuScene.turned,
+    );
+  await page.keyboard.down('ArrowRight');
+  await page.waitForTimeout(600);
+  await page.keyboard.up('ArrowRight');
+  const a = await turned();
+  // o giro acompanha o tempo segurado (~2,8 rad/s)
+  expect(a).toBeGreaterThan(1);
+  await page.waitForTimeout(300);
+  expect(await turned()).toBe(a);
+  await page.mouse.move(400, 380);
+  await page.mouse.down();
+  await page.mouse.move(150, 380, { steps: 6 });
+  await page.mouse.up();
+  expect(await turned()).toBeLessThan(a - 2);
+  // ←/→ não trocam de personagem
+  await expect(page.locator('.cs-name')).toHaveText('Zumbi Bot');
+
+  // ↓ troca para a Maga; tocar num nome também troca; Enter começa com o escolhido
+  await page.keyboard.press('ArrowDown');
+  await expect(page.locator('.cs-name')).toHaveText('Maga');
+  await expect(page.locator('.cs-info').getByText('Nova Arcana')).toBeVisible();
+  await page.locator('.cs-card[data-char="cyborg"]').click();
+  await expect(page.locator('.cs-card.on')).toHaveAttribute('data-char', 'cyborg');
+  await page.keyboard.press('ArrowUp');
+  await page.keyboard.press('ArrowUp');
+  await expect(page.locator('.cs-card.on')).toHaveAttribute('data-char', 'mage');
   await page.keyboard.press('Enter');
   await page.waitForFunction(() => (window as unknown as { __game: G }).__game.state().screen === 'playing');
   expect(

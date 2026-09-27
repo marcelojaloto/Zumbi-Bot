@@ -1,7 +1,7 @@
-import { CHARACTERS, CHARACTER_ORDER } from '../../data/characters';
+import { CHARACTERS } from '../../data/characters';
 import { DIFFICULTY_ORDER } from '../../data/balance';
 import { MAPS, getMap } from '../../data/maps';
-import type { Difficulty } from '../../data/types';
+import type { CharacterId, Difficulty } from '../../data/types';
 import { SLOT_COLORS, playerTag } from '../../app/party';
 import { platform, type Platform } from '../../input/device';
 import { cleanCode, type RoomOptions, type RoomPlayer } from '../../net/protocol';
@@ -15,6 +15,7 @@ import { el, hexColor } from '../dom';
 import { t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
 import type { LobbyHost } from './LobbyScreen';
+import { characterScreen, nextCharacter } from './CharacterPicker';
 
 const DEFAULT_NAME = defaultSave().profile.name;
 
@@ -461,19 +462,33 @@ export function roomScreen(host: OnlineHost): Screen {
     const r = host.online;
     return r ? (r.role === 'host' ? r.players() : r.players) : [];
   };
-  const mySlot = () => (host.online?.role === 'guest' ? host.online.slot : 0);
+  const mySlot = () => host.online?.mySlot ?? 0;
+  // quem criou a sala é o P1; depois de uma troca de anfitrião, quem assumiu
+  const hostSlot = () => {
+    const r = host.online;
+    return r?.role === 'guest' ? r.hostSlot : mySlot();
+  };
   const me = () => players().find((p) => p.slot === mySlot());
 
-  const setChar = (dir: number) => {
+  const choose = (c: CharacterId) => {
     const r = host.online;
     const p = me();
-    if (!r || !p || (r.role === 'guest' && p.ready)) return;
-    const n = CHARACTER_ORDER.length;
-    const c = CHARACTER_ORDER[(((CHARACTER_ORDER.indexOf(p.char) + dir) % n) + n) % n]!;
+    if (!r || !p || (r.role === 'guest' && p.ready) || c === p.char) return;
     host.profile.setCharacter(c);
     host.playUi('ui_hover');
     if (r.role === 'host') r.setMyCharacter(c);
     else r.pick(c, false);
+  };
+  const setChar = (dir: number) => {
+    const p = me();
+    if (p) choose(nextCharacter(p.char, dir));
+  };
+  /** Tela como a da loja: o personagem em 3D (girando com o dedo ou ←/→), a lista e os detalhes. */
+  const openPicker = () => {
+    const p = me();
+    const r = host.online;
+    if (!p || !r || (r.role === 'guest' && p.ready)) return;
+    host.screens.push(characterScreen(host, { char: p.char, onPick: choose }));
   };
 
   function row(i: number, p: RoomPlayer | undefined): HTMLElement {
@@ -490,7 +505,7 @@ export function roomScreen(host: OnlineHost): Screen {
     const you = p.slot === mySlot();
     const mic = el('span', { class: 'rp-mic' });
     const state =
-      p.slot === 0
+      p.slot === hostSlot()
         ? el('span', { class: 'rp-state host' }, `👑 ${t('Anfitrião')}`)
         : p.ready
           ? el('span', { class: 'rp-state ok' }, `✓ ${t('Pronto')}`)
@@ -591,6 +606,11 @@ export function roomScreen(host: OnlineHost): Screen {
         ),
         el('div', { class: 'ci-title' }, t(c.title)),
         el('div', { class: 'ci-special' }, el('b', {}, t(c.specialName)), el('span', {}, t(c.specialDesc))),
+        el(
+          'button',
+          { class: 'btn small cs-open', disabled: locked, data: { nav: '' }, onclick: openPicker },
+          `👤 ${t('Ver os personagens')}`,
+        ),
       );
       if (p.char !== lastChar) {
         lastChar = p.char;
@@ -619,7 +639,7 @@ export function roomScreen(host: OnlineHost): Screen {
     voiceVal.textContent = r.voice ? `🎤 ${t('Permitido')}` : `🔇 ${t('Desligado')}`;
     voiceVal.classList.toggle('on', r.voice);
     if (r.role === 'host') {
-      const waiting = ps.filter((x) => x.slot !== 0 && !x.ready).map((x) => playerTag(x.slot));
+      const waiting = ps.filter((x) => x.slot !== r.mySlot && !x.ready).map((x) => playerTag(x.slot));
       mainBtn.textContent = `▶ ${t('Começar')}`;
       mainBtn.disabled = !r.allReady();
       status.textContent =
@@ -636,7 +656,7 @@ export function roomScreen(host: OnlineHost): Screen {
       status.textContent =
         r.phase === 'lobby'
           ? ready
-            ? t('Tudo certo! Esperando o anfitrião (P1) começar a partida…')
+            ? t('Tudo certo! Esperando o anfitrião ({p}) começar a partida…', { p: playerTag(r.hostSlot) })
             : t('Escolha seu personagem e toque em Pronto.')
           : t('O anfitrião está terminando uma fase. Você entra na próxima!');
     }
@@ -667,7 +687,11 @@ export function roomScreen(host: OnlineHost): Screen {
 
   const leave = () => {
     const r = host.online;
-    if (r?.role === 'host' && r.guestCount > 0 && !confirm(t('Fechar a sala? Todos os jogadores vão sair.')))
+    if (
+      r?.role === 'host' &&
+      r.guestCount > 0 &&
+      !confirm(t('Sair da sala? Outro jogador assume como anfitrião e a sala continua.'))
+    )
       return;
     host.leaveRoom();
   };
@@ -745,7 +769,7 @@ export function roomScreen(host: OnlineHost): Screen {
         { class: 'room-steps' },
         el('li', {}, t('Escolha seu personagem (◀ ▶).')),
         el('li', {}, t('Toque em "Pronto".')),
-        el('li', {}, t('Espere o anfitrião (P1) começar a partida.')),
+        el('li', {}, t('Espere o anfitrião (👑) começar a partida.')),
       );
 
   const e = el(
@@ -776,11 +800,7 @@ export function roomScreen(host: OnlineHost): Screen {
     el(
       'div',
       { class: 'row-btns' },
-      el(
-        'button',
-        { class: 'btn danger', data: { nav: '' }, onclick: leave },
-        isHost ? t('Fechar sala') : t('Sair da sala'),
-      ),
+      el('button', { class: 'btn danger', data: { nav: '' }, onclick: leave }, t('Sair da sala')),
       micBtn,
       mainBtn,
     ),
@@ -788,7 +808,9 @@ export function roomScreen(host: OnlineHost): Screen {
       'p',
       { class: 'muted online-note' },
       isHost
-        ? t('Deixe o jogo aberto nesta tela durante a partida: é o seu aparelho que conduz o jogo de todos.')
+        ? t(
+            'Deixe o jogo aberto durante a partida: é o seu aparelho que conduz o jogo de todos. Se você sair, outro jogador assume.',
+          )
         : t('Seu progresso (nível, armas e itens) fica salvo neste aparelho.'),
     ),
   );

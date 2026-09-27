@@ -1,5 +1,5 @@
 import { CHARACTERS } from '../../data/characters';
-import type { CharacterDef, CharacterId } from '../../data/types';
+import type { CharacterId } from '../../data/types';
 import { SLOT_COLORS, playerTag, type PartyMember } from '../../app/party';
 import type { DeviceRef } from '../../input/devices';
 import { connectedPads, padDir } from '../../input/pads';
@@ -9,28 +9,22 @@ import { t } from '../../i18n';
 import { LobbyModel } from '../lobby/model';
 import type { Screen } from '../ScreenManager';
 import type { WardrobeHost } from './WardrobeScreen';
+import {
+  HeroSpin,
+  characterList,
+  nextCharacter,
+  spinTip,
+  statBars,
+  type PickerHost,
+} from './CharacterPicker';
 
-export interface LobbyHost extends WardrobeHost {
+export interface LobbyHost extends WardrobeHost, PickerHost {
   /** Câmera do cenário 3D no modo "palco" (personagens de frente, acima dos cartões). */
   setMenuStage(on: boolean): void;
-  /** Mostra os personagens escolhidos no cenário 3D atrás da tela (um só = close com o especial). */
-  previewLineup(chars: CharacterId[]): void;
   /** Começa a fase com a equipe. */
   startParty(members: PartyMember[], mapId: string, levelIdx: number): void;
   /** Dispositivo que abriu a tela (vira o jogador 1). */
   readonly lastDevice: DeviceRef;
-}
-
-/** Barras de atributos (rótulo já traduzido, valor 0..1) mostradas na seleção. */
-export function characterBars(c: CharacterDef): [string, number][] {
-  const s = c.stats;
-  return [
-    [t('Vida'), s.hp / 150],
-    [t('Força'), s.dmg.melee / 1.4],
-    [t('Armas'), s.dmg.gun / 1.4],
-    [t('Magia'), s.dmg.staff / 1.4],
-    [t('Velocidade'), s.speed / 1.2],
-  ];
 }
 
 function deviceLabel(d: DeviceRef): string {
@@ -78,10 +72,17 @@ const KB: Record<'full' | 'left' | 'right', { prev: string[]; next: string[]; ok
 /** Segunda pessoa no teclado (enquanto uma só usa o teclado inteiro). */
 const SPLIT_JOIN = ['KeyJ', 'KeyL', 'Numpad0'];
 
+/** Troca de personagem no jogo solo (↑/↓, W/S). */
+const UP = ['ArrowUp', 'KeyW'];
+const DOWN = ['ArrowDown', 'KeyS'];
+
 /**
  * Seleção de jogadores e personagens antes da fase (até 5 no mesmo computador). O jogador 1 é quem abriu a tela;
- * outros entram apertando A/Start num controle ou J na metade direita do teclado. Cada um troca de personagem
- * (←/→), confirma (pronto) e pode sair. Com todos prontos, a partida começa.
+ * outros entram apertando A/Start num controle ou J na metade direita do teclado.
+ *
+ * Sozinho, a tela é como a loja: o personagem em 3D no espaço livre (gira arrastando para os lados ou com ←/→ e o
+ * direcional do controle), a lista e os detalhes à direita (↑/↓ ou tocar num nome trocam). Com mais gente, um
+ * cartão por jogador: cada um troca (←/→), confirma (pronto) e pode sair; com todos prontos, a partida começa.
  */
 export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: number }): Screen {
   const model = new LobbyModel(host.lastDevice, host.profile.save.profile.character);
@@ -93,6 +94,9 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
   const help = el('div', { class: 'muted lobby-help' });
   const cards = el('div', { class: 'lobby-cards' });
   const count = el('div', { class: 'lobby-count' });
+  const spin = new HeroSpin(host);
+  /** Visão atual: sozinho (como a loja) ou com vários jogadores (cartões); null antes de montar. */
+  let solo: boolean | null = null;
 
   const start = () => {
     countdown = -1;
@@ -113,6 +117,13 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
   };
   const cycle = (slot: PlayerSlot, dir: number) => {
     model.cycle(slot, dir);
+    host.playUi('ui_hover');
+    changed();
+  };
+  const p1 = () => model.slots[0]!;
+  const pickSolo = (c: CharacterId) => {
+    if (c === model.character(p1())) return;
+    model.setChar(p1().slot, c);
     host.playUi('ui_hover');
     changed();
   };
@@ -165,14 +176,6 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
       return el('div', { class: 'lobby-card empty', style: `--pc:${color}` }, tag, ...hints);
     }
     const c = CHARACTERS[model.character(s)];
-    const bars = characterBars(c).map(([label, v]) =>
-      el(
-        'div',
-        { class: 'stat-row' },
-        el('span', {}, label),
-        el('div', { class: 'stat-bar' }, el('i', { style: `width:${Math.round(Math.min(1, v) * 100)}%` })),
-      ),
-    );
     const keys = splitHelp(s.device);
     return el(
       'div',
@@ -191,7 +194,7 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
       ),
       el('div', { class: 'ci-title' }, t(c.title)),
       el('p', { class: 'ci-desc' }, t(c.desc)),
-      el('div', { class: 'lc-stats' }, ...bars),
+      statBars(c),
       el('div', { class: 'ci-special' }, el('b', {}, t(c.specialName)), el('span', {}, t(c.specialDesc))),
       keys ? el('div', { class: 'lc-keys muted' }, keys) : null,
       el(
@@ -202,8 +205,59 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
     );
   }
 
+  // sozinho: painel como o da loja
+  const soloList = characterList({ get: () => model.character(p1()), pick: pickSolo });
+  const soloTip = el('p', { class: 'muted shop-tip' });
+  const soloJoin = el('p', { class: 'muted cs-join' });
+  const soloBox = el(
+    'div',
+    { class: 'wr-panel' },
+    el('h2', {}, t('ESCOLHA SEU PERSONAGEM')),
+    soloTip,
+    el('div', { class: 'wr-body' }, soloList.list, soloList.info),
+    soloJoin,
+    el(
+      'div',
+      { class: 'row-btns' },
+      el('button', { class: 'btn', data: { nav: '' }, onclick: close }, t('Voltar')),
+      el('button', { class: 'btn primary', data: { nav: '', autofocus: '' }, onclick: start }, t('Começar')),
+    ),
+  );
+  const partyBtns = el(
+    'div',
+    { class: 'row-btns lobby-btns' },
+    el('button', { class: 'btn', data: { nav: '' }, onclick: close }, t('Voltar')),
+    el('button', { class: 'btn primary', data: { nav: '', autofocus: '' }, onclick: start }, t('Começar')),
+  );
+  const partyTop = el('div', { class: 'lobby-top' }, el('h2', {}, t('ESCOLHA SEU PERSONAGEM')), help, count);
+
+  /** Troca entre a tela da loja (sozinho) e os cartões (vários jogadores), com a câmera de cada uma. */
+  function layout(one: boolean): void {
+    if (solo === one) return;
+    solo = one;
+    e.className = one ? 'screen wardrobe char-select' : 'screen lobby';
+    e.replaceChildren(...(one ? [soloBox] : [partyTop, cards, partyBtns]));
+    host.setMenuStage(!one);
+    host.setMenuFocus(one ? 1 : 0);
+    if (!one) spin.end();
+    else spin.start();
+  }
+
   function render(): void {
     const n = model.slots.length;
+    layout(n === 1);
+    if (solo) {
+      const dev = p1().device;
+      soloList.render();
+      soloTip.textContent = spinTip(dev.k === 'touch');
+      soloJoin.textContent =
+        dev.k === 'touch'
+          ? `🎮 ${t('Mais jogadores: aperte A num controle')}`
+          : dev.k === 'kb'
+            ? `🎮 ${t('Mais jogadores: aperte A num controle ou J no teclado')}`
+            : `🎮 ${t('Mais jogadores: aperte A em outro controle ou Enter no teclado')}`;
+      return;
+    }
     cards.replaceChildren(...Array.from({ length: MAX_PLAYERS }, (_, i) => card(i)));
     cards.dataset.players = String(n);
     help.textContent =
@@ -215,6 +269,14 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
 
   /** Teclado: cada tecla vale para o lado do teclado de quem a usa. */
   const onKey = (code: string, e?: KeyboardEvent): boolean => {
+    // sozinho: ←/→ giram o boneco (segurando), ↑/↓ trocam de personagem
+    if (solo && !SPLIT_JOIN.includes(code)) {
+      if (spin.keyDown(code)) return true;
+      if (UP.includes(code) || DOWN.includes(code)) {
+        pickSolo(nextCharacter(model.character(p1()), UP.includes(code) ? -1 : 1));
+        return true;
+      }
+    }
     if (e?.repeat) return true;
     const kbs = model.keyboardSlots();
     for (const s of kbs) {
@@ -259,8 +321,12 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
     return true;
   };
 
-  /** Controles: entrar (A/Start), trocar (D-pad/analógico), pronto (A), sair (B). */
-  const pollPads = (dt: number) => {
+  /**
+   * Controles: entrar (A/Start), trocar (D-pad/analógico), pronto (A), sair (B). Sozinho: para os lados gira o
+   * boneco e para cima/baixo troca. Devolve o quanto o controle do jogador 1 está girando (−1..1).
+   */
+  const pollPads = (dt: number): number => {
+    let turn = 0;
     for (const gp of connectedPads()) {
       // controle que apareceu agora: o navegador só o mostra depois do 1º botão, que já vale para entrar
       const prev = padPrev.get(gp.index) ?? [];
@@ -273,29 +339,23 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
         if (edge(0) || edge(9)) join(dev);
         continue;
       }
-      const d = padDir(gp).x;
+      const dir = padDir(gp);
+      if (solo) turn += dir.x;
+      const d = solo ? dir.y : dir.x;
       const rep = (padRepeat.get(gp.index) ?? 0) - dt;
       if (d && rep <= 0) {
-        cycle(s.slot, d);
+        if (solo) pickSolo(nextCharacter(model.character(s), d));
+        else cycle(s.slot, d);
         padRepeat.set(gp.index, 0.22);
       } else padRepeat.set(gp.index, d ? rep : 0);
       if (edge(0) || edge(9)) ready(s.slot);
       if (edge(1)) leave(s.slot);
     }
+    return turn;
   };
 
-  const e = el(
-    'div',
-    { class: 'screen lobby' },
-    el('div', { class: 'lobby-top' }, el('h2', {}, t('ESCOLHA SEU PERSONAGEM')), help, count),
-    cards,
-    el(
-      'div',
-      { class: 'row-btns lobby-btns' },
-      el('button', { class: 'btn', data: { nav: '' }, onclick: close }, t('Voltar')),
-      el('button', { class: 'btn primary', data: { nav: '', autofocus: '' }, onclick: start }, t('Começar')),
-    ),
-  );
+  const e = el('div', { class: 'screen lobby' });
+  spin.bind(e, soloBox, () => !!solo);
   return {
     el: e,
     id: 'lobby',
@@ -307,18 +367,23 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
           gp.index,
           gp.buttons.map((b) => !!b.pressed),
         );
-      host.setMenuStage(true);
+      solo = null;
       lastLineup = '';
       changed();
     },
-    onHide: () => host.setMenuStage(false),
+    onHide: () => {
+      spin.end();
+      host.setMenuStage(false);
+      host.setMenuFocus(0);
+    },
     onBack: () => {
       close();
       return true;
     },
     onKey,
     update: (dt) => {
-      pollPads(dt);
+      const turn = pollPads(dt);
+      if (solo) spin.update(dt, turn);
       if (countdown >= 0) {
         if (!model.allReady()) countdown = -1;
         else {

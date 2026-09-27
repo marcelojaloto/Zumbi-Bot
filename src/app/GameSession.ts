@@ -49,7 +49,8 @@ export interface SessionHooks {
  */
 export class GameSession {
   readonly world: World;
-  readonly net: NetAdapter;
+  /** Muda uma vez no máximo: quem era convidado vira anfitrião quando o anfitrião sai (`becomeHost`). */
+  net: NetAdapter;
   readonly view: SceneView;
   readonly env: BuiltEnv;
   readonly lighting: Lighting;
@@ -124,6 +125,21 @@ export class GameSession {
 
   setInputOverride(src: InputSource | null): void {
     this.net.setOverride(src);
+  }
+
+  /**
+   * Troca de anfitrião: este aparelho passa a rodar a partida (o mundo já foi preparado com `takeOverWorld`) e a
+   * publicar o estado para os outros.
+   */
+  becomeHost(net: NetAdapter): void {
+    this.net.dispose();
+    this.net = net;
+    this.frameEvents = [];
+    for (const e of this.world.entities) {
+      e.t.px = e.t.x;
+      e.t.py = e.t.y;
+      e.t.pz = e.t.z;
+    }
   }
 
   private step(): void {

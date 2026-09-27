@@ -4,7 +4,14 @@ import { collectErrors, createRoom } from './helpers';
 // Jogo online com duas abas do mesmo navegador: o canal local (?net=local) faz o papel do PeerJS.
 const Q = '?debug=1&quality=low&mute=1&nopointerlock=1&net=local';
 
-type Online = { role: string; code: string; slot: number; phase: string; players: { ready: boolean }[] };
+type Online = {
+  role: string;
+  code: string;
+  slot: number;
+  host: number;
+  phase: string;
+  players: { slot: number; ready: boolean }[];
+};
 type G = {
   isReady(): boolean;
   state(): {
@@ -37,7 +44,16 @@ async function screenOf(page: Page, screen: string): Promise<void> {
   );
 }
 
-test('jogo online: criar sala, entrar pelo link, jogar, resultado, jogar de novo e fechar a sala', async ({
+/** Jogadores na partida deste aparelho (número de cada um). */
+const slotsIn = (p: Page) =>
+  p.evaluate(() =>
+    (window as unknown as { __game: G }).__game
+      .players()
+      .map((x) => x.slot)
+      .sort(),
+  );
+
+test('jogo online: criar sala, entrar pelo link, jogar, resultado, jogar de novo; o anfitrião sai e outro assume', async ({
   context,
 }) => {
   const host = await context.newPage();
@@ -133,11 +149,23 @@ test('jogo online: criar sala, entrar pelo link, jogar, resultado, jogar de novo
   await expect(guest.locator('.room-code')).toHaveText(code);
   await expect(guest.getByRole('button', { name: 'Pronto?' })).toBeVisible();
 
-  // anfitrião fecha a sala: o convidado volta para "Jogar online" com o aviso
+  // o anfitrião sai da sala: o convidado assume (mesma sala, mesmo código) e é avisado
   host.once('dialog', (d) => void d.accept());
-  await host.getByRole('button', { name: 'Fechar sala' }).click();
-  await expect(guest.locator('.online-status.error')).toContainText('O anfitrião fechou a sala');
-  expect(await online(guest)).toBeNull();
+  await host.getByRole('button', { name: 'Sair da sala' }).click();
+  await expect(guest.locator('.menu-toasts')).toContainText('P1');
+  await expect(guest.locator('.menu-toasts')).toContainText('Você agora é o anfitrião');
+  await expect(guest.locator('.room-top h2')).toHaveText('SUA SALA');
+  await expect(guest.locator('.room-code')).toHaveText(code);
+  expect(await online(guest)).toMatchObject({ role: 'host', slot: 1, host: 1, code });
+  await expect(guest.locator('.rp[data-slot="1"]')).toContainText('Anfitrião');
+  await expect(guest.locator('.rp').first()).toHaveClass(/empty/);
+
+  // quem chega depois entra pelo mesmo código, agora no aparelho de quem assumiu (vaga do P1 livre)
+  await open(host, `${Q}&sala=${code}`);
+  await expect(host.locator('.room-ok')).toBeVisible();
+  expect(await online(host)).toMatchObject({ role: 'guest', slot: 0, host: 1 });
+  await expect(guest.locator('.menu-toasts')).toContainText('entrou na sala');
+  await expect(host.locator('.rp[data-slot="1"]')).toContainText('Anfitrião');
   expect(errors).toEqual([]);
 });
 
@@ -159,26 +187,94 @@ test('jogo online: código errado avisa e quem sai no meio fica fora da partida'
   const code = (await host.locator('.room-code').textContent())!.trim();
   await guest.locator('.code-input').fill(code);
   await guest.getByRole('button', { name: 'Entrar', exact: true }).click();
+  // na sala, "Ver os personagens" abre a escolha como a loja (girar e trocar); "Escolher" volta com o novo
+  await guest.getByRole('button', { name: /Ver os personagens/ }).click();
+  await expect(guest.locator('.char-select .cs-card')).toHaveCount(5);
+  await guest.keyboard.press('ArrowDown');
+  await expect(guest.locator('.cs-name')).toHaveText('Maga');
+  await guest.locator('.cs-card[data-char="cyborg"]').click();
+  await guest.getByRole('button', { name: 'Escolher' }).click();
+  await expect(guest.locator('.room-me .lc-name')).toHaveText('Ciborgue');
+  await expect(host.locator('.rp[data-slot="1"]')).toContainText('Ciborgue');
   await guest.getByRole('button', { name: 'Pronto?' }).click();
   await host.getByRole('button', { name: /Começar/ }).click();
   await screenOf(guest, 'playing');
   await screenOf(host, 'playing');
 
-  // convidado sai pelo menu: no anfitrião o P2 fica fora e o jogo segue
+  // convidado sai pelo menu: o anfitrião é avisado, o P2 sai do jogo e a partida segue
+  await expect(host.locator('.ph')).toHaveCount(2);
   await guest.bringToFront();
   await guest.keyboard.press('Escape');
   await guest.getByRole('button', { name: 'Sair da sala' }).click();
   await expect(guest.locator('.menu-screen')).toBeVisible();
-  await host.waitForFunction(
-    () =>
-      (
-        (window as unknown as { __game: G }).__game.app as unknown as {
-          session: { world: { get(id: number): { player: { gone?: boolean } } | undefined } };
-        }
-      ).session.world.get(2)?.player.gone === true,
-  );
-  await expect(host.locator('.ph').nth(1)).toContainText('Saiu da partida');
+  await expect.poll(() => slotsIn(host)).toEqual([0]);
+  await expect(host.locator('.hud-tr .toasts')).toContainText('saiu da partida');
+  await expect(host.locator('.ph')).toHaveCount(1);
+  await expect(host.locator('.ptag')).toHaveCount(0);
   expect((await game(host)).screen).toBe('playing');
+  expect(errors).toEqual([]);
+});
+
+test('jogo online: o anfitrião sai no meio da fase, outro assume e a partida continua para quem ficou', async ({
+  context,
+}) => {
+  const host = await context.newPage();
+  const p2 = await context.newPage();
+  const p3 = await context.newPage();
+  const errors = [...collectErrors(host), ...collectErrors(p2), ...collectErrors(p3)];
+
+  await open(host);
+  await host.getByRole('button', { name: /Jogar online/ }).click();
+  await createRoom(host);
+  const code = (await host.locator('.room-code').textContent())!.trim();
+  for (const g of [p2, p3]) {
+    await open(g, `${Q}&sala=${code}`);
+    await expect(g.locator('.room-ok')).toBeVisible();
+    await g.getByRole('button', { name: 'Pronto?' }).click();
+  }
+  await expect(host.getByRole('button', { name: /Começar/ })).toBeEnabled();
+  await host.getByRole('button', { name: /Começar/ }).click();
+  for (const pg of [host, p2, p3]) await screenOf(pg, 'playing');
+  for (const pg of [p2, p3]) await expect.poll(() => slotsIn(pg)).toEqual([0, 1, 2]);
+
+  // o anfitrião sai pelo menu (a aba continua aberta, no menu principal)
+  await host.bringToFront();
+  await host.keyboard.press('Escape');
+  host.once('dialog', (d) => void d.accept());
+  await host.getByRole('button', { name: 'Sair da sala' }).click();
+  await expect(host.locator('.menu-screen')).toBeVisible();
+
+  // o P2 (menor número) assume; o P3 se reconecta nele; o P1 sai do jogo dos dois; ninguém sai da fase
+  await expect.poll(async () => (await online(p2))?.role, { timeout: 20_000 }).toBe('host');
+  await expect.poll(async () => (await online(p3))?.host, { timeout: 20_000 }).toBe(1);
+  await expect(p2.locator('.hud-tr .toasts')).toContainText('Você agora é o anfitrião');
+  await expect(p3.locator('.hud-tr .toasts')).toContainText('P2 é o novo anfitrião');
+  await expect.poll(() => slotsIn(p2)).toEqual([1, 2]);
+  await expect.poll(() => slotsIn(p3), { timeout: 20_000 }).toEqual([1, 2]);
+  await expect(p3.locator('.ph')).toHaveCount(2);
+  expect((await game(p2)).screen).toBe('playing');
+  expect((await game(p3)).screen).toBe('playing');
+
+  // a partida anda no novo anfitrião e o P3 continua controlando o boneco dele
+  const t0 = (await game(p3)).tick;
+  await expect.poll(async () => (await game(p3)).tick, { timeout: 20_000 }).toBeGreaterThan(t0 + 30);
+  const x3 = async () =>
+    (await p2.evaluate(() => (window as unknown as { __game: G }).__game.players())).find(
+      (x) => x.slot === 2,
+    )!.x;
+  const x0 = await x3();
+  await p3.bringToFront();
+  await p3.keyboard.down('KeyD');
+  await expect.poll(x3, { timeout: 30_000 }).toBeGreaterThan(x0 + 1);
+  await p3.keyboard.up('KeyD');
+
+  // o novo anfitrião leva todos para a sala: a sala é a mesma, com o código de antes
+  await p2.bringToFront();
+  await p2.keyboard.press('Escape');
+  await p2.getByRole('button', { name: /Voltar para a sala/ }).click();
+  await expect(p2.locator('.room-code')).toHaveText(code);
+  await expect(p3.locator('.room-code')).toHaveText(code);
+  await expect(p3.locator('.rp[data-slot="1"]')).toContainText('Anfitrião');
   expect(errors).toEqual([]);
 });
 
@@ -232,17 +328,59 @@ test('jogo online com PeerJS de verdade (WebRTC): cada um no seu navegador; aba 
 
   // a aba do convidado fecha de repente: o anfitrião percebe e o P2 sai da partida
   await guestCtx.close();
-  await host.waitForFunction(
-    () =>
-      (
-        (window as unknown as { __game: G }).__game.app as unknown as {
-          session: { world: { get(id: number): { player: { gone?: boolean } } | undefined } };
-        }
-      ).session.world.get(2)?.player.gone === true,
-    null,
-    { timeout: 30_000 },
-  );
+  await expect.poll(() => slotsIn(host), { timeout: 30_000 }).toEqual([0]);
   expect((await game(host)).screen).toBe('playing');
   expect(errors).toEqual([]);
   await hostCtx.close();
+});
+
+test('jogo online com PeerJS de verdade: a aba do anfitrião fecha, outro assume e o código da sala continua valendo', async ({
+  browser,
+}) => {
+  const peer = '?debug=1&quality=low&mute=1&nopointerlock=1&peer=127.0.0.1:9000/zb';
+  const opts = {
+    baseURL: 'http://localhost:4173/Zumbi-Bot/',
+    locale: 'pt-BR',
+    viewport: { width: 1280, height: 720 },
+  };
+  const ctxs = await Promise.all([0, 1, 2].map(() => browser.newContext(opts)));
+  const [host, p2, p3] = await Promise.all(ctxs.map((c) => c.newPage()));
+  const errors = [host!, p2!, p3!].flatMap((pg) => collectErrors(pg));
+
+  await open(host!, peer);
+  await host!.getByRole('button', { name: /Jogar online/ }).click();
+  await createRoom(host!);
+  await expect(host!.locator('.room-code')).toHaveText(/^[A-Z]{4}$/, { timeout: 30_000 });
+  const code = (await host!.locator('.room-code').textContent())!.trim();
+  for (const g of [p2!, p3!]) {
+    await open(g, `${peer}&sala=${code}`);
+    await expect(g.locator('.room-ok')).toBeVisible({ timeout: 30_000 });
+    await g.getByRole('button', { name: 'Pronto?' }).click();
+  }
+  await expect(host!.getByRole('button', { name: /Começar/ })).toBeEnabled();
+  await host!.getByRole('button', { name: /Começar/ }).click();
+  for (const pg of [host!, p2!, p3!]) await screenOf(pg, 'playing');
+  await expect.poll(() => slotsIn(p3!), { timeout: 30_000 }).toEqual([0, 1, 2]);
+
+  // a aba do anfitrião fecha de repente
+  await ctxs[0]!.close();
+  await expect.poll(async () => (await online(p2!))?.role, { timeout: 40_000 }).toBe('host');
+  await expect.poll(async () => (await online(p3!))?.host, { timeout: 40_000 }).toBe(1);
+  await expect.poll(() => slotsIn(p3!), { timeout: 30_000 }).toEqual([1, 2]);
+  const t0 = (await game(p3!)).tick;
+  await expect.poll(async () => (await game(p3!)).tick, { timeout: 20_000 }).toBeGreaterThan(t0 + 30);
+  expect((await game(p2!)).screen).toBe('playing');
+
+  // de volta à sala, alguém novo entra pelo mesmo código (a "porta" da sala passou para o novo anfitrião)
+  await p2!.keyboard.press('Escape');
+  await p2!.getByRole('button', { name: /Voltar para a sala/ }).click();
+  await expect(p2!.locator('.room-code')).toHaveText(code);
+  const ctx4 = await browser.newContext(opts);
+  const p4 = await ctx4.newPage();
+  errors.push(...collectErrors(p4));
+  await open(p4, `${peer}&sala=${code}`);
+  await expect(p4.locator('.room-ok')).toBeVisible({ timeout: 60_000 });
+  expect(await online(p4)).toMatchObject({ role: 'guest', slot: 0, host: 1 });
+  expect(errors).toEqual([]);
+  for (const c of [ctxs[1]!, ctxs[2]!, ctx4]) await c.close();
 });

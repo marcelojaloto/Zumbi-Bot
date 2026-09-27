@@ -128,6 +128,11 @@ export class World {
     return this.byId.get(id);
   }
 
+  /** Próximos ids depois de todos os que já existem (mundo montado de fora: troca de anfitrião). */
+  syncNextId(): void {
+    for (const e of this.entities) if (e.id >= this.nextId) this.nextId = e.id + 1;
+  }
+
   /** Adiciona uma entidade (ids 1..MAX_PLAYERS são reservados aos slots de jogador). */
   add(e: Omit<Entity, 'id'> & { id?: EntityId }): Entity {
     const id = e.id ?? this.nextId++;

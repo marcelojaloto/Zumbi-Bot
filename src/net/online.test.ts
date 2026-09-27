@@ -6,6 +6,8 @@ import { loadout } from '../sim/test/helpers';
 import { World } from '../sim/World';
 import { getMap } from '../data/maps';
 import { LocalTransport } from './localTransport';
+import { takeOverWorld } from '../sim/takeover';
+import { removePlayer } from '../sim/systems/lives';
 import {
   CODE_ALPHABET,
   NET_VERSION,
@@ -18,7 +20,7 @@ import {
   type StartMsg,
 } from './protocol';
 import { ClientAdapter, GuestRoom, HostRoom, type RoomNotice } from './room';
-import { NetError, type Link, type Transport } from './transport';
+import { NetError, type Endpoint, type Link, type Transport } from './transport';
 
 const until = async (cond: () => boolean, ms = 3000): Promise<void> => {
   const t0 = Date.now();
@@ -235,12 +237,16 @@ describe('sala online (canal local)', () => {
   });
 
   it('o mesmo aparelho chegando duas vezes (aviso repetido da conexão) não vira um jogador fantasma', async () => {
-    let deliver: ((l: Link) => void) | null = null;
+    const ep: Endpoint = {
+      id: 'host-1',
+      onLink: null,
+      connect: () => Promise.reject(new NetError('lost')),
+      openDoor: () => Promise.resolve(true),
+      close: () => {},
+    };
+    const deliver = (l: Link) => ep.onLink!(l);
     const t: Transport = {
-      host: (on) => {
-        deliver = on;
-        return Promise.resolve({ code: 'ABCD', close: () => {} });
-      },
+      host: () => Promise.resolve({ code: 'ABCD', ep }),
       join: () => Promise.reject(new NetError('not-found')),
     };
     const host = await HostRoom.open(t, loadout(), { mapId: 'vila', levelIdx: 0 });
@@ -255,8 +261,8 @@ describe('sala online (canal local)', () => {
     });
     const a = fake();
     const b = fake();
-    deliver!(a);
-    deliver!(b);
+    deliver(a);
+    deliver(b);
     const hello = { t: 'hello', v: NET_VERSION, lo: loadout({ name: 'Bia' }) };
     a.onMessage!(hello);
     b.onMessage?.(hello);
@@ -289,11 +295,115 @@ describe('sala online (canal local)', () => {
     const next = await GuestRoom.join(transport(), host.code, loadout());
     expect(next.slot).toBe(4);
     gs.push(next);
+  });
 
-    const why: string[] = [];
-    for (const g of gs) g.onClosed = (w) => why.push(w);
+  it('anfitrião sai: o jogador de menor número assume, os outros voltam sozinhos e a sala continua', async () => {
+    const host = await HostRoom.open(transport(), loadout({ name: 'Ana' }), { mapId: 'vila', levelIdx: 0 });
+    const gs: GuestRoom[] = [];
+    for (const name of ['Bia', 'Caio', 'Duda'])
+      gs.push(await GuestRoom.join(transport(), host.code, loadout({ name })));
+    cleanup.push(() => gs.forEach((g) => g.leave()));
+    await until(() => gs.every((g) => g.players.length === 4));
+    gs[1]!.pick('mage', true);
+    await until(() => gs[0]!.players.find((p) => p.slot === 2)?.char === 'mage');
+
+    let promoted: HostRoom | null = null;
+    const gone: RoomNotice[] = [];
+    gs[0]!.onPromote = () => (promoted = HostRoom.takeOver(gs[0]!));
+    for (const g of gs) g.onNotice = (n) => gone.push(n);
+    const closed: string[] = [];
+    for (const g of gs) g.onClosed = (w) => closed.push(w);
+    const code = host.code;
     host.close();
-    await until(() => why.length === 4);
-    expect(new Set(why)).toEqual(new Set(['host-left']));
+    await until(() => !!promoted && promoted.guestCount === 2);
+    cleanup.push(() => promoted!.close());
+    const nh = promoted!;
+    // mesma sala, mesmo código, o novo anfitrião é o P2 e ninguém caiu
+    expect(nh.code).toBe(code);
+    expect(nh.mySlot).toBe(1);
+    expect(nh.players().map((p) => [p.slot, p.name])).toEqual([
+      [1, 'Bia'],
+      [2, 'Caio'],
+      [3, 'Duda'],
+    ]);
+    // quem voltou guardou o personagem e o "pronto"
+    expect(nh.players()[1]!.char).toBe('mage');
+    expect(nh.players()[1]!.ready).toBe(true);
+    await until(() => gs[2]!.hostSlot === 1 && gs[2]!.players.length === 3);
+    expect(closed).toEqual([]);
+    expect(gone.filter((n) => n.host).map((n) => n.name)).toEqual(['Ana', 'Ana', 'Ana']);
+
+    // alguém novo entra pelo mesmo código (a porta do código mudou de aparelho) e fica com o lugar livre
+    const late = await GuestRoom.join(transport(), code, loadout({ name: 'Eva' }));
+    cleanup.push(() => late.leave());
+    expect(late.slot).toBe(0);
+    await until(() => late.players.length === 4 && late.hostSlot === 1);
+  });
+
+  it('anfitrião sai no meio da partida: quem assume continua a mesma fase e os outros continuam vendo', async () => {
+    const host = await HostRoom.open(transport(), loadout({ name: 'Ana' }), { mapId: 'vila', levelIdx: 0 });
+    const g1 = await GuestRoom.join(transport(), host.code, loadout({ name: 'Bia' }));
+    const g2 = await GuestRoom.join(transport(), host.code, loadout({ name: 'Caio' }));
+    cleanup.push(() => [g1, g2].forEach((g) => g.leave()));
+    await until(() => g2.players.length === 3);
+    let s1: StartMsg | null = null;
+    let s2: StartMsg | null = null;
+    g1.onStart = (m) => (s1 = m);
+    g2.onStart = (m) => (s2 = m);
+    const msg = host.start({ seed: 5, ngPlus: false, enemyCap: 14 });
+    await until(() => !!s1 && !!s2);
+
+    // a partida anda um pouco com o anfitrião original
+    const hw = worldFrom(msg);
+    const w1 = worldFrom(s1!);
+    const w2 = worldFrom(s2!);
+    const ha = host.adapter(new Fixed(0));
+    const in1 = new Fixed(1);
+    const c1 = new ClientAdapter(g1, in1);
+    const c2 = new ClientAdapter(g2, new Fixed(2));
+    g1.attach(c1);
+    g2.attach(c2);
+    in1.f = { moveX: 1 };
+    // o estado vai a cada 3 ticks: 61 passos terminam num tick enviado
+    for (let i = 0; i < 61; i++) {
+      c1.collectInputs(i);
+      await new Promise((r) => setTimeout(r, 1));
+      hw.step(ha.collectInputs(hw.tick));
+      ha.publish(hw.tick, hw, hw.drainEvents());
+      c1.receive(w1);
+      c2.receive(w2);
+    }
+    await until(() => {
+      c1.receive(w1);
+      return w1.tick === hw.tick;
+    });
+    const bx = w1.get(2)!.t.x;
+
+    // anfitrião cai: Bia (P2) assume com o mundo que já tinha e continua a fase
+    let nh: HostRoom | null = null;
+    g1.onPromote = () => (nh = HostRoom.takeOver(g1));
+    host.close();
+    await until(() => !!nh && nh.guestCount === 1);
+    cleanup.push(() => nh!.close());
+    takeOverWorld(w1);
+    const leftSlot = 0;
+    removePlayer(w1, w1.get(leftSlot + 1)!);
+    const na = nh!.adapter(in1);
+    for (let i = 0; i < 61; i++) {
+      await new Promise((r) => setTimeout(r, 1));
+      w1.step(na.collectInputs(w1.tick));
+      na.publish(w1.tick, w1, w1.drainEvents());
+      c2.receive(w2);
+    }
+    // Bia continua andando; Ana sumiu da partida; Caio recebe o estado do novo anfitrião
+    expect(w1.get(2)!.t.x).toBeGreaterThan(bx + 1);
+    expect(w1.get(1)).toBeUndefined();
+    await until(() => {
+      c2.receive(w2);
+      return w2.tick === w1.tick;
+    });
+    expect(w2.get(2)!.t.x).toBeCloseTo(w1.get(2)!.t.x, 1);
+    expect(w2.get(1)).toBeUndefined();
+    expect(w2.entities.length).toBe(w1.entities.length);
   });
 });

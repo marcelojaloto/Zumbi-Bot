@@ -76,7 +76,8 @@ test('multijogador local: controles e teclado dividido entram, jogam e veem o re
   await page.waitForFunction(() => (window as unknown as Win).__game?.isReady());
   await page.getByRole('button', { name: 'Jogar' }).click();
   await page.locator('.menu .btn.primary').click();
-  await expect(page.locator('.lobby-card')).toHaveCount(5);
+  // sozinho: a seleção como a loja; quem entra vira cartão
+  await expect(page.locator('.char-select .cs-card')).toHaveCount(5);
 
   // dois controles entram (A e Start) e uma segunda pessoa no teclado (J)
   await page.evaluate(() => {
@@ -86,6 +87,7 @@ test('multijogador local: controles e teclado dividido entram, jogam e veem o re
   await press(page, 0, 0);
   await press(page, 1, 9);
   await page.keyboard.press('KeyJ');
+  await expect(page.locator('.lobby-card')).toHaveCount(5);
   await expect(page.locator('.lobby-card[data-slot="3"]')).toBeVisible();
   await expect(page.locator('.lobby-card[data-slot="0"] .lc-dev')).toContainText('esquerda');
   await expect(page.locator('.lobby-card[data-slot="3"] .lc-dev')).toContainText('direita');
