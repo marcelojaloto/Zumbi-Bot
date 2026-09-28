@@ -25,7 +25,7 @@ function c(
     slot,
     set,
     rarity,
-    price: set === 'boss' ? null : PRICES[rarity],
+    price: set === 'boss' || set === 'secret' ? null : PRICES[rarity],
     mesh: { parts },
     ...extra,
   };
@@ -417,6 +417,41 @@ export const COSMETIC_LIST: CosmeticDef[] = [
       glowIntensity: 3,
     },
   ]),
+
+  // ---------------------------------------------------------------- disfarce do Prodígio (vem com ele)
+  c(
+    'wig_black',
+    'Peruca Preta',
+    'head',
+    'secret',
+    'epic',
+    [
+      { shape: 'box', size: [0.34, 0.2, 0.36], pos: [0, 0.07, 0], color: 0x141414 },
+      { shape: 'box', size: [0.05, 0.22, 0.3], pos: [0.175, -0.07, -0.01], color: 0x141414 },
+      { shape: 'box', size: [0.05, 0.22, 0.3], pos: [-0.175, -0.07, -0.01], color: 0x141414 },
+      { shape: 'box', size: [0.34, 0.3, 0.06], pos: [0, -0.08, -0.165], color: 0x141414 },
+      { shape: 'box', size: [0.3, 0.06, 0.06], pos: [0, -0.01, 0.16], color: 0x1c1c1c },
+      { shape: 'box', size: [0.2, 0.025, 0.3], pos: [0.02, 0.172, 0], color: 0x2c2c30 },
+    ],
+    { desc: 'Disfarce do Prodígio.' },
+  ),
+  c('lens_green', 'Lentes Verdes', 'eyes', 'secret', 'rare', lenses(0x3aa84a), {
+    desc: 'Disfarce do Prodígio.',
+  }),
+  c('lens_brown', 'Lentes Castanhas', 'eyes', 'secret', 'rare', lenses(0x6a3a1a), {
+    desc: 'Disfarce do Prodígio.',
+  }),
 ];
+
+/** Lentes de contato coloridas por cima dos olhos (no encaixe do rosto). */
+function lenses(color: number): P[] {
+  return [0.0667, -0.0667].flatMap((x): P[] => [
+    { shape: 'box', size: [0.038, 0.046, 0.008], pos: [x, -0.002, 0.0205], color },
+    { shape: 'box', size: [0.015, 0.02, 0.004], pos: [x, -0.002, 0.026], color: 0x0a0a0a },
+  ]);
+}
+
+/** O disfarce que vem junto com o Prodígio (personagem secreto). */
+export const SECRET_GIFTS = ['wig_black', 'lens_green', 'lens_brown'];
 
 registerCosmetics(COSMETIC_LIST);

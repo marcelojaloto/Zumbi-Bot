@@ -44,8 +44,11 @@ export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
     tapRun: false,
     tapDir: 0,
     tapTick: -999,
-    mode: ch.startMode === 'staff' && lo.staffs.length > 0 ? 'staff' : 'gun',
-    guns: [...lo.guns],
+    // quem não atira fica no cajado (mesmo sem nenhum: aí só luta); quem não conjura fica nas armas
+    mode:
+      !ch.arms.guns || (ch.arms.staff && ch.startMode === 'staff' && lo.staffs.length > 0) ? 'staff' : 'gun',
+    // as armas do perfil continuam salvas; só não entram na mão de quem não sabe atirar
+    guns: ch.arms.guns ? [...lo.guns] : [],
     gunIdx: 0,
     ammoMag: {},
     ammo: emptyAmmo(),

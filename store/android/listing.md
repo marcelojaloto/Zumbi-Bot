@@ -21,7 +21,7 @@ Os zumbis tomaram a cidade e só um robô pode detê-los. Zumbi Bot é um beat '
 ruas, pule, soque, chute e atire para limpar 10 mapas cheios de mortos-vivos e robôs rebeldes.
 
 • 10 mapas, da Vila Assombrada à Arena Final, cada um com seu chefe gigante e seus próprios ataques
-• 5 personagens para escolher — robô, maga, militar, ciborgue e mutante — cada um com seu golpe especial
+• 5 personagens para escolher — robô, maga, militar, ciborgue e mutante — cada um com seu golpe especial, e um personagem secreto para quem terminar o jogo
 • Jogue online com até 4 amigos: crie uma sala, mande o código de 4 letras e joguem juntos, cada um no seu celular
 • Chat de voz na sala: todos conversam com todos — cada um liga ou desliga o próprio microfone
 • Ou até 5 jogadores no mesmo aparelho, com controles
@@ -30,11 +30,11 @@ ruas, pule, soque, chute e atire para limpar 10 mapas cheios de mortos-vivos e r
 • 10 cajados mágicos com elementos: fogo, gelo, água, raio, veneno, vento, terra e mais
 • Poderes, itens e armas brancas espalhados pelas fases
 • Guarda-roupa com mais de 40 peças para deixar o seu robô com a sua cara
-• Suba de nível, junte sucata, compre na loja e bata seu recorde no ranking
+• Suba de nível, junte sucata, compre na loja e bata seu recorde no ranking pessoal e no ranking global
 • Quatro dificuldades, de Muito fácil a Difícil, e Novo Jogo+ depois do chefe final
 • Controles de toque confortáveis: direcional à esquerda, botões à direita, tamanho e transparência ajustáveis
 • Em português e inglês
-• Sem anúncios, sem compras e sem coleta de dados. Joga offline (só o jogo online usa internet).
+• Sem anúncios e sem compras. Joga offline (a internet só é usada no jogo online e no ranking global).
 
 Também dá para jogar no navegador (computador, Android e iPhone): marcelojaloto.github.io/Zumbi-Bot
 ```
@@ -58,7 +58,7 @@ Zombies have taken over the city and only one robot can stop them. Zumbi Bot is 
 streets, jump, punch, kick and shoot your way through 10 maps packed with the undead and rogue robots.
 
 • 10 maps, from the Haunted Village to the Final Arena, each with its own giant boss and attacks
-• 5 characters to pick — robot, mage, soldier, cyborg and mutant — each with a special move
+• 5 characters to pick — robot, mage, soldier, cyborg and mutant — each with a special move, plus a secret character for those who finish the game
 • Play online with up to 4 friends: create a room, share the 4-letter code and play together, each on their phone
 • Voice chat in the room: everyone talks with everyone — each player turns their own mic on or off
 • Or up to 5 players on the same device with controllers
@@ -67,11 +67,11 @@ streets, jump, punch, kick and shoot your way through 10 maps packed with the un
 • 10 magic staffs with elements: fire, ice, water, lightning, poison, wind, earth and more
 • Powers, items and melee weapons scattered across the levels
 • A wardrobe with more than 40 pieces to make your robot your own
-• Level up, collect scrap, shop and beat your high score on the leaderboard
+• Level up, collect scrap, shop and beat your high score on the personal and global leaderboards
 • Four difficulties, from Very easy to Hard, plus New Game+ after the final boss
 • Comfortable touch controls: D-pad on the left, buttons on the right, adjustable size and opacity
 • In English and Portuguese
-• No ads, no purchases and no data collection. Plays offline (only online play uses the internet).
+• No ads and no purchases. Plays offline (the internet is only used for online play and the global leaderboard).
 
 You can also play in the browser (computer, Android and iPhone): marcelojaloto.github.io/Zumbi-Bot
 ```

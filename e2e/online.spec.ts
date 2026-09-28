@@ -202,17 +202,21 @@ test('jogo online: código errado avisa e quem sai no meio fica fora da partida'
   await guest.locator('.code-input').fill(code);
   await guest.getByRole('button', { name: 'Entrar', exact: true }).click();
   // na sala, o botão "Personagem" (e o nome no quadro) abre a escolha como a loja; "Escolher" volta com o novo
-  await expect(guest.locator('.room-me-title')).toHaveText('Personagem');
+  await expect(guest.locator('.room-me .room-me-title')).toHaveText('Personagem');
+  // "Fase" centralizado em cima do nome da fase (quem entrou só vê, sem setas)
+  await expect(guest.locator('.room-stage .room-me-title')).toHaveText('Fase');
+  await expect(guest.locator('.room-stage .lc-arrow')).toHaveCount(0);
+  await expect(host.locator('.room-stage .lc-arrow')).toHaveCount(2);
   await guest.getByRole('button', { name: /Personagem$/ }).click();
   await expect(guest.locator('.char-select .cs-head')).toBeVisible();
   await guest.keyboard.press('ArrowDown');
   await expect(guest.locator('.cs-head .cs-nav-name')).toHaveText('Maga');
   await guest.getByRole('button', { name: 'Voltar' }).click();
   await guest.locator('.room-me .lc-name-btn').click();
-  await guest.locator('.cs-stage .lc-arrow').nth(1).click();
-  await guest.locator('.cs-stage .lc-arrow').nth(1).click();
-  await guest.locator('.cs-stage .lc-arrow').nth(1).click();
-  await expect(guest.locator('.cs-stage .cs-nav-name')).toHaveText('Ciborgue');
+  await guest.locator('.cs-head .lc-arrow').nth(1).click();
+  await guest.locator('.cs-head .lc-arrow').nth(1).click();
+  await guest.locator('.cs-head .lc-arrow').nth(1).click();
+  await expect(guest.locator('.cs-head .cs-nav-name')).toHaveText('Ciborgue');
   await guest.getByRole('button', { name: 'Escolher' }).click();
   await expect(guest.locator('.room-me .lc-name')).toHaveText('Ciborgue');
   await expect(host.locator('.rp[data-slot="1"]')).toContainText('Ciborgue');

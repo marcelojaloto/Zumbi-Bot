@@ -8,6 +8,9 @@ import { Renderer } from '../render/Renderer';
 import { downgrade, resolveQuality, type QualityLevel } from '../render/quality';
 import type { InputSource } from '../sim/InputFrame';
 import { GameSession } from './GameSession';
+import { ViewportKeeper } from './viewport';
+import { GlobalRanking } from '../net/globalRanking';
+import { FIREBASE_CONFIG } from '../net/firebaseConfig';
 import { readFlags, type UrlFlags } from './urlFlags';
 import { installDebug } from './debug';
 import { AudioEngine } from '../audio/AudioEngine';
@@ -25,7 +28,7 @@ import { charactersScreen, type CharactersHost } from '../ui/screens/CharacterPi
 import { renderPortrait } from '../render/Portraits';
 import { EndingScene, type EndingChapter } from '../render/EndingScene';
 import { endingScreen, type EndingHost } from '../ui/screens/EndingScreen';
-import { isCharacterId } from '../data/characters';
+import { getCharacter, isCharacterId } from '../data/characters';
 import { SLOT_COLORS, aggregateParty, playerProgress, playerTag, type PartyMember } from './party';
 import { ClientAdapter, GuestRoom, HostRoom, type RoomNotice } from '../net/room';
 import type { RoomOptions, RoomPlayer, StartMsg } from '../net/protocol';
@@ -75,6 +78,7 @@ export type Screen = 'boot' | 'splash' | 'menu' | 'loading' | 'playing' | 'pause
 /** Pedido de instalação do navegador (Chrome/Edge no Android e no computador). */
 interface InstallPromptEvent extends Event {
   prompt(): Promise<void>;
+  userChoice?: Promise<{ outcome: string }>;
 }
 
 /** Tudo o que define uma partida (local ou online). */
@@ -126,7 +130,16 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     this.flags = readFlags();
     this.ui = ui;
     this.profile = new Profile();
-    if (isCharacterId(this.flags.char)) this.profile.setCharacter(this.flags.char);
+    // ranking global (Firebase): o melhor resultado do aparelho; qualquer falha só o deixa escondido
+    this.global = new GlobalRanking(
+      this.flags.rankdb ? { apiKey: 'test', databaseURL: this.flags.rankdb } : FIREBASE_CONFIG,
+    );
+    this.global.retry();
+    if (isCharacterId(this.flags.char)) {
+      // testes: ?char=prodigy já vem com o secreto liberado
+      if (getCharacter(this.flags.char).secret && this.flags.debug) this.profile.unlockSecret();
+      this.profile.setCharacter(this.flags.char);
+    }
     // ?party=robot,mage,... : equipe local (P1 no teclado, os outros nos controles 1, 2...)
     const party = this.flags.party.filter(isCharacterId);
     if (party.length > 1)
@@ -137,6 +150,12 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       }));
     const q = this.flags.quality ?? this.profile.settings.graphics.quality;
     this.renderer = new Renderer(canvas, resolveQuality(q, this.device));
+    // tela que se deforma (barra do navegador, gesto de sair, janela de instalar): espera 3 s antes de reajustar
+    this.viewport = new ViewportKeeper({
+      desktop: () => this.device === 'desktop',
+      apply: () => this.renderer.resize(),
+    });
+    this.renderer.viewSize = () => this.viewport.size;
     this.input = new InputManager(canvas);
     this.touch = new TouchControls(ui, {
       onPause: () => this.togglePause(),
@@ -222,14 +241,13 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     addEventListener('pointerup', refull, true);
     addEventListener('touchend', refull, true);
     // navegador que deixa instalar o jogo (Android): instalado, abre em tela cheia sem barra e sem aviso
+    // (o botão fica nas Configurações, só enquanto o navegador oferece)
     addEventListener('beforeinstallprompt', (ev) => {
       ev.preventDefault();
       this.installEvt = ev as InstallPromptEvent;
-      this.installBtn?.removeAttribute('hidden');
     });
     addEventListener('appinstalled', () => {
       this.installEvt = null;
-      this.installBtn?.setAttribute('hidden', '');
     });
     this.installNativeBack();
     // nomes das teclas como estão impressos no teclado do jogador (quando o navegador informa)
@@ -280,7 +298,17 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
   private portraitWait = new Map<CharacterId, (() => void)[]>();
   /** Pedido de instalação guardado (navegador que deixa instalar como app). */
   private installEvt: InstallPromptEvent | null = null;
-  private installBtn: HTMLElement | null = null;
+  readonly global: GlobalRanking;
+  private viewport: ViewportKeeper;
+
+  /** O melhor registro do ranking pessoal vai para o ranking global (sem internet, fica para depois). */
+  rankSaved(): void {
+    void this.global.submit(this.profile.ranking.entries[0]);
+  }
+
+  get canInstall(): boolean {
+    return !!this.installEvt;
+  }
 
   /** Celular/tablet: minimapa pequeno à mostra (começa oculto; botão 🗺 da coluna do canto). */
   private touchMap = false;
@@ -355,17 +383,27 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     return !!(document.fullscreenElement || d.webkitFullscreenElement);
   }
 
-  /** Instala o jogo como app (quando o navegador oferece). */
-  private async installApp(): Promise<void> {
+  /**
+   * Instala o jogo como app (quando o navegador oferece). A janela do navegador tira o jogo da tela cheia: o
+   * tamanho fica segurado enquanto ela está aberta e, depois, o jogo tenta voltar para a tela cheia (se o navegador
+   * não deixar sem um toque, o próximo toque volta).
+   */
+  installApp(): void {
     const ev = this.installEvt;
     if (!ev) return;
     this.installEvt = null;
-    this.installBtn?.setAttribute('hidden', '');
-    try {
-      await ev.prompt();
-    } catch {
-      /* o navegador recusou mostrar */
-    }
+    const back = this.wantFullscreen;
+    this.viewport.freeze(true);
+    void (async () => {
+      try {
+        await ev.prompt();
+        await ev.userChoice;
+      } catch {
+        /* o navegador recusou mostrar */
+      }
+      this.viewport.freeze(false);
+      if (back) this.toggleFullscreen(true);
+    })();
   }
 
   /** Por quadro: controles de toque só na partida; aviso para girar em retrato. */
@@ -381,7 +419,14 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     }
     this.touch.setVisible(this.touchOn && this.screen === 'playing' && !portrait);
     const p = this.session?.world.get((this.hud?.localSlot ?? 0) + 1)?.player;
-    if (p) this.touch.setFireMode(p.mode);
+    if (p) {
+      const arms = getCharacter(p.character).arms;
+      this.touch.setArms(
+        p.mode,
+        arms.guns && arms.staff && p.staffs.length > 0,
+        p.mode === 'staff' ? p.staffs.length : p.guns.length,
+      );
+    }
   }
 
   get touchActive(): boolean {
@@ -620,17 +665,6 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
             }),
           ),
         ),
-        (this.installBtn = el(
-          'button',
-          {
-            class: 'btn install-btn',
-            hidden: !this.installEvt,
-            title: t('Instalado, o jogo abre em tela cheia, sem a barra do navegador.'),
-            onclick: () => void this.installApp(),
-            data: { nav: '' },
-          },
-          `📲 ${t('Instalar o jogo')}`,
-        )),
       ),
       ...this.profile.notices.map((n) => el('p', { class: 'muted', style: 'color:#ffb02a' }, t(n))),
       el(
@@ -924,10 +958,15 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     const room = this.online;
     if (!p || !stats) return;
     const beforeLevel = this.profile.save.profile.level;
-    const res =
-      s.world.map.id === 'sandbox'
-        ? { newRecord: false, unlockedNext: null, ngPlusUnlocked: false, finalBoss: false }
-        : this.profile.applyRun(stats, p);
+    const sandbox = s.world.map.id === 'sandbox';
+    const res = sandbox
+      ? { newRecord: false, unlockedNext: null, ngPlusUnlocked: false, finalBoss: false }
+      : this.profile.applyRun(stats, p);
+    // jornada: os pontos de cada mapa se somam; perdeu todas as vidas ou terminou o jogo, vai para o ranking
+    const run = sandbox ? null : this.profile.addToRun(stats);
+    const closed = run && (!victory || res.finalBoss) ? this.profile.closeRun(p.level, victory) : null;
+    // terminou o jogo pela primeira vez: o personagem secreto aparece no fim do final lendário
+    const secretNew = victory && res.finalBoss && !this.profile.save.flags.credits;
     this.screen = victory ? 'victory' : 'gameover';
     this.input.enabled = false;
     this.input.exitPointerLock();
@@ -944,13 +983,15 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
         next: victory ? this.profile.nextLevel(s.world.map.id, idx) : null,
         unlockedNext: res.unlockedNext,
         ngPlusUnlocked: res.ngPlusUnlocked,
+        run: run ? { score: run.score, maps: run.maps } : undefined,
+        rank: closed ? { entry: closed.entry, pos: closed.pos, team: closed.run.team > 1 } : undefined,
+        secretUnlocked: secretNew ? 'prodigy' : undefined,
       }),
     );
     // primeira vitória sobre o chefe final: o final lendário e os créditos por cima do resultado
-    const fl = this.profile.save.flags;
-    if (victory && res.finalBoss && !fl.credits) {
-      fl.credits = true;
-      this.profile.persist();
+    if (secretNew) {
+      // terminou o jogo: libera o personagem secreto (revelado no fim do final lendário)
+      this.profile.unlockSecret();
       this.playEnding(() =>
         this.screens.replace(creditsScreen(this, { final: true, ngPlusUnlocked: res.ngPlusUnlocked })),
       );

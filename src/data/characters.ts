@@ -1,7 +1,9 @@
 import type { CharacterDef, CharacterId, HitSource } from './types';
 
-const DMG = (melee: number, gun: number, staff: number): Record<HitSource, number> => ({
+/** Multiplicadores de dano; `weapon` (armas brancas) é o mesmo do soco se não for dado. */
+const DMG = (melee: number, gun: number, staff: number, weapon = melee): Record<HitSource, number> => ({
   melee,
+  weapon,
   gun,
   staff,
   special: 1,
@@ -44,6 +46,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     resist: {},
     special: 'giroTurbo',
     startMode: 'gun',
+    arms: { guns: true, staff: true },
     metal: true,
   },
   mage: {
@@ -51,7 +54,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     name: 'Maga',
     fullName: 'Lívia Vesper',
     title: 'Feiticeira arcana',
-    desc: 'Mestra dos cajados: magias muito mais fortes e mana de sobra, mas aguenta pouco.',
+    desc: 'Mestra dos cajados: magias muito mais fortes e mana de sobra, mas aguenta pouco, não usa armas de fogo e é fraca com armas brancas.',
     story:
       'Lívia Vesper era a aprendiz mais curiosa da Academia Arcana — tão curiosa que leu escondida o grimório proibido que previa o fim do mundo. Quando os mortos se levantaram, os mestres fugiram; ela ficou, com o chapéu de aprendiz meio torto e um cajado maior que ela. Hoje domina dez elementos e lança fogo roxo, mas ainda se distrai lendo livros velhos no meio da batalha.',
     ending: {
@@ -67,9 +70,8 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       manaRegen: 1.5,
       speed: 1,
       jump: 1.05,
-      dmg: DMG(0.85, 0.9, 1.35),
+      dmg: DMG(0.85, 0.9, 1.35, 0.55),
       reload: 1,
-      pistolReloadS: 2.3,
       hpRegen: 0,
       hpRegenDelayS: 0,
       mass: 1,
@@ -78,6 +80,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     resist: { fire: 0.85, ice: 0.85, electric: 0.85, water: 0.85, necro: 0.85 },
     special: 'novaArcana',
     startMode: 'staff',
+    arms: { guns: false, staff: true },
     metal: false,
   },
   military: {
@@ -85,7 +88,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     name: 'Militar',
     fullName: 'Bruno Trovão',
     title: 'Soldado super forte',
-    desc: 'Muita vida e socos devastadores; quase não é empurrado. Mais lento e fraco em magia.',
+    desc: 'Muita vida e socos devastadores; quase não é empurrado. Mais lento e não usa cajados.',
     story:
       'O sargento Bruno Trovão comandava a última base de pé quando a cidade caiu. Perdeu o batalhão, mas não o bigode nem a mira com granadas. Durão por fora e manteiga por dentro, guarda uma foto da família no bolso do colete e jurou que só tira os óculos escuros quando o último zumbi cair.',
     ending: {
@@ -112,6 +115,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     resist: { bullet: 0.8, explosive: 0.8, blunt: 0.85, blade: 0.85 },
     special: 'chuvaGranadas',
     startMode: 'gun',
+    arms: { guns: true, staff: false },
     metal: false,
   },
   cyborg: {
@@ -119,7 +123,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     name: 'Ciborgue',
     fullName: 'Ícaro Neon',
     title: 'Meio humano, meio máquina',
-    desc: 'Especialista em armas: tiros mais fortes e recarga rápida. Sofre com choques elétricos.',
+    desc: 'Especialista em armas: tiros mais fortes e recarga rápida. Não usa cajados e sofre com choques elétricos.',
     story:
       'Ícaro Neon foi um dos engenheiros que construíram o OMEGA-Z. Quando a máquina se rebelou, ele estava no laboratório e acordou da explosão meio homem, meio máquina — com um canhão laser no lugar do arrependimento. Luta para desfazer o que ajudou a criar e é o único que entende como pensa o Ciborgue Primordial.',
     ending: {
@@ -145,6 +149,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     resist: { bullet: 0.9, toxic: 0.7, electric: 1.2 },
     special: 'raioLaser',
     startMode: 'gun',
+    arms: { guns: true, staff: false },
     metal: true,
   },
   mutant: {
@@ -152,7 +157,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     name: 'Mutante',
     fullName: 'Tobias Brejo',
     title: 'Fera regenerativa',
-    desc: 'Rápido, pula alto e se regenera quando fica sem apanhar. Ruim de mira.',
+    desc: 'Rápido, pula alto e se regenera quando fica sem apanhar. Ruim de mira e não usa cajados.',
     story:
       'Tobias Brejo era guarda-florestal quando caiu num lago contaminado da Zona Tóxica. Saiu de lá maior, mais verde e com uma fome assustadora — e com um corpo que se cura sozinho. Os zumbis não o reconhecem como presa, e ele usa isso a seu favor. Apesar da cara de fera, conversa com os bichos da floresta e chora com filme triste.',
     ending: {
@@ -179,11 +184,58 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     resist: { toxic: 0.5, fire: 1.15 },
     special: 'furiaMutante',
     startMode: 'gun',
+    arms: { guns: true, staff: false },
     metal: false,
+  },
+  // personagem secreto: liberado ao terminar o jogo pela primeira vez
+  prodigy: {
+    id: 'prodigy',
+    name: 'Prodígio',
+    fullName: 'Léo Aurora',
+    title: 'Caratê arcano',
+    desc: 'Rápido e ótimo de briga: caratê com magia arcana nos golpes, e usa cajados. Baixinho e frágil, não usa armas de fogo e é muito fraco com armas brancas.',
+    story:
+      'Léo Aurora tem catorze anos, é o aluno mais novo que a Academia Arcana já aceitou e faixa-preta de caratê desde os doze. Quando descobriu que conseguia passar magia pelos próprios golpes, virou alvo: o OMEGA-Z caçava qualquer criança com poderes arcanos. Léo passou o apocalipse disfarçado — peruca preta e lentes verdes ou castanhas por cima dos olhos azuis — ajudando os heróis de longe, sem ninguém desconfiar daquele garoto loiro e baixinho que sempre aparecia na hora certa.',
+    ending: {
+      title: 'Sem disfarce',
+      text: 'Com o OMEGA-Z vencido, Léo Aurora tirou a peruca preta e as lentes pela primeira vez em anos. Loiro, de olhos azuis e com o sorriso de quem acabou de ganhar um campeonato, abriu na vila o primeiro dojo arcano do mundo, onde os alunos aprendem caratê e magia ao mesmo tempo. Os heróis aparecem para treinar toda semana — e o Zumbi Bot ainda não venceu nenhuma luta contra ele.',
+    },
+    specialName: 'Tornado Arcano',
+    specialDesc:
+      'Avança girando em chutes de caratê envoltos em energia arcana, acertando várias vezes quem estiver no caminho.',
+    color: 0x4ad8ff,
+    stats: {
+      hp: 80,
+      mana: 120,
+      manaRegen: 1.25,
+      speed: 1.2,
+      jump: 1.2,
+      dmg: DMG(1.3, 1, 1.15, 0.35),
+      reload: 1,
+      hpRegen: 0,
+      hpRegenDelayS: 0,
+      mass: 0.85,
+      hitstun: 1.1,
+    },
+    resist: { electric: 0.9, necro: 0.9 },
+    special: 'tornadoArcano',
+    startMode: 'staff',
+    arms: { guns: false, staff: true },
+    metal: false,
+    secret: true,
   },
 };
 
-export const CHARACTER_ORDER: CharacterId[] = ['robot', 'mage', 'military', 'cyborg', 'mutant'];
+/** Ordem nas telas (o secreto por último; só aparece depois de liberado). */
+export const CHARACTER_ORDER: CharacterId[] = ['robot', 'mage', 'military', 'cyborg', 'mutant', 'prodigy'];
+
+/** Personagens que dá para escolher: o secreto só depois de terminar o jogo (`secret` = liberado). */
+export function playableCharacters(secret: boolean): CharacterId[] {
+  return CHARACTER_ORDER.filter((c) => secret || !CHARACTERS[c].secret);
+}
+
+/** Os personagens de sempre (sem os secretos): o final lendário e o epílogo são deles. */
+export const HERO_ORDER: CharacterId[] = CHARACTER_ORDER.filter((c) => !CHARACTERS[c].secret);
 
 export function isCharacterId(v: unknown): v is CharacterId {
   return typeof v === 'string' && v in CHARACTERS;

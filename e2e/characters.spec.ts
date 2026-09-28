@@ -26,7 +26,9 @@ test('seleção de personagem antes da partida e o especial de cada um', async (
   await expect(page.getByText('ESCOLHA SEU PERSONAGEM')).toBeVisible();
   const name = page.locator('.cs-head .cs-nav-name');
   await expect(name).toHaveText('Zumbi Bot');
-  await expect(page.locator('.cs-stage .cs-nav-name')).toHaveText('Zumbi Bot');
+  // sem a seleção repetida embaixo do boneco; o título fica centralizado na ficha
+  await expect(page.locator('.cs-stage')).toHaveCount(0);
+  await expect(page.locator('.cs-sheet h2')).toHaveCSS('text-align', 'center');
   // ficha: nome e sobrenome, especial e história
   await expect(page.locator('.cs-full')).toHaveText('Zeca Engrenagem');
   await expect(page.locator('.cs-body')).toContainText('Giro Turbo');
@@ -55,17 +57,17 @@ test('seleção de personagem antes da partida e o especial de cada um', async (
   // ←/→ não trocam de personagem
   await expect(name).toHaveText('Zumbi Bot');
 
-  // ↓ troca para a Maga; as setas ◀ ▶ (embaixo do boneco e na ficha) também trocam; Enter começa com ela
+  // ↓ troca para a Maga; as setas ◀ ▶ da ficha também trocam; Enter começa com ela
   await page.keyboard.press('ArrowDown');
   await expect(name).toHaveText('Maga');
   await expect(page.locator('.cs-body').getByText('Nova Arcana')).toBeVisible();
   await expect(page.locator('.cs-full')).toHaveText('Lívia Vesper');
-  await page.locator('.cs-stage .lc-arrow').nth(1).click();
-  await page.locator('.cs-stage .lc-arrow').nth(1).click();
+  await page.locator('.cs-head .lc-arrow').nth(1).click();
+  await page.locator('.cs-head .lc-arrow').nth(1).click();
   await expect(name).toHaveText('Ciborgue');
   await page.locator('.cs-head .lc-arrow').first().click();
   await page.locator('.cs-head .lc-arrow').first().click();
-  await expect(page.locator('.cs-stage .cs-nav-name')).toHaveText('Maga');
+  await expect(name).toHaveText('Maga');
   // janela baixa: a ficha não cabe e rola até a história (Page Down)
   await page.setViewportSize({ width: 1280, height: 480 });
   await expect

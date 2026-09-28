@@ -42,6 +42,10 @@ jobs:
         run: echo "VERSION_NAME=$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')").${{ github.run_number }}" >> "$GITHUB_ENV"
       - name: Build do jogo para o app e cópia para o projeto Android
         run: npm run android:sync
+        env:
+          # ranking global (Firebase): variáveis do repositório; vazias = ranking global desligado
+          VITE_FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
+          VITE_FIREBASE_DB_URL: ${{ vars.FIREBASE_DB_URL }}
       - name: APK de teste (debug)
         working-directory: android
         run: ./gradlew --no-daemon assembleDebug

@@ -32,6 +32,7 @@ const FX_COLORS: Record<string, number> = {
   electricTile: 0xfff15a,
   shock: 0xfff15a,
   necro: 0xb05aff,
+  arcane: 0x4ad8ff,
   water: 0x3a9cff,
   mud: 0x8a6a3a,
   swamp: 0x4a6a3a,

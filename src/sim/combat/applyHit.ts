@@ -36,7 +36,10 @@ export interface HitOpts {
 function characterMult(src: Entity, source: HitSource | undefined): number {
   if (!source || !src.player) return 1;
   const m = characterDef(src).stats.dmg[source];
-  const rage = src.player.powers.rage > 0 && (source === 'melee' || source === 'special') ? RAGE.melee : 1;
+  const rage =
+    src.player.powers.rage > 0 && (source === 'melee' || source === 'weapon' || source === 'special')
+      ? RAGE.melee
+      : 1;
   return m * rage;
 }
 

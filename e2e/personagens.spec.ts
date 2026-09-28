@@ -28,12 +28,18 @@ test('menu Personagens: rostos, apelido, nome e título; a ficha abre com Voltar
   await page.getByRole('button', { name: 'Personagens', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'PERSONAGENS' })).toBeVisible();
   const cards = page.locator('.char-card');
-  await expect(cards).toHaveCount(5);
+  await expect(cards).toHaveCount(6);
   await expect(cards.nth(1)).toContainText('Maga');
   await expect(cards.nth(1)).toContainText('Lívia Vesper');
   await expect(cards.nth(1)).toContainText('Feiticeira arcana');
+  // o personagem secreto fica trancado até terminar o jogo
+  await expect(cards.nth(5)).toHaveClass(/locked/);
+  await expect(cards.nth(5)).toContainText('???');
+  await expect(cards.nth(5)).not.toContainText('Prodígio');
   // os rostos são fotografados em 3D, um por quadro
   await expect(page.locator('.char-face img')).toHaveCount(5, { timeout: 60_000 });
+  // no computador cabem todos numa linha: sem as setas do carrossel
+  await expect(page.locator('.chars-arrow:visible')).toHaveCount(0);
 
   await cards.nth(1).click();
   await expect(page.getByRole('heading', { name: 'FICHA DE PERSONAGEM' })).toBeVisible();
@@ -88,5 +94,44 @@ test('Manual dentro das Configurações (sem sair do jogo) e o boneco gira na lo
   await page.mouse.move(80, 400, { steps: 5 });
   await page.mouse.up();
   expect(await turned(page)).toBeLessThan(0);
+  expect(errors).toEqual([]);
+});
+
+test('menu Personagens no celular: carrossel com setas e o Prodígio liberado depois do fim do jogo', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await page.setViewportSize({ width: 740, height: 360 });
+  // ?char=prodigy (testes) já vem com o jogo terminado
+  await page.goto(`./${DEBUG_QUERY}&char=prodigy`);
+  await page.waitForFunction(() => (window as unknown as { __game?: G }).__game?.isReady());
+  await page.getByRole('button', { name: 'Jogar', exact: true }).click();
+  await page.getByRole('button', { name: 'Personagens', exact: true }).click();
+  const grid = page.locator('.chars-grid');
+  const left = page.locator('.chars-arrow.left');
+  const right = page.locator('.chars-arrow.right');
+  await expect(left).toBeVisible();
+  await expect(right).toBeVisible();
+  await expect(left).toBeDisabled();
+  // as setas ficam nas pontas, na altura do Voltar
+  const back = (await page.getByRole('button', { name: 'Voltar' }).boundingBox())!;
+  const lb = (await left.boundingBox())!;
+  const rb = (await right.boundingBox())!;
+  expect(lb.x).toBeLessThan(40);
+  expect(rb.x + rb.width).toBeGreaterThan(700);
+  expect(Math.abs(lb.y + lb.height / 2 - (back.y + back.height / 2))).toBeLessThan(4);
+  await right.click();
+  await expect.poll(() => grid.evaluate((g) => g.scrollLeft)).toBeGreaterThan(50);
+  await expect(left).toBeEnabled();
+  // arrastar com o dedo também anda (rolagem nativa): vai até o fim
+  await grid.evaluate((g) => g.scrollTo({ left: g.scrollWidth }));
+  await expect(right).toBeDisabled();
+  const secret = page.locator('.char-card[data-char="prodigy"]');
+  await expect(secret).toContainText('Prodígio');
+  await expect(secret).toContainText('Léo Aurora');
+  await secret.click();
+  await expect(page.locator('.cs-full')).toHaveText('Léo Aurora');
+  await expect(page.locator('.cs-body')).toContainText('Tornado Arcano');
+  await expect(page.locator('.stat-bar.none')).toHaveCount(1);
   expect(errors).toEqual([]);
 });

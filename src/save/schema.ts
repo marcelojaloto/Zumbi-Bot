@@ -25,8 +25,18 @@ export interface SaveV1 {
   version: 1;
   createdAt: number;
   updatedAt: number;
-  /** character = último personagem escolhido pelo jogador 1. */
-  profile: { name: string; level: number; xp: number; scrap: number; character: CharacterId };
+  /**
+   * character = último personagem escolhido pelo jogador 1; rankName = último nome salvo no ranking (sugerido na
+   * próxima vez; sem ele, sugere o apelido do personagem).
+   */
+  profile: {
+    name: string;
+    level: number;
+    xp: number;
+    scrap: number;
+    character: CharacterId;
+    rankName?: string;
+  };
   progress: { unlockedLevels: LevelId[]; levels: Record<LevelId, LevelProgress> };
   unlocks: { firearms: WeaponId[]; staffs: StaffId[] };
   cosmetics: {
@@ -36,8 +46,33 @@ export interface SaveV1 {
     pity: number;
   };
   stats: { kills: number; deaths: number; bosses: number; playTimeMs: number; runs: number };
-  /** ngPlus = Novo Jogo+ desbloqueado; ngPlusOn = ativo nas próximas partidas; credits = créditos já vistos. */
+  /**
+   * ngPlus = Novo Jogo+ desbloqueado; ngPlusOn = ativo nas próximas partidas; credits = jogo terminado (créditos
+   * vistos) — também libera o personagem secreto.
+   */
   flags: { ngPlus: boolean; ngPlusOn: boolean; tutorialDone: boolean; credits: boolean };
+  /** Jornada em andamento: pontos somados mapa a mapa até perder todas as vidas ou terminar o jogo. */
+  run?: CampaignRun;
+}
+
+/**
+ * Jornada: os mapas jogados desde o último fim de jogo. A pontuação de cada mapa (vencido ou o da derrota) se
+ * soma; quando o jogador perde todas as vidas ou termina o jogo, a jornada vai para o ranking.
+ */
+export interface CampaignRun {
+  score: number;
+  kills: number;
+  timeMs: number;
+  /** Mapas vencidos na jornada. */
+  maps: number;
+  /** Último mapa jogado. */
+  mapId: MapId;
+  levelId: LevelId;
+  chars: CharacterId[];
+  ngPlus: boolean;
+  /** Maior equipe que jogou a jornada (1 = sozinho). */
+  team: number;
+  startedAt: number;
 }
 
 export type QualityChoice = 'auto' | 'low' | 'medium' | 'high';
@@ -92,10 +127,13 @@ export interface RankEntry {
   kills: number;
   playerLevel: number;
   date: number;
+  /** Terminou o jogo (venceu o último mapa); false = perdeu todas as vidas. */
   victory: boolean;
   ngPlus?: boolean;
   /** Personagens da partida (um por jogador). */
   chars?: CharacterId[];
+  /** Mapas vencidos na jornada (registros antigos, de um mapa só, não têm). */
+  maps?: number;
 }
 
 export interface RankingV1 {

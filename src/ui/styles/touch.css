@@ -177,6 +177,17 @@
 .t-btn.b-special {
   border-color: rgba(200, 120, 255, 0.85);
 }
+.t-btn[hidden] {
+  display: none;
+}
+.t-btn svg {
+  width: 64%;
+  height: 64%;
+  filter: drop-shadow(0 1px 1px #000);
+}
+.t-btn.b-next.staff {
+  border-color: rgba(57, 230, 255, 0.9);
+}
 .t-btn.on {
   opacity: min(1, calc(var(--to) + 0.5));
   transform: scale(0.92);

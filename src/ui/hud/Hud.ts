@@ -276,11 +276,15 @@ export class Hud {
                 t('Nova arma: {name}', { name: t(FIREARMS[ev.id as keyof typeof FIREARMS]?.name ?? ev.id) }),
               '#ffb02a',
             );
-          else if (!multi || w.get(ev.player)?.player?.slot === this.localSlot)
+          else if (!multi || w.get(ev.player)?.player?.slot === this.localSlot) {
+            // quem não conjura guarda o cajado para quando jogar com quem usa
+            const pc = w.get(ev.player)?.player;
             this.toast(
               t('Novo cajado: {name}', { name: t(STAFFS[ev.id as keyof typeof STAFFS]?.name ?? ev.id) }),
               hexColor(ELEMENT_COLORS[ev.id as keyof typeof ELEMENT_COLORS] ?? 0xffffff),
+              pc && !getCharacter(pc.character).arms.staff ? t('Guardado para quem usa cajado') : undefined,
             );
+          }
           break;
         case 'loot': {
           if (ev.cosmetic) {

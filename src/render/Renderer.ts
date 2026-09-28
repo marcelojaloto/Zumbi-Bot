@@ -31,6 +31,8 @@ export class Renderer {
   height = 1;
   contextLost = false;
   onContextLost: (() => void) | null = null;
+  /** Tamanho da tela usado pelo jogo (o app segura o antigo por um tempo quando a tela encolhe). */
+  viewSize: () => { w: number; h: number } = () => ({ w: innerWidth, h: innerHeight });
 
   constructor(
     readonly canvas: HTMLCanvasElement,
@@ -74,8 +76,9 @@ export class Renderer {
   }
 
   resize(): void {
-    const w = Math.max(1, innerWidth);
-    const h = Math.max(1, innerHeight);
+    const v = this.viewSize();
+    const w = Math.max(1, v.w);
+    const h = Math.max(1, v.h);
     this.width = w;
     this.height = h;
     const pr =

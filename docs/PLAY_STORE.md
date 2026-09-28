@@ -89,9 +89,15 @@ No repositório: **Settings → Secrets and variables → Actions → New reposi
      PeerJS recebe o código da sala e o IP, só enquanto a sala está aberta (processamento temporário, nada é
      guardado). A **voz** (só com o microfone ligado pelo jogador) vai direto para os aparelhos da sala,
      criptografada de ponta a ponta (WebRTC/DTLS-SRTP), e não é gravada — nem o servidor de retransmissão
-     consegue ouvi-la. Com isso dá para declarar **"nenhum dado coletado"**; marque também que os dados são
-     **criptografados em trânsito**. Se preferir declarar de forma conservadora: **Áudio → Gravações de voz ou
-     som**: coletado, processado temporariamente, opcional, para funcionalidade do app, não compartilhado.
+     consegue ouvi-la. Marque que os dados são **criptografados em trânsito**. Se preferir declarar de forma
+     conservadora: **Áudio → Gravações de voz ou som**: coletado, processado temporariamente, opcional, para
+     funcionalidade do app, não compartilhado.
+     Com o **ranking global** ligado ([RANKING_GLOBAL.md](RANKING_GLOBAL.md)), o melhor resultado do aparelho vai
+     para o Firebase e fica público: declare **Informações pessoais → Nome** (o nome do ranking, escolhido pelo
+     jogador) e **Atividade no app → Outras ações** (pontuação), **coletados**, **compartilhados: não**,
+     **opcionais: não**, finalidade **Funcionalidade do app**; e **IDs do dispositivo ou outros IDs** (a conta
+     anônima do Firebase), coletado, para funcionalidade do app. Os dados podem ser apagados a pedido (issue no
+     GitHub).
    - **Permissões:** o app declara **microfone** (`RECORD_AUDIO`, para o chat de voz; o Android só pergunta quando
      o jogador toca em "Ligar microfone") e vibração. O microfone não exige formulário no Play Console, mas
      precisa estar na política de privacidade (já está).

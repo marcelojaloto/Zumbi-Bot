@@ -396,7 +396,7 @@ export function roomScreen(host: OnlineHost): Screen {
 
   const list = el('div', { class: 'room-players' });
   const mine = el('div', { class: 'room-me' });
-  const stageText = el('div', { class: 'room-level' });
+  const stageText = el('div', { class: 'room-stage' });
   const status = el('p', { class: 'room-status' });
   const mainBtn = el('button', { class: 'btn primary', data: { nav: '' } });
   // escolha de personagem (a mesma tela da loja), à esquerda de Pronto/Começar
@@ -483,7 +483,7 @@ export function roomScreen(host: OnlineHost): Screen {
   };
   const setChar = (dir: number) => {
     const p = me();
-    if (p) choose(nextCharacter(p.char, dir));
+    if (p) choose(nextCharacter(p.char, dir, host.profile.roster));
   };
   /** Tela como a da loja: o personagem em 3D (girando com o dedo ou ←/→), a lista e os detalhes. */
   charBtn.addEventListener('click', () => openPicker());
@@ -627,23 +627,28 @@ export function roomScreen(host: OnlineHost): Screen {
         host.previewLineup([p.char]);
       }
     }
+    // Fase como o Personagem: título centralizado em cima e, para o anfitrião, as setas nas pontas (alinhadas às
+    // do personagem)
+    const label = r.mapId ? levelLabel(r.mapId, r.levelIdx) : '…';
     stageText.replaceChildren(
-      el('span', { class: 'muted' }, `${t('Fase')}: `),
-      ...(r.role === 'host'
-        ? [
+      el('div', { class: 'room-me-title' }, t('Fase')),
+      r.role === 'host'
+        ? el(
+            'div',
+            { class: 'lc-pick' },
             el(
               'button',
               { class: 'lc-arrow', title: t('Anterior'), data: { nav: '' }, onclick: () => stage(-1) },
               '◀',
             ),
-            el('b', {}, levelLabel(r.mapId, r.levelIdx)),
+            el('div', { class: 'lc-name room-stage-name' }, label),
             el(
               'button',
               { class: 'lc-arrow', title: t('Próximo'), data: { nav: '' }, onclick: () => stage(1) },
               '▶',
             ),
-          ]
-        : [el('b', {}, r.mapId ? levelLabel(r.mapId, r.levelIdx) : '…')]),
+          )
+        : el('div', { class: 'lc-name room-stage-name' }, label),
     );
     diffVal.textContent = difficultyName(r.difficulty);
     voiceVal.textContent = r.voice ? `🎤 ${t('Permitido')}` : `🔇 ${t('Desligado')}`;

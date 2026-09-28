@@ -323,6 +323,22 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
         { class: 'btn', onclick: () => host.screens.push(manualScreen(host)), data: { nav: '' } },
         `📖 ${t('Manual')}`,
       ),
+      // só quando o navegador oferece instalar: instalado, abre em tela cheia, sem a barra e sem o aviso
+      host.canInstall
+        ? el(
+            'button',
+            {
+              class: 'btn install-btn',
+              title: t('Instalado, o jogo abre em tela cheia, sem a barra do navegador.'),
+              onclick: () => {
+                host.installApp();
+                host.screens.pop();
+              },
+              data: { nav: '' },
+            },
+            `📲 ${t('Instalar o jogo')}`,
+          )
+        : null,
     ),
   );
   return {

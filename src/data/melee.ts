@@ -308,6 +308,32 @@ export const MOVES: Record<string, MeleeMoveDef> = {
     ],
   },
 
+  tornadoArcano: {
+    id: 'tornadoArcano',
+    pose: 'tornado',
+    startup: 8,
+    active: 28,
+    recovery: 14,
+    // chutes girando para os dois lados enquanto avança
+    hitbox: { x0: -0.7, x1: 1.5, y0: 0.2, y1: 2.1, zTol: 0.8 },
+    // empurra pouco: quem é pego vai sendo arrastado pelo tornado e leva vários chutes
+    hit: {
+      damage: 8,
+      dtype: 'blunt',
+      knockback: 1.2,
+      hitstun: 18,
+      hitstop: 2,
+    },
+    rehitEvery: 7,
+    lunge: 6.5,
+    invulnActive: true,
+    manaCost: 30,
+    hpCost: 10,
+    special: true,
+    sfx: 'cast_electric',
+    effects: [{ k: 'trail', r: 1.5, every: 4, ticks: 14, fx: 'arcane' }],
+  },
+
   // --- cajado: no modo cajado (sem arma branca), J bate com o cajado em vez de socar ---
   staff1: blunt('staff1', 'swing1', 6, 8, 1.3, 1.5, 'staff2'),
   staff2: blunt('staff2', 'swing2', 6, 9, 1.3, 1.8, 'staff3'),

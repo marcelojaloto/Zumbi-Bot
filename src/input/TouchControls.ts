@@ -24,9 +24,28 @@ const BUTTONS: BtnSpec[] = [
   { id: 'fire', bit: Btn.Fire, label: 'ATIRAR', size: 'mid', right: 52, bottom: 150 },
   { id: 'special', bit: Btn.Special, label: 'ESPECIAL', size: 'small', right: 232, bottom: 42 },
   // sem botão de recarregar: a arma recarrega sozinha quando o pente acaba
-  { id: 'next', bit: Btn.Next, label: '▶▶', size: 'small', right: 222, bottom: 118, tapOnly: true },
   { id: 'mode', bit: Btn.ToggleMode, label: '⇄', size: 'small', right: 118, bottom: 214, tapOnly: true },
+  // trocar de cajado (ou de arma), logo à direita do Arma ⇄ Cajado
+  { id: 'next', bit: Btn.Next, label: '', size: 'small', right: 56, bottom: 222, tapOnly: true },
 ];
+
+/** Seta circular de "trocar", no canto do ícone. */
+const CYCLE =
+  '<path d="M21 15.5a4.5 4.5 0 1 1-1.6-3.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>' +
+  '<path d="M20.6 9.4v3.4h-3.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>';
+/** Ícones do botão de troca: cajado (bastão com a pedra mágica) e arma de fogo. */
+const NEXT_ICON = {
+  staff:
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 21.5 11.5 9.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>' +
+    '<circle cx="13" cy="7" r="3.3" fill="#39e6ff" stroke="currentColor" stroke-width="1.2"/>' +
+    '<path d="M8 3.2l.7 1.6 1.6.7-1.6.7L8 7.8l-.7-1.6-1.6-.7 1.6-.7z" fill="currentColor"/>' +
+    CYCLE +
+    '</svg>',
+  gun:
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 6.5h13v3.2H9.6l-.9 1.4-.8 4.4H4.4l1.2-5.8H2.5z" fill="currentColor"/>' +
+    CYCLE +
+    '</svg>',
+};
 
 /** Raio do direcional (px, antes da escala). */
 const STICK_R = 58;
@@ -62,6 +81,7 @@ export class TouchControls {
   private micBtn: HTMLButtonElement;
   private mapBtn: HTMLButtonElement;
   private top: HTMLDivElement;
+  private armsKey = '';
   haptics = true;
 
   constructor(
@@ -130,8 +150,10 @@ export class TouchControls {
   relabel(): void {
     for (const b of BUTTONS) {
       const el = this.btnEls.get(b.id)!;
-      el.textContent = t(b.label);
+      if (b.label) el.textContent = t(b.label);
     }
+    // Atirar/Conjurar e o ícone de troca são refeitos no próximo quadro
+    this.armsKey = '';
     const top = this.root.querySelector('.t-top');
     top?.querySelector('.t-pause')?.setAttribute('aria-label', t('Pausa'));
     top?.querySelector('.t-fs')?.setAttribute('aria-label', t('Tela cheia'));
@@ -174,14 +196,23 @@ export class TouchControls {
     this.root.style.setProperty('--to', String(opacity));
   }
 
-  /** Botão Atirar mostra o modo atual (arma de fogo ou cajado). */
-  setFireMode(mode: 'gun' | 'staff'): void {
-    const el = this.btnEls.get('fire')!;
-    const want = mode === 'staff' ? t('CONJURAR') : t('ATIRAR');
-    if (el.textContent !== want) {
-      el.textContent = want;
-      el.classList.toggle('staff', mode === 'staff');
-    }
+  /**
+   * Botões de armas do personagem: Atirar mostra o modo atual (arma de fogo ou cajado); Arma ⇄ Cajado só para
+   * quem usa os dois; o de trocar (com o ícone do cajado ou da arma) só com mais de um para escolher.
+   */
+  setArms(mode: 'gun' | 'staff', canToggle: boolean, choices: number): void {
+    const key = `${mode}|${canToggle}|${choices > 1}`;
+    if (key === this.armsKey) return;
+    this.armsKey = key;
+    const fire = this.btnEls.get('fire')!;
+    fire.textContent = mode === 'staff' ? t('CONJURAR') : t('ATIRAR');
+    fire.classList.toggle('staff', mode === 'staff');
+    this.btnEls.get('mode')!.hidden = !canToggle;
+    const next = this.btnEls.get('next')!;
+    next.hidden = choices <= 1;
+    next.innerHTML = NEXT_ICON[mode];
+    next.classList.toggle('staff', mode === 'staff');
+    next.setAttribute('aria-label', mode === 'staff' ? t('Trocar de cajado') : t('Trocar de arma'));
   }
 
   /** Estado do quadro: eixos do direcional e botões (segurados + toques curtos). */
@@ -287,7 +318,9 @@ export class TouchControls {
     let best: BtnId | null = null;
     let bd = Infinity;
     for (const b of BUTTONS) {
-      const r = this.btnEls.get(b.id)!.getBoundingClientRect();
+      const el = this.btnEls.get(b.id)!;
+      if (el.hidden) continue;
+      const r = el.getBoundingClientRect();
       const d = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2)) / (r.width / 2);
       if (d < 1.35 && d < bd) {
         bd = d;

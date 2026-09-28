@@ -2,11 +2,12 @@ import { t } from '../i18n';
 import { PLAYER, xpToNext } from '../data/balance';
 import { getMap, MAPS } from '../data/maps';
 import { STAFFS } from '../data/staffs';
+import { getCharacter, playableCharacters } from '../data/characters';
 import type { CharacterId, CosmeticId, CosmeticSlot, StaffId, WeaponId } from '../data/types';
-import { COSMETICS, SELL_VALUE } from '../data/cosmetics';
+import { COSMETICS, SECRET_GIFTS, SELL_VALUE } from '../data/cosmetics';
 import { Rng } from '../core/rng';
 import { insertRank } from '../save/ranking';
-import type { RankingV1, SaveV1, SettingsV1 } from '../save/schema';
+import type { CampaignRun, RankEntry, RankingV1, SaveV1, SettingsV1 } from '../save/schema';
 import { Storage } from '../save/storage';
 import type { RunStats } from '../sim/events';
 import type { PlayerLoadout } from '../sim/World';
@@ -31,6 +32,32 @@ export class Profile {
     if (s.recovered) this.notices.push('Save corrompido — backup restaurado');
     if (s.readOnly) this.notices.push('Save de uma versão mais nova: progresso não será gravado');
     if (s.migratedFrom !== null) this.persist();
+    // quem já terminou o jogo antes desta versão também ganha o disfarce do personagem secreto
+    if (this.secretUnlocked && this.grantSecretGifts()) this.persist();
+  }
+
+  /** Personagem secreto liberado (o jogo já foi terminado uma vez). */
+  get secretUnlocked(): boolean {
+    return this.save.flags.credits;
+  }
+
+  /** Personagens que dá para escolher agora. */
+  get roster(): CharacterId[] {
+    return playableCharacters(this.secretUnlocked);
+  }
+
+  /** Terminou o jogo pela primeira vez: libera o personagem secreto e o disfarce dele. */
+  unlockSecret(): void {
+    this.save.flags.credits = true;
+    this.grantSecretGifts();
+    this.persist();
+  }
+
+  private grantSecretGifts(): boolean {
+    const owned = this.save.cosmetics.owned;
+    const add = SECRET_GIFTS.filter((id) => !owned.includes(id));
+    owned.push(...add);
+    return add.length > 0;
   }
 
   persist(): void {
@@ -55,7 +82,8 @@ export class Profile {
     return {
       slot: 0,
       name: s.profile.name,
-      character: s.profile.character,
+      // o secreto só entra depois de liberado
+      character: this.roster.includes(s.profile.character) ? s.profile.character : 'robot',
       level: s.profile.level,
       xp: s.profile.xp,
       guns: [...s.unlocks.firearms] as WeaponId[],
@@ -146,23 +174,90 @@ export class Profile {
     return { newRecord, unlockedNext, ngPlusUnlocked, finalBoss };
   }
 
-  /** Posição no ranking (0-based) se entrar. */
-  addRank(name: string, stats: RunStats, playerLevel: number): number {
-    const pos = insertRank(this.ranking, {
-      name: name.slice(0, 16) || t('Anônimo'),
-      score: stats.score,
+  /**
+   * Soma o mapa que acabou (vencido ou o da derrota) à jornada em andamento — começa uma nova se não houver.
+   * A jornada só vai para o ranking quando o jogador perde todas as vidas ou termina o jogo ({@link closeRun}).
+   */
+  addToRun(stats: RunStats): CampaignRun {
+    const s = this.save;
+    const r: CampaignRun = s.run ?? {
+      score: 0,
+      kills: 0,
+      timeMs: 0,
+      maps: 0,
       mapId: stats.mapId,
       levelId: stats.levelId,
-      timeMs: stats.timeMs,
-      kills: stats.kills,
+      chars: [],
+      ngPlus: false,
+      team: 1,
+      startedAt: Date.now(),
+    };
+    r.score += stats.score;
+    r.kills += stats.kills;
+    r.timeMs += stats.timeMs;
+    if (stats.victory) r.maps++;
+    r.mapId = stats.mapId;
+    r.levelId = stats.levelId;
+    for (const c of stats.chars ?? []) if (!r.chars.includes(c) && r.chars.length < 5) r.chars.push(c);
+    r.ngPlus ||= !!stats.ngPlus;
+    r.team = Math.max(r.team, stats.players?.length ?? 1);
+    s.run = r;
+    this.persist();
+    return r;
+  }
+
+  /** Nome sugerido para o ranking: o último salvo; sem nenhum ainda, o apelido do personagem. */
+  suggestedRankName(): string {
+    return this.save.profile.rankName ?? t(getCharacter(this.save.profile.character).name);
+  }
+
+  /**
+   * Fim da jornada (perdeu todas as vidas ou terminou o jogo): registra no ranking na hora, com o nome sugerido
+   * (o jogador pode trocar o nome depois com {@link renameRank}) e começa uma jornada nova. `pos` = -1 se não
+   * entrou no top 20.
+   */
+  closeRun(
+    playerLevel: number,
+    finished: boolean,
+  ): { entry: RankEntry; pos: number; run: CampaignRun } | null {
+    const r = this.save.run;
+    if (!r) return null;
+    delete this.save.run;
+    this.persist();
+    const entry: RankEntry = {
+      name: (r.team > 1 ? t('Equipe de {n}', { n: r.team }) : this.suggestedRankName()).slice(0, 16),
+      score: r.score,
+      mapId: r.mapId,
+      levelId: r.levelId,
+      timeMs: r.timeMs,
+      kills: r.kills,
       playerLevel,
       date: Date.now(),
-      victory: stats.victory,
-      ...(stats.ngPlus ? { ngPlus: true } : {}),
-      ...(stats.chars?.length ? { chars: [...stats.chars] } : {}),
-    });
+      victory: finished,
+      maps: r.maps,
+      ...(r.ngPlus ? { ngPlus: true } : {}),
+      ...(r.chars.length ? { chars: [...r.chars] } : {}),
+    };
+    const pos = insertRank(this.ranking, entry);
     if (pos >= 0) this.storage.writeRanking(this.ranking);
-    return pos;
+    return { entry, pos, run: r };
+  }
+
+  /**
+   * O jogador escreveu o nome: troca no registro do ranking e guarda para sugerir da próxima vez (a equipe não muda
+   * o nome do perfil).
+   */
+  renameRank(entry: RankEntry, name: string, team: boolean): void {
+    const n = name.trim().slice(0, 16) || t('Anônimo');
+    if (n !== entry.name) {
+      entry.name = n;
+      if (this.ranking.entries.includes(entry)) this.storage.writeRanking(this.ranking);
+    }
+    if (!team) {
+      this.save.profile.rankName = n;
+      this.save.profile.name = n;
+      this.persist();
+    }
   }
 
   /** Personagem escolhido pelo jogador 1 (fica para a próxima partida). */
@@ -202,7 +297,8 @@ export class Profile {
 
   sell(id: CosmeticId): boolean {
     const c = COSMETICS[id];
-    if (!c || !this.owns(id)) return false;
+    // o disfarce do personagem secreto vem com ele: não se vende
+    if (!c || !this.owns(id) || c.set === 'secret') return false;
     const eq = this.save.cosmetics.equipped;
     if (eq[c.slot] === id) delete eq[c.slot];
     this.save.cosmetics.owned = this.save.cosmetics.owned.filter((x) => x !== id);

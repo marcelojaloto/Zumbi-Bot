@@ -22,4 +22,10 @@ export interface UiHost {
   readonly inGame: boolean;
   /** Controles de toque ativos (celular/tablet). */
   readonly touchActive: boolean;
+  /** O navegador deixa instalar o jogo agora (aparece nas Configurações só quando dá). */
+  readonly canInstall: boolean;
+  /** Instala o jogo como app (depois o jogo volta para a tela cheia). */
+  installApp(): void;
+  /** Um registro do ranking foi salvo ou renomeado (o melhor do aparelho vai para o ranking global). */
+  rankSaved(): void;
 }

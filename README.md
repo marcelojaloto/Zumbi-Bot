@@ -26,23 +26,31 @@ Web Audio.
   | 9   | Campo de Guerra    | General Criotanque                     | Cajado do Gelo                        |
   | 10  | Arena Final        | **OMEGA-Z**, ciborgue zumbi de 4 fases | Coroa do Ômega, créditos e Novo Jogo+ |
 
-- **5 personagens**, escolhidos antes de cada partida, cada um com atributos e especial próprios:
+- **5 personagens** (e um **secreto**), escolhidos antes de cada partida, cada um com atributos, armas e especial
+  próprios:
 
-  | Personagem | Ponto forte                                             | Especial                                                |
-  | ---------- | ------------------------------------------------------- | ------------------------------------------------------- |
-  | Zumbi Bot  | equilibrado                                             | **Giro Turbo**: gira acertando todos em volta           |
-  | Maga       | magias muito mais fortes e mana de sobra; aguenta pouco | **Nova Arcana**: explosão em volta + bola de fogo roxa  |
-  | Militar    | muita vida, socos fortes, quase não é empurrado; lento  | **Chuva de Granadas**: granadas explodem em volta       |
-  | Ciborgue   | tiros mais fortes e recarga rápida                      | **Raio Laser**: atravessa todos os inimigos à frente    |
-  | Mutante    | rápido, pula alto e se regenera; ruim de mira           | **Fúria Mutante**: rugido + 6 s de fúria que rouba vida |
+  | Personagem | Ponto forte                                             | Usa                              | Especial                                                |
+  | ---------- | ------------------------------------------------------- | -------------------------------- | ------------------------------------------------------- |
+  | Zumbi Bot  | equilibrado                                             | armas de fogo e cajados          | **Giro Turbo**: gira acertando todos em volta           |
+  | Maga       | magias muito mais fortes e mana de sobra; aguenta pouco | cajados (fraca c/ brancas)       | **Nova Arcana**: explosão em volta + bola de fogo roxa  |
+  | Militar    | muita vida, socos fortes, quase não é empurrado; lento  | armas de fogo                    | **Chuva de Granadas**: granadas explodem em volta       |
+  | Ciborgue   | tiros mais fortes e recarga rápida                      | armas de fogo                    | **Raio Laser**: atravessa todos os inimigos à frente    |
+  | Mutante    | rápido, pula alto e se regenera; ruim de mira           | armas de fogo                    | **Fúria Mutante**: rugido + 6 s de fúria que rouba vida |
+  | Prodígio   | secreto: caratê arcano, rápido e ótimo de briga; frágil | cajados (muito fraco c/ brancas) | **Tornado Arcano**: avança girando em chutes arcanos    |
 
-  Cada um tem nome e sobrenome, uma história e o seu próprio final feliz: veja tudo no menu **Personagens** (rostos
-  e ficha completa) e, depois de vencer o OMEGA-Z, no **final lendário** — um capítulo por personagem, cada um num
-  mini cenário animado (dá para rever pelos Créditos).
+  Todos usam socos, chutes e armas brancas. Quem não conjura (Militar, Ciborgue, Mutante) guarda os cajados ganhos
+  para quando jogar com a Maga, o Zumbi Bot ou o Prodígio. Cada um tem nome e sobrenome, uma história e o seu
+  próprio final feliz: veja tudo no menu **Personagens** (rostos e ficha completa; no celular é um carrossel com
+  ◀ ▶) e, depois de vencer o OMEGA-Z, no **final lendário** — um capítulo por personagem, cada um num mini cenário
+  animado (dá para rever pelos Créditos).
+
+  **Personagem secreto:** terminando o jogo pela primeira vez, o último capítulo do final lendário revela o
+  **Prodígio** (Léo Aurora), um adolescente loiro de olhos azuis que luta caratê com magia arcana. O disfarce dele —
+  **peruca preta** e **lentes verdes ou castanhas** — vai para o guarda-roupa: veste quem quiser.
 
 - **7 armas de fogo** (pistola, escopeta, submetralhadora, fuzil de assalto, rifle de precisão, metralhadora e
   lança-granadas), com dano, cadência, recuo, munição e recarga próprios. As armas novas aparecem em caixas
-  pelos mapas.
+  pelos mapas: é só **passar por cima** para pegar (armas de fogo e armas brancas).
 - **10 cajados elementais** (cura, fogo, água, gelo, eletricidade, tóxico, cibernético, vento, terra e
   necromancia) com efeitos de status que interagem entre si: molhado + elétrico atordoa, congelado quebra com
   golpes fortes, fogo inflama nuvens tóxicas, o cibernético hackeia robôs e o necromante controla zumbis.
@@ -50,8 +58,13 @@ Web Audio.
 - **Loot cosmético**: cerca de 40 peças dos conjuntos mago e zumbi (chapéus, óculos, máscaras, roupas e capas
   com física), inventário no **Guarda-roupa** com prévia 3D e uma **Loja** com ofertas do dia (escolher um item
   veste o boneco para ver antes, e a compra só acontece ao confirmar).
-- **Progressão**: XP e níveis, pontuação com combos, estrelas por nível, recordes, **ranking local** e
-  **Novo Jogo+** depois de derrotar o OMEGA-Z. O progresso fica salvo no navegador (`localStorage`).
+- **Progressão**: XP e níveis, pontuação com combos, estrelas por nível, recordes e **Novo Jogo+** depois de
+  derrotar o OMEGA-Z. O progresso fica salvo no navegador (`localStorage`).
+- **Ranking por jornada**: os pontos de cada mapa se somam até você **perder todas as vidas** ou **terminar o
+  jogo**; só aí o jogo mostra a posição e o nome — já salvo com o último nome usado (ou o apelido do personagem).
+  Tocar no nome abre o teclado, com a caixa no alto da tela. O **Ranking Pessoal** fica no aparelho; o botão
+  **Ranking Global** mostra o melhor de cada jogador do mundo (Firebase, veja
+  [docs/RANKING_GLOBAL.md](docs/RANKING_GLOBAL.md)) e só aparece quando o ranking global está no ar.
 - **Música procedural** por mapa, que ganha camadas durante as lutas e acelera contra os chefes.
 
 ## Controles
@@ -87,16 +100,16 @@ Os tiros sempre saem para a frente, na faixa de profundidade do robô (o mouse e
 inimigo usando W/S e a mira ajusta sozinha para acertar quem estiver à frente, na mesma faixa. Andar tem a mesma
 velocidade na tela em qualquer direção, inclusive nas diagonais (duas teclas juntas ou o direcional inclinado). No
 modo cajado, o soco vira uma pancada com o cajado, segurado pela ponta e brandido como um bastão; e quando a munição de uma arma pega no chão acaba, o robô volta
-sozinho para a pistola.
+sozinho para a pistola. Armas no chão são pegas passando por cima (uma arma branca nova troca pela que estava na
+mão, que fica no chão).
 
 **Na tela:** as barras de energia de cada jogador ficam no alto, no centro (sem caixa, do mesmo jeito com 1 ou 5
 jogadores); a pontuação e as mensagens (que somem em 3 segundos) à direita; o nome do mapa e o progresso embaixo, no
 centro. No computador, o microfone (ícone e tecla) e o FPS ficam no canto superior esquerdo e o mapa grande abre na
 tecla M; no celular, o minimapa começa oculto e aparece no botão 🗺.
 
-**Escolha do personagem:** a tela é como a loja — o personagem aparece em 3D no espaço livre, com **◀ nome ▶**
-embaixo, e a ficha ao lado (as mesmas setas, nome e sobrenome, atributos, especial e história; a ficha rola quando
-não cabe na tela). Para **girar** o personagem, arraste-o para os lados com o dedo (ou o mouse), ou segure **←/→**
+**Escolha do personagem:** a tela é como a loja — o personagem aparece em 3D no espaço livre e a ficha ao lado
+(**◀ nome ▶**, nome e sobrenome, atributos, especial e história; a ficha rola quando não cabe na tela). Para **girar** o personagem, arraste-o para os lados com o dedo (ou o mouse), ou segure **←/→**
 no teclado ou o direcional do controle para os lados; para **trocar**, use as setas ◀ ▶ ou **↑/↓**. Na loja e no
 guarda-roupa o boneco também gira (arrastar, **Q/E** ou o analógico direito). Na sala online, o botão
 **👤 Personagem** (ou tocar no nome) abre a mesma tela.
@@ -145,8 +158,8 @@ PeerJS para achar a sala pelo código — sem cadastro e sem servidor próprio. 
 bloqueiam a conexão direta; nesse caso, tente outra rede, como os dados do celular.
 
 No celular e no tablet: direcional à esquerda (empurrar até a borda corre) e botões Soco, Pular, Chute,
-Atirar/Conjurar (mira sozinho), Especial, Próxima arma e Arma ⇄ Cajado à direita (a arma recarrega sozinha quando o
-pente acaba); pausa, microfone (no jogo online com voz), tela cheia e minimapa ficam no canto superior esquerdo, um
+Atirar/Conjurar (mira sozinho), Especial, Arma ⇄ Cajado (só para quem usa os dois) e, à direita dele, o botão de
+trocar de cajado ou de arma (a arma recarrega sozinha quando o pente acaba); pausa, microfone (no jogo online com voz), tela cheia e minimapa ficam no canto superior esquerdo, um
 abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configurações → Controles.
 
 ## Jogar
@@ -154,10 +167,12 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
 - **No navegador:** https://marcelojaloto.github.io/Zumbi-Bot/ — computador, celular ou tablet (Android e iPhone).
 - **No celular e no tablet:** deite o aparelho; os controles de toque aparecem sozinhos (direcional com setas à
   esquerda, botões de ação à direita). O jogo entra em tela cheia ao tocar em Jogar; se sair dela (outra aba ou outro
-  app), o próximo toque volta. O aviso "arraste para sair da tela cheia" é do próprio navegador e nenhum site
-  consegue escondê-lo: para jogar sem ele, instale o jogo (**📲 Instalar o jogo** no menu, quando o navegador
-  oferece, ou "Adicionar à tela inicial") ou use o app para Android — instalado, o jogo abre em tela cheia, deitado
-  e sem a barra do navegador. O manual abre dentro do jogo, em Configurações → **📖 Manual**.
+  app), o próximo toque volta — e quando a tela encolhe sozinha (a barra do navegador aparece, gesto de sair), o
+  jogo espera 3 segundos antes de se rearrumar, porque quase sempre ela volta logo. O aviso "arraste para sair da
+  tela cheia" é do próprio navegador e nenhum site consegue escondê-lo: para jogar sem ele, instale o jogo
+  (Configurações → **📲 Instalar o jogo**, que só aparece quando o navegador oferece, ou "Adicionar à tela
+  inicial") ou use o app para Android — instalado, o jogo abre em tela cheia, deitado e sem a barra do navegador. O
+  manual abre dentro do jogo, em Configurações → **📖 Manual**.
 - **No iPhone (Safari):** a página não consegue entrar em tela cheia sozinha — toque em **Compartilhar → Adicionar
   à Tela de Início** e abra o Zumbi Bot por lá. O jogo online e o chat de voz funcionam no Safari (iOS 16.4 ou
   mais novo recomendado); se as vozes não tocarem, toque em **🔈 Toque para ouvir a conversa**.

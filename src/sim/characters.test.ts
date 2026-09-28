@@ -217,7 +217,7 @@ describe('personagens', () => {
     expect(tick('cyborg')).toBeCloseTo(1.35);
   });
 
-  it('pistola: cada personagem recarrega no seu ritmo; o ciborgue é o mais rápido', () => {
+  it('pistola: cada personagem que atira recarrega no seu ritmo; o ciborgue é o mais rápido', () => {
     const secs = (id: CharacterId) => {
       const w = world(id);
       const p = player(w).player!;
@@ -232,13 +232,14 @@ describe('personagens', () => {
       expect(p.ammoMag.pistol, id).toBe(12);
       return t / 60;
     };
-    const s = Object.fromEntries(CHARACTER_ORDER.map((id) => [id, secs(id)]));
+    const s = Object.fromEntries(
+      CHARACTER_ORDER.filter((id) => CHARACTERS[id].arms.guns).map((id) => [id, secs(id)]),
+    );
+    expect(s.mage).toBeUndefined();
     expect(s.cyborg).toBeLessThan(1);
-    for (const id of ['robot', 'mage', 'military', 'mutant'] as const)
-      expect(s[id]!, id).toBeGreaterThan(1.5);
+    for (const id of ['robot', 'military', 'mutant'] as const) expect(s[id]!, id).toBeGreaterThan(1.5);
     expect(s.military).toBeLessThan(s.robot!);
-    expect(s.robot).toBeLessThan(s.mage!);
-    expect(s.mage).toBeLessThan(s.mutant!);
+    expect(s.robot).toBeLessThan(s.mutant!);
   });
 
   it('save com personagem inválido volta para o robô', () => {

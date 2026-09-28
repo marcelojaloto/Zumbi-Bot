@@ -7,7 +7,6 @@ import { Btn, pressed } from '../InputFrame';
 import type { World } from '../World';
 import { applyHit } from './applyHit';
 import { isAoe, meleeHits } from './hitbox';
-import { tryManualPickup } from '../systems/pickups';
 import { LOCOMOTION } from '../systems/playerControl';
 import { characterDef } from '../defs';
 import { runMoveEffects } from './moveEffects';
@@ -88,7 +87,6 @@ export function playerMeleeInput(w: World, e: Entity): void {
     startMove(w, e, sp);
     return;
   }
-  if (jP && tryManualPickup(w, e)) return;
 
   if (!grounded) {
     if (!fi.airUsed && (jP || kP)) {
@@ -320,11 +318,18 @@ export function resolveMeleeHits(w: World, e: Entity, m: MeleeMoveDef): void {
       dirX: e.t.facing,
       dirZ: 0,
       element: undefined,
-      source: e.player ? (m.special ? 'special' : 'melee') : undefined,
+      source: e.player ? meleeSource(e, m) : undefined,
     });
     if (dmg > 0 && e.player) onPlayerMeleeConnect(w, e, m, dmg);
     if (m.hit.heavy && dmg > 0) w.emit({ t: 'shake', trauma: 0.25 });
   }
+}
+
+/** Origem do dano de um golpe do jogador: especial, arma branca (tem multiplicador próprio) ou mãos e pés. */
+function meleeSource(e: Entity, m: MeleeMoveDef): 'special' | 'weapon' | 'melee' {
+  if (m.special) return 'special';
+  const w = e.player!.melee;
+  return w && m.id.startsWith(w.id) ? 'weapon' : 'melee';
 }
 
 function onPlayerMeleeConnect(w: World, e: Entity, _m: MeleeMoveDef, dmg: number): void {

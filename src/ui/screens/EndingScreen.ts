@@ -21,8 +21,9 @@ function chapterText(c: EndingChapter): { color: string; title: string; name: st
   const d = CHARACTERS[c];
   return {
     color: hexColor(d.color),
-    title: `${t(d.name)} — ${t(d.ending.title)}`,
-    name: d.fullName,
+    title: `${d.secret ? '🔓 ' : ''}${t(d.name)} — ${t(d.ending.title)}`,
+    // o secreto é liberado bem aqui
+    name: d.secret ? `${d.fullName} • ${t('Personagem secreto liberado!')}` : d.fullName,
     text: t(d.ending.text),
   };
 }

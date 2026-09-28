@@ -2,7 +2,8 @@ import { COSMETICS, RARITY_COLORS, RARITY_NAMES } from '../../data/cosmetics';
 import { getMap } from '../../data/maps';
 import { STAFFS } from '../../data/staffs';
 import { FIREARMS } from '../../data/weapons';
-import { rankPosition } from '../../save/ranking';
+import type { RankEntry } from '../../save/schema';
+import type { CharacterId } from '../../data/types';
 import type { RunStats } from '../../sim/events';
 import { el, fmtInt, hexColor } from '../dom';
 import { ordinal, t } from '../../i18n';
@@ -25,8 +26,17 @@ export interface ResultInfo {
   next: { mapId: string; levelIdx: number } | null;
   unlockedNext: string | null;
   ngPlusUnlocked?: boolean;
+  /** Terminou o jogo pela primeira vez: o personagem secreto foi liberado. */
+  secretUnlocked?: CharacterId;
   /** Online: o anfitrião escolhe o que vem depois; quem entrou espera. */
   online?: 'host' | 'guest';
+  /** Jornada até aqui (os mapas vencidos seguem somando pontos). */
+  run?: { score: number; maps: number };
+  /**
+   * Fim da jornada (perdeu todas as vidas ou terminou o jogo): o registro já foi salvo no ranking com o nome
+   * sugerido; tocar no nome abre o teclado para trocar. `pos` = -1 se não entrou no top 20.
+   */
+  rank?: { entry: RankEntry; pos: number; team: boolean };
 }
 
 /** Tela de vitória ("MAPA CONCLUÍDO!") ou derrota ("VOCÊ FOI DESATIVADO"). */
@@ -134,6 +144,17 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     );
   }
 
+  if (r.secretUnlocked) {
+    const sc = getCharacter(r.secretUnlocked);
+    rewards.appendChild(
+      el(
+        'div',
+        { class: 'reward', style: `border-color:${hexColor(sc.color)}` },
+        el('b', { style: `color:${hexColor(sc.color)}` }, `🔓 ${t('Personagem secreto liberado!')}`),
+        el('span', {}, `${t(sc.name)} — ${sc.fullName}`),
+      ),
+    );
+  }
   if (r.ngPlusUnlocked)
     rewards.appendChild(
       el(
@@ -144,47 +165,105 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
       ),
     );
 
-  // ranking
+  // jornada e ranking: o nome só é pedido quando a jornada acaba (perdeu todas as vidas ou terminou o jogo)
   const rankBox = el('div', { class: 'rank-entry' });
-  const pos = rankPosition(host.profile.ranking, s.score);
-  if (pos >= 0) {
-    const input = el('input', {
-      type: 'text',
-      maxLength: 16,
-      value: team ? t('Equipe de {n}', { n: team.length }) : host.profile.save.profile.name,
-      data: { nav: '' },
-    });
-    const save = el(
-      'button',
-      {
-        class: 'btn small primary',
-        data: { nav: '' },
-        onclick: () => {
-          const name = input.value.trim() || t('Anônimo');
-          // o nome do perfil é o do jogador 1: uma equipe registra só no ranking
-          if (!team) {
-            host.profile.save.profile.name = name;
-            host.profile.persist();
-          }
-          const p = host.profile.addRank(name, s, r.playerLevel);
-          rankBox.innerHTML = '';
-          rankBox.appendChild(
-            el('span', {}, t('Registrado em {pos} lugar no ranking!', { pos: ordinal(p + 1) })),
-          );
+  let commitName = () => {};
+  let editor: HTMLElement | null = null;
+  const runLine = (score: number, maps: number) =>
+    maps === 1
+      ? t('Jornada: {pts} pontos • 1 mapa vencido', { pts: fmtInt(score) })
+      : t('Jornada: {pts} pontos • {n} mapas vencidos', { pts: fmtInt(score), n: maps });
+  if (r.rank) {
+    const { entry, pos, team } = r.rank;
+    rankBox.classList.add('end');
+    rankBox.append(el('div', { class: 'rank-run' }, runLine(entry.score, entry.maps ?? 0)));
+    if (pos >= 0) {
+      const label = el('span', {}, entry.name);
+      // o teclado só aparece ao tocar no nome
+      const nameBtn = el(
+        'button',
+        {
+          class: 'rank-name',
+          title: t('Tocar para mudar o nome'),
+          data: { nav: '' },
+          onclick: () => openEditor(),
         },
-      },
-      t('Salvar no ranking'),
-    );
-    rankBox.append(
-      el('span', {}, t('Nova pontuação no ranking ({pos})! Seu nome:', { pos: ordinal(pos + 1) }) + ' '),
-      input,
-      save,
-    );
-  }
+        label,
+        el('i', { class: 'rank-pen' }, '✎'),
+      );
+      const input = el('input', {
+        type: 'text',
+        maxLength: 16,
+        autocomplete: 'off',
+        spellcheck: false,
+        enterKeyHint: 'done',
+      });
+      const close = (save: boolean) => {
+        if (!editor) return;
+        if (save) {
+          host.profile.renameRank(entry, input.value, team);
+          label.textContent = entry.name;
+          host.rankSaved();
+        }
+        const ed = editor;
+        editor = null;
+        input.blur();
+        ed.remove();
+      };
+      // escrevendo o nome: a caixa fica no alto da tela, acima do teclado, com o nome sendo escrito à vista
+      const openEditor = () => {
+        if (editor) return;
+        input.value = entry.name;
+        const form = el(
+          'form',
+          { class: 'name-editor-box' },
+          el('label', {}, t('Seu nome no ranking')),
+          input,
+          el('button', { class: 'btn small primary', type: 'submit' }, t('OK')),
+        );
+        form.addEventListener('submit', (ev) => {
+          ev.preventDefault();
+          close(true);
+        });
+        editor = el('div', { class: 'name-editor' }, form);
+        // tocar fora da caixa confirma
+        editor.addEventListener('pointerdown', (ev) => {
+          if (ev.target === editor) {
+            ev.preventDefault();
+            close(true);
+          }
+        });
+        (document.getElementById('ui') ?? document.body).appendChild(editor);
+        input.focus();
+        input.select();
+      };
+      commitName = () => close(true);
+      rankBox.append(
+        el('div', { class: 'rank-pos' }, '🏆 ', t('{pos} lugar no ranking!', { pos: ordinal(pos + 1) })),
+        el('div', { class: 'rank-name-row' }, el('span', { class: 'muted' }, t('Nome:')), nameBtn),
+        el('p', { class: 'muted rank-note' }, t('Já está salvo. Toque no nome se quiser mudar.')),
+      );
+      host.rankSaved();
+    } else
+      rankBox.append(el('p', { class: 'muted rank-note' }, t('Não entrou no top 20 do ranking desta vez.')));
+  } else if (r.run && r.run.score > 0)
+    rankBox.append(el('div', { class: 'rank-run muted' }, runLine(r.run.score, r.run.maps)));
 
   const btns = el('div', { class: 'row-btns' });
+  // sair da tela (avançar, tentar de novo, menu) confirma o nome que estiver sendo escrito
   const b = (label: string, fn: () => void, cls = 'btn') =>
-    el('button', { class: cls, onclick: fn, data: { nav: '' } }, label);
+    el(
+      'button',
+      {
+        class: cls,
+        onclick: () => {
+          commitName();
+          fn();
+        },
+        data: { nav: '' },
+      },
+      label,
+    );
   const guest = r.online === 'guest';
   if (guest) btns.appendChild(b(t('Sair da sala'), () => host.quitToMenu()));
   else if (win && r.next)
@@ -246,5 +325,20 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     guest ? el('p', { class: 'online-wait' }, t('Esperando o anfitrião escolher a próxima fase…')) : null,
     btns,
   );
-  return { el: e, id: win ? 'victory' : 'gameover', onBack: () => false };
+  return {
+    el: e,
+    id: win ? 'victory' : 'gameover',
+    onBack: () => false,
+    // escrevendo o nome: Enter confirma, Esc desiste (sem mexer nos botões da tela)
+    onKey: (code) => {
+      if (!editor) return false;
+      if (code === 'Enter' || code === 'NumpadEnter') commitName();
+      else if (code === 'Escape') {
+        editor.remove();
+        editor = null;
+      } else return false;
+      return true;
+    },
+    onHide: () => commitName(),
+  };
 }

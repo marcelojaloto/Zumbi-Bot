@@ -514,6 +514,194 @@ export function mutantRig(): RigSpec {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Prodígio (secreto): adolescente baixinho, loiro de olhos azuis, quimono de caratê branco com faixa preta,
+// bandana azul e punhos envoltos em energia arcana
+// ---------------------------------------------------------------------------
+export function prodigyRig(): RigSpec {
+  const gi = 0xf2f1ea;
+  const giShade = 0xd6d2c4;
+  const belt = 0x161616;
+  const skin = 0xf2caa2;
+  const hair = 0xf2d060;
+  const hairHi = 0xffe890;
+  const band = 0x2a5aff;
+  const arcane = 0x4ad8ff;
+  const pr: Proportions = {
+    ...HUMAN,
+    hipH: 0.8,
+    hipW: 0.1,
+    thigh: 0.38,
+    shin: 0.38,
+    spine: 0.09,
+    chest: 0.2,
+    neck: 0.24,
+    shoulderW: 0.21,
+    shoulderH: 0.18,
+    upperArm: 0.25,
+    foreArm: 0.23,
+  };
+  const eye = (x: number): PartSpec[] => [
+    { j: J.head, shape: 'box', size: [0.056, 0.04, 0.01], at: [x, 0.1375, 0.121], color: 0xf6f6f6 },
+    // olhos azuis (as lentes do disfarce ficam por cima)
+    { j: J.head, shape: 'box', size: [0.028, 0.034, 0.008], at: [x, 0.136, 0.126], color: 0x2f86ff },
+    { j: J.head, shape: 'box', size: [0.012, 0.016, 0.006], at: [x, 0.136, 0.13], color: 0x0a1020 },
+    { j: J.head, shape: 'box', size: [0.062, 0.014, 0.01], at: [x, 0.178, 0.123], color: 0xc8a040 },
+  ];
+  const parts: PartSpec[] = [
+    // quimono: calça, casaco com lapelas e faixa preta
+    { j: J.hips, shape: 'box', size: [0.28, 0.16, 0.2], at: [0, 0, 0], color: gi },
+    { j: J.hips, shape: 'box', size: [0.3, 0.1, 0.21], at: [0, -0.03, 0], color: gi },
+    { j: J.spine, shape: 'box', size: [0.27, 0.14, 0.19], at: [0, 0.02, 0], color: gi },
+    { j: J.spine, shape: 'box', size: [0.29, 0.045, 0.21], at: [0, -0.07, 0], color: belt },
+    { j: J.spine, shape: 'box', size: [0.06, 0.05, 0.03], at: [0, -0.07, 0.11], color: belt },
+    {
+      j: J.spine,
+      shape: 'box',
+      size: [0.03, 0.13, 0.015],
+      at: [-0.025, -0.14, 0.112],
+      rot: [0, 0, 0.15],
+      color: belt,
+    },
+    {
+      j: J.spine,
+      shape: 'box',
+      size: [0.03, 0.12, 0.015],
+      at: [0.03, -0.13, 0.112],
+      rot: [0, 0, -0.2],
+      color: belt,
+    },
+    { j: J.chest, shape: 'box', size: [0.32, 0.28, 0.21], at: [0, 0.04, 0], color: gi },
+    { j: J.chest, shape: 'box', size: [0.07, 0.09, 0.01], at: [0, 0.13, 0.107], color: skin },
+    {
+      j: J.chest,
+      shape: 'box',
+      size: [0.05, 0.27, 0.02],
+      at: [-0.045, 0.05, 0.107],
+      rot: [0, 0, -0.35],
+      color: giShade,
+    },
+    {
+      j: J.chest,
+      shape: 'box',
+      size: [0.05, 0.27, 0.02],
+      at: [0.045, 0.05, 0.107],
+      rot: [0, 0, 0.35],
+      color: giShade,
+    },
+    {
+      j: J.chest,
+      shape: 'oct',
+      size: [0.032],
+      at: [-0.095, 0.08, 0.115],
+      color: arcane,
+      glow: true,
+      glowI: 2.5,
+    },
+    { j: J.neck, shape: 'cyl', size: [0.045, 0.05, 0.1, 6], at: [0, 0, 0], color: skin },
+    // cabeça um pouco grande (ainda é um garoto), nariz, sorriso
+    { j: J.head, shape: 'box', size: [0.23, 0.25, 0.22], at: [0, 0.13, 0.01], color: skin },
+    { j: J.head, shape: 'box', size: [0.024, 0.04, 0.024], at: [0, 0.105, 0.128], color: 0xe2b089 },
+    { j: J.head, shape: 'box', size: [0.07, 0.015, 0.01], at: [0, 0.068, 0.122], color: 0xb55252 },
+    ...eye(0.052),
+    ...eye(-0.052),
+    // cabelo loiro espetado
+    { j: J.head, shape: 'box', size: [0.25, 0.07, 0.24], at: [0, 0.28, -0.005], color: hair },
+    {
+      j: J.head,
+      shape: 'box',
+      size: [0.1, 0.07, 0.05],
+      at: [0.045, 0.262, 0.112],
+      rot: [0.35, 0, -0.25],
+      color: hairHi,
+    },
+    {
+      j: J.head,
+      shape: 'box',
+      size: [0.09, 0.06, 0.05],
+      at: [-0.06, 0.255, 0.108],
+      rot: [0.3, 0, 0.3],
+      color: hair,
+    },
+    { j: J.head, shape: 'box', size: [0.03, 0.12, 0.18], at: [0.125, 0.2, -0.01], color: hair },
+    { j: J.head, shape: 'box', size: [0.03, 0.12, 0.18], at: [-0.125, 0.2, -0.01], color: hair },
+    { j: J.head, shape: 'box', size: [0.24, 0.16, 0.05], at: [0, 0.19, -0.115], color: hair },
+    {
+      j: J.head,
+      shape: 'cone',
+      size: [0.05, 0.11, 5],
+      at: [0.03, 0.335, -0.02],
+      rot: [0, 0, -0.45],
+      color: hairHi,
+    },
+    {
+      j: J.head,
+      shape: 'cone',
+      size: [0.045, 0.09, 5],
+      at: [-0.05, 0.325, -0.04],
+      rot: [0.2, 0, 0.5],
+      color: hair,
+    },
+    // bandana azul com as pontas soltas atrás
+    { j: J.head, shape: 'box', size: [0.245, 0.035, 0.235], at: [0, 0.215, 0], color: band },
+    {
+      j: J.head,
+      shape: 'box',
+      size: [0.03, 0.14, 0.015],
+      at: [0.03, 0.15, -0.125],
+      rot: [0.2, 0, 0.25],
+      color: band,
+    },
+    {
+      j: J.head,
+      shape: 'box',
+      size: [0.03, 0.13, 0.015],
+      at: [-0.02, 0.15, -0.125],
+      rot: [0.2, 0, -0.1],
+      color: band,
+    },
+    // punhos com energia arcana
+    {
+      j: J.foreArmL,
+      shape: 'box',
+      size: [0.1, 0.05, 0.1],
+      at: [0, -0.19, 0],
+      color: arcane,
+      glow: true,
+      glowI: 2,
+    },
+    {
+      j: J.foreArmR,
+      shape: 'box',
+      size: [0.1, 0.05, 0.1],
+      at: [0, -0.19, 0],
+      color: arcane,
+      glow: true,
+      glowI: 2,
+    },
+    ...limbs({
+      upper: gi,
+      fore: gi,
+      hand: skin,
+      thigh: gi,
+      shin: gi,
+      foot: skin,
+      armW: 0.095,
+      legW: 0.12,
+      props: pr,
+    }),
+  ];
+  return {
+    key: 'char-prodigy',
+    joints: humanoidJoints(pr),
+    parts,
+    sockets: fitSockets(humanSockets(0.25, 0.22, 0.21), 0.78, 0.82),
+    height: 1.62,
+    metal: 0.03,
+    rough: 0.85,
+  };
+}
+
 /** Rig de cada personagem jogável. */
 export function characterRig(id: CharacterId): RigSpec {
   switch (id) {
@@ -525,6 +713,8 @@ export function characterRig(id: CharacterId): RigSpec {
       return cyborgRig();
     case 'mutant':
       return mutantRig();
+    case 'prodigy':
+      return prodigyRig();
     default:
       return robotPlayerRig();
   }
@@ -535,5 +725,7 @@ export function characterStyle(id: CharacterId): { hunch: number; scale: number 
   if (id === 'mutant') return { hunch: 0.25, scale: 1.02 };
   if (id === 'military') return { hunch: 0, scale: 1.05 };
   if (id === 'mage') return { hunch: 0, scale: 0.97 };
+  // baixinho: ainda é um garoto
+  if (id === 'prodigy') return { hunch: 0, scale: 0.94 };
   return { hunch: 0, scale: 1 };
 }

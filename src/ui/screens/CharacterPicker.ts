@@ -16,14 +16,14 @@ export interface PickerHost extends UiHost {
   turnMenuHero(delta: number): void;
 }
 
-/** Barras de atributos (rótulo já traduzido, valor 0..1) mostradas na seleção. */
-export function characterBars(c: CharacterDef): [string, number][] {
+/** Barras de atributos (rótulo já traduzido, valor 0..1; null = não usa) mostradas na seleção. */
+export function characterBars(c: CharacterDef): [string, number | null][] {
   const s = c.stats;
   return [
     [t('Vida'), s.hp / 150],
     [t('Força'), s.dmg.melee / 1.4],
-    [t('Armas'), s.dmg.gun / 1.4],
-    [t('Magia'), s.dmg.staff / 1.4],
+    [t('Armas'), c.arms.guns ? s.dmg.gun / 1.4 : null],
+    [t('Magia'), c.arms.staff ? s.dmg.staff / 1.4 : null],
     [t('Velocidade'), s.speed / 1.2],
   ];
 }
@@ -37,16 +37,27 @@ export function statBars(c: CharacterDef): HTMLElement {
         'div',
         { class: 'stat-row' },
         el('span', {}, label),
-        el('div', { class: 'stat-bar' }, el('i', { style: `width:${Math.round(Math.min(1, v) * 100)}%` })),
+        v === null
+          ? el('div', { class: 'stat-bar none' }, el('em', {}, t('não usa')))
+          : el(
+              'div',
+              { class: 'stat-bar' },
+              el('i', { style: `width:${Math.round(Math.min(1, v) * 100)}%` }),
+            ),
       ),
     ),
   );
 }
 
-/** Personagem vizinho na lista (dir = ±1, dá a volta). */
-export function nextCharacter(c: CharacterId, dir: number): CharacterId {
-  const n = CHARACTER_ORDER.length;
-  return CHARACTER_ORDER[(((CHARACTER_ORDER.indexOf(c) + dir) % n) + n) % n]!;
+/** Personagem vizinho na lista dos que dá para escolher (dir = ±1, dá a volta). */
+export function nextCharacter(
+  c: CharacterId,
+  dir: number,
+  roster: CharacterId[] = CHARACTER_ORDER,
+): CharacterId {
+  const n = roster.length;
+  const i = roster.indexOf(c);
+  return roster[(((i < 0 ? 0 : i + dir) % n) + n) % n]!;
 }
 
 /** Giro por pixel arrastado e por segundo com a tecla (ou o direcional) segurada. */
@@ -151,17 +162,14 @@ export class HeroSpin {
 }
 
 /**
- * Ficha de personagem, no jeito da loja: o personagem em 3D no espaço livre (com ◀ nome ▶ e o título embaixo dele)
- * e, à direita, a ficha com as mesmas setas, os atributos, o especial e a história. A ficha rola quando não cabe
- * na tela (qualquer aparelho).
+ * Ficha de personagem, no jeito da loja: o personagem em 3D no espaço livre e, à direita, a ficha com ◀ nome ▶, o
+ * título, os atributos, o especial e a história. A ficha rola quando não cabe na tela (qualquer aparelho).
  */
 export interface CharacterSheet {
   /** A tela inteira (espaço livre do boneco + ficha). */
   el: HTMLElement;
   /** O painel da ficha (arrastar nele não gira o boneco). */
   panel: HTMLElement;
-  /** ◀ nome ▶ e o título embaixo do boneco. */
-  stage: HTMLElement;
   render: () => void;
   /** Rola a ficha (teclado: Page Up/Down; controle: analógico direito). */
   scroll: (dy: number) => void;
@@ -175,47 +183,47 @@ export function characterSheet(o: {
   tip: string;
   extra?: HTMLElement[];
   buttons: HTMLElement[];
+  /** Personagens das setas (o secreto só depois de liberado). */
+  roster: CharacterId[];
 }): CharacterSheet {
-  const nav = (cls: string) => {
-    const name = el('b', { class: 'cs-nav-name' });
-    const sub = el('div', { class: 'cs-sub' });
-    const arrow = (dir: number, text: string, title: string) =>
-      el(
-        'button',
-        { class: 'lc-arrow', title, data: { nav: '' }, onclick: () => o.pick(nextCharacter(o.get(), dir)) },
-        text,
-      );
-    const box = el(
-      'div',
-      { class: `cs-nav ${cls}` },
-      el('div', { class: 'cs-nav-row' }, arrow(-1, '◀', t('Anterior')), name, arrow(1, '▶', t('Próximo'))),
-      sub,
+  const name = el('b', { class: 'cs-nav-name' });
+  const sub = el('div', { class: 'cs-sub' });
+  const arrow = (dir: number, text: string, title: string) =>
+    el(
+      'button',
+      {
+        class: 'lc-arrow',
+        title,
+        data: { nav: '' },
+        onclick: () => o.pick(nextCharacter(o.get(), dir, o.roster)),
+      },
+      text,
     );
-    return { box, name, sub };
-  };
-  const stage = nav('cs-stage');
-  const head = nav('cs-head');
+  const head = el(
+    'div',
+    { class: 'cs-nav cs-head' },
+    el('div', { class: 'cs-nav-row' }, arrow(-1, '◀', t('Anterior')), name, arrow(1, '▶', t('Próximo'))),
+    sub,
+  );
   const body = el('div', { class: 'wr-body cs-body', tabIndex: -1 });
   const panel = el(
     'div',
     { class: 'wr-panel cs-sheet' },
     el('h2', {}, o.title),
-    head.box,
+    head,
     body,
     el('p', { class: 'muted shop-tip' }, o.tip),
     ...(o.extra ?? []),
     el('div', { class: 'row-btns' }, ...o.buttons),
   );
-  const root = el('div', { class: 'screen wardrobe char-select' }, stage.box, panel);
+  const root = el('div', { class: 'screen wardrobe char-select' }, panel);
   let shown: CharacterId | null = null;
   const render = () => {
     const id = o.get();
     const c = CHARACTERS[id];
-    for (const x of [stage.box, panel]) x.style.setProperty('--cc', hexColor(c.color));
-    for (const n of [stage, head]) {
-      n.name.textContent = t(c.name);
-      n.sub.textContent = t(c.title);
-    }
+    panel.style.setProperty('--cc', hexColor(c.color));
+    name.textContent = t(c.name);
+    sub.textContent = t(c.title);
     if (shown === id) return;
     shown = id;
     body.replaceChildren(
@@ -232,7 +240,6 @@ export function characterSheet(o: {
   return {
     el: root,
     panel,
-    stage: stage.box,
     render,
     scroll: (dy) => body.scrollBy({ top: dy, behavior: 'smooth' }),
   };
@@ -266,6 +273,7 @@ function sheetScreen(
   },
 ): Screen {
   let cur = o.char;
+  const roster = host.profile.roster;
   const spin = new HeroSpin(host);
   const padPrev = new Map<number, boolean[]>();
   let padRepeat = 0;
@@ -283,6 +291,7 @@ function sheetScreen(
     get: () => cur,
     pick: choose,
     tip: spinTip(host.touchActive),
+    roster,
     buttons: o.buttons(() => cur),
   });
   spin.bind(sheet.el, sheet.panel);
@@ -317,8 +326,8 @@ function sheetScreen(
         return true;
       }
       if (ev?.repeat && !['ArrowUp', 'ArrowDown', 'KeyW', 'KeyS'].includes(code)) return true;
-      if (code === 'ArrowUp' || code === 'KeyW') choose(nextCharacter(cur, -1));
-      else if (code === 'ArrowDown' || code === 'KeyS') choose(nextCharacter(cur, 1));
+      if (code === 'ArrowUp' || code === 'KeyW') choose(nextCharacter(cur, -1, roster));
+      else if (code === 'ArrowDown' || code === 'KeyS') choose(nextCharacter(cur, 1, roster));
       else if (code === 'Enter' || code === 'NumpadEnter' || code === 'Space') o.main(cur);
       else if (code === 'Escape' || code === 'Backspace') back();
       return true;
@@ -334,7 +343,7 @@ function sheetScreen(
         px += d.x;
         padRepeat -= dt;
         if (d.y && padRepeat <= 0) {
-          choose(nextCharacter(cur, d.y));
+          choose(nextCharacter(cur, d.y, roster));
           padRepeat = 0.25;
         } else if (!d.y) padRepeat = Math.min(padRepeat, 0);
         // analógico direito: rola a ficha
@@ -405,9 +414,12 @@ export function characterSheetScreen(host: CharactersHost, char: CharacterId): S
 
 /**
  * Menu Personagens: todos os personagens, cada um num cartão com o rosto, o apelido, o nome e o título. Tocar num
- * cartão abre a Ficha de Personagem.
+ * cartão abre a Ficha de Personagem. O secreto aparece trancado até o jogo ser terminado. Em telas grandes (PC,
+ * tablet) cabem quantos der, quebrando a linha (e rolando para baixo se passar da tela); no celular é um carrossel
+ * que anda com o dedo ou com as setas ◀ ▶ nas pontas, na altura do Voltar.
  */
 export function charactersScreen(host: CharactersHost): Screen {
+  const unlocked = new Set(host.profile.roster);
   // rosto de cada um: aparece assim que é fotografado (sem refazer os cartões, que perderiam o foco)
   const faces = new Map<CharacterId, HTMLElement>();
   const showFace = (id: CharacterId) => {
@@ -416,43 +428,101 @@ export function charactersScreen(host: CharactersHost): Screen {
     if (box && url && !box.firstChild)
       box.appendChild(el('img', { src: url, alt: t(CHARACTERS[id].name), draggable: false }));
   };
-  const grid = el(
-    'div',
-    { class: 'chars-grid' },
-    ...CHARACTER_ORDER.map((id) => {
-      const c = CHARACTERS[id];
-      const face = el('div', { class: 'char-face' });
-      faces.set(id, face);
+  const card = (id: CharacterId) => {
+    const c = CHARACTERS[id];
+    if (!unlocked.has(id))
       return el(
         'button',
         {
-          class: 'char-card',
-          style: `--cc:${hexColor(c.color)}`,
+          class: 'char-card locked',
           data: { nav: '', char: id },
-          onclick: () => host.screens.push(characterSheetScreen(host, id)),
+          title: t('Termine o jogo para liberar'),
+          onclick: () => host.playUi('ui_back'),
         },
-        face,
-        el('b', { class: 'char-nick' }, t(c.name)),
-        el('span', { class: 'char-name' }, c.fullName),
-        el('span', { class: 'char-title' }, t(c.title)),
+        el('div', { class: 'char-face' }, el('span', { class: 'char-lock' }, '?')),
+        el('b', { class: 'char-nick' }, '???'),
+        el('span', { class: 'char-name' }, t('Personagem secreto')),
+        el('span', { class: 'char-title' }, `🔒 ${t('Termine o jogo para liberar')}`),
       );
-    }),
-  );
-  const render = () => {
-    for (const id of CHARACTER_ORDER) showFace(id);
+    const face = el('div', { class: 'char-face' });
+    faces.set(id, face);
+    return el(
+      'button',
+      {
+        class: 'char-card',
+        style: `--cc:${hexColor(c.color)}`,
+        data: { nav: '', char: id },
+        onclick: () => host.screens.push(characterSheetScreen(host, id)),
+      },
+      face,
+      el('b', { class: 'char-nick' }, t(c.name)),
+      el('span', { class: 'char-name' }, c.fullName),
+      el('span', { class: 'char-title' }, t(c.title)),
+    );
   };
+  const grid = el('div', { class: 'chars-grid' }, ...CHARACTER_ORDER.map(card));
+  const render = () => {
+    for (const id of CHARACTER_ORDER) if (unlocked.has(id)) showFace(id);
+  };
+
+  // setas do carrossel: com mais de 5 personagens e só quando não cabem todos na tela
+  const arrow = (dir: -1 | 1) =>
+    el(
+      'button',
+      {
+        class: `btn chars-arrow ${dir < 0 ? 'left' : 'right'}`,
+        title: dir < 0 ? t('Anterior') : t('Próximo'),
+        onclick: () => page(dir),
+      },
+      dir < 0 ? '◀' : '▶',
+    );
+  const prev = arrow(-1);
+  const next = arrow(1);
+  const horizontal = () => grid.scrollWidth > grid.clientWidth + 2;
+  const page = (dir: number) => {
+    const first = grid.firstElementChild as HTMLElement | null;
+    if (!first) return;
+    const gap = parseFloat(getComputedStyle(grid).columnGap) || 8;
+    if (horizontal()) grid.scrollBy({ left: dir * (first.offsetWidth + gap), behavior: 'smooth' });
+    else grid.scrollBy({ top: dir * (first.offsetHeight + gap), behavior: 'smooth' });
+  };
+  const syncArrows = () => {
+    const many = CHARACTER_ORDER.length > 5;
+    const h = horizontal();
+    const v = grid.scrollHeight > grid.clientHeight + 2;
+    const show = many && (h || v);
+    prev.hidden = next.hidden = !show;
+    if (!show) return;
+    const pos = h ? grid.scrollLeft : grid.scrollTop;
+    const max = h ? grid.scrollWidth - grid.clientWidth : grid.scrollHeight - grid.clientHeight;
+    prev.disabled = pos <= 6;
+    next.disabled = pos >= max - 6;
+  };
+  grid.addEventListener('scroll', syncArrows, { passive: true });
+
   const e = el(
     'div',
     { class: 'screen dim chars-screen' },
     el('h2', {}, t('PERSONAGENS')),
     el('p', { class: 'muted' }, t('Toque num personagem para ver a ficha completa.')),
     grid,
-    el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
+    el(
+      'div',
+      { class: 'chars-nav' },
+      prev,
+      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
+      next,
+    ),
   );
   return {
     el: e,
     id: 'characters',
-    onShow: render,
+    onShow: () => {
+      render();
+      addEventListener('resize', syncArrows);
+      requestAnimationFrame(syncArrows);
+    },
+    onHide: () => removeEventListener('resize', syncArrows),
     onBack: () => {
       host.screens.pop();
       return true;
