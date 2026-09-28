@@ -87,6 +87,8 @@ export function giveAmmo(e: Entity, t: AmmoType, amount: number): boolean {
 
 export function giveFirearm(w: World, e: Entity, id: WeaponId): void {
   const p = e.player!;
+  // quem não sabe atirar (Maga, Prodígio) nunca fica com arma de fogo na mão
+  if (!characterDef(e).arms.guns) return;
   const def = FIREARMS[id];
   if (!p.guns.includes(id)) {
     p.guns.push(id);

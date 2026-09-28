@@ -172,12 +172,14 @@ export type MoveEffect =
       explosion: ExplosionSpec;
     }
   /** Projétil lançado para a frente (bola de fogo da Maga), na altura `y`; `element` dá a cor da explosão. */
-  | { k: 'bolt'; spec: ProjectileSpec; y: number; element?: Element };
+  | { k: 'bolt'; spec: ProjectileSpec; y: number; element?: Element }
+  /** Rastro visual: um anel que cresce onde o lutador está, a cada `every` quadros ativos (tornado do Prodígio). */
+  | { k: 'trail'; r: number; every: number; ticks: number; fx: string };
 
 // ---------------------------------------------------------------------------
 // Personagens jogáveis
 // ---------------------------------------------------------------------------
-export type CharacterId = 'robot' | 'mage' | 'military' | 'cyborg' | 'mutant';
+export type CharacterId = 'robot' | 'mage' | 'military' | 'cyborg' | 'mutant' | 'prodigy';
 /** Origem do dano causado por um jogador (para os multiplicadores do personagem). */
 export type HitSource = 'melee' | 'weapon' | 'gun' | 'staff' | 'special';
 
@@ -234,6 +236,8 @@ export interface CharacterDef {
   arms: { guns: boolean; staff: boolean };
   /** Corpo metálico (sons e faíscas ao apanhar). */
   metal: boolean;
+  /** Personagem secreto: só aparece para escolher depois de terminar o jogo. */
+  secret?: boolean;
 }
 
 export interface ExplosionSpec {
@@ -814,7 +818,8 @@ export interface CosmeticDef {
   id: CosmeticId;
   name: string;
   slot: CosmeticSlot;
-  set: 'wizard' | 'zombie' | 'boss';
+  /** secret = disfarce do personagem secreto (vem junto com ele; não cai nem é vendido). */
+  set: 'wizard' | 'zombie' | 'boss' | 'secret';
   rarity: Rarity;
   /** null = só por drop. */
   price: number | null;

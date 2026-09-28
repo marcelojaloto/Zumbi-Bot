@@ -1434,11 +1434,22 @@ a.btn {
 }
 
 /* ---------------------------------------------------------------- menu Personagens */
+/* PC e tablet: quantos couberem, quebrando a linha (o próximo fica embaixo do primeiro, à esquerda); passou da tela,
+   rola para baixo */
+.chars-screen {
+  justify-content: flex-start;
+}
 .chars-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, 170px);
+  justify-content: center;
   gap: 12px;
-  width: min(1100px, 100%);
+  width: min(1240px, 100%);
+  min-height: 0;
+  flex: 0 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px;
 }
 .char-card {
   --cc: #c8c8c8;
@@ -1464,11 +1475,18 @@ a.btn {
   border-color: var(--cc);
   transform: translateY(-3px);
 }
+.char-card.locked {
+  --cc: #5a6070;
+  cursor: default;
+  opacity: 0.8;
+}
 .char-face {
   width: 100%;
   aspect-ratio: 1;
   border-radius: 10px;
   overflow: hidden;
+  display: grid;
+  place-items: center;
   background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--cc) 35%, #151823), #0b0d14 72%);
 }
 .char-face img {
@@ -1476,6 +1494,12 @@ a.btn {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+.char-lock {
+  font-family: var(--title-font);
+  font-size: 64px;
+  color: #3a4050;
+  text-shadow: 0 0 18px rgba(74, 216, 255, 0.35);
 }
 .char-nick {
   font-family: var(--title-font);
@@ -1493,11 +1517,55 @@ a.btn {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
-@media (max-width: 800px), (max-height: 500px) {
+/* Voltar no meio; as setas do carrossel nas pontas, na mesma altura */
+.chars-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  min-height: 48px;
+}
+.chars-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  padding-left: 0;
+  padding-right: 0;
+  font-size: 20px;
+}
+.chars-arrow.left {
+  left: 0;
+}
+.chars-arrow.right {
+  right: 0;
+}
+.chars-arrow:disabled {
+  opacity: 0.35;
+}
+.chars-arrow[hidden] {
+  display: none;
+}
+/* celular: carrossel numa linha só, que anda com o dedo (e com as setas) */
+@media (max-width: 700px), (max-height: 500px) {
   .chars-grid {
+    display: flex;
+    justify-content: flex-start;
     gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 4px;
+    touch-action: pan-x;
+    scrollbar-width: none;
+  }
+  .chars-grid::-webkit-scrollbar {
+    display: none;
   }
   .char-card {
+    flex: 0 0 calc((100% - 3 * 8px) / 4);
+    scroll-snap-align: start;
     padding: 6px 4px 8px;
   }
   .char-nick {
@@ -1509,10 +1577,18 @@ a.btn {
   .char-title {
     font-size: 9px;
   }
+  .char-lock {
+    font-size: 40px;
+  }
 }
 @media (max-height: 500px) {
   .char-face {
     aspect-ratio: 1.25;
+  }
+}
+@media (max-width: 480px) {
+  .char-card {
+    flex-basis: calc((100% - 8px) / 2);
   }
 }
 

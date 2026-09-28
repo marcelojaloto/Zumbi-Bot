@@ -9,6 +9,13 @@ import { dec, locale, t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
 import { HeroSpin, SPIN_QE } from './CharacterPicker';
+
+const SET_NAMES: Record<CosmeticDef['set'], string> = {
+  wizard: 'Mago',
+  zombie: 'Zumbi',
+  boss: 'Chefe',
+  secret: 'Disfarce',
+};
 import { connectedPads } from '../../input/pads';
 
 export const SLOT_NAMES: Record<CosmeticSlot, string> = {
@@ -72,11 +79,7 @@ function card(
       title: t(c.desc ?? c.name),
     },
     el('b', {}, t(c.name)),
-    el(
-      'span',
-      { style: `color:${col}` },
-      `${t(RARITY_NAMES[c.rarity])} • ${c.set === 'wizard' ? t('Mago') : c.set === 'zombie' ? t('Zumbi') : t('Chefe')}`,
-    ),
+    el('span', { style: `color:${col}` }, `${t(RARITY_NAMES[c.rarity])} • ${t(SET_NAMES[c.set])}`),
     opts.price !== undefined && opts.price !== null
       ? el('span', { class: 'price' }, `⚙ ${fmtInt(opts.price)}`)
       : null,
@@ -195,8 +198,8 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
           t('Nenhum item deste tipo ainda. Derrote zumbis e chefes ou visite a Loja!'),
         ),
       );
-    // vender
-    if (eq) {
+    // vender (o disfarce do Prodígio vem com ele e não se vende)
+    if (eq && COSMETICS[eq]?.set !== 'secret') {
       const c = COSMETICS[eq]!;
       body.appendChild(
         el(

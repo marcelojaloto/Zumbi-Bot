@@ -2,9 +2,9 @@ import { t } from '../i18n';
 import { PLAYER, xpToNext } from '../data/balance';
 import { getMap, MAPS } from '../data/maps';
 import { STAFFS } from '../data/staffs';
-import { getCharacter } from '../data/characters';
+import { getCharacter, playableCharacters } from '../data/characters';
 import type { CharacterId, CosmeticId, CosmeticSlot, StaffId, WeaponId } from '../data/types';
-import { COSMETICS, SELL_VALUE } from '../data/cosmetics';
+import { COSMETICS, SECRET_GIFTS, SELL_VALUE } from '../data/cosmetics';
 import { Rng } from '../core/rng';
 import { insertRank } from '../save/ranking';
 import type { CampaignRun, RankEntry, RankingV1, SaveV1, SettingsV1 } from '../save/schema';
@@ -32,6 +32,32 @@ export class Profile {
     if (s.recovered) this.notices.push('Save corrompido — backup restaurado');
     if (s.readOnly) this.notices.push('Save de uma versão mais nova: progresso não será gravado');
     if (s.migratedFrom !== null) this.persist();
+    // quem já terminou o jogo antes desta versão também ganha o disfarce do personagem secreto
+    if (this.secretUnlocked && this.grantSecretGifts()) this.persist();
+  }
+
+  /** Personagem secreto liberado (o jogo já foi terminado uma vez). */
+  get secretUnlocked(): boolean {
+    return this.save.flags.credits;
+  }
+
+  /** Personagens que dá para escolher agora. */
+  get roster(): CharacterId[] {
+    return playableCharacters(this.secretUnlocked);
+  }
+
+  /** Terminou o jogo pela primeira vez: libera o personagem secreto e o disfarce dele. */
+  unlockSecret(): void {
+    this.save.flags.credits = true;
+    this.grantSecretGifts();
+    this.persist();
+  }
+
+  private grantSecretGifts(): boolean {
+    const owned = this.save.cosmetics.owned;
+    const add = SECRET_GIFTS.filter((id) => !owned.includes(id));
+    owned.push(...add);
+    return add.length > 0;
   }
 
   persist(): void {
@@ -56,7 +82,8 @@ export class Profile {
     return {
       slot: 0,
       name: s.profile.name,
-      character: s.profile.character,
+      // o secreto só entra depois de liberado
+      character: this.roster.includes(s.profile.character) ? s.profile.character : 'robot',
       level: s.profile.level,
       xp: s.profile.xp,
       guns: [...s.unlocks.firearms] as WeaponId[],
@@ -270,7 +297,8 @@ export class Profile {
 
   sell(id: CosmeticId): boolean {
     const c = COSMETICS[id];
-    if (!c || !this.owns(id)) return false;
+    // o disfarce do personagem secreto vem com ele: não se vende
+    if (!c || !this.owns(id) || c.set === 'secret') return false;
     const eq = this.save.cosmetics.equipped;
     if (eq[c.slot] === id) delete eq[c.slot];
     this.save.cosmetics.owned = this.save.cosmetics.owned.filter((x) => x !== id);

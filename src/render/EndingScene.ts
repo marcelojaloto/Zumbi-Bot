@@ -15,7 +15,7 @@ import {
 } from 'three';
 import { getMap } from '../data/maps';
 import { ENEMIES } from '../data/enemies';
-import { CHARACTER_ORDER, getCharacter } from '../data/characters';
+import { CHARACTERS, HERO_ORDER, getCharacter } from '../data/characters';
 import { MOVES } from '../data/melee';
 import type { CharacterId } from '../data/types';
 import { makeFighter, makeTransform, type Entity } from '../sim/Entity';
@@ -29,10 +29,17 @@ import { CharacterView } from './views/CharacterView';
 import { CosmeticRig } from './views/Attachments';
 import { BlobShadows } from './fx/BlobShadows';
 
-/** Capítulo do final lendário: um por personagem e o epílogo com todos juntos. */
+/**
+ * Capítulo do final lendário: um por personagem, o epílogo com todos juntos e, por último, a revelação do
+ * personagem secreto (liberado bem nessa hora).
+ */
 export type EndingChapter = CharacterId | 'all';
 
-export const ENDING_CHAPTERS: EndingChapter[] = [...CHARACTER_ORDER, 'all'];
+export const ENDING_CHAPTERS: EndingChapter[] = [
+  ...HERO_ORDER,
+  'all',
+  ...(Object.keys(CHARACTERS) as CharacterId[]).filter((c) => CHARACTERS[c].secret),
+];
 
 /** Onde cada final acontece (cenário de um mapa do jogo). */
 const CHAPTER_MAP: Record<EndingChapter, string> = {
@@ -42,6 +49,7 @@ const CHAPTER_MAP: Record<EndingChapter, string> = {
   cyborg: 'centro',
   mutant: 'floresta',
   all: 'vila',
+  prodigy: 'vila',
 };
 
 const X0 = 20;
@@ -131,6 +139,9 @@ export class EndingScene {
         break;
       case 'mutant':
         this.forest();
+        break;
+      case 'prodigy':
+        this.reveal();
         break;
       default:
         this.epilogue();
@@ -550,9 +561,109 @@ export class EndingScene {
     this.cam = { x: X0 + 0.6, y: -1.05, z: 0.4, zoom: 0.62, push: 0.05 };
   }
 
+  /**
+   * Personagem secreto: um garoto de peruca preta e lentes verdes treina caratê na vila; num estalo de energia
+   * arcana, o disfarce voa longe (loiro, olhos azuis) e ele solta o Tornado Arcano, quebrando as tábuas do dojo.
+   */
+  private reveal(): void {
+    const a = this.hero('prodigy', X0 - 0.8, 0.4, 0.35);
+    a.cos?.set({ head: 'wig_black', eyes: 'lens_green' });
+    // guarda de caratê enquanto está disfarçado
+    a.pose = (h, t) => {
+      if (t > 2.4) return;
+      this.bone(h, J.upperArmL, -1.2, 0, 0.3);
+      this.bone(h, J.foreArmL, -1.7);
+      this.bone(h, J.upperArmR, -0.5, 0, -0.2);
+      this.bone(h, J.foreArmR, -2.1);
+      this.bone(h, J.thighL, -0.3 + Math.sin(t * 3) * 0.05);
+      this.bone(h, J.shinL, 0.4);
+    };
+    // estalo: o disfarce voa e o cabelo loiro aparece
+    this.later(2.2, () => {
+      a.cos?.set({});
+      const head = a.v.socket('head_top');
+      head?.getWorldPosition(_v);
+      for (let i = 0; i < 40; i++) {
+        const ang = (i / 40) * Math.PI * 2;
+        this.spark(_v.x, _v.y, _v.z, Math.cos(ang) * 2.6, Math.sin(ang) * 2.6 + 1, 0.3, 0x4ad8ff, {
+          size: 0.05,
+          life: 0.9,
+          g: 2,
+          glow: 5,
+        });
+      }
+      const wig = this.mesh(this.box, 0x141414);
+      wig.scale.set(0.24, 0.14, 0.26);
+      wig.position.copy(_v);
+      const w0 = _v.clone();
+      this.updaters.push((t) => {
+        const k = t - 2.2;
+        if (k > 2.5) {
+          wig.visible = false;
+          return;
+        }
+        wig.position.set(w0.x - k * 1.4, Math.max(0.07, w0.y + k * 4 - k * k * 5), w0.z - k * 0.6);
+        wig.rotation.set(k * 5, k * 3, k * 7);
+      });
+      this.lights.push({ x: _v.x, y: _v.y, z: _v.z + 0.5, color: 0x4ad8ff, intensity: 30 });
+    });
+    // pilhas de tábuas do dojo: o tornado quebra ao passar
+    const boards: { m: Mesh; x: number; broken: number }[] = [];
+    for (let i = 0; i < 2; i++) {
+      const x = X0 + 1.1 + i * 1.2;
+      const stand = this.mesh(this.box, 0x5a3a1a);
+      stand.scale.set(0.12, 0.9, 0.5);
+      stand.position.set(x, 0.45, 0.4);
+      const m = this.mesh(this.box, 0xc89a5a);
+      m.scale.set(0.05, 0.5, 0.5);
+      m.position.set(x, 1.15, 0.4);
+      boards.push({ m, x, broken: -1 });
+    }
+    let next = 3.2;
+    this.updaters.push((t) => {
+      if (t >= next) {
+        next = t + 5;
+        this.play(a, 'tornadoArcano');
+      }
+      // avança com o tornado e volta devagar ao lugar
+      const e = a.e;
+      const m = MOVES.tornadoArcano!;
+      const st = e.fighter!.state === 'attack' ? e.fighter!.st : -1;
+      const x0 = X0 - 0.8;
+      if (st >= m.startup && st < m.startup + m.active) e.t.x += 3 * (1 / 60);
+      else if (st < 0) e.t.x += (x0 - e.t.x) * 0.02;
+      if (st >= m.startup && st < m.startup + m.active && st % 3 === 0)
+        this.spark(e.t.x, 0.9 + this.rand() * 0.6, 0.4, (this.rand() - 0.5) * 2, 1, 0.4, 0x4ad8ff, {
+          size: 0.04,
+          life: 0.6,
+          glow: 5,
+        });
+      for (const b of boards) {
+        if (b.broken < 0 && st >= 0 && Math.abs(e.t.x - b.x) < 0.45) {
+          b.broken = t;
+          this.lights.push({ x: b.x, y: 1.2, z: 0.8, color: 0x4ad8ff, intensity: 24 });
+        }
+        if (b.broken >= 0) {
+          const k = t - b.broken;
+          if (k > 2.6) {
+            b.broken = -1;
+            b.m.position.set(b.x, 1.15, 0.4);
+            b.m.rotation.set(0, 0, 0);
+          } else {
+            b.m.position.set(b.x + k * 1.5, Math.max(0.03, 1.15 + k * 2 - k * k * 4.9), 0.4 + k * 0.4);
+            b.m.rotation.set(0, 0, k * 6);
+          }
+        }
+      }
+    });
+    this.fireflies(X0, 12, 0x9ff0ff);
+    this.lights.push({ x: X0, y: 2, z: 2, color: 0xa8e8ff, intensity: 12 });
+    this.cam = { x: X0 + 0.2, y: -0.85, z: 0.35, zoom: 0.66, push: 0.05 };
+  }
+
   /** Epílogo: os cinco juntos na vila, cada um soltando o seu especial, com fogos no céu. */
   private epilogue(): void {
-    CHARACTER_ORDER.forEach((id, i) => {
+    HERO_ORDER.forEach((id, i) => {
       const a = this.hero(id, X0 - 2.3 + i * 1.15, 0.4 - (i % 2) * 0.35, 0.15);
       let next = 1 + i * 1.2;
       this.updaters.push((t) => {

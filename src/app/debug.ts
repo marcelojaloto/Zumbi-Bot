@@ -9,7 +9,7 @@ import { STAFF_ORDER } from '../data/staffs';
 import { WEAPON_ORDER } from '../data/weapons';
 import { killEntity } from '../sim/combat/applyHit';
 import type { App } from './App';
-import { isCharacterId } from '../data/characters';
+import { getCharacter, isCharacterId } from '../data/characters';
 
 export interface DebugState {
   screen: string;
@@ -90,7 +90,10 @@ export function installDebug(app: App): void {
     },
     /** Personagem do jogador 1 nas próximas partidas. */
     setCharacter(id: string) {
-      if (isCharacterId(id)) app.profile.setCharacter(id);
+      if (!isCharacterId(id)) return;
+      // o secreto precisa estar liberado para entrar na partida
+      if (getCharacter(id).secret && !app.profile.secretUnlocked) app.profile.unlockSecret();
+      app.profile.setCharacter(id);
     },
     step(ticks: number) {
       app.session?.stepTicks(ticks);

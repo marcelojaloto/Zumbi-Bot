@@ -3,4 +3,4 @@
  * catálogo completo esteja registrado (necessário antes de sanitizar o save).
  */
 export * from './cosmeticsBase';
-import './cosmeticsList';
+export { SECRET_GIFTS } from './cosmeticsList';

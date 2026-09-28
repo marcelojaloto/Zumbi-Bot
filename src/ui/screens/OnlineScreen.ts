@@ -483,7 +483,7 @@ export function roomScreen(host: OnlineHost): Screen {
   };
   const setChar = (dir: number) => {
     const p = me();
-    if (p) choose(nextCharacter(p.char, dir));
+    if (p) choose(nextCharacter(p.char, dir, host.profile.roster));
   };
   /** Tela como a da loja: o personagem em 3D (girando com o dedo ou ←/→), a lista e os detalhes. */
   charBtn.addEventListener('click', () => openPicker());

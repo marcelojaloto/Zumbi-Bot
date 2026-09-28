@@ -86,7 +86,8 @@ const DOWN = ['ArrowDown', 'KeyS'];
  * cartão por jogador: cada um troca (←/→), confirma (pronto) e pode sair; com todos prontos, a partida começa.
  */
 export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: number }): Screen {
-  const model = new LobbyModel(host.lastDevice, host.profile.save.profile.character);
+  const roster = host.profile.roster;
+  const model = new LobbyModel(host.lastDevice, host.profile.save.profile.character, roster);
   const padPrev = new Map<number, boolean[]>();
   const padRepeat = new Map<number, number>();
   let countdown = -1;
@@ -213,6 +214,7 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
     get: () => model.character(p1()),
     pick: pickSolo,
     tip: spinTip(host.lastDevice.k === 'touch'),
+    roster,
     extra: [soloJoin],
     buttons: [
       el('button', { class: 'btn', data: { nav: '' }, onclick: close }, t('Voltar')),
@@ -273,7 +275,7 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
         return true;
       }
       if (UP.includes(code) || DOWN.includes(code)) {
-        pickSolo(nextCharacter(model.character(p1()), UP.includes(code) ? -1 : 1));
+        pickSolo(nextCharacter(model.character(p1()), UP.includes(code) ? -1 : 1, roster));
         return true;
       }
     }
@@ -349,7 +351,7 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
       const d = solo ? dir.y : dir.x;
       const rep = (padRepeat.get(gp.index) ?? 0) - dt;
       if (d && rep <= 0) {
-        if (solo) pickSolo(nextCharacter(model.character(s), d));
+        if (solo) pickSolo(nextCharacter(model.character(s), d, roster));
         else cycle(s.slot, d);
         padRepeat.set(gp.index, 0.22);
       } else padRepeat.set(gp.index, d ? rep : 0);

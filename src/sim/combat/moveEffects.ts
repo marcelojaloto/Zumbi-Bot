@@ -31,6 +31,21 @@ export function runMoveEffects(w: World, e: Entity, m: MeleeMoveDef, rel: number
           height: -1,
         });
         break;
+      case 'trail':
+        if (rel % fx.every !== 0) break;
+        spawnHazard(w, {
+          x: e.t.x,
+          z: e.t.z,
+          owner: e.id,
+          team: e.team,
+          shape: { k: 'ring', r: 0.3, width: 0.35 },
+          hit: NO_HIT,
+          active: fx.ticks,
+          grow: (fx.r - 0.3) / fx.ticks,
+          fx: fx.fx,
+          height: -1,
+        });
+        break;
       case 'shockwave':
         if (rel !== 0) break;
         spawnHazard(w, {

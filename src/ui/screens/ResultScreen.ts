@@ -3,6 +3,7 @@ import { getMap } from '../../data/maps';
 import { STAFFS } from '../../data/staffs';
 import { FIREARMS } from '../../data/weapons';
 import type { RankEntry } from '../../save/schema';
+import type { CharacterId } from '../../data/types';
 import type { RunStats } from '../../sim/events';
 import { el, fmtInt, hexColor } from '../dom';
 import { ordinal, t } from '../../i18n';
@@ -25,6 +26,8 @@ export interface ResultInfo {
   next: { mapId: string; levelIdx: number } | null;
   unlockedNext: string | null;
   ngPlusUnlocked?: boolean;
+  /** Terminou o jogo pela primeira vez: o personagem secreto foi liberado. */
+  secretUnlocked?: CharacterId;
   /** Online: o anfitrião escolhe o que vem depois; quem entrou espera. */
   online?: 'host' | 'guest';
   /** Jornada até aqui (os mapas vencidos seguem somando pontos). */
@@ -141,6 +144,17 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     );
   }
 
+  if (r.secretUnlocked) {
+    const sc = getCharacter(r.secretUnlocked);
+    rewards.appendChild(
+      el(
+        'div',
+        { class: 'reward', style: `border-color:${hexColor(sc.color)}` },
+        el('b', { style: `color:${hexColor(sc.color)}` }, `🔓 ${t('Personagem secreto liberado!')}`),
+        el('span', {}, `${t(sc.name)} — ${sc.fullName}`),
+      ),
+    );
+  }
   if (r.ngPlusUnlocked)
     rewards.appendChild(
       el(

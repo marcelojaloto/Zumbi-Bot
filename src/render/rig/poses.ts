@@ -320,6 +320,32 @@ const K: Record<string, [Key, Key]> = {
         .set(J.upperArmL, -0.8, 0, 0.8)
         .set(J.upperArmR, -0.8, 0, -0.8),
   ],
+  // Tornado Arcano: agachado para o impulso, depois gira no ar com a perna estendida (chute giratório)
+  tornado: [
+    (p) =>
+      p
+        .set(J.thighR, -0.7)
+        .set(J.shinR, 1.3)
+        .set(J.thighL, -0.4)
+        .set(J.shinL, 0.9)
+        .set(J.spine, 0.25)
+        .set(J.upperArmL, -0.6, 0, 0.4)
+        .set(J.foreArmL, -1.6)
+        .set(J.upperArmR, -0.4, 0, -0.3)
+        .set(J.foreArmR, -1.8),
+    (p) => {
+      p.set(J.thighR, -1.5, 0, -0.35)
+        .set(J.shinR, 0.05)
+        .set(J.thighL, -0.35)
+        .set(J.shinL, 1.1)
+        .set(J.spine, -0.25)
+        .set(J.upperArmL, 0, 0, 1.2)
+        .set(J.upperArmR, 0, 0, -1.2)
+        .set(J.foreArmL, -0.4)
+        .set(J.foreArmR, -0.4);
+      p.y = 0.28;
+    },
+  ],
   spin: [
     (p) =>
       p
@@ -719,7 +745,7 @@ export function attackPose(
   if (st < startup + active) {
     const t = Math.min(1, (st - startup + 1) / Math.max(2, Math.min(4, active)));
     out.mix(_a, _b, easeOut(t));
-    if (name === 'spin') {
+    if (name === 'spin' || name === 'tornado') {
       out.r[J.root * 3 + 1] = ((st - startup) / active) * P * 4;
     }
     return out;

@@ -123,7 +123,11 @@ test('chefe final: vitória mostra o final lendário, os créditos e libera o No
   await expect(page.locator('.end-name')).toHaveText('Zeca Engrenagem');
   await page.getByRole('button', { name: /Próximo/ }).click();
   await expect(page.locator('.end-head')).toContainText('A mestra da Academia');
-  await expect(page.locator('.end-dots span')).toHaveCount(6);
+  // cinco heróis, o epílogo e, por último, a revelação do personagem secreto
+  await expect(page.locator('.end-dots span')).toHaveCount(7);
+  for (let i = 0; i < 5; i++) await page.keyboard.press('ArrowRight');
+  await expect(page.locator('.end-head')).toContainText('Sem disfarce');
+  await expect(page.locator('.end-name')).toContainText('Personagem secreto liberado!');
   // "Pular" vai direto para os créditos
   await page.getByRole('button', { name: 'Pular' }).click();
   await page.waitForFunction(() => document.querySelector('.screen.credits') !== null);
@@ -131,6 +135,9 @@ test('chefe final: vitória mostra o final lendário, os créditos e libera o No
   await page.getByRole('button', { name: 'Fechar' }).click();
   await expect(page.getByText('MAPA CONCLUÍDO!')).toBeVisible();
   await expect(page.getByText('Novo Jogo+ desbloqueado!')).toBeVisible();
+  await expect(page.getByText('Personagem secreto liberado!')).toBeVisible();
+  // terminou o jogo: a jornada vai para o ranking (com o nome para trocar, se quiser)
+  await expect(page.locator('.rank-pos')).toBeVisible();
   const flags = await page.evaluate(() => JSON.parse(localStorage.getItem('zumbi-bot:save') ?? '{}').flags);
   expect(flags.ngPlus).toBe(true);
   expect(flags.credits).toBe(true);

@@ -135,7 +135,11 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       this.flags.rankdb ? { apiKey: 'test', databaseURL: this.flags.rankdb } : FIREBASE_CONFIG,
     );
     this.global.retry();
-    if (isCharacterId(this.flags.char)) this.profile.setCharacter(this.flags.char);
+    if (isCharacterId(this.flags.char)) {
+      // testes: ?char=prodigy já vem com o secreto liberado
+      if (getCharacter(this.flags.char).secret && this.flags.debug) this.profile.unlockSecret();
+      this.profile.setCharacter(this.flags.char);
+    }
     // ?party=robot,mage,... : equipe local (P1 no teclado, os outros nos controles 1, 2...)
     const party = this.flags.party.filter(isCharacterId);
     if (party.length > 1)
@@ -961,6 +965,8 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     // jornada: os pontos de cada mapa se somam; perdeu todas as vidas ou terminou o jogo, vai para o ranking
     const run = sandbox ? null : this.profile.addToRun(stats);
     const closed = run && (!victory || res.finalBoss) ? this.profile.closeRun(p.level, victory) : null;
+    // terminou o jogo pela primeira vez: o personagem secreto aparece no fim do final lendário
+    const secretNew = victory && res.finalBoss && !this.profile.save.flags.credits;
     this.screen = victory ? 'victory' : 'gameover';
     this.input.enabled = false;
     this.input.exitPointerLock();
@@ -979,13 +985,13 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
         ngPlusUnlocked: res.ngPlusUnlocked,
         run: run ? { score: run.score, maps: run.maps } : undefined,
         rank: closed ? { entry: closed.entry, pos: closed.pos, team: closed.run.team > 1 } : undefined,
+        secretUnlocked: secretNew ? 'prodigy' : undefined,
       }),
     );
     // primeira vitória sobre o chefe final: o final lendário e os créditos por cima do resultado
-    const fl = this.profile.save.flags;
-    if (victory && res.finalBoss && !fl.credits) {
-      fl.credits = true;
-      this.profile.persist();
+    if (secretNew) {
+      // terminou o jogo: libera o personagem secreto (revelado no fim do final lendário)
+      this.profile.unlockSecret();
       this.playEnding(() =>
         this.screens.replace(creditsScreen(this, { final: true, ngPlusUnlocked: res.ngPlusUnlocked })),
       );

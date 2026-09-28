@@ -187,9 +187,55 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     arms: { guns: true, staff: false },
     metal: false,
   },
+  // personagem secreto: liberado ao terminar o jogo pela primeira vez
+  prodigy: {
+    id: 'prodigy',
+    name: 'Prodígio',
+    fullName: 'Léo Aurora',
+    title: 'Caratê arcano',
+    desc: 'Rápido e ótimo de briga: caratê com magia arcana nos golpes, e usa cajados. Baixinho e frágil, não usa armas de fogo e é muito fraco com armas brancas.',
+    story:
+      'Léo Aurora tem catorze anos, é o aluno mais novo que a Academia Arcana já aceitou e faixa-preta de caratê desde os doze. Quando descobriu que conseguia passar magia pelos próprios golpes, virou alvo: o OMEGA-Z caçava qualquer criança com poderes arcanos. Léo passou o apocalipse disfarçado — peruca preta e lentes verdes ou castanhas por cima dos olhos azuis — ajudando os heróis de longe, sem ninguém desconfiar daquele garoto loiro e baixinho que sempre aparecia na hora certa.',
+    ending: {
+      title: 'Sem disfarce',
+      text: 'Com o OMEGA-Z vencido, Léo Aurora tirou a peruca preta e as lentes pela primeira vez em anos. Loiro, de olhos azuis e com o sorriso de quem acabou de ganhar um campeonato, abriu na vila o primeiro dojo arcano do mundo, onde os alunos aprendem caratê e magia ao mesmo tempo. Os heróis aparecem para treinar toda semana — e o Zumbi Bot ainda não venceu nenhuma luta contra ele.',
+    },
+    specialName: 'Tornado Arcano',
+    specialDesc:
+      'Avança girando em chutes de caratê envoltos em energia arcana, acertando várias vezes quem estiver no caminho.',
+    color: 0x4ad8ff,
+    stats: {
+      hp: 80,
+      mana: 120,
+      manaRegen: 1.25,
+      speed: 1.2,
+      jump: 1.2,
+      dmg: DMG(1.3, 1, 1.15, 0.35),
+      reload: 1,
+      hpRegen: 0,
+      hpRegenDelayS: 0,
+      mass: 0.85,
+      hitstun: 1.1,
+    },
+    resist: { electric: 0.9, necro: 0.9 },
+    special: 'tornadoArcano',
+    startMode: 'staff',
+    arms: { guns: false, staff: true },
+    metal: false,
+    secret: true,
+  },
 };
 
-export const CHARACTER_ORDER: CharacterId[] = ['robot', 'mage', 'military', 'cyborg', 'mutant'];
+/** Ordem nas telas (o secreto por último; só aparece depois de liberado). */
+export const CHARACTER_ORDER: CharacterId[] = ['robot', 'mage', 'military', 'cyborg', 'mutant', 'prodigy'];
+
+/** Personagens que dá para escolher: o secreto só depois de terminar o jogo (`secret` = liberado). */
+export function playableCharacters(secret: boolean): CharacterId[] {
+  return CHARACTER_ORDER.filter((c) => secret || !CHARACTERS[c].secret);
+}
+
+/** Os personagens de sempre (sem os secretos): o final lendário e o epílogo são deles. */
+export const HERO_ORDER: CharacterId[] = CHARACTER_ORDER.filter((c) => !CHARACTERS[c].secret);
 
 export function isCharacterId(v: unknown): v is CharacterId {
   return typeof v === 'string' && v in CHARACTERS;

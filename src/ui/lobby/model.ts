@@ -19,11 +19,16 @@ export interface LobbySlot {
 export class LobbyModel {
   slots: LobbySlot[] = [];
 
-  constructor(first: DeviceRef, char: CharacterId = 'robot') {
+  /** `roster` = personagens que dá para escolher (o secreto só depois de liberado). */
+  constructor(
+    first: DeviceRef,
+    char: CharacterId = 'robot',
+    private roster: CharacterId[] = CHARACTER_ORDER,
+  ) {
     this.slots.push({
       slot: 0,
       device: first,
-      charIdx: Math.max(0, CHARACTER_ORDER.indexOf(char)),
+      charIdx: Math.max(0, roster.indexOf(char)),
       ready: false,
     });
   }
@@ -51,7 +56,7 @@ export class LobbyModel {
     while (this.slots.some((s) => s.slot === slot)) slot = (slot + 1) as PlayerSlot;
     const used = new Set(this.slots.map((s) => s.charIdx));
     let charIdx = 0;
-    while (used.has(charIdx) && charIdx < CHARACTER_ORDER.length - 1) charIdx++;
+    while (used.has(charIdx) && charIdx < this.roster.length - 1) charIdx++;
     const s: LobbySlot = { slot, device: dev, charIdx, ready: false };
     this.slots.push(s);
     this.slots.sort((a, b) => a.slot - b.slot);
@@ -83,13 +88,13 @@ export class LobbyModel {
   cycle(slot: PlayerSlot, dir: number): void {
     const s = this.get(slot);
     if (!s || s.ready) return;
-    const n = CHARACTER_ORDER.length;
+    const n = this.roster.length;
     s.charIdx = (((s.charIdx + dir) % n) + n) % n;
   }
 
   setChar(slot: PlayerSlot, id: CharacterId): void {
     const s = this.get(slot);
-    const i = CHARACTER_ORDER.indexOf(id);
+    const i = this.roster.indexOf(id);
     if (s && i >= 0) s.charIdx = i;
   }
 
@@ -103,7 +108,7 @@ export class LobbyModel {
   }
 
   character(s: LobbySlot): CharacterId {
-    return CHARACTER_ORDER[s.charIdx] ?? 'robot';
+    return this.roster[s.charIdx] ?? 'robot';
   }
 
   members(): PartyMember[] {

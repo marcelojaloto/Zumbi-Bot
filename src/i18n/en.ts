@@ -919,4 +919,24 @@ export const EN: Record<string, string> = {
   'Nome:': 'Name:',
   'Já está salvo. Toque no nome se quiser mudar.': 'Already saved. Tap the name to change it.',
   'Não entrou no top 20 do ranking desta vez.': 'Not in the top 20 this time.',
+  'Peruca Preta': 'Black Wig',
+  'Disfarce do Prodígio.': "The Prodigy's disguise.",
+  'Lentes Verdes': 'Green Lenses',
+  'Lentes Castanhas': 'Brown Lenses',
+  Disfarce: 'Disguise',
+  Prodígio: 'Prodigy',
+  'Caratê arcano': 'Arcane karate',
+  'Rápido e ótimo de briga: caratê com magia arcana nos golpes, e usa cajados. Baixinho e frágil, não usa armas de fogo e é muito fraco com armas brancas.':
+    'Fast and a great fighter: karate with arcane magic in every strike, and uses staffs. Short and fragile, uses no firearms and is very weak with melee weapons.',
+  'Tornado Arcano': 'Arcane Tornado',
+  'Avança girando em chutes de caratê envoltos em energia arcana, acertando várias vezes quem estiver no caminho.':
+    'Spins forward in karate kicks wrapped in arcane energy, hitting everyone in the way several times.',
+  'Léo Aurora tem catorze anos, é o aluno mais novo que a Academia Arcana já aceitou e faixa-preta de caratê desde os doze. Quando descobriu que conseguia passar magia pelos próprios golpes, virou alvo: o OMEGA-Z caçava qualquer criança com poderes arcanos. Léo passou o apocalipse disfarçado — peruca preta e lentes verdes ou castanhas por cima dos olhos azuis — ajudando os heróis de longe, sem ninguém desconfiar daquele garoto loiro e baixinho que sempre aparecia na hora certa.':
+    'Léo Aurora is fourteen, the youngest student the Arcane Academy ever accepted and a karate black belt since he was twelve. When he found out he could channel magic through his own strikes, he became a target: OMEGA-Z hunted every child with arcane powers. Léo spent the apocalypse in disguise — a black wig and green or brown lenses over his blue eyes — helping the heroes from afar, and nobody ever suspected the short blond kid who always showed up at the right time.',
+  'Sem disfarce': 'No more disguise',
+  'Com o OMEGA-Z vencido, Léo Aurora tirou a peruca preta e as lentes pela primeira vez em anos. Loiro, de olhos azuis e com o sorriso de quem acabou de ganhar um campeonato, abriu na vila o primeiro dojo arcano do mundo, onde os alunos aprendem caratê e magia ao mesmo tempo. Os heróis aparecem para treinar toda semana — e o Zumbi Bot ainda não venceu nenhuma luta contra ele.':
+    "With OMEGA-Z defeated, Léo Aurora took off the black wig and the lenses for the first time in years. Blond, blue-eyed and smiling like he had just won a championship, he opened the world's first arcane dojo in the village, where students learn karate and magic at the same time. The heroes come to train every week — and Zumbi Bot still hasn't won a single fight against him.",
+  'Termine o jogo para liberar': 'Finish the game to unlock',
+  'Personagem secreto': 'Secret character',
+  'Personagem secreto liberado!': 'Secret character unlocked!',
 };
