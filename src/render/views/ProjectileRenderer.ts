@@ -87,6 +87,15 @@ export const PROJ_VISUALS: Record<ProjVisual, VisualCfg> = {
   iceball: { geo: 'ico', size: [0.38, 0.38, 0.38], color: 0xbff4ff, glow: 2.4, spin: 4 },
   mudball: { geo: 'ico', size: [0.38, 0.38, 0.38], color: 0x5a4a2a, glow: 0, lit: true, spin: 4 },
   spark: { geo: 'sphere', size: [0.12, 0.12, 0.12], color: 0xfff15a, glow: 5 },
+  // bola de fogo arcana (especial da Maga)
+  fireball_arcane: {
+    geo: 'ico',
+    size: [0.5, 0.5, 0.5],
+    color: 0xb04aff,
+    glow: 5,
+    spin: 7,
+    light: { color: 0xb05aff, intensity: 12, dist: 8 },
+  },
 };
 
 const _m = new Matrix4();

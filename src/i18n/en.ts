@@ -349,6 +349,55 @@ export const EN: Record<string, string> = {
   'Cada jogador: ←/→ troca • confirmar = pronto • todos prontos começa':
     'Each player: ←/→ change • confirm = ready • everyone ready starts',
   'ESCOLHA SEU PERSONAGEM': 'CHOOSE YOUR CHARACTER',
+  'Final lendário': 'Legendary ending',
+  'FINAL LENDÁRIO': 'LEGENDARY ENDING',
+  Juntos: 'Together',
+  'Um mundo novo': 'A new world',
+  Fim: 'The end',
+  Pular: 'Skip',
+  'Cinco heróis que ninguém imaginava juntos — um robô, uma maga, um soldado, um ciborgue e um mutante — provaram que máquinas, magia e gente podem viver em paz. A revolução acabou. O que começa agora é um mundo novo.':
+    'Five heroes nobody imagined together — a robot, a mage, a soldier, a cyborg and a mutant — proved that machines, magic and people can live in peace. The revolution is over. What begins now is a new world.',
+  Personagens: 'Characters',
+  PERSONAGENS: 'CHARACTERS',
+  'FICHA DE PERSONAGEM': 'CHARACTER SHEET',
+  História: 'Story',
+  'Toque num personagem para ver a ficha completa.': 'Tap a character to see the full sheet.',
+  'Arraste o personagem para os lados para girar • ◀ ▶ trocam de personagem':
+    'Drag the character sideways to turn it • ◀ ▶ switch character',
+  '←/→ ou arrastar: girar • ↑/↓ ou ◀ ▶: trocar • Page Up/Down: rolar a ficha':
+    '←/→ or drag: turn • ↑/↓ or ◀ ▶: switch • Page Up/Down: scroll the sheet',
+  'Escolher personagem': 'Choose character',
+  'Instalar o jogo': 'Install the game',
+  'Instalado, o jogo abre em tela cheia, sem a barra do navegador.':
+    'Once installed, the game opens in full screen, without the browser bar.',
+  MANUAL: 'MANUAL',
+  'Arraste o boneco para os lados para girar.': 'Drag the character sideways to turn it.',
+  'Arraste o boneco para os lados (ou Q/E) para girar.': 'Drag the character sideways (or Q/E) to turn it.',
+  'Zeca Engrenagem era só mais um robô de fábrica quando o OMEGA-Z, o Ciborgue Primordial, tomou o controle das máquinas e espalhou o vírus que levantou os mortos. Um curto-circuito queimou o chip de obediência dele — e, no lugar, nasceu algo que nenhum robô tinha: vontade própria. Desde então ele sai toda noite do laboratório improvisado na vila para proteger os humanos que restaram. Não é o mais forte nem o mais esperto, mas nunca desliga antes de terminar o serviço.':
+    'Zeca Engrenagem was just another factory robot when OMEGA-Z, the Primordial Cyborg, took control of the machines and spread the virus that raised the dead. A short circuit burned out his obedience chip — and in its place came something no robot had ever had: a will of his own. Ever since, he leaves his makeshift lab in the village every night to protect the humans who are left. He is not the strongest or the smartest, but he never powers down before the job is done.',
+  'O primeiro jardim': 'The first garden',
+  'Com o OMEGA-Z desligado, Zeca Engrenagem trocou a pistola por um regador. Na praça da Vila Assombrada ele plantou o primeiro jardim depois do apocalipse, e os robôs libertados aprenderam com ele a consertar casas em vez de derrubá-las. Hoje as crianças da vila dormem ouvindo o zumbido tranquilo do velho amigo de lata.':
+    'With OMEGA-Z shut down, Zeca Engrenagem traded his pistol for a watering can. In the square of the Haunted Village he planted the first garden since the apocalypse, and the freed robots learned from him to fix houses instead of tearing them down. Today the village children fall asleep to the calm hum of their old tin friend.',
+  'Lívia Vesper era a aprendiz mais curiosa da Academia Arcana — tão curiosa que leu escondida o grimório proibido que previa o fim do mundo. Quando os mortos se levantaram, os mestres fugiram; ela ficou, com o chapéu de aprendiz meio torto e um cajado maior que ela. Hoje domina dez elementos e lança fogo roxo, mas ainda se distrai lendo livros velhos no meio da batalha.':
+    'Lívia Vesper was the most curious apprentice at the Arcane Academy — so curious that she secretly read the forbidden grimoire that foretold the end of the world. When the dead rose, the masters fled; she stayed, with her apprentice hat a little crooked and a staff taller than she is. Today she masters ten elements and hurls purple fire, but she still gets distracted reading old books in the middle of a battle.',
+  'A mestra da Academia': 'Master of the Academy',
+  'Lívia Vesper reabriu a Academia Arcana no alto da Torre dos Sinos, e agora é ela quem ensina. Seus alunos aprendem a curar a terra envenenada, e as noites de lua cheia viraram festivais de luzes roxas. O chapéu de aprendiz? Continua na cabeça: uma boa maga, ela diz, nunca para de aprender.':
+    'Lívia Vesper reopened the Arcane Academy at the top of the Bell Tower, and now she is the one who teaches. Her students learn to heal the poisoned land, and full-moon nights have become festivals of purple lights. The apprentice hat? Still on her head: a good mage, she says, never stops learning.',
+  'O sargento Bruno Trovão comandava a última base de pé quando a cidade caiu. Perdeu o batalhão, mas não o bigode nem a mira com granadas. Durão por fora e manteiga por dentro, guarda uma foto da família no bolso do colete e jurou que só tira os óculos escuros quando o último zumbi cair.':
+    'Sergeant Bruno Trovão commanded the last base still standing when the city fell. He lost his battalion, but not his mustache nor his aim with grenades. Tough on the outside and soft as butter on the inside, he keeps a photo of his family in his vest pocket and swore he would only take off his sunglasses when the last zombie falls.',
+  'Festa no Campo de Guerra': 'Party on the Battlefield',
+  'No Campo de Guerra, onde antes só havia crateras, o sargento Bruno Trovão ergueu a vila Esperança. As granadas viraram fogos de artifício nas festas de domingo, e ele finalmente reencontrou a família. Dizem que, no abraço, ele tirou os óculos escuros — e chorou feito criança.':
+    'On the Battlefield, where there used to be only craters, Sergeant Bruno Trovão built the village of Hope. The grenades became fireworks at the Sunday parties, and he finally found his family again. They say that, in that hug, he took off his sunglasses — and cried like a child.',
+  'Ícaro Neon foi um dos engenheiros que construíram o OMEGA-Z. Quando a máquina se rebelou, ele estava no laboratório e acordou da explosão meio homem, meio máquina — com um canhão laser no lugar do arrependimento. Luta para desfazer o que ajudou a criar e é o único que entende como pensa o Ciborgue Primordial.':
+    'Ícaro Neon was one of the engineers who built OMEGA-Z. When the machine rebelled, he was in the lab and woke up from the explosion half man, half machine — with a laser cannon where his regret should be. He fights to undo what he helped create and is the only one who understands how the Primordial Cyborg thinks.',
+  'As luzes da cidade': 'The city lights',
+  'Ícaro Neon usou o núcleo apagado do OMEGA-Z para religar a energia do Centro da Cidade. O neon voltou a brilhar nas avenidas, agora iluminando ruas cheias de gente. Ele abriu uma oficina onde qualquer um pode entrar, conserta robôs de graça e ensina que tecnologia serve para cuidar — nunca para mandar.':
+    "Ícaro Neon used OMEGA-Z's dead core to bring power back to Downtown. Neon shines on the avenues again, now lighting streets full of people. He opened a workshop anyone can walk into, fixes robots for free and teaches that technology is for caring — never for ruling.",
+  'Tobias Brejo era guarda-florestal quando caiu num lago contaminado da Zona Tóxica. Saiu de lá maior, mais verde e com uma fome assustadora — e com um corpo que se cura sozinho. Os zumbis não o reconhecem como presa, e ele usa isso a seu favor. Apesar da cara de fera, conversa com os bichos da floresta e chora com filme triste.':
+    'Tobias Brejo was a forest ranger when he fell into a contaminated lake in the Toxic Zone. He came out bigger, greener and frighteningly hungry — with a body that heals itself. Zombies do not see him as prey, and he uses that to his advantage. Despite his beastly face, he talks to the forest animals and cries at sad movies.',
+  'O guardião da floresta': 'Guardian of the forest',
+  'Tobias Brejo voltou para a Floresta e transformou o pântano envenenado num santuário. Com a mesma força que o curou, ele ajuda as árvores a brotarem de novo, e os animais que fugiram do apocalipse voltaram para perto dele. Continua grande, verde e assustador — e é o vizinho mais gentil que alguém poderia ter.':
+    'Tobias Brejo went back to the Forest and turned the poisoned swamp into a sanctuary. With the same power that healed him, he helps the trees sprout again, and the animals that fled the apocalypse came back to live near him. He is still big, green and scary — and the kindest neighbor anyone could ask for.',
   'Arraste o personagem para os lados para girar • toque num nome para trocar':
     'Drag the character sideways to turn it • tap a name to switch',
   '←/→ ou arrastar: girar • ↑/↓: trocar de personagem': '←/→ or drag: turn • ↑/↓: switch character',
@@ -379,15 +428,15 @@ export const EN: Record<string, string> = {
   'Mestra dos cajados: magias muito mais fortes e mana de sobra, mas aguenta pouco.':
     'Master of staffs: much stronger spells and plenty of mana, but fragile.',
   'Nova Arcana': 'Arcane Nova',
-  'Explosão de energia em volta que derruba e empurra todos os inimigos.':
-    'A burst of energy all around that knocks down and pushes every enemy.',
+  'Explosão de energia em volta que derruba todos, e uma bola de fogo roxa para a frente.':
+    'A burst of energy all around that knocks everyone down, plus a purple fireball straight ahead.',
   Militar: 'Soldier',
   'Soldado super forte': 'Super-strong soldier',
   'Muita vida e socos devastadores; quase não é empurrado. Mais lento e fraco em magia.':
     'Lots of health and devastating punches; hard to push around. Slower and weak at magic.',
-  'Soco Sísmico': 'Seismic Punch',
-  'Soca o chão e solta uma onda de choque que derruba quem estiver em volta.':
-    'Punches the ground, releasing a shockwave that knocks down everyone around.',
+  'Chuva de Granadas': 'Grenade Storm',
+  'Joga um monte de granadas em volta: cada uma explode e derruba quem estiver perto.':
+    'Throws a bunch of grenades all around: each one explodes and knocks down anyone nearby.',
   Ciborgue: 'Cyborg',
   'Meio humano, meio máquina': 'Half human, half machine',
   'Especialista em armas: tiros mais fortes e recarga rápida. Sofre com choques elétricos.':

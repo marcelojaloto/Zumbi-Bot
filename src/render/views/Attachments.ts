@@ -57,6 +57,8 @@ export class CosmeticRig {
   private objs: Partial<Record<CosmeticSlot, Object3D>> = {};
   private cape: CapeState | null = null;
   private t = 0;
+  /** Peça de cabeça própria do personagem (chapéu da maga), enquanto não há item de cabeça equipado. */
+  private ownHead: Object3D | null = null;
 
   constructor(private view: CharacterView) {}
 
@@ -80,6 +82,19 @@ export class CosmeticRig {
         socket.add(o);
         this.objs[slot] = o;
       }
+    }
+    this.syncOwnHead(!equipped.head);
+  }
+
+  private syncOwnHead(show: boolean): void {
+    const recipe = this.view.rig.built.spec.defaultHead;
+    if (!recipe) return;
+    if (show && !this.ownHead) {
+      this.ownHead = recipeMesh(`own:${this.view.rig.built.spec.key}`, recipe);
+      this.view.socket('head_top')?.add(this.ownHead);
+    } else if (!show && this.ownHead) {
+      this.ownHead.parent?.remove(this.ownHead);
+      this.ownHead = null;
     }
   }
 
@@ -119,5 +134,6 @@ export class CosmeticRig {
 
   dispose(): void {
     for (const s of Object.keys(this.objs) as CosmeticSlot[]) this.clearSlot(s);
+    this.syncOwnHead(false);
   }
 }

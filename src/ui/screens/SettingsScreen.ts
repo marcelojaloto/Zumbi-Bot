@@ -4,6 +4,7 @@ import type { UiHost } from './host';
 import type { LanguageChoice, SettingsV1 } from '../../save/schema';
 import { dec, t } from '../../i18n';
 import { keyBindScreen } from './KeyBindScreen';
+import { manualScreen } from './ManualScreen';
 
 function slider(
   label: string,
@@ -312,7 +313,17 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
     el('h2', {}, t('CONFIGURAÇÕES')),
     tabs,
     body,
-    el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, t('Voltar')),
+    el(
+      'div',
+      { class: 'row-btns' },
+      el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, t('Voltar')),
+      // manual dentro do jogo (não sai da tela cheia)
+      el(
+        'button',
+        { class: 'btn', onclick: () => host.screens.push(manualScreen(host)), data: { nav: '' } },
+        `📖 ${t('Manual')}`,
+      ),
+    ),
   );
   return {
     el: e,

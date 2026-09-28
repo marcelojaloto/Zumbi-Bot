@@ -137,6 +137,8 @@ export interface MeleeMoveDef {
   effects?: MoveEffect[];
   /** Som tocado no primeiro quadro ativo. */
   sfx?: string;
+  /** Especial à distância: com a mira do mouse, o lutador vira para o lado da mira ao começar. */
+  faceAim?: boolean;
 }
 
 /** Efeitos de golpes especiais além da caixa de acerto. */
@@ -157,7 +159,20 @@ export type MoveEffect =
   /** Raio visual para a frente, repetido a cada `every` ticks ativos. */
   | { k: 'beam'; length: number; y: number; every: number }
   /** Poder temporário no próprio jogador. */
-  | { k: 'power'; power: PowerId; s: number };
+  | { k: 'power'; power: PowerId; s: number }
+  /**
+   * Granadas jogadas em volta (especial do Militar): caem a `dist` metros em todas as direções, quicam e
+   * explodem depois de `fuseS` segundos (um pouco diferente cada uma, para as explosões virem em sequência).
+   */
+  | {
+      k: 'grenades';
+      count: number;
+      dist: [number, number];
+      fuseS: [number, number];
+      explosion: ExplosionSpec;
+    }
+  /** Projétil lançado para a frente (bola de fogo da Maga), na altura `y`; `element` dá a cor da explosão. */
+  | { k: 'bolt'; spec: ProjectileSpec; y: number; element?: Element };
 
 // ---------------------------------------------------------------------------
 // Personagens jogáveis
@@ -168,10 +183,16 @@ export type HitSource = 'melee' | 'gun' | 'staff' | 'special';
 
 export interface CharacterDef {
   id: CharacterId;
-  /** Textos em português (chaves de tradução). */
+  /** Textos em português (chaves de tradução). `name` é o apelido (como todos o chamam). */
   name: string;
+  /** Nome e sobrenome (ficha de personagem). */
+  fullName: string;
   title: string;
   desc: string;
+  /** História do personagem no jogo (ficha de personagem). */
+  story: string;
+  /** Final feliz dele no final lendário (depois do OMEGA-Z). */
+  ending: { title: string; text: string };
   specialName: string;
   specialDesc: string;
   /** Cor de destaque na interface. */
@@ -187,6 +208,11 @@ export interface CharacterDef {
     dmg: Record<HitSource, number>;
     /** Velocidade de recarga (>1 = mais rápida). */
     reload: number;
+    /**
+     * Tempo de recarga da pistola (s) deste personagem — a pistola nunca acaba, então é a recarga que dita o
+     * ritmo. Sem valor, vale o da própria pistola (o ciborgue, especialista em armas).
+     */
+    pistolReloadS?: number;
     /** Regeneração de vida (HP/s) depois de `hpRegenDelayS` sem apanhar. */
     hpRegen: number;
     hpRegenDelayS: number;
@@ -252,7 +278,8 @@ export type ProjVisual =
   | 'plasma'
   | 'iceball'
   | 'mudball'
-  | 'spark';
+  | 'spark'
+  | 'fireball_arcane';
 
 export interface ProjectileSpec {
   visual: ProjVisual;

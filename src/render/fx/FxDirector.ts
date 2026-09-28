@@ -794,7 +794,39 @@ export class FxDirector {
             },
             this.rnd,
           );
-        else if (pc.visual === 'missile' && every(40)) this.smoke(e.t.x, e.t.y, e.t.z, 1, 0.3, 0x6a6a6a, 0.6);
+        // fogo roxo: rastro de chamas e faíscas lilases
+        else if (pc.visual === 'fireball_arcane' && every(60)) {
+          this.add.emit(
+            {
+              x: e.t.x,
+              y: e.t.y,
+              z: e.t.z,
+              spread: 0.45,
+              life: 0.35,
+              size: 0.38,
+              sizeEnd: 0.05,
+              color: this.rnd() < 0.5 ? 0xb04aff : 0xe07aff,
+              intensity: 4,
+            },
+            this.rnd,
+          );
+          if (every(20))
+            this.add.emit(
+              {
+                x: e.t.x,
+                y: e.t.y,
+                z: e.t.z,
+                spread: 0.3,
+                vy: 1.5,
+                life: 0.5,
+                size: 0.08,
+                color: 0xffd0ff,
+                intensity: 5,
+              },
+              this.rnd,
+            );
+        } else if (pc.visual === 'missile' && every(40))
+          this.smoke(e.t.x, e.t.y, e.t.z, 1, 0.3, 0x6a6a6a, 0.6);
         else if (
           (pc.visual === 'skull_necro' || pc.visual === 'packet_cyber' || pc.visual === 'plasma') &&
           every(25)

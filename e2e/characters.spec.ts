@@ -24,9 +24,13 @@ test('seleção de personagem antes da partida e o especial de cada um', async (
   await page.getByRole('button', { name: 'Jogar' }).click();
   await page.locator('.menu .btn.primary').click();
   await expect(page.getByText('ESCOLHA SEU PERSONAGEM')).toBeVisible();
-  await expect(page.locator('.char-select .cs-card')).toHaveCount(5);
-  await expect(page.locator('.cs-card.on')).toHaveAttribute('data-char', 'robot');
-  await expect(page.locator('.cs-name')).toHaveText('Zumbi Bot');
+  const name = page.locator('.cs-head .cs-nav-name');
+  await expect(name).toHaveText('Zumbi Bot');
+  await expect(page.locator('.cs-stage .cs-nav-name')).toHaveText('Zumbi Bot');
+  // ficha: nome e sobrenome, especial e história
+  await expect(page.locator('.cs-full')).toHaveText('Zeca Engrenagem');
+  await expect(page.locator('.cs-body')).toContainText('Giro Turbo');
+  await expect(page.locator('.cs-story')).toContainText('Zeca Engrenagem');
 
   // segurar → gira o boneco; arrastar para a esquerda no espaço livre gira de volta
   const turned = () =>
@@ -49,17 +53,29 @@ test('seleção de personagem antes da partida e o especial de cada um', async (
   await page.mouse.up();
   expect(await turned()).toBeLessThan(a - 2);
   // ←/→ não trocam de personagem
-  await expect(page.locator('.cs-name')).toHaveText('Zumbi Bot');
+  await expect(name).toHaveText('Zumbi Bot');
 
-  // ↓ troca para a Maga; tocar num nome também troca; Enter começa com o escolhido
+  // ↓ troca para a Maga; as setas ◀ ▶ (embaixo do boneco e na ficha) também trocam; Enter começa com ela
   await page.keyboard.press('ArrowDown');
-  await expect(page.locator('.cs-name')).toHaveText('Maga');
-  await expect(page.locator('.cs-info').getByText('Nova Arcana')).toBeVisible();
-  await page.locator('.cs-card[data-char="cyborg"]').click();
-  await expect(page.locator('.cs-card.on')).toHaveAttribute('data-char', 'cyborg');
-  await page.keyboard.press('ArrowUp');
-  await page.keyboard.press('ArrowUp');
-  await expect(page.locator('.cs-card.on')).toHaveAttribute('data-char', 'mage');
+  await expect(name).toHaveText('Maga');
+  await expect(page.locator('.cs-body').getByText('Nova Arcana')).toBeVisible();
+  await expect(page.locator('.cs-full')).toHaveText('Lívia Vesper');
+  await page.locator('.cs-stage .lc-arrow').nth(1).click();
+  await page.locator('.cs-stage .lc-arrow').nth(1).click();
+  await expect(name).toHaveText('Ciborgue');
+  await page.locator('.cs-head .lc-arrow').first().click();
+  await page.locator('.cs-head .lc-arrow').first().click();
+  await expect(page.locator('.cs-stage .cs-nav-name')).toHaveText('Maga');
+  // janela baixa: a ficha não cabe e rola até a história (Page Down)
+  await page.setViewportSize({ width: 1280, height: 480 });
+  await expect
+    .poll(() => page.evaluate(() => document.querySelector('.cs-body')!.scrollHeight))
+    .toBeGreaterThan(await page.evaluate(() => document.querySelector('.cs-body')!.clientHeight));
+  await page.keyboard.press('PageDown');
+  await expect
+    .poll(() => page.evaluate(() => document.querySelector('.cs-body')!.scrollTop))
+    .toBeGreaterThan(0);
+  await page.setViewportSize({ width: 1280, height: 720 });
   await page.keyboard.press('Enter');
   await page.waitForFunction(() => (window as unknown as { __game: G }).__game.state().screen === 'playing');
   expect(

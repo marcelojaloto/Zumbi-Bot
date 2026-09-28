@@ -31,10 +31,14 @@ Web Audio.
   | Personagem | Ponto forte                                             | Especial                                                |
   | ---------- | ------------------------------------------------------- | ------------------------------------------------------- |
   | Zumbi Bot  | equilibrado                                             | **Giro Turbo**: gira acertando todos em volta           |
-  | Maga       | magias muito mais fortes e mana de sobra; aguenta pouco | **Nova Arcana**: explosão em volta que derruba          |
-  | Militar    | muita vida, socos fortes, quase não é empurrado; lento  | **Soco Sísmico**: onda de choque no chão                |
+  | Maga       | magias muito mais fortes e mana de sobra; aguenta pouco | **Nova Arcana**: explosão em volta + bola de fogo roxa  |
+  | Militar    | muita vida, socos fortes, quase não é empurrado; lento  | **Chuva de Granadas**: granadas explodem em volta       |
   | Ciborgue   | tiros mais fortes e recarga rápida                      | **Raio Laser**: atravessa todos os inimigos à frente    |
   | Mutante    | rápido, pula alto e se regenera; ruim de mira           | **Fúria Mutante**: rugido + 6 s de fúria que rouba vida |
+
+  Cada um tem nome e sobrenome, uma história e o seu próprio final feliz: veja tudo no menu **Personagens** (rostos
+  e ficha completa) e, depois de vencer o OMEGA-Z, no **final lendário** — um capítulo por personagem, cada um num
+  mini cenário animado (dá para rever pelos Créditos).
 
 - **7 armas de fogo** (pistola, escopeta, submetralhadora, fuzil de assalto, rifle de precisão, metralhadora e
   lança-granadas), com dano, cadência, recuo, munição e recarga próprios. As armas novas aparecem em caixas
@@ -90,10 +94,16 @@ jogadores); a pontuação e as mensagens (que somem em 3 segundos) à direita; o
 centro. No computador, o microfone (ícone e tecla) e o FPS ficam no canto superior esquerdo e o mapa grande abre na
 tecla M; no celular, o minimapa começa oculto e aparece no botão 🗺.
 
-**Escolha do personagem:** a tela é como a loja — o personagem aparece em 3D no espaço livre e a lista e os
-detalhes (atributos e especial) ficam ao lado. Para **girar** o personagem, arraste-o para os lados com o dedo (ou
-o mouse), ou segure **←/→** no teclado ou o direcional do controle para os lados; para **trocar**, toque num nome
-ou use **↑/↓**. Na sala online, **👤 Ver os personagens** abre a mesma tela.
+**Escolha do personagem:** a tela é como a loja — o personagem aparece em 3D no espaço livre, com **◀ nome ▶**
+embaixo, e a ficha ao lado (as mesmas setas, nome e sobrenome, atributos, especial e história; a ficha rola quando
+não cabe na tela). Para **girar** o personagem, arraste-o para os lados com o dedo (ou o mouse), ou segure **←/→**
+no teclado ou o direcional do controle para os lados; para **trocar**, use as setas ◀ ▶ ou **↑/↓**. Na loja e no
+guarda-roupa o boneco também gira (arrastar, **Q/E** ou o analógico direito). Na sala online, o botão
+**👤 Personagem** (ou tocar no nome) abre a mesma tela.
+
+**Especiais à distância com o mouse:** o Raio Laser do Ciborgue e a bola de fogo da Maga saem para o lado da mira —
+o personagem vira na hora. A pistola nunca acaba, mas cada personagem recarrega no seu ritmo: o Militar é o mais
+rápido dos humanos, o Mutante o mais lento, e o Ciborgue continua o mais rápido de todos.
 
 **Multijogador local (até 5 jogadores na mesma tela):** na tela "Escolha seu personagem", cada controle entra
 apertando **A** (ou Start) e uma segunda pessoa no teclado entra com **J** — o teclado se divide em dois:
@@ -143,7 +153,11 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
 
 - **No navegador:** https://marcelojaloto.github.io/Zumbi-Bot/ — computador, celular ou tablet (Android e iPhone).
 - **No celular e no tablet:** deite o aparelho; os controles de toque aparecem sozinhos (direcional com setas à
-  esquerda, botões de ação à direita). Em "Adicionar à tela inicial", o jogo abre em tela cheia e deitado.
+  esquerda, botões de ação à direita). O jogo entra em tela cheia ao tocar em Jogar; se sair dela (outra aba ou outro
+  app), o próximo toque volta. O aviso "arraste para sair da tela cheia" é do próprio navegador e nenhum site
+  consegue escondê-lo: para jogar sem ele, instale o jogo (**📲 Instalar o jogo** no menu, quando o navegador
+  oferece, ou "Adicionar à tela inicial") ou use o app para Android — instalado, o jogo abre em tela cheia, deitado
+  e sem a barra do navegador. O manual abre dentro do jogo, em Configurações → **📖 Manual**.
 - **No iPhone (Safari):** a página não consegue entrar em tela cheia sozinha — toque em **Compartilhar → Adicionar
   à Tela de Início** e abra o Zumbi Bot por lá. O jogo online e o chat de voz funcionam no Safari (iOS 16.4 ou
   mais novo recomendado); se as vozes não tocarem, toque em **🔈 Toque para ouvir a conversa**.

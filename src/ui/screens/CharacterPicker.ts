@@ -52,8 +52,9 @@ export function nextCharacter(c: CharacterId, dir: number): CharacterId {
 /** Giro por pixel arrastado e por segundo com a tecla (ou o direcional) segurada. */
 const TURN_PER_PX = 0.012;
 const TURN_SPEED = 2.8;
-const LEFT = ['ArrowLeft', 'KeyA'];
-const RIGHT = ['ArrowRight', 'KeyD'];
+/** Teclas de giro: na escolha de personagem ←/→ (e A/D); na loja e no guarda-roupa, onde as setas andam pela lista, Q/E. */
+export const SPIN_ARROWS = { left: ['ArrowLeft', 'KeyA'], right: ['ArrowRight', 'KeyD'] };
+export const SPIN_QE = { left: ['KeyQ'], right: ['KeyE'] };
 
 /**
  * Girar o boneco: arrastando para os lados (dedo ou mouse) no espaço livre ao lado do painel, segurando ←/→ (ou A/D)
@@ -65,7 +66,10 @@ export class HeroSpin {
   private drag: { id: number; x: number } | null = null;
   private stop: (() => void) | null = null;
 
-  constructor(private host: Pick<PickerHost, 'turnMenuHero'>) {}
+  constructor(
+    private host: Pick<PickerHost, 'turnMenuHero'>,
+    private keys: { left: string[]; right: string[] } = SPIN_ARROWS,
+  ) {}
 
   /**
    * Arrastar em `area` gira o boneco; o que começa dentro de `except` (o painel) fica de fora, e nada gira
@@ -73,7 +77,13 @@ export class HeroSpin {
    */
   bind(area: HTMLElement, except: HTMLElement, enabled: () => boolean = () => true): void {
     area.addEventListener('pointerdown', (e) => {
-      if (!enabled() || except.contains(e.target as Node) || (e.pointerType === 'mouse' && e.button !== 0))
+      const target = e.target as Element;
+      if (
+        !enabled() ||
+        except.contains(target) ||
+        target.closest?.('button') ||
+        (e.pointerType === 'mouse' && e.button !== 0)
+      )
         return;
       this.drag = { id: e.pointerId, x: e.clientX };
       area.classList.add('turning');
@@ -95,7 +105,7 @@ export class HeroSpin {
 
   /** Tecla de giro apertada (true = era de giro). As repetições do teclado são ignoradas: vale o tempo segurado. */
   keyDown(code: string): boolean {
-    if (!LEFT.includes(code) && !RIGHT.includes(code)) return false;
+    if (!this.keys.left.includes(code) && !this.keys.right.includes(code)) return false;
     if (!this.held.has(code)) this.held.set(code, performance.now());
     return true;
   }
@@ -106,7 +116,7 @@ export class HeroSpin {
     if (t0 === undefined) return;
     const secs = Math.min(0.5, Math.max(0, now - t0) / 1000);
     this.held.set(code, now);
-    this.host.turnMenuHero((RIGHT.includes(code) ? 1 : -1) * TURN_SPEED * secs);
+    this.host.turnMenuHero((this.keys.right.includes(code) ? 1 : -1) * TURN_SPEED * secs);
   }
 
   /** Começa a acompanhar o soltar das teclas (enquanto a tela está aberta). */
@@ -141,64 +151,121 @@ export class HeroSpin {
 }
 
 /**
- * Painel da direita da seleção, no jeito da loja: a lista de personagens (tocar/clicar escolhe; ↑/↓ trocam) e os
- * detalhes do escolhido (atributos e especial). O personagem aparece em 3D no espaço livre ao lado.
+ * Ficha de personagem, no jeito da loja: o personagem em 3D no espaço livre (com ◀ nome ▶ e o título embaixo dele)
+ * e, à direita, a ficha com as mesmas setas, os atributos, o especial e a história. A ficha rola quando não cabe
+ * na tela (qualquer aparelho).
  */
-export function characterList(opts: {
+export interface CharacterSheet {
+  /** A tela inteira (espaço livre do boneco + ficha). */
+  el: HTMLElement;
+  /** O painel da ficha (arrastar nele não gira o boneco). */
+  panel: HTMLElement;
+  /** ◀ nome ▶ e o título embaixo do boneco. */
+  stage: HTMLElement;
+  render: () => void;
+  /** Rola a ficha (teclado: Page Up/Down; controle: analógico direito). */
+  scroll: (dy: number) => void;
+}
+
+export function characterSheet(o: {
+  title: string;
   get: () => CharacterId;
   pick: (c: CharacterId) => void;
-  disabled?: () => boolean;
-}): { list: HTMLElement; info: HTMLElement; render: () => void } {
-  const list = el('div', { class: 'cs-list' });
-  const info = el('div', { class: 'cs-info' });
-  const render = () => {
-    const cur = opts.get();
-    const off = !!opts.disabled?.();
-    list.replaceChildren(
-      ...CHARACTER_ORDER.map((id) => {
-        const c = CHARACTERS[id];
-        return el(
-          'button',
-          {
-            class: `cs-card${id === cur ? ' on' : ''}`,
-            style: `--cc:${hexColor(c.color)}`,
-            disabled: off,
-            data: { nav: '', char: id },
-            onclick: () => opts.pick(id),
-          },
-          el('b', {}, t(c.name)),
-          el('span', {}, t(c.title)),
-        );
-      }),
+  /** Dica embaixo da ficha (girar e trocar). */
+  tip: string;
+  extra?: HTMLElement[];
+  buttons: HTMLElement[];
+}): CharacterSheet {
+  const nav = (cls: string) => {
+    const name = el('b', { class: 'cs-nav-name' });
+    const sub = el('div', { class: 'cs-sub' });
+    const arrow = (dir: number, text: string, title: string) =>
+      el(
+        'button',
+        { class: 'lc-arrow', title, data: { nav: '' }, onclick: () => o.pick(nextCharacter(o.get(), dir)) },
+        text,
+      );
+    const box = el(
+      'div',
+      { class: `cs-nav ${cls}` },
+      el('div', { class: 'cs-nav-row' }, arrow(-1, '◀', t('Anterior')), name, arrow(1, '▶', t('Próximo'))),
+      sub,
     );
-    const c = CHARACTERS[cur];
-    info.style.setProperty('--cc', hexColor(c.color));
-    info.replaceChildren(
-      el('div', { class: 'cs-name' }, t(c.name)),
+    return { box, name, sub };
+  };
+  const stage = nav('cs-stage');
+  const head = nav('cs-head');
+  const body = el('div', { class: 'wr-body cs-body', tabIndex: -1 });
+  const panel = el(
+    'div',
+    { class: 'wr-panel cs-sheet' },
+    el('h2', {}, o.title),
+    head.box,
+    body,
+    el('p', { class: 'muted shop-tip' }, o.tip),
+    ...(o.extra ?? []),
+    el('div', { class: 'row-btns' }, ...o.buttons),
+  );
+  const root = el('div', { class: 'screen wardrobe char-select' }, stage.box, panel);
+  let shown: CharacterId | null = null;
+  const render = () => {
+    const id = o.get();
+    const c = CHARACTERS[id];
+    for (const x of [stage.box, panel]) x.style.setProperty('--cc', hexColor(c.color));
+    for (const n of [stage, head]) {
+      n.name.textContent = t(c.name);
+      n.sub.textContent = t(c.title);
+    }
+    if (shown === id) return;
+    shown = id;
+    body.replaceChildren(
+      el('div', { class: 'cs-full' }, c.fullName),
       el('p', { class: 'ci-desc' }, t(c.desc)),
       statBars(c),
+      el('h4', { class: 'cs-h' }, t('Especial')),
       el('div', { class: 'ci-special' }, el('b', {}, t(c.specialName)), el('span', {}, t(c.specialDesc))),
+      el('h4', { class: 'cs-h' }, t('História')),
+      el('p', { class: 'cs-story' }, t(c.story)),
     );
+    body.scrollTop = 0;
   };
-  return { list, info, render };
+  return {
+    el: root,
+    panel,
+    stage: stage.box,
+    render,
+    scroll: (dy) => body.scrollBy({ top: dy, behavior: 'smooth' }),
+  };
 }
 
 /** Dica do giro e da troca (toque ou teclado/controle). */
 export function spinTip(touch: boolean): string {
   return touch
-    ? t('Arraste o personagem para os lados para girar • toque num nome para trocar')
-    : t('←/→ ou arrastar: girar • ↑/↓: trocar de personagem');
+    ? t('Arraste o personagem para os lados para girar • ◀ ▶ trocam de personagem')
+    : t('←/→ ou arrastar: girar • ↑/↓ ou ◀ ▶: trocar • Page Up/Down: rolar a ficha');
+}
+
+/** Rolagem da ficha pelo teclado. */
+export function sheetScrollKey(code: string): number {
+  return code === 'PageDown' ? 220 : code === 'PageUp' ? -220 : 0;
 }
 
 /**
- * Escolha de personagem em tela cheia, como a loja (usada na sala online): boneco em 3D girando com o dedo ou
- * ←/→, lista e detalhes à direita; "Escolher" confirma e volta.
+ * Tela da ficha de personagem (sala online e menu Personagens): girar com o dedo, o mouse, ←/→ ou o controle;
+ * trocar com ◀ ▶ ou ↑/↓; Enter (ou A no controle) faz a ação principal.
  */
-export function characterScreen(
+function sheetScreen(
   host: PickerHost,
-  opts: { char: CharacterId; onPick: (c: CharacterId) => void },
+  o: {
+    id: string;
+    title: string;
+    char: CharacterId;
+    buttons: (cur: () => CharacterId) => HTMLElement[];
+    main: (c: CharacterId) => void;
+    onChange?: (c: CharacterId) => void;
+  },
 ): Screen {
-  let cur = opts.char;
+  let cur = o.char;
   const spin = new HeroSpin(host);
   const padPrev = new Map<number, boolean[]>();
   let padRepeat = 0;
@@ -207,37 +274,21 @@ export function characterScreen(
     cur = c;
     host.playUi('ui_hover');
     host.previewLineup([c]);
-    panel.render();
-  };
-  const panel = characterList({ get: () => cur, pick: choose });
-  const confirm = () => {
-    host.playUi('ui_click');
-    host.screens.pop();
-    opts.onPick(cur);
+    sheet.render();
+    o.onChange?.(c);
   };
   const back = () => host.screens.pop();
-  const box = el(
-    'div',
-    { class: 'wr-panel' },
-    el('h2', {}, t('ESCOLHA SEU PERSONAGEM')),
-    el('p', { class: 'muted shop-tip' }, spinTip(host.touchActive)),
-    el('div', { class: 'wr-body' }, panel.list, panel.info),
-    el(
-      'div',
-      { class: 'row-btns' },
-      el('button', { class: 'btn', data: { nav: '' }, onclick: back }, t('Voltar')),
-      el(
-        'button',
-        { class: 'btn primary', data: { nav: '', autofocus: '' }, onclick: confirm },
-        t('Escolher'),
-      ),
-    ),
-  );
-  const e = el('div', { class: 'screen wardrobe char-select' }, box);
-  spin.bind(e, box);
+  const sheet = characterSheet({
+    title: o.title,
+    get: () => cur,
+    pick: choose,
+    tip: spinTip(host.touchActive),
+    buttons: o.buttons(() => cur),
+  });
+  spin.bind(sheet.el, sheet.panel);
   return {
-    el: e,
-    id: 'character',
+    el: sheet.el,
+    id: o.id,
     ownsInput: true,
     onShow: () => {
       for (const gp of connectedPads())
@@ -248,7 +299,7 @@ export function characterScreen(
       spin.start();
       host.setMenuFocus(1);
       host.previewLineup([cur]);
-      panel.render();
+      sheet.render();
     },
     onHide: () => {
       spin.end();
@@ -260,10 +311,15 @@ export function characterScreen(
     },
     onKey: (code, ev) => {
       if (spin.keyDown(code)) return true;
+      const dy = sheetScrollKey(code);
+      if (dy) {
+        sheet.scroll(dy);
+        return true;
+      }
       if (ev?.repeat && !['ArrowUp', 'ArrowDown', 'KeyW', 'KeyS'].includes(code)) return true;
       if (code === 'ArrowUp' || code === 'KeyW') choose(nextCharacter(cur, -1));
       else if (code === 'ArrowDown' || code === 'KeyS') choose(nextCharacter(cur, 1));
-      else if (code === 'Enter' || code === 'NumpadEnter' || code === 'Space') confirm();
+      else if (code === 'Enter' || code === 'NumpadEnter' || code === 'Space') o.main(cur);
       else if (code === 'Escape' || code === 'Backspace') back();
       return true;
     },
@@ -281,10 +337,125 @@ export function characterScreen(
           choose(nextCharacter(cur, d.y));
           padRepeat = 0.25;
         } else if (!d.y) padRepeat = Math.min(padRepeat, 0);
-        if (edge(0) || edge(9)) return confirm();
+        // analógico direito: rola a ficha
+        const ry = gp.axes[3] ?? 0;
+        if (Math.abs(ry) > 0.3) sheet.scroll(ry * 600 * dt);
+        if (edge(0) || edge(9)) return o.main(cur);
         if (edge(1)) return back();
       }
       spin.update(dt, px);
+    },
+  };
+}
+
+/** Escolha de personagem da sala online: "Escolher" confirma e volta para a sala. */
+export function characterScreen(
+  host: PickerHost,
+  opts: { char: CharacterId; onPick: (c: CharacterId) => void },
+): Screen {
+  const confirm = (c: CharacterId) => {
+    host.playUi('ui_click');
+    host.screens.pop();
+    opts.onPick(c);
+  };
+  return sheetScreen(host, {
+    id: 'character',
+    title: t('ESCOLHA SEU PERSONAGEM'),
+    char: opts.char,
+    main: confirm,
+    buttons: (cur) => [
+      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
+      el(
+        'button',
+        { class: 'btn primary', data: { nav: '', autofocus: '' }, onclick: () => confirm(cur()) },
+        t('Escolher'),
+      ),
+    ],
+  });
+}
+
+/** O que o menu Personagens precisa do aplicativo. */
+export interface CharactersHost extends PickerHost {
+  /** Começa a jogar com o personagem (na próxima fase da campanha). */
+  playAs(c: CharacterId): void;
+  /** Abre os mapas já com o personagem escolhido. */
+  mapsAs(c: CharacterId): void;
+  /** Rosto do personagem (imagem) para os cartões; ainda não pronto: null, e `onReady` avisa quando ficar. */
+  portrait(c: CharacterId, onReady?: () => void): string | null;
+}
+
+/** Ficha de Personagem aberta pelo menu Personagens: Voltar, Mapas e Começar (com o personagem da ficha). */
+export function characterSheetScreen(host: CharactersHost, char: CharacterId): Screen {
+  return sheetScreen(host, {
+    id: 'sheet',
+    title: t('FICHA DE PERSONAGEM'),
+    char,
+    main: (c) => host.playAs(c),
+    buttons: (cur) => [
+      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
+      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.mapsAs(cur()) }, t('Mapas')),
+      el(
+        'button',
+        { class: 'btn primary', data: { nav: '', autofocus: '' }, onclick: () => host.playAs(cur()) },
+        t('Começar'),
+      ),
+    ],
+  });
+}
+
+/**
+ * Menu Personagens: todos os personagens, cada um num cartão com o rosto, o apelido, o nome e o título. Tocar num
+ * cartão abre a Ficha de Personagem.
+ */
+export function charactersScreen(host: CharactersHost): Screen {
+  // rosto de cada um: aparece assim que é fotografado (sem refazer os cartões, que perderiam o foco)
+  const faces = new Map<CharacterId, HTMLElement>();
+  const showFace = (id: CharacterId) => {
+    const box = faces.get(id);
+    const url = host.portrait(id, () => showFace(id));
+    if (box && url && !box.firstChild)
+      box.appendChild(el('img', { src: url, alt: t(CHARACTERS[id].name), draggable: false }));
+  };
+  const grid = el(
+    'div',
+    { class: 'chars-grid' },
+    ...CHARACTER_ORDER.map((id) => {
+      const c = CHARACTERS[id];
+      const face = el('div', { class: 'char-face' });
+      faces.set(id, face);
+      return el(
+        'button',
+        {
+          class: 'char-card',
+          style: `--cc:${hexColor(c.color)}`,
+          data: { nav: '', char: id },
+          onclick: () => host.screens.push(characterSheetScreen(host, id)),
+        },
+        face,
+        el('b', { class: 'char-nick' }, t(c.name)),
+        el('span', { class: 'char-name' }, c.fullName),
+        el('span', { class: 'char-title' }, t(c.title)),
+      );
+    }),
+  );
+  const render = () => {
+    for (const id of CHARACTER_ORDER) showFace(id);
+  };
+  const e = el(
+    'div',
+    { class: 'screen dim chars-screen' },
+    el('h2', {}, t('PERSONAGENS')),
+    el('p', { class: 'muted' }, t('Toque num personagem para ver a ficha completa.')),
+    grid,
+    el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
+  );
+  return {
+    el: e,
+    id: 'characters',
+    onShow: render,
+    onBack: () => {
+      host.screens.pop();
+      return true;
     },
   };
 }

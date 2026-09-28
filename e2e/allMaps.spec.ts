@@ -95,7 +95,7 @@ test('todos os mapas carregam, renderizam e liberam recursos', async ({ page }) 
   expect(errors).toEqual([]);
 });
 
-test('chefe final: vitória mostra créditos e libera o Novo Jogo+', async ({ page }) => {
+test('chefe final: vitória mostra o final lendário, os créditos e libera o Novo Jogo+', async ({ page }) => {
   test.setTimeout(300_000);
   const errors = collectErrors(page);
   await page.goto(`./${DEBUG_QUERY}`);
@@ -115,9 +115,18 @@ test('chefe final: vitória mostra créditos e libera o Novo Jogo+', async ({ pa
       g.step(5);
     }
   });
-  await page.waitForFunction(() => document.querySelector('.screen.credits') !== null, null, {
+  // final lendário: um capítulo por personagem (com o mini cenário) e o epílogo; "Próximo" avança
+  await page.waitForFunction(() => document.querySelector('.screen.ending') !== null, null, {
     timeout: 120_000,
   });
+  await expect(page.locator('.end-head')).toContainText('O primeiro jardim');
+  await expect(page.locator('.end-name')).toHaveText('Zeca Engrenagem');
+  await page.getByRole('button', { name: /Próximo/ }).click();
+  await expect(page.locator('.end-head')).toContainText('A mestra da Academia');
+  await expect(page.locator('.end-dots span')).toHaveCount(6);
+  // "Pular" vai direto para os créditos
+  await page.getByRole('button', { name: 'Pular' }).click();
+  await page.waitForFunction(() => document.querySelector('.screen.credits') !== null);
   await expect(page.getByText('Obrigado por jogar!')).toBeAttached();
   await page.getByRole('button', { name: 'Fechar' }).click();
   await expect(page.getByText('MAPA CONCLUÍDO!')).toBeVisible();
@@ -125,5 +134,16 @@ test('chefe final: vitória mostra créditos e libera o Novo Jogo+', async ({ pa
   const flags = await page.evaluate(() => JSON.parse(localStorage.getItem('zumbi-bot:save') ?? '{}').flags);
   expect(flags.ngPlus).toBe(true);
   expect(flags.credits).toBe(true);
+
+  // quem já venceu pode rever o final lendário pelos Créditos
+  await page
+    .getByRole('button', { name: /Menu principal|Voltar/ })
+    .first()
+    .click();
+  await page.getByRole('button', { name: 'Créditos', exact: true }).click();
+  await page.getByRole('button', { name: /Final lendário/ }).click();
+  await expect(page.locator('.end-head')).toContainText('O primeiro jardim');
+  await page.getByRole('button', { name: 'Pular' }).click();
+  await expect(page.locator('.screen.credits')).toBeVisible();
   expect(errors).toEqual([]);
 });

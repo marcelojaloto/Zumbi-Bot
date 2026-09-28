@@ -1,4 +1,4 @@
-import type { CharacterId } from '../../data/types';
+import type { CharacterId, MeshRecipe } from '../../data/types';
 import type { PartSpec, RigSpec, SocketSpec } from './RigBuilder';
 import { humanSockets, limbs, robotPlayerRig } from './rigs';
 import { HUMAN, J, humanoidJoints, type Proportions } from './skeleton';
@@ -118,11 +118,30 @@ export function mageRig(): RigSpec {
     height: 1.85,
     metal: 0.05,
     rough: 0.8,
+    defaultHead: apprenticeHat(robe, magic),
+  };
+}
+
+/**
+ * Chapéu de aprendiz de feiticeira: aba larga, copa roxa com a ponta caída para o lado, faixa lilás e uma
+ * estrelinha brilhando. Medidas no espaço do encaixe do topo da cabeça.
+ */
+function apprenticeHat(robe: number, magic: number): MeshRecipe {
+  const hat = 0x6a2fb0;
+  return {
+    parts: [
+      { shape: 'cyl', size: [0.3, 0.31, 0.035, 14], pos: [0, 0.02, 0], color: hat },
+      { shape: 'cyl', size: [0.1, 0.19, 0.28, 12], pos: [0, 0.17, 0], color: hat },
+      { shape: 'cyl', size: [0.195, 0.2, 0.055, 12], pos: [0, 0.07, 0], color: robe },
+      { shape: 'cone', size: [0.1, 0.25, 10], pos: [0.062, 0.415, 0], rot: [0, 0, -0.55], color: hat },
+      { shape: 'oct', size: [0.035], pos: [0.135, 0.525, 0], color: magic, glow: true, glowIntensity: 3 },
+      { shape: 'oct', size: [0.04], pos: [0, 0.09, 0.2], color: 0xffe07a, glow: true, glowIntensity: 3 },
+    ],
   };
 }
 
 // ---------------------------------------------------------------------------
-// Militar: largo e musculoso, colete com bolsos, camuflagem verde-oliva, boina e óculos escuros
+// Militar: largo e musculoso, colete com bolsos, camuflagem verde-oliva, boina, óculos escuros e bigode
 // ---------------------------------------------------------------------------
 export function militaryRig(): RigSpec {
   const olive = 0x4b5a2a;
@@ -162,7 +181,48 @@ export function militaryRig(): RigSpec {
     { j: J.head, shape: 'box', size: [0.29, 0.29, 0.29], at: [0, 0.15, 0.01], color: skin },
     { j: J.head, shape: 'box', size: [0.27, 0.08, 0.27], at: [0, 0.03, 0.03], color: 0xb07a4a },
     { j: J.head, shape: 'box', size: [0.3, 0.04, 0.3], at: [0, 0.3, 0], color: 0x2a2018 },
-    { j: J.head, shape: 'box', size: [0.26, 0.055, 0.02], at: [0, 0.18, 0.16], color: black },
+    // óculos escuros (duas lentes com um brilho, ponte e hastes)
+    { j: J.head, shape: 'box', size: [0.11, 0.07, 0.025], at: [0.066, 0.185, 0.165], color: 0x0c0f14 },
+    { j: J.head, shape: 'box', size: [0.11, 0.07, 0.025], at: [-0.066, 0.185, 0.165], color: 0x0c0f14 },
+    {
+      j: J.head,
+      shape: 'box',
+      size: [0.035, 0.012, 0.005],
+      at: [0.045, 0.205, 0.18],
+      color: 0xbfd8ff,
+      glow: true,
+      glowI: 0.7,
+    },
+    {
+      j: J.head,
+      shape: 'box',
+      size: [0.035, 0.012, 0.005],
+      at: [-0.087, 0.205, 0.18],
+      color: 0xbfd8ff,
+      glow: true,
+      glowI: 0.7,
+    },
+    { j: J.head, shape: 'box', size: [0.04, 0.018, 0.02], at: [0, 0.2, 0.165], color: 0x2a2e36 },
+    { j: J.head, shape: 'box', size: [0.018, 0.018, 0.17], at: [0.146, 0.2, 0.085], color: 0x2a2e36 },
+    { j: J.head, shape: 'box', size: [0.018, 0.018, 0.17], at: [-0.146, 0.2, 0.085], color: 0x2a2e36 },
+    // bigode grosso com as pontas caídas
+    { j: J.head, shape: 'box', size: [0.15, 0.04, 0.03], at: [0, 0.105, 0.165], color: 0x2a1a10 },
+    {
+      j: J.head,
+      shape: 'box',
+      size: [0.05, 0.035, 0.03],
+      at: [0.085, 0.09, 0.163],
+      rot: [0, 0, 0.55],
+      color: 0x2a1a10,
+    },
+    {
+      j: J.head,
+      shape: 'box',
+      size: [0.05, 0.035, 0.03],
+      at: [-0.085, 0.09, 0.163],
+      rot: [0, 0, -0.55],
+      color: 0x2a1a10,
+    },
     // boina vermelha inclinada
     {
       j: J.head,

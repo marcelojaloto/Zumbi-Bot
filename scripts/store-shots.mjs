@@ -131,7 +131,13 @@ async function shots(locale) {
   const pg = await open(ctx);
   const shot = async (i, page = pg) => {
     await page.waitForTimeout(700);
-    await page.screenshot({ path: `${OUT}/${tag}-${names[i]}.jpg`, type: 'jpeg', quality: 88 });
+    // telas grandes (iPad) sem placa de vídeo levam mais que o padrão de 30 s
+    await page.screenshot({
+      path: `${OUT}/${tag}-${names[i]}.jpg`,
+      type: 'jpeg',
+      quality: 88,
+      timeout: 180_000,
+    });
   };
   // perfil de quem já jogou um pouco
   await pg.evaluate(() => {
@@ -238,7 +244,7 @@ async function shots(locale) {
     timeout: 30_000,
     polling: 20,
   });
-  await pg.screenshot({ path: `${OUT}/${tag}-${names[3]}.jpg`, type: 'jpeg', quality: 88 });
+  await pg.screenshot({ path: `${OUT}/${tag}-${names[3]}.jpg`, type: 'jpeg', quality: 88, timeout: 180_000 });
   for (const g of guests) await g.close();
   await pg.evaluate(() => window.__game.app.leaveRoom());
 

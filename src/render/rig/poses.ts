@@ -530,6 +530,32 @@ const K: Record<string, [Key, Key]> = {
       p.y = -0.12;
     },
   ],
+  // Chuva de Granadas (militar): puxa as granadas do colete e arremessa com os dois braços para os lados
+  grenadeToss: [
+    (p) => {
+      p.set(J.upperArmL, -0.9, 0, 0.5)
+        .set(J.upperArmR, -0.9, 0, -0.5)
+        .set(J.foreArmL, -1.9)
+        .set(J.foreArmR, -1.9)
+        .set(J.spine, 0.25)
+        .set(J.chest, 0.15)
+        .set(J.thighL, -0.4)
+        .set(J.shinL, 0.6)
+        .set(J.thighR, -0.3)
+        .set(J.shinR, 0.5);
+      p.y = -0.12;
+    },
+    (p) => {
+      p.set(J.upperArmL, -2.5, 0, 1.25)
+        .set(J.upperArmR, -2.5, 0, -1.25)
+        .set(J.foreArmL, -0.25)
+        .set(J.foreArmR, -0.25)
+        .set(J.spine, -0.2)
+        .set(J.chest, -0.1)
+        .set(J.neck, -0.2);
+      p.y = 0.04;
+    },
+  ],
   roar: [
     (p) =>
       p.set(J.spine, 0.3).set(J.neck, 0.3).set(J.upperArmL, -0.3, 0, 0.3).set(J.upperArmR, -0.3, 0, -0.3),
