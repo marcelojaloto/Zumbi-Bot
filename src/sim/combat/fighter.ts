@@ -79,7 +79,13 @@ export function playerMeleeInput(w: World, e: Entity): void {
   if (!LOCOMOTION.has(fi.state)) return;
 
   if (sP && grounded) {
-    startMove(w, e, characterDef(e).special);
+    const sp = characterDef(e).special;
+    // especial à distância (raio, bola de fogo) com a mira do mouse: vira para o lado da mira antes de disparar
+    if (MOVES[sp]?.faceAim && p.aimMode === 1) {
+      const c = Math.cos(p.aimYaw);
+      if (Math.abs(c) > 0.05) e.t.facing = c > 0 ? 1 : -1;
+    }
+    startMove(w, e, sp);
     return;
   }
   if (jP && tryManualPickup(w, e)) return;

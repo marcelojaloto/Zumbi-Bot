@@ -11,8 +11,9 @@ import type { Screen } from '../ScreenManager';
 import type { WardrobeHost } from './WardrobeScreen';
 import {
   HeroSpin,
-  characterList,
+  characterSheet,
   nextCharacter,
+  sheetScrollKey,
   spinTip,
   statBars,
   type PickerHost,
@@ -205,24 +206,19 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
     );
   }
 
-  // sozinho: painel como o da loja
-  const soloList = characterList({ get: () => model.character(p1()), pick: pickSolo });
-  const soloTip = el('p', { class: 'muted shop-tip' });
+  // sozinho: ficha de personagem como a loja (boneco em 3D com ◀ ▶ embaixo; a ficha rola se não couber)
   const soloJoin = el('p', { class: 'muted cs-join' });
-  const soloBox = el(
-    'div',
-    { class: 'wr-panel' },
-    el('h2', {}, t('ESCOLHA SEU PERSONAGEM')),
-    soloTip,
-    el('div', { class: 'wr-body' }, soloList.list, soloList.info),
-    soloJoin,
-    el(
-      'div',
-      { class: 'row-btns' },
+  const sheet = characterSheet({
+    title: t('ESCOLHA SEU PERSONAGEM'),
+    get: () => model.character(p1()),
+    pick: pickSolo,
+    tip: spinTip(host.lastDevice.k === 'touch'),
+    extra: [soloJoin],
+    buttons: [
       el('button', { class: 'btn', data: { nav: '' }, onclick: close }, t('Voltar')),
       el('button', { class: 'btn primary', data: { nav: '', autofocus: '' }, onclick: start }, t('Começar')),
-    ),
-  );
+    ],
+  });
   const partyBtns = el(
     'div',
     { class: 'row-btns lobby-btns' },
@@ -236,7 +232,7 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
     if (solo === one) return;
     solo = one;
     e.className = one ? 'screen wardrobe char-select' : 'screen lobby';
-    e.replaceChildren(...(one ? [soloBox] : [partyTop, cards, partyBtns]));
+    e.replaceChildren(...(one ? [sheet.stage, sheet.panel] : [partyTop, cards, partyBtns]));
     host.setMenuStage(!one);
     host.setMenuFocus(one ? 1 : 0);
     if (!one) spin.end();
@@ -248,8 +244,7 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
     layout(n === 1);
     if (solo) {
       const dev = p1().device;
-      soloList.render();
-      soloTip.textContent = spinTip(dev.k === 'touch');
+      sheet.render();
       soloJoin.textContent =
         dev.k === 'touch'
           ? `🎮 ${t('Mais jogadores: aperte A num controle')}`
@@ -272,6 +267,11 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
     // sozinho: ←/→ giram o boneco (segurando), ↑/↓ trocam de personagem
     if (solo && !SPLIT_JOIN.includes(code)) {
       if (spin.keyDown(code)) return true;
+      const dy = sheetScrollKey(code);
+      if (dy) {
+        sheet.scroll(dy);
+        return true;
+      }
       if (UP.includes(code) || DOWN.includes(code)) {
         pickSolo(nextCharacter(model.character(p1()), UP.includes(code) ? -1 : 1));
         return true;
@@ -340,7 +340,12 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
         continue;
       }
       const dir = padDir(gp);
-      if (solo) turn += dir.x;
+      if (solo) {
+        turn += dir.x;
+        // analógico direito: rola a ficha
+        const ry = gp.axes[3] ?? 0;
+        if (Math.abs(ry) > 0.3) sheet.scroll(ry * 600 * dt);
+      }
       const d = solo ? dir.y : dir.x;
       const rep = (padRepeat.get(gp.index) ?? 0) - dt;
       if (d && rep <= 0) {
@@ -355,7 +360,7 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
   };
 
   const e = el('div', { class: 'screen lobby' });
-  spin.bind(e, soloBox, () => !!solo);
+  spin.bind(e, sheet.panel, () => !!solo);
   return {
     el: e,
     id: 'lobby',

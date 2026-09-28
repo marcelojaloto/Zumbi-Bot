@@ -890,7 +890,11 @@ npm install</pre>
         }
         var stored = read();
         var nav = (navigator.language || '').toLowerCase();
-        setLang(stored === 'pt' || stored === 'en' ? stored : nav.indexOf('pt') === 0 ? 'pt' : 'en');
+        // aberto de dentro do jogo: o idioma do jogo (?lang=pt|en)
+        var asked = (location.search.match(/[?&]lang=(pt|en)/) || [])[1];
+        setLang(
+          asked || (stored === 'pt' || stored === 'en' ? stored : nav.indexOf('pt') === 0 ? 'pt' : 'en'),
+        );
         var ua = navigator.userAgent;
         setOs(
           /Windows/i.test(ua)

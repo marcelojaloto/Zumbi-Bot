@@ -21,6 +21,10 @@ import { MenuScene } from '../render/MenuScene';
 import { shopScreen, wardrobeScreen } from '../ui/screens/WardrobeScreen';
 import type { CharacterId, CosmeticId, CosmeticSlot } from '../data/types';
 import { lobbyScreen, type LobbyHost } from '../ui/screens/LobbyScreen';
+import { charactersScreen, type CharactersHost } from '../ui/screens/CharacterPicker';
+import { renderPortrait } from '../render/Portraits';
+import { EndingScene, type EndingChapter } from '../render/EndingScene';
+import { endingScreen, type EndingHost } from '../ui/screens/EndingScreen';
 import { isCharacterId } from '../data/characters';
 import { SLOT_COLORS, aggregateParty, playerProgress, playerTag, type PartyMember } from './party';
 import { ClientAdapter, GuestRoom, HostRoom, type RoomNotice } from '../net/room';
@@ -68,6 +72,11 @@ function homeScreenTip(): string {
 
 export type Screen = 'boot' | 'splash' | 'menu' | 'loading' | 'playing' | 'paused' | 'gameover' | 'victory';
 
+/** Pedido de instalação do navegador (Chrome/Edge no Android e no computador). */
+interface InstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+}
+
 /** Tudo o que define uma partida (local ou online). */
 interface LaunchConfig {
   mapId: string;
@@ -83,7 +92,7 @@ interface LaunchConfig {
 }
 
 /** Aplicação: renderer único, entrada, perfil salvo, telas, HUD e a partida em andamento. */
-export class App implements LobbyHost, OnlineHost {
+export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
   readonly renderer: Renderer;
   readonly input: InputManager;
   readonly flags: UrlFlags;
@@ -205,6 +214,23 @@ export class App implements LobbyHost, OnlineHost {
     });
     // fechando a aba ou o app no meio da sala: os outros ficam sabendo na hora (e um deles assume como anfitrião)
     addEventListener('pagehide', () => this.leaveRoomQuiet());
+    // celular/tablet: se o navegador sair da tela cheia sem o jogador pedir (outra aba, outro app), o próximo
+    // toque volta para ela — sem a barra do navegador o jogo não se desarruma
+    const refull = () => {
+      if (this.wantFullscreen && !this.isFullscreen() && !document.hidden) this.toggleFullscreen(true);
+    };
+    addEventListener('pointerup', refull, true);
+    addEventListener('touchend', refull, true);
+    // navegador que deixa instalar o jogo (Android): instalado, abre em tela cheia sem barra e sem aviso
+    addEventListener('beforeinstallprompt', (ev) => {
+      ev.preventDefault();
+      this.installEvt = ev as InstallPromptEvent;
+      this.installBtn?.removeAttribute('hidden');
+    });
+    addEventListener('appinstalled', () => {
+      this.installEvt = null;
+      this.installBtn?.setAttribute('hidden', '');
+    });
     this.installNativeBack();
     // nomes das teclas como estão impressos no teclado do jogador (quando o navegador informa)
     void loadKeyboardLayout();
@@ -245,6 +271,16 @@ export class App implements LobbyHost, OnlineHost {
   private holdTimer = 0;
   /** Avisos da sala fora da partida (quem entrou, saiu, novo anfitrião). */
   private menuToasts: HTMLElement | null = null;
+  /** O jogo pediu tela cheia (celular/tablet) e o jogador não desligou pelo botão ⛶. */
+  private wantFullscreen = false;
+  /** Mini cenário do final lendário em exibição. */
+  private ending: EndingScene | null = null;
+  /** Rostos dos personagens (menu Personagens), fotografados uma vez. */
+  private portraits = new Map<CharacterId, string>();
+  private portraitWait = new Map<CharacterId, (() => void)[]>();
+  /** Pedido de instalação guardado (navegador que deixa instalar como app). */
+  private installEvt: InstallPromptEvent | null = null;
+  private installBtn: HTMLElement | null = null;
 
   /** Celular/tablet: minimapa pequeno à mostra (começa oculto; botão 🗺 da coluna do canto). */
   private touchMap = false;
@@ -295,8 +331,9 @@ export class App implements LobbyHost, OnlineHost {
         this.hud?.toast(t('Tela cheia no iPhone'), '#39e6ff', homeScreenTip());
       return;
     }
-    const d = document as Document & { webkitFullscreenElement?: Element };
-    const on = force ?? !(document.fullscreenElement || d.webkitFullscreenElement);
+    const on = force ?? !this.isFullscreen();
+    // só o celular/tablet volta sozinho para a tela cheia; desligar pelo botão ⛶ vale até ligar de novo
+    this.wantFullscreen = on && this.device !== 'desktop';
     try {
       if (on) {
         const root = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => void };
@@ -310,6 +347,24 @@ export class App implements LobbyHost, OnlineHost {
       } else if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
     } catch {
       /* sem suporte */
+    }
+  }
+
+  private isFullscreen(): boolean {
+    const d = document as Document & { webkitFullscreenElement?: Element };
+    return !!(document.fullscreenElement || d.webkitFullscreenElement);
+  }
+
+  /** Instala o jogo como app (quando o navegador oferece). */
+  private async installApp(): Promise<void> {
+    const ev = this.installEvt;
+    if (!ev) return;
+    this.installEvt = null;
+    this.installBtn?.setAttribute('hidden', '');
+    try {
+      await ev.prompt();
+    } catch {
+      /* o navegador recusou mostrar */
     }
   }
 
@@ -449,6 +504,70 @@ export class App implements LobbyHost, OnlineHost {
     } else this.menuScene.setLineup(chars);
   }
 
+  /** Rosto do personagem; ainda não fotografado: fotografa no próximo quadro e avisa em `onReady`. */
+  portrait(c: CharacterId, onReady?: () => void): string | null {
+    const url = this.portraits.get(c);
+    if (url) return url;
+    const list = this.portraitWait.get(c) ?? [];
+    if (onReady) list.push(onReady);
+    this.portraitWait.set(c, list);
+    return null;
+  }
+
+  /** Um rosto por quadro, logo antes do quadro normal (que apaga o canto usado). */
+  private shootPortrait(): void {
+    const next = this.portraitWait.keys().next();
+    if (next.done) return;
+    const c = next.value;
+    const cbs = this.portraitWait.get(c) ?? [];
+    this.portraitWait.delete(c);
+    const url = renderPortrait(this.renderer, c);
+    if (!url) return;
+    this.portraits.set(c, url);
+    for (const f of cbs) f();
+  }
+
+  /**
+   * Final lendário (depois do OMEGA-Z, ou pelos Créditos): a partida e o cenário do menu saem de cena e cada
+   * capítulo monta o seu mini cenário. `then` roda no fim (os créditos, ou voltar).
+   */
+  playEnding(then: () => void): void {
+    this.input.exitPointerLock();
+    this.endSession();
+    this.menuScene?.dispose();
+    this.menuScene = null;
+    this.music.play('menu');
+    this.screens.push(
+      endingScreen(this, {
+        onDone: () => {
+          this.ending?.dispose();
+          this.ending = null;
+          this.ensureMenuScene();
+          then();
+        },
+      }),
+    );
+  }
+
+  endingChapter(c: EndingChapter): void {
+    this.ending?.dispose();
+    this.ending = new EndingScene(this.renderer, c);
+  }
+
+  /** Menu Personagens: começa a jogar com o personagem da ficha (na próxima fase da campanha). */
+  playAs(c: CharacterId): void {
+    this.profile.setCharacter(c);
+    this.party = null;
+    const cont = this.continueTarget();
+    void this.startLevel(cont.mapId, cont.levelIdx);
+  }
+
+  /** Menu Personagens: abre os mapas com o personagem da ficha escolhido. */
+  mapsAs(c: CharacterId): void {
+    this.profile.setCharacter(c);
+    this.screens.push(mapSelectScreen(this));
+  }
+
   /** Seleção de personagem antes de começar a fase. */
   openLobby(mapId: string, levelIdx = 0): void {
     this.screens.push(lobbyScreen(this, { mapId, levelIdx }));
@@ -487,25 +606,31 @@ export class App implements LobbyHost, OnlineHost {
         ),
         b(`🌐 ${t('Jogar online')}`, () => this.openOnline()),
         b(t('Mapas'), () => this.screens.push(mapSelectScreen(this))),
+        b(t('Personagens'), () => this.screens.push(charactersScreen(this))),
         b(t('Guarda-roupa'), () => this.screens.push(wardrobeScreen(this))),
         b(t('Loja'), () => this.screens.push(shopScreen(this))),
         b(t('Ranking'), () => this.screens.push(rankingScreen(this))),
         b(t('Configurações'), () => this.openSettings()),
         b(t('Controles'), () => this.openControls()),
-        b(t('Créditos'), () => this.screens.push(creditsScreen(this))),
-        __NATIVE__
-          ? null
-          : el(
-              'a',
-              {
-                class: 'btn',
-                href: 'manual/index.html',
-                target: '_blank',
-                rel: 'noopener',
-                data: { nav: '' },
-              },
-              t('Manual'),
-            ),
+        b(t('Créditos'), () =>
+          this.screens.push(
+            creditsScreen(this, {
+              // quem já venceu o OMEGA-Z pode rever o final lendário
+              onEnding: s.flags.credits ? () => this.playEnding(() => this.screens.pop()) : undefined,
+            }),
+          ),
+        ),
+        (this.installBtn = el(
+          'button',
+          {
+            class: 'btn install-btn',
+            hidden: !this.installEvt,
+            title: t('Instalado, o jogo abre em tela cheia, sem a barra do navegador.'),
+            onclick: () => void this.installApp(),
+            data: { nav: '' },
+          },
+          `📲 ${t('Instalar o jogo')}`,
+        )),
       ),
       ...this.profile.notices.map((n) => el('p', { class: 'muted', style: 'color:#ffb02a' }, t(n))),
       el(
@@ -821,12 +946,14 @@ export class App implements LobbyHost, OnlineHost {
         ngPlusUnlocked: res.ngPlusUnlocked,
       }),
     );
-    // primeira vitória sobre o chefe final: créditos por cima do resultado
+    // primeira vitória sobre o chefe final: o final lendário e os créditos por cima do resultado
     const fl = this.profile.save.flags;
     if (victory && res.finalBoss && !fl.credits) {
       fl.credits = true;
       this.profile.persist();
-      this.screens.push(creditsScreen(this, { final: true, ngPlusUnlocked: res.ngPlusUnlocked }));
+      this.playEnding(() =>
+        this.screens.replace(creditsScreen(this, { final: true, ngPlusUnlocked: res.ngPlusUnlocked })),
+      );
     }
   }
 
@@ -1247,7 +1374,11 @@ export class App implements LobbyHost, OnlineHost {
     this.updateHold(dt);
     this.updateTouchUi();
     this.renderer.gl.info.reset();
-    if (!this.session && this.menuScene) {
+    if (this.ending) {
+      this.ending.frame(dt);
+      this.renderer.render(dt);
+    } else if (!this.session && this.menuScene) {
+      if (this.portraitWait.size) this.shootPortrait();
       this.menuScene.frame(dt);
       this.renderer.render(dt);
     }

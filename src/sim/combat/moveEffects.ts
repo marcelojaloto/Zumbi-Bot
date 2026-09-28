@@ -3,6 +3,7 @@ import type { HitSpec, MeleeMoveDef } from '../../data/types';
 import type { Entity } from '../Entity';
 import type { World } from '../World';
 import { spawnHazard } from '../systems/effects';
+import { spawnProjectile } from '../systems/projectiles';
 
 const NO_HIT: HitSpec = { damage: 0, dtype: 'blunt', knockback: 0, hitstun: 0, hitstop: 0 };
 
@@ -61,6 +62,55 @@ export function runMoveEffects(w: World, e: Entity, m: MeleeMoveDef, rel: number
           y1: y,
           z1: e.t.z,
           element: 'laser',
+        });
+        break;
+      }
+      case 'grenades': {
+        if (rel !== 0) break;
+        const [z0, z1] = w.zBand;
+        for (let i = 0; i < fx.count; i++) {
+          // em volta, com um pouco de acaso (ângulo, distância e pavio) para cair espalhado e explodir em sequência
+          const a = ((i + w.rng.next() * 0.6) / fx.count) * Math.PI * 2;
+          const d = fx.dist[0] + w.rng.next() * (fx.dist[1] - fx.dist[0]);
+          const tx = e.t.x + Math.cos(a) * d;
+          const tz = Math.max(z0 + 0.2, Math.min(z1 - 0.2, e.t.z + Math.sin(a) * d * 0.6));
+          spawnProjectile(w, {
+            owner: e,
+            x: e.t.x,
+            y: e.t.y + 1.7,
+            z: e.t.z,
+            yaw: a,
+            target: { x: tx, z: tz },
+            spec: {
+              visual: 'grenade',
+              speed: 7,
+              radius: 0.18,
+              lifeS: 4,
+              gravity: 16,
+              lob: true,
+              // encostou num inimigo no ar: explode ali mesmo (o dano é todo da explosão)
+              hit: { damage: 0, dtype: 'explosive', knockback: 0, hitstun: 0, hitstop: 0 },
+              onImpact: { explosion: fx.explosion },
+            },
+            fuseS: fx.fuseS[0] + w.rng.next() * (fx.fuseS[1] - fx.fuseS[0]),
+            fromSpecial: !!e.player,
+          });
+        }
+        w.emit({ t: 'sfx', id: 'whooshHeavy', x: e.t.x });
+        break;
+      }
+      case 'bolt': {
+        if (rel !== 0) break;
+        const f = e.t.facing;
+        spawnProjectile(w, {
+          owner: e,
+          x: e.t.x + f * 0.6,
+          y: e.t.y + fx.y,
+          z: e.t.z,
+          yaw: f > 0 ? 0 : Math.PI,
+          spec: fx.spec,
+          fromSpecial: !!e.player,
+          element: fx.element,
         });
         break;
       }

@@ -11,7 +11,7 @@ import {
   SkinnedMesh,
   Uint16BufferAttribute,
 } from 'three';
-import type { MeshPart } from '../../data/types';
+import type { MeshPart, MeshRecipe } from '../../data/types';
 import { merge, paint, place, primitive } from '../geom';
 import { bindPositions, type JointDef } from './skeleton';
 
@@ -44,6 +44,11 @@ export interface RigSpec {
   sockets: Record<string, SocketSpec>;
   /** Altura aproximada (para barras de vida, etc.). */
   height: number;
+  /**
+   * Peça de cabeça própria do personagem (o chapéu da maga), presa no encaixe do topo da cabeça. Some quando o
+   * jogador equipa um item de cabeça do guarda-roupa.
+   */
+  defaultHead?: MeshRecipe;
   metal: number;
   rough: number;
 }

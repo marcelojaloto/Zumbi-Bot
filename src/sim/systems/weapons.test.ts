@@ -43,7 +43,7 @@ describe('armas de fogo', () => {
     expect(n).toBe(10);
   });
 
-  it('pistola recarrega em 1,1 s com reserva infinita', () => {
+  it('pistola do robô recarrega em 1,9 s com reserva infinita', () => {
     const w = makeWorld();
     const p = player(w);
     const pc = p.player!;
@@ -54,7 +54,9 @@ describe('armas de fogo', () => {
     }
     expect(pc.ammoMag.pistol).toBe(0);
     expect(pc.fire.reload).toBeGreaterThan(0);
-    run(w, 66);
+    run(w, 100);
+    expect(pc.ammoMag.pistol).toBe(0);
+    run(w, 14);
     expect(pc.ammoMag.pistol).toBe(12);
   });
 

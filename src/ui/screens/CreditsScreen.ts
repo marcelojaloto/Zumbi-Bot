@@ -8,7 +8,7 @@ import type { UiHost } from './host';
 /** Créditos com rolagem (automática; setas/rolagem aceleram). `final` = depois do OMEGA-Z. */
 export function creditsScreen(
   host: UiHost,
-  opts: { final?: boolean; ngPlusUnlocked?: boolean } = {},
+  opts: { final?: boolean; ngPlusUnlocked?: boolean; onEnding?: () => void } = {},
 ): Screen {
   const block = (title: string, ...lines: string[]) =>
     el('div', { class: 'cr-block' }, el('h3', {}, title), ...lines.map((l) => el('p', {}, l)));
@@ -76,9 +76,17 @@ export function creditsScreen(
     { class: 'screen credits' },
     viewport,
     el(
-      'button',
-      { class: 'btn small cr-skip', data: { nav: '', autofocus: '' }, onclick: close },
-      t('Fechar'),
+      'div',
+      { class: 'row-btns cr-skip' },
+      // quem já venceu o OMEGA-Z pode rever o final lendário
+      opts.onEnding
+        ? el(
+            'button',
+            { class: 'btn small', data: { nav: '' }, onclick: () => opts.onEnding?.() },
+            `🏆 ${t('Final lendário')}`,
+          )
+        : null,
+      el('button', { class: 'btn small', data: { nav: '', autofocus: '' }, onclick: close }, t('Fechar')),
     ),
   );
   viewport.addEventListener('wheel', (ev) => {

@@ -399,6 +399,8 @@ export function roomScreen(host: OnlineHost): Screen {
   const stageText = el('div', { class: 'room-level' });
   const status = el('p', { class: 'room-status' });
   const mainBtn = el('button', { class: 'btn primary', data: { nav: '' } });
+  // escolha de personagem (a mesma tela da loja), à esquerda de Pronto/Começar
+  const charBtn = el('button', { class: 'btn char-btn', data: { nav: '' } }, `👤 ${t('Personagem')}`);
   let lastChar = '';
 
   // opções da sala: o anfitrião muda, os outros só veem
@@ -484,6 +486,7 @@ export function roomScreen(host: OnlineHost): Screen {
     if (p) choose(nextCharacter(p.char, dir));
   };
   /** Tela como a da loja: o personagem em 3D (girando com o dedo ou ←/→), a lista e os detalhes. */
+  charBtn.addEventListener('click', () => openPicker());
   const openPicker = () => {
     const p = me();
     const r = host.online;
@@ -576,7 +579,7 @@ export function roomScreen(host: OnlineHost): Screen {
       const locked = r.role === 'guest' && p.ready;
       mine.style.setProperty('--cc', hexColor(c.color));
       mine.replaceChildren(
-        el('div', { class: 'muted' }, t('Seu personagem')),
+        el('div', { class: 'room-me-title' }, t('Personagem')),
         el(
           'div',
           { class: 'lc-pick' },
@@ -591,7 +594,18 @@ export function roomScreen(host: OnlineHost): Screen {
             },
             '◀',
           ),
-          el('div', { class: 'lc-name' }, t(c.name)),
+          // o nome abre a escolha de personagem (como a da loja)
+          el(
+            'button',
+            {
+              class: 'lc-name lc-name-btn',
+              title: t('Escolher personagem'),
+              disabled: locked,
+              data: { nav: '' },
+              onclick: openPicker,
+            },
+            t(c.name),
+          ),
           el(
             'button',
             {
@@ -606,12 +620,8 @@ export function roomScreen(host: OnlineHost): Screen {
         ),
         el('div', { class: 'ci-title' }, t(c.title)),
         el('div', { class: 'ci-special' }, el('b', {}, t(c.specialName)), el('span', {}, t(c.specialDesc))),
-        el(
-          'button',
-          { class: 'btn small cs-open', disabled: locked, data: { nav: '' }, onclick: openPicker },
-          `👤 ${t('Ver os personagens')}`,
-        ),
       );
+      charBtn.disabled = locked;
       if (p.char !== lastChar) {
         lastChar = p.char;
         host.previewLineup([p.char]);
@@ -802,6 +812,7 @@ export function roomScreen(host: OnlineHost): Screen {
       { class: 'row-btns' },
       el('button', { class: 'btn danger', data: { nav: '' }, onclick: leave }, t('Sair da sala')),
       micBtn,
+      charBtn,
       mainBtn,
     ),
     el(

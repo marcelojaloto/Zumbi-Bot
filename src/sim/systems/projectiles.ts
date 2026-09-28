@@ -33,6 +33,8 @@ export interface ProjOpts {
   special?: ProjectileComp['special'];
   staff?: ProjectileComp['staff'];
   weapon?: ProjectileComp['weapon'];
+  fromSpecial?: boolean;
+  element?: ProjectileComp['element'];
   homingTarget?: number;
   team?: Team;
 }
@@ -93,6 +95,8 @@ export function spawnProjectile(w: World, o: ProjOpts): Entity {
       age: 0,
       staff: o.staff,
       weapon: o.weapon,
+      fromSpecial: o.fromSpecial,
+      element: o.element,
     },
   });
   return e;
@@ -142,7 +146,7 @@ function impact(w: World, p: Entity, x: number, y: number, z: number): void {
   w.emit({ t: 'impact', x, y, z, visual: pc.visual, element: undefined });
   const oi = pc.onImpact;
   const source = projSource(pc);
-  if (oi?.explosion) explode(w, x, Math.max(0.3, y), z, oi.explosion, pc.owner, p.team, undefined, source);
+  if (oi?.explosion) explode(w, x, Math.max(0.3, y), z, oi.explosion, pc.owner, p.team, pc.element, source);
   if (oi?.zone) spawnZone(w, x, z, oi.zone, pc.owner, p.team, undefined, source);
   w.remove(p.id);
 }
@@ -291,7 +295,7 @@ export function projectileSystem(w: World): void {
 
 /** Origem do dano de um projétil de jogador (cajado ou arma de fogo). */
 function projSource(pc: ProjectileComp): HitSource | undefined {
-  return pc.staff ? 'staff' : pc.weapon ? 'gun' : undefined;
+  return pc.fromSpecial ? 'special' : pc.staff ? 'staff' : pc.weapon ? 'gun' : undefined;
 }
 
 function applySpecial(w: World, p: Entity, e: Entity): void {

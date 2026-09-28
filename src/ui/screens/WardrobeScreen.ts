@@ -8,6 +8,8 @@ import { el, fmtInt, hexColor } from '../dom';
 import { dec, locale, t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
+import { HeroSpin, SPIN_QE } from './CharacterPicker';
+import { connectedPads } from '../../input/pads';
 
 export const SLOT_NAMES: Record<CosmeticSlot, string> = {
   head: 'Cabeça',
@@ -22,6 +24,37 @@ export interface WardrobeHost extends UiHost {
   /** Veste o boneco do menu; `back` vira o boneco de costas. */
   previewCosmetics(eq: Partial<Record<CosmeticSlot, string>>, back?: boolean): void;
   setMenuFocus(f: number): void;
+  /** Gira o boneco em exibição (radianos). */
+  turnMenuHero(delta: number): void;
+}
+
+/**
+ * Girar o boneco na loja e no guarda-roupa, para ver o visual todo: arrastar para os lados no espaço livre, Q/E no
+ * teclado ou o analógico direito do controle (as setas continuam andando pela lista).
+ */
+function spinner(host: WardrobeHost, screen: HTMLElement, panel: HTMLElement) {
+  const spin = new HeroSpin(host, SPIN_QE);
+  spin.bind(screen, panel);
+  return {
+    start: () => spin.start(),
+    end: () => spin.end(),
+    key: (code: string) => spin.keyDown(code),
+    update: (dt: number) => {
+      let x = 0;
+      for (const gp of connectedPads()) {
+        const a = gp.axes[2] ?? 0;
+        if (Math.abs(a) > 0.3) x += a;
+      }
+      spin.update(dt, x);
+    },
+  };
+}
+
+/** Dica do giro (toque ou teclado/controle). */
+function spinHint(host: WardrobeHost): string {
+  return host.touchActive
+    ? t('Arraste o boneco para os lados para girar.')
+    : t('Arraste o boneco para os lados (ou Q/E) para girar.');
 }
 
 function card(
@@ -202,35 +235,38 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
     ),
   );
 
-  const e = el(
+  const panel = el(
     'div',
-    { class: 'screen wardrobe' },
+    { class: 'wr-panel' },
+    el('h2', {}, t('GUARDA-ROUPA')),
+    scrap,
+    el('p', { class: 'muted shop-tip' }, spinHint(host)),
+    tabs,
+    body,
     el(
       'div',
-      { class: 'wr-panel' },
-      el('h2', {}, t('GUARDA-ROUPA')),
-      scrap,
-      tabs,
-      body,
-      el(
-        'div',
-        { class: 'row-btns' },
-        el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
-      ),
+      { class: 'row-btns' },
+      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
     ),
   );
+  const e = el('div', { class: 'screen wardrobe spin-area' }, panel);
+  const spin = spinner(host, e, panel);
   render();
   return {
     el: e,
     id: 'wardrobe',
     onShow: () => {
       host.setMenuFocus(1);
+      spin.start();
       render();
     },
     onHide: () => {
+      spin.end();
       host.previewCosmetics(prof.save.cosmetics.equipped);
       host.setMenuFocus(0);
     },
+    onKey: (code) => spin.key(code),
+    update: (dt) => spin.update(dt),
     onBack: () => {
       host.screens.pop();
       return true;
@@ -377,38 +413,44 @@ export function shopScreen(host: WardrobeHost): Screen {
     body.scrollTop = top;
     renderBar();
   };
-  const e = el(
+  const panel = el(
     'div',
-    { class: 'screen wardrobe' },
+    { class: 'wr-panel' },
+    el('h2', {}, t('LOJA')),
+    el('div', { class: 'shop-head' }, scrap, msg),
+    el(
+      'p',
+      { class: 'muted shop-tip' },
+      `${t('Escolha um item para ver no boneco antes de comprar.')} ${spinHint(host)}`,
+    ),
+    body,
+    bar,
     el(
       'div',
-      { class: 'wr-panel' },
-      el('h2', {}, t('LOJA')),
-      el('div', { class: 'shop-head' }, scrap, msg),
-      el('p', { class: 'muted shop-tip' }, t('Escolha um item para ver no boneco antes de comprar.')),
-      body,
-      bar,
-      el(
-        'div',
-        { class: 'row-btns' },
-        el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
-      ),
+      { class: 'row-btns' },
+      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
     ),
   );
+  const e = el('div', { class: 'screen wardrobe spin-area' }, panel);
+  const spin = spinner(host, e, panel);
   render();
   return {
     el: e,
     id: 'shop',
     onShow: () => {
       host.setMenuFocus(1);
+      spin.start();
       render();
     },
     onHide: () => {
       // sai sem comprar: o boneco volta com o que está equipado
       sel = null;
+      spin.end();
       host.previewCosmetics(prof.save.cosmetics.equipped);
       host.setMenuFocus(0);
     },
+    onKey: (code) => spin.key(code),
+    update: (dt) => spin.update(dt),
     onBack: () => {
       if (sel) {
         close();

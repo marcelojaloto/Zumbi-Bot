@@ -106,13 +106,60 @@ describe('personagens', () => {
     expect(hurt(b)).toBeGreaterThan(0);
   });
 
-  it('Soco Sísmico (militar): a onda de choque alcança longe', () => {
+  it('Nova Arcana (maga) lança uma bola de fogo roxa que acerta longe, à frente', () => {
+    const w = world('mage');
+    const far = walker(w, 7);
+    const behind = walker(w, -7);
+    const booms: string[] = [];
+    run(w, 1, { buttons: Btn.Special });
+    for (let i = 0; i < 60; i++) {
+      run(w, 1);
+      for (const x of w.drainEvents()) if (x.t === 'explosion') booms.push(x.element ?? '');
+    }
+    expect(hurt(far)).toBeGreaterThan(20);
+    expect(hurt(behind)).toBe(0);
+    // explodiu no alvo, em fogo arcano (roxo)
+    expect(booms).toEqual(['necro']);
+  });
+
+  it('Chuva de Granadas (militar): granadas em volta explodem dos dois lados, sem ferir o militar', () => {
     const w = world('military');
-    const near = walker(w, 1);
-    const far = walker(w, 3.6);
-    special(w, 42);
-    expect(hurt(near)).toBeGreaterThan(0);
-    expect(hurt(far)).toBeGreaterThan(0);
+    const p = player(w);
+    const ev: string[] = [];
+    const right = walker(w, 3);
+    const left = walker(w, -3);
+    run(w, 1, { buttons: Btn.Special });
+    run(w, 20);
+    const grenades = w.entities.filter((e) => e.projectile?.visual === 'grenade');
+    expect(grenades.length).toBe(8);
+    expect(grenades.every((g) => g.projectile!.fromSpecial)).toBe(true);
+    for (let i = 0; i < 150; i++) {
+      run(w, 1);
+      for (const x of w.drainEvents()) ev.push(x.t);
+    }
+    expect(ev.filter((t) => t === 'explosion').length).toBe(8);
+    expect(hurt(right)).toBeGreaterThan(0);
+    expect(hurt(left)).toBeGreaterThan(0);
+    expect(p.health!.hp).toBe(p.health!.max);
+  });
+
+  it('especial à distância com o mouse vira para o lado da mira (raio do ciborgue e bola de fogo da maga)', () => {
+    for (const id of ['cyborg', 'mage'] as const) {
+      const w = world(id);
+      const p = player(w);
+      p.t.facing = 1;
+      const left = walker(w, -5);
+      run(w, 1, { buttons: Btn.Special, aimMode: 1, aimYaw: Math.PI });
+      expect(p.t.facing, id).toBe(-1);
+      run(w, 60);
+      expect(hurt(left), id).toBeGreaterThan(0);
+    }
+    // sem mouse (teclado, controle, toque) continua para onde já estava virado
+    const w = world('cyborg');
+    const p = player(w);
+    p.t.facing = 1;
+    run(w, 1, { buttons: Btn.Special, aimMode: 0, aimYaw: Math.PI });
+    expect(p.t.facing).toBe(1);
   });
 
   it('Raio Laser (ciborgue) atravessa a faixa inteira, mas não sai dela', () => {
@@ -168,6 +215,30 @@ describe('personagens', () => {
     };
     expect(tick('robot')).toBeCloseTo(1);
     expect(tick('cyborg')).toBeCloseTo(1.35);
+  });
+
+  it('pistola: cada personagem recarrega no seu ritmo; o ciborgue é o mais rápido', () => {
+    const secs = (id: CharacterId) => {
+      const w = world(id);
+      const p = player(w).player!;
+      p.mode = 'gun';
+      p.ammoMag.pistol = 0;
+      run(w, 2, { buttons: Btn.Fire });
+      let t = 0;
+      while (p.fire.reload > 0 && t < 600) {
+        run(w, 1);
+        t++;
+      }
+      expect(p.ammoMag.pistol, id).toBe(12);
+      return t / 60;
+    };
+    const s = Object.fromEntries(CHARACTER_ORDER.map((id) => [id, secs(id)]));
+    expect(s.cyborg).toBeLessThan(1);
+    for (const id of ['robot', 'mage', 'military', 'mutant'] as const)
+      expect(s[id]!, id).toBeGreaterThan(1.5);
+    expect(s.military).toBeLessThan(s.robot!);
+    expect(s.robot).toBeLessThan(s.mage!);
+    expect(s.mage).toBeLessThan(s.mutant!);
   });
 
   it('save com personagem inválido volta para o robô', () => {

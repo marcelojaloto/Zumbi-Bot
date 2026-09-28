@@ -88,7 +88,9 @@ function startReload(w: World, e: Entity, d: FirearmDef): boolean {
   const mag = p.ammoMag[d.id] ?? 0;
   if (mag >= d.mag || reserveOf(p, d) <= 0 || p.fire.reload > 0) return false;
   if (d.reload.kind === 'mag') {
-    p.fire.reload = secToTicks(d.reload.s);
+    // pistola: cada personagem recarrega no seu ritmo (o ciborgue é o mais rápido)
+    const s = (d.id === 'pistol' ? characterDef(e).stats.pistolReloadS : undefined) ?? d.reload.s;
+    p.fire.reload = secToTicks(s);
     p.fire.reloadTotal = p.fire.reload;
     p.fire.shellReload = false;
   } else {

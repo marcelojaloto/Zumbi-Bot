@@ -77,7 +77,7 @@ test('multijogador local: controles e teclado dividido entram, jogam e veem o re
   await page.getByRole('button', { name: 'Jogar' }).click();
   await page.locator('.menu .btn.primary').click();
   // sozinho: a seleção como a loja; quem entra vira cartão
-  await expect(page.locator('.char-select .cs-card')).toHaveCount(5);
+  await expect(page.locator('.char-select .cs-head .cs-nav-name')).toBeVisible();
 
   // dois controles entram (A e Start) e uma segunda pessoa no teclado (J)
   await page.evaluate(() => {

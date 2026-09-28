@@ -53,6 +53,9 @@ export function dataKeys(): string[] {
     add(c.desc);
     add(c.specialName);
     add(c.specialDesc);
+    add(c.story);
+    add(c.ending.title);
+    add(c.ending.text);
   }
   return [...out];
 }

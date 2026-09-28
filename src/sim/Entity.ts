@@ -279,6 +279,8 @@ export interface ProjectileComp {
   age: number;
   staff?: StaffId;
   weapon?: WeaponId;
+  /** Lançado por um especial de personagem (dano conta como especial). */
+  fromSpecial?: boolean;
 }
 
 export type HazardShape =
