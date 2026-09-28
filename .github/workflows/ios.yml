@@ -45,6 +45,10 @@ jobs:
           echo "BUILD_NUMBER=${{ github.run_number }}" >> "$GITHUB_ENV"
       - name: Build do jogo para o app e cópia para o projeto iOS
         run: npm run ios:sync
+        env:
+          # ranking global (Firebase): variáveis do repositório; vazias = ranking global desligado
+          VITE_FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
+          VITE_FIREBASE_DB_URL: ${{ vars.FIREBASE_DB_URL }}
 
       - name: Compilar para o simulador
         working-directory: ios/App

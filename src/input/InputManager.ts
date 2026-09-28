@@ -22,7 +22,7 @@ export const ACTION_LABELS: Record<Action, string> = {
   up: 'Mover para o fundo',
   down: 'Mover para a frente',
   jump: 'Pular / pulo duplo',
-  punch: 'Soco / arma branca / pegar',
+  punch: 'Soco / arma branca / cajado',
   kick: 'Chute',
   special: 'Especial do personagem',
   fire: 'Atirar / conjurar',

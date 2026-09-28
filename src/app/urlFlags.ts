@@ -21,6 +21,8 @@ export interface UrlFlags {
   sala: string | null;
   /** Outro servidor PeerJS (?peer=host:porta/caminho) — testes ou servidor próprio. */
   peer: string | null;
+  /** Testes: outro banco para o ranking global (?rankdb=https://...; só com ?debug=1). */
+  rankdb: string | null;
 }
 
 export function readFlags(search = location.search): UrlFlags {
@@ -45,5 +47,6 @@ export function readFlags(search = location.search): UrlFlags {
     net: q.get('net') === 'local' ? 'local' : 'peer',
     sala: q.get('sala'),
     peer: q.get('peer'),
+    rankdb: b('debug') ? q.get('rankdb') : null,
   };
 }

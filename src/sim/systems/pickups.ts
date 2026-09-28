@@ -5,7 +5,7 @@ import { MELEE_WEAPONS } from '../../data/melee';
 import { FIREARMS, ammoCap } from '../../data/weapons';
 import type { AmmoType, ItemId, WeaponId } from '../../data/types';
 import { makeTransform, type Entity } from '../Entity';
-import { Btn, pressed } from '../InputFrame';
+import { characterDef } from '../defs';
 import type { World } from '../World';
 import { applyHeal } from '../combat/applyHit';
 import { grantCosmeticBag } from './loot';
@@ -36,23 +36,6 @@ export function spawnPickup(w: World, item: ItemId, x: number, z: number, pop = 
   });
 }
 
-/** Pickup manual mais próximo (armas no chão) ao alcance do jogador. */
-export function nearbyManualPickup(w: World, e: Entity): Entity | undefined {
-  let best: Entity | undefined;
-  let bestD = 1.0 * 1.0;
-  for (const p of w.entities) {
-    if (p.kind !== 'pickup' || !p.pickup || p.pickup.auto || p.pickup.grace > 0) continue;
-    const dx = p.t.x - e.t.x;
-    const dz = (p.t.z - e.t.z) * 1.3;
-    const d = dx * dx + dz * dz;
-    if (d < bestD) {
-      bestD = d;
-      best = p;
-    }
-  }
-  return best;
-}
-
 export function pickupSystem(w: World): void {
   const players = w.activePlayers();
   for (const pk of [...w.entities]) {
@@ -70,7 +53,13 @@ export function pickupSystem(w: World): void {
     for (const pl of players) {
       const dx = pl.t.x - pk.t.x;
       const dz = pl.t.z - pk.t.z;
-      if (dx * dx + dz * dz > 0.75 * 0.75 || pl.t.y > 1.5) continue;
+      const d2 = dx * dx + dz * dz;
+      // quem soltou a arma branca só pega de volta depois de se afastar dela
+      if (pc.owner === pl.id) {
+        if (d2 > 1.3 * 1.3) pc.owner = undefined;
+        continue;
+      }
+      if (d2 > 0.75 * 0.75 || pl.t.y > 1.5) continue;
       if (applyItem(w, pl, pc.item)) {
         w.emit({ t: 'pickup', player: pl.id, item: pc.item, x: pk.t.x, y: pk.t.y + 0.5, z: pk.t.z });
         w.remove(pk.id);
@@ -78,21 +67,6 @@ export function pickupSystem(w: World): void {
       }
     }
   }
-}
-
-/** Tenta pegar uma arma no chão com J. Retorna true se consumiu o comando. */
-export function tryManualPickup(w: World, e: Entity): boolean {
-  const p = e.player!;
-  if (!pressed(p.buttons, p.prevButtons, Btn.Punch)) return false;
-  const pk = nearbyManualPickup(w, e);
-  if (!pk) return false;
-  const item = pk.pickup!.item;
-  if (applyItem(w, e, item)) {
-    w.emit({ t: 'pickup', player: e.id, item, x: pk.t.x, y: pk.t.y + 0.5, z: pk.t.z });
-    w.remove(pk.id);
-    return true;
-  }
-  return false;
 }
 
 function currentAmmoType(e: Entity): AmmoType | null {
@@ -169,17 +143,31 @@ export function applyItem(w: World, e: Entity, item: ItemId): boolean {
       p.powers[ef.power] = secToTicks(ef.s);
       w.emit({ t: 'power', player: e.id, power: ef.power, on: true });
       return true;
-    case 'firearm':
-      giveFirearm(w, e, ef.id);
-      return true;
-    case 'melee':
-      if (p.melee) {
-        // solta a arma atual no chão
-        spawnPickup(w, `melee_${p.melee.id}`, e.t.x - e.t.facing * 0.6, e.t.z);
+    case 'firearm': {
+      // quem não sabe atirar (a maga) deixa a arma no chão para os colegas
+      if (!characterDef(e).arms.guns) return false;
+      if (!p.guns.includes(ef.id)) {
+        giveFirearm(w, e, ef.id);
+        return true;
       }
-      p.melee = { id: ef.id, durability: MELEE_WEAPONS[ef.id].durability };
+      // arma que já tem: vale como munição (sem trocar o que está na mão); cheia, fica no chão
+      const d = FIREARMS[ef.id];
+      if (d.reserveMax === 'infinite') return false;
+      return giveAmmo(e, d.ammo, d.mag);
+    }
+    case 'melee': {
+      const max = MELEE_WEAPONS[ef.id].durability;
+      // a mesma arma inteira na mão: deixa no chão
+      if (p.melee?.id === ef.id && p.melee.durability >= max) return false;
+      if (p.melee && p.melee.id !== ef.id) {
+        // solta a arma atual no chão (quem soltou só pega de volta depois de se afastar)
+        const drop = spawnPickup(w, `melee_${p.melee.id}`, e.t.x - e.t.facing * 0.6, e.t.z);
+        if (drop) drop.pickup!.owner = e.id;
+      }
+      p.melee = { id: ef.id, durability: max };
       w.emit({ t: 'weaponSwap', id: e.id, mode: p.mode, weapon: ef.id });
       return true;
+    }
     case 'scrap':
       p.scrap += ef.amount;
       return true;

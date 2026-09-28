@@ -328,6 +328,8 @@ export interface PickupComp {
   despawn: number;
   /** Ticks até poder ser coletado. */
   grace: number;
+  /** Arma branca solta por este jogador: ele só pega de volta depois de se afastar (senão trocaria sem parar). */
+  owner?: EntityId;
 }
 
 export interface PropComp {

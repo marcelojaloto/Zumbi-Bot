@@ -16,14 +16,14 @@ export interface PickerHost extends UiHost {
   turnMenuHero(delta: number): void;
 }
 
-/** Barras de atributos (rótulo já traduzido, valor 0..1) mostradas na seleção. */
-export function characterBars(c: CharacterDef): [string, number][] {
+/** Barras de atributos (rótulo já traduzido, valor 0..1; null = não usa) mostradas na seleção. */
+export function characterBars(c: CharacterDef): [string, number | null][] {
   const s = c.stats;
   return [
     [t('Vida'), s.hp / 150],
     [t('Força'), s.dmg.melee / 1.4],
-    [t('Armas'), s.dmg.gun / 1.4],
-    [t('Magia'), s.dmg.staff / 1.4],
+    [t('Armas'), c.arms.guns ? s.dmg.gun / 1.4 : null],
+    [t('Magia'), c.arms.staff ? s.dmg.staff / 1.4 : null],
     [t('Velocidade'), s.speed / 1.2],
   ];
 }
@@ -37,7 +37,13 @@ export function statBars(c: CharacterDef): HTMLElement {
         'div',
         { class: 'stat-row' },
         el('span', {}, label),
-        el('div', { class: 'stat-bar' }, el('i', { style: `width:${Math.round(Math.min(1, v) * 100)}%` })),
+        v === null
+          ? el('div', { class: 'stat-bar none' }, el('em', {}, t('não usa')))
+          : el(
+              'div',
+              { class: 'stat-bar' },
+              el('i', { style: `width:${Math.round(Math.min(1, v) * 100)}%` }),
+            ),
       ),
     ),
   );
@@ -151,17 +157,14 @@ export class HeroSpin {
 }
 
 /**
- * Ficha de personagem, no jeito da loja: o personagem em 3D no espaço livre (com ◀ nome ▶ e o título embaixo dele)
- * e, à direita, a ficha com as mesmas setas, os atributos, o especial e a história. A ficha rola quando não cabe
- * na tela (qualquer aparelho).
+ * Ficha de personagem, no jeito da loja: o personagem em 3D no espaço livre e, à direita, a ficha com ◀ nome ▶, o
+ * título, os atributos, o especial e a história. A ficha rola quando não cabe na tela (qualquer aparelho).
  */
 export interface CharacterSheet {
   /** A tela inteira (espaço livre do boneco + ficha). */
   el: HTMLElement;
   /** O painel da ficha (arrastar nele não gira o boneco). */
   panel: HTMLElement;
-  /** ◀ nome ▶ e o título embaixo do boneco. */
-  stage: HTMLElement;
   render: () => void;
   /** Rola a ficha (teclado: Page Up/Down; controle: analógico direito). */
   scroll: (dy: number) => void;
@@ -176,46 +179,39 @@ export function characterSheet(o: {
   extra?: HTMLElement[];
   buttons: HTMLElement[];
 }): CharacterSheet {
-  const nav = (cls: string) => {
-    const name = el('b', { class: 'cs-nav-name' });
-    const sub = el('div', { class: 'cs-sub' });
-    const arrow = (dir: number, text: string, title: string) =>
-      el(
-        'button',
-        { class: 'lc-arrow', title, data: { nav: '' }, onclick: () => o.pick(nextCharacter(o.get(), dir)) },
-        text,
-      );
-    const box = el(
-      'div',
-      { class: `cs-nav ${cls}` },
-      el('div', { class: 'cs-nav-row' }, arrow(-1, '◀', t('Anterior')), name, arrow(1, '▶', t('Próximo'))),
-      sub,
+  const name = el('b', { class: 'cs-nav-name' });
+  const sub = el('div', { class: 'cs-sub' });
+  const arrow = (dir: number, text: string, title: string) =>
+    el(
+      'button',
+      { class: 'lc-arrow', title, data: { nav: '' }, onclick: () => o.pick(nextCharacter(o.get(), dir)) },
+      text,
     );
-    return { box, name, sub };
-  };
-  const stage = nav('cs-stage');
-  const head = nav('cs-head');
+  const head = el(
+    'div',
+    { class: 'cs-nav cs-head' },
+    el('div', { class: 'cs-nav-row' }, arrow(-1, '◀', t('Anterior')), name, arrow(1, '▶', t('Próximo'))),
+    sub,
+  );
   const body = el('div', { class: 'wr-body cs-body', tabIndex: -1 });
   const panel = el(
     'div',
     { class: 'wr-panel cs-sheet' },
     el('h2', {}, o.title),
-    head.box,
+    head,
     body,
     el('p', { class: 'muted shop-tip' }, o.tip),
     ...(o.extra ?? []),
     el('div', { class: 'row-btns' }, ...o.buttons),
   );
-  const root = el('div', { class: 'screen wardrobe char-select' }, stage.box, panel);
+  const root = el('div', { class: 'screen wardrobe char-select' }, panel);
   let shown: CharacterId | null = null;
   const render = () => {
     const id = o.get();
     const c = CHARACTERS[id];
-    for (const x of [stage.box, panel]) x.style.setProperty('--cc', hexColor(c.color));
-    for (const n of [stage, head]) {
-      n.name.textContent = t(c.name);
-      n.sub.textContent = t(c.title);
-    }
+    panel.style.setProperty('--cc', hexColor(c.color));
+    name.textContent = t(c.name);
+    sub.textContent = t(c.title);
     if (shown === id) return;
     shown = id;
     body.replaceChildren(
@@ -232,7 +228,6 @@ export function characterSheet(o: {
   return {
     el: root,
     panel,
-    stage: stage.box,
     render,
     scroll: (dy) => body.scrollBy({ top: dy, behavior: 'smooth' }),
   };

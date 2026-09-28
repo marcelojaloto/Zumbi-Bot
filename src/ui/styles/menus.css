@@ -284,14 +284,92 @@
   flex-wrap: wrap;
   justify-content: center;
 }
-.rank-entry input {
+.rank-entry.end {
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  background: rgba(12, 14, 22, 0.8);
+  border: 1px solid rgba(255, 216, 74, 0.35);
+}
+.rank-run {
+  font-weight: 700;
+}
+.rank-pos {
+  color: #ffd84a;
+  font-weight: 800;
+  font-size: 17px;
+}
+.rank-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rank-name {
   font: inherit;
+  font-size: 18px;
+  font-weight: 800;
   color: var(--fg);
   background: #161a24;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
+  border: 1px dashed rgba(255, 255, 255, 0.45);
+  border-radius: 8px;
+  padding: 4px 12px;
+  cursor: text;
+}
+.rank-name:hover,
+.rank-name:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+.rank-pen {
+  font-style: normal;
+  margin-left: 8px;
+  opacity: 0.7;
+}
+.rank-note {
+  margin: 0;
+  font-size: 12px;
+}
+/* escrevendo o nome: a caixa fica no alto da tela, acima do teclado */
+.name-editor {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: max(10px, env(safe-area-inset-top)) 12px 0;
+  background: rgba(4, 5, 10, 0.72);
+  pointer-events: auto;
+}
+.name-editor-box {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #11141d;
+  border: 1px solid rgba(255, 216, 74, 0.5);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+.name-editor-box label {
+  color: var(--muted);
+  font-size: 13px;
+}
+.name-editor-box input {
+  font: inherit;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--fg);
+  background: #1b2030;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
   padding: 6px 10px;
-  width: 170px;
+  width: min(240px, 60vw);
+  user-select: text;
+  -webkit-user-select: text;
 }
 .loading {
   position: absolute;
@@ -831,6 +909,31 @@
   background: rgba(255, 255, 255, 0.08);
   color: #9aa0b0;
 }
+.rk-tag.win {
+  background: rgba(255, 216, 74, 0.2);
+  color: #ffd84a;
+}
+.rk-tag.you {
+  background: rgba(57, 230, 255, 0.2);
+  color: #39e6ff;
+}
+.rk-table tr.me td {
+  background: rgba(57, 230, 255, 0.1);
+}
+.rk-chars {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rk-note {
+  margin: 0;
+  max-width: min(900px, 100%);
+  text-align: center;
+  font-size: 13px;
+}
+.rk-toggle {
+  border-color: rgba(57, 230, 255, 0.7);
+}
 .rk-empty {
   text-align: center;
   padding: 24px;
@@ -1090,6 +1193,19 @@ a.btn {
   background: var(--cc);
   border-radius: 4px;
 }
+/* não usa (a maga não atira; militar, ciborgue e mutante não conjuram) */
+.stat-bar.none {
+  height: auto;
+  background: none;
+  overflow: visible;
+  line-height: 1;
+}
+.stat-bar.none em {
+  font-size: 0.72em;
+  font-style: normal;
+  color: #8a93a8;
+  text-transform: lowercase;
+}
 .ci-special {
   display: flex;
   flex-direction: column;
@@ -1184,6 +1300,7 @@ a.btn {
   font-size: clamp(18px, 2.1vw, 28px);
   letter-spacing: 2px;
   margin: 0;
+  text-align: center;
 }
 .cs-nav {
   display: flex;
@@ -1219,14 +1336,6 @@ a.btn {
   width: 44px;
   height: 44px;
   font-size: 18px;
-}
-/* embaixo do boneco, no meio do espaço livre ao lado da ficha */
-.char-select > .cs-stage {
-  position: absolute;
-  left: 16px;
-  bottom: 18px;
-  width: calc(100% - min(600px, 56vw) - 48px);
-  cursor: default;
 }
 .cs-head {
   padding: 4px 0 8px;
@@ -1312,9 +1421,6 @@ a.btn {
   .cs-sub {
     font-size: 10px;
   }
-  .char-select > .cs-stage {
-    bottom: 8px;
-  }
   .cs-full {
     font-size: 17px;
   }
@@ -1324,15 +1430,6 @@ a.btn {
   /* a ficha rola: o especial aparece inteiro */
   .cs-body .ci-special span {
     display: block;
-  }
-}
-@media (max-width: 800px) {
-  /* ficha embaixo, na largura toda: as setas ficam logo acima dela */
-  .char-select > .cs-stage {
-    left: 16px;
-    right: 16px;
-    width: auto;
-    bottom: calc(62% + 22px);
   }
 }
 
@@ -1741,6 +1838,18 @@ a.btn {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+.room-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.room-stage-name {
+  font-size: 19px;
+  color: var(--fg);
+  line-height: 1.15;
+}
 .room-level {
   display: flex;
   align-items: center;
@@ -1910,6 +2019,13 @@ a.btn {
   }
   .room-side .lc-name {
     font-size: 18px;
+  }
+  .room-side .room-stage-name {
+    font-size: 15px;
+  }
+  .room-stage {
+    padding-top: 4px;
+    gap: 2px;
   }
   .screen.room .btn {
     font-size: 16px;

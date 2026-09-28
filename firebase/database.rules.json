@@ -1,0 +1,29 @@
+{
+  "rules": {
+    "ranking": {
+      ".read": true,
+      ".indexOn": ["score"],
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['name', 'score', 'date'])",
+        "name": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 16"
+        },
+        "score": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100000000"
+        },
+        "maps": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000" },
+        "mapId": { ".validate": "newData.isString() && newData.val().length <= 32" },
+        "chars": {
+          "$i": { ".validate": "newData.isString() && newData.val().length <= 16" }
+        },
+        "victory": { ".validate": "newData.isBoolean()" },
+        "ngPlus": { ".validate": "newData.isBoolean()" },
+        "level": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 99" },
+        "date": { ".validate": "newData.isNumber() && newData.val() <= now + 86400000" },
+        "$other": { ".validate": false }
+      }
+    },
+    "$other": { ".read": false, ".write": false }
+  }
+}

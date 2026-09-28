@@ -232,7 +232,7 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
     if (solo === one) return;
     solo = one;
     e.className = one ? 'screen wardrobe char-select' : 'screen lobby';
-    e.replaceChildren(...(one ? [sheet.stage, sheet.panel] : [partyTop, cards, partyBtns]));
+    e.replaceChildren(...(one ? [sheet.panel] : [partyTop, cards, partyBtns]));
     host.setMenuStage(!one);
     host.setMenuFocus(one ? 1 : 0);
     if (!one) spin.end();

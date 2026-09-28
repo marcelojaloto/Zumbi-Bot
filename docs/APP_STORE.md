@@ -118,7 +118,10 @@ Em **App Store Connect → o app → versão iOS**:
 - **Privacidade do app:** o jogo não coleta dados (o progresso fica no aparelho; no jogo online, nome, comandos e voz
   vão direto para os outros jogadores da sala, criptografados, e nada é guardado). Dá para declarar **"Dados não
   coletados"**. Se preferir declarar de forma conservadora: **Áudio (voz)** — não vinculado à identidade, sem
-  rastreamento, para funcionalidade do app.
+  rastreamento, para funcionalidade do app. Com o **ranking global** ligado ([RANKING_GLOBAL.md](RANKING_GLOBAL.md)),
+  declare também **Conteúdo do usuário → Outro conteúdo** (o nome do ranking) e **Dados de uso → Interação com o
+  produto** (pontuação), mais **Identificadores → ID do usuário** (a conta anônima do Firebase): não vinculados à
+  identidade, sem rastreamento, para funcionalidade do app.
 - **Classificação etária:** violência de desenho/fantasia **frequente** (lutas contra zumbis e robôs, sem sangue
   realista); **comunicação entre usuários: sim** (chat de voz opcional numa sala com código); sem compras, sem
   navegação livre na internet. A Apple calcula a idade a partir das respostas.

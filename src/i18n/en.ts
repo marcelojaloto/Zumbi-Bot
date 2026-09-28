@@ -85,7 +85,7 @@ export const EN: Record<string, string> = {
   'Mover (frente/fundo e lados)': 'Move (sideways and in depth)',
   Correr: 'Run',
   'Pular / pulo duplo': 'Jump / double jump',
-  'Soco / arma branca / cajado / pegar item': 'Punch / melee weapon / staff / pick up item',
+  'Soco / arma branca / cajado': 'Punch / melee weapon / staff',
   'Chute (correndo: voadora)': 'Kick (running: flying kick)',
   'Especial do personagem': 'Character special',
   'Atirar / conjurar': 'Shoot / cast',
@@ -102,8 +102,8 @@ export const EN: Record<string, string> = {
   'Direcional (esquerda)': 'D-pad (left)',
   'Anda e muda de plano; empurrar até a borda corre': 'Walks and changes lanes; push to the edge to run',
   SOCO: 'PUNCH',
-  'Soco (com o cajado, bate com ele), arma branca e pegar itens; seguidos = combo':
-    'Punch (holding a staff, hit with it), melee weapon and pick up items; in a row = combo',
+  'Soco (com o cajado, bate com ele) e arma branca; seguidos = combo':
+    'Punch (holding a staff, hit with it) and melee weapon; in a row = combo',
   CHUTE: 'KICK',
   'Chute; correndo = voadora': 'Kick; while running = flying kick',
   PULAR: 'JUMP',
@@ -114,11 +114,17 @@ export const EN: Record<string, string> = {
     'Shoots or casts the staff, auto-aiming at the enemy ahead',
   ESPECIAL: 'SPECIAL',
   'Especial do personagem (gasta mana)': 'Character special (costs mana)',
-  '▶▶': '▶▶',
-  'Próxima arma ou cajado (a arma recarrega sozinha)': 'Next weapon or staff (guns reload by themselves)',
   'Mostra ou esconde o minimapa': 'Shows or hides the minimap',
   '⇄': '⇄',
-  'Alterna entre arma de fogo e cajado': 'Switches between firearm and staff',
+  'Alterna entre arma de fogo e cajado (só quem usa os dois)':
+    'Switches between firearm and staff (only for who uses both)',
+  '⟳': '⟳',
+  'Troca de cajado (no modo arma, de arma); fica à direita do ⇄':
+    'Switches staff (in gun mode, the gun); right of ⇄',
+  'Trocar de cajado': 'Switch staff',
+  'Trocar de arma': 'Switch weapon',
+  'não usa': "doesn't use",
+  'Guardado para quem usa cajado': 'Saved for characters who use staffs',
   '⏸': '⏸',
   '🗺': '🗺',
 
@@ -162,8 +168,6 @@ export const EN: Record<string, string> = {
 
   // ------------------------------------------------------------------ ranking e resultado
   'Ninguém registrou pontos neste mapa ainda.': 'Nobody has scored on this map yet.',
-  'O ranking está vazio. Termine uma partida e registre seu nome!':
-    'The leaderboard is empty. Finish a run and save your name!',
   Nome: 'Name',
   Pontos: 'Score',
   Mapa: 'Map',
@@ -188,9 +192,6 @@ export const EN: Record<string, string> = {
   'Nova arma!': 'New weapon!',
   'Mapa desbloqueado!': 'Map unlocked!',
   'Ative na tela de mapas': 'Turn it on in the map screen',
-  'Registrado em {pos} lugar no ranking!': 'Saved in {pos} place on the leaderboard!',
-  'Salvar no ranking': 'Save to leaderboard',
-  'Nova pontuação no ranking ({pos})! Seu nome:': 'New leaderboard score ({pos})! Your name:',
   'Próximo mapa': 'Next map',
   'Jogar de novo': 'Play again',
   'Tentar novamente': 'Try again',
@@ -425,29 +426,29 @@ export const EN: Record<string, string> = {
     'Spins with arms wide open, hitting everyone around without taking damage.',
   Maga: 'Mage',
   'Feiticeira arcana': 'Arcane sorceress',
-  'Mestra dos cajados: magias muito mais fortes e mana de sobra, mas aguenta pouco.':
-    'Master of staffs: much stronger spells and plenty of mana, but fragile.',
+  'Mestra dos cajados: magias muito mais fortes e mana de sobra, mas aguenta pouco, não usa armas de fogo e é fraca com armas brancas.':
+    'Master of staffs: much stronger spells and plenty of mana, but fragile, uses no firearms and is weak with melee weapons.',
   'Nova Arcana': 'Arcane Nova',
   'Explosão de energia em volta que derruba todos, e uma bola de fogo roxa para a frente.':
     'A burst of energy all around that knocks everyone down, plus a purple fireball straight ahead.',
   Militar: 'Soldier',
   'Soldado super forte': 'Super-strong soldier',
-  'Muita vida e socos devastadores; quase não é empurrado. Mais lento e fraco em magia.':
-    'Lots of health and devastating punches; hard to push around. Slower and weak at magic.',
+  'Muita vida e socos devastadores; quase não é empurrado. Mais lento e não usa cajados.':
+    'Lots of health and devastating punches; hard to push around. Slower and uses no staffs.',
   'Chuva de Granadas': 'Grenade Storm',
   'Joga um monte de granadas em volta: cada uma explode e derruba quem estiver perto.':
     'Throws a bunch of grenades all around: each one explodes and knocks down anyone nearby.',
   Ciborgue: 'Cyborg',
   'Meio humano, meio máquina': 'Half human, half machine',
-  'Especialista em armas: tiros mais fortes e recarga rápida. Sofre com choques elétricos.':
-    'Weapons expert: stronger shots and fast reloads. Suffers from electric shocks.',
+  'Especialista em armas: tiros mais fortes e recarga rápida. Não usa cajados e sofre com choques elétricos.':
+    'Weapons expert: stronger shots and fast reloads. Uses no staffs and suffers from electric shocks.',
   'Raio Laser': 'Laser Beam',
   'Dispara um raio reto que atravessa todos os inimigos à frente e queima.':
     'Fires a straight beam that pierces every enemy ahead and burns them.',
   Mutante: 'Mutant',
   'Fera regenerativa': 'Regenerating beast',
-  'Rápido, pula alto e se regenera quando fica sem apanhar. Ruim de mira.':
-    'Fast, jumps high and heals when not taking hits. Bad aim.',
+  'Rápido, pula alto e se regenera quando fica sem apanhar. Ruim de mira e não usa cajados.':
+    'Fast, jumps high and heals when not taking hits. Bad aim and uses no staffs.',
   'Fúria Mutante': 'Mutant Fury',
   'Rugido que derruba e envenena; por 6 s bate mais forte, corre mais e rouba vida.':
     'A roar that knocks down and poisons; for 6 s hits harder, runs faster and steals life.',
@@ -789,7 +790,6 @@ export const EN: Record<string, string> = {
   'Mover para a direita': 'Move right',
   'Mover para o fundo': 'Move back (depth)',
   'Mover para a frente': 'Move forward (depth)',
-  'Soco / arma branca / pegar': 'Punch / melee weapon / pick up',
   Chute: 'Kick',
   'Mirar (precisão)': 'Aim (precision)',
   'Correr (segurar)': 'Run (hold)',
@@ -892,4 +892,31 @@ export const EN: Record<string, string> = {
     'To play in full screen: tap Share (□↑) → "Add to Home Screen" and open Zumbi Bot from there.',
   'Para liberar: Ajustes do iPhone → Apps → Zumbi Bot → Microfone (ligado).':
     'To allow it: iPhone Settings → Apps → Zumbi Bot → Microphone (on).',
+  'fim do jogo': 'game finished',
+  'Jornada em andamento: {pts} pontos • {n} mapas vencidos. Ela entra no ranking quando você perder todas as vidas ou terminar o jogo.':
+    'Run in progress: {pts} points • {n} maps won. It enters the leaderboard when you lose all lives or finish the game.',
+  'Os pontos de cada mapa se somam na jornada até você perder todas as vidas ou terminar o jogo.':
+    'Points from each map add up in your run until you lose all lives or finish the game.',
+  'O ranking está vazio. Jogue até o fim da jornada para entrar nele!':
+    'The leaderboard is empty. Play until the end of a run to get on it!',
+  'Onde parou': 'Ended at',
+  'O melhor resultado de cada jogador. Você está em {pos}º lugar!':
+    "Each player's best result. You are #{pos}!",
+  'O melhor resultado de cada jogador (o seu melhor do Ranking Pessoal entra sozinho).':
+    "Each player's best result (your Personal Leaderboard best is sent automatically).",
+  'Ninguém entrou no ranking global ainda.': 'Nobody is on the global leaderboard yet.',
+  'RANKING PESSOAL': 'PERSONAL LEADERBOARD',
+  'RANKING GLOBAL': 'GLOBAL LEADERBOARD',
+  'Ranking Global': 'Global Leaderboard',
+  'Ranking Pessoal': 'Personal Leaderboard',
+  Todos: 'All',
+  'Jornada: {pts} pontos • 1 mapa vencido': 'Run: {pts} points • 1 map won',
+  'Jornada: {pts} pontos • {n} mapas vencidos': 'Run: {pts} points • {n} maps won',
+  'Tocar para mudar o nome': 'Tap to change the name',
+  'Seu nome no ranking': 'Your leaderboard name',
+  OK: 'OK',
+  '{pos} lugar no ranking!': '{pos} place on the leaderboard!',
+  'Nome:': 'Name:',
+  'Já está salvo. Toque no nome se quiser mudar.': 'Already saved. Tap the name to change it.',
+  'Não entrou no top 20 do ranking desta vez.': 'Not in the top 20 this time.',
 };

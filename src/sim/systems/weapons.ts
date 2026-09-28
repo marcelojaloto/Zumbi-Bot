@@ -37,7 +37,10 @@ function handleSwitching(w: World, e: Entity): void {
   if (pressed(b, pb, Btn.ModeGun)) newMode = 'gun';
   if (pressed(b, pb, Btn.ModeStaff)) newMode = 'staff';
   if (pressed(b, pb, Btn.ToggleMode)) newMode = p.mode === 'gun' ? 'staff' : 'gun';
-  if (newMode === 'staff' && p.staffs.length === 0) newMode = 'gun';
+  // cada personagem só troca para o que sabe usar (a maga não atira; militar, ciborgue e mutante não conjuram)
+  const arms = characterDef(e).arms;
+  if (newMode === 'gun' && !arms.guns) newMode = p.mode;
+  if (newMode === 'staff' && (!arms.staff || p.staffs.length === 0)) newMode = arms.guns ? 'gun' : p.mode;
   if (newMode !== p.mode) {
     p.mode = newMode;
     cancelReload(p);

@@ -197,7 +197,7 @@ item({
   shape: 'bag',
 });
 
-// armas no chão (pegar com J)
+// armas no chão: pega passando por cima
 for (const [id, name] of [
   ['shotgun', 'Escopeta'],
   ['smg', 'Submetralhadora'],
@@ -206,7 +206,7 @@ for (const [id, name] of [
   ['mg', 'Metralhadora'],
   ['gl', 'Lança-Granadas'],
 ] as const) {
-  item({ id: `gun_${id}`, name, effect: { k: 'firearm', id }, auto: false, color: 0xffb02a, shape: 'gun' });
+  item({ id: `gun_${id}`, name, effect: { k: 'firearm', id }, auto: true, color: 0xffb02a, shape: 'gun' });
 }
 for (const [id, name] of [
   ['knife', 'Faca'],
@@ -220,7 +220,7 @@ for (const [id, name] of [
     id: `melee_${id}`,
     name,
     effect: { k: 'melee', id },
-    auto: false,
+    auto: true,
     despawnS: 45,
     color: 0xe0e0e0,
     shape: 'melee',

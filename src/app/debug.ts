@@ -4,6 +4,7 @@ import type { PlayerSlot } from '../sim/Entity';
 import { emptyFrame, type InputFrame, type InputSource } from '../sim/InputFrame';
 import { spawnEnemy } from '../sim/ai/spawnEnemy';
 import { applyItem, giveFirearm } from '../sim/systems/pickups';
+import { finishRun } from '../sim/level/LevelRunner';
 import { STAFF_ORDER } from '../data/staffs';
 import { WEAPON_ORDER } from '../data/weapons';
 import { killEntity } from '../sim/combat/applyHit';
@@ -246,6 +247,13 @@ export function installDebug(app: App): void {
       w.updateBounds();
       app.renderer.cam.snap(x, 0, 0);
       app.session!.stepTicks(2);
+    },
+    /** Termina a fase na hora (testes do ranking): vitória ou derrota, com a pontuação dada a cada jogador. */
+    finish(victory: boolean, score?: number) {
+      const w = app.session?.world;
+      if (!w || w.finished) return;
+      if (score !== undefined) for (const p of w.playerEntities()) p.player!.score = score;
+      finishRun(w, victory);
     },
     /** Salta para X (segmentos anteriores contam como concluídos; o próximo dispara normalmente). */
     teleport(x: number) {

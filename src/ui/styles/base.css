@@ -45,6 +45,15 @@ body {
   inset: 0;
   pointer-events: none;
 }
+/* a tela encolheu sem o jogador querer (barra do navegador, gesto de sair): o jogo segura o tamanho antigo por
+   alguns segundos antes de se rearrumar */
+html.hold-size #game,
+html.hold-size #ui {
+  right: auto;
+  bottom: auto;
+  width: var(--hold-w);
+  height: var(--hold-h);
+}
 #ui > * {
   pointer-events: auto;
 }

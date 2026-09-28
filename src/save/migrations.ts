@@ -11,6 +11,7 @@ import {
   RANKING_VERSION,
   SAVE_VERSION,
   SETTINGS_VERSION,
+  type CampaignRun,
   type RankEntry,
   type RankingV1,
   type SaveV1,
@@ -115,6 +116,9 @@ export function sanitizeSave(raw: unknown): SaveV1 {
       xp: num(profile.xp, 0, 0),
       scrap,
       character: isCharacterId(profile.character) ? profile.character : 'robot',
+      ...(typeof profile.rankName === 'string' && profile.rankName.trim()
+        ? { rankName: str(profile.rankName, '', 16) }
+        : {}),
     },
     progress: { unlockedLevels: [...new Set(unlockedLevels)], levels },
     unlocks: { firearms: [...new Set(firearms)], staffs: [...new Set(staffs)] },
@@ -137,6 +141,26 @@ export function sanitizeSave(raw: unknown): SaveV1 {
       tutorialDone: bool(flags.tutorialDone, false),
       credits: bool(flags.credits, false),
     },
+    ...(sanitizeRun(d.run) ? { run: sanitizeRun(d.run) } : {}),
+  };
+}
+
+function sanitizeRun(raw: unknown): CampaignRun | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = obj(raw);
+  if (typeof r.score !== 'number') return undefined;
+  const chars = arr(r.chars).filter(isCharacterId).slice(0, 5);
+  return {
+    score: num(r.score, 0, 0),
+    kills: num(r.kills, 0, 0),
+    timeMs: num(r.timeMs, 0, 0),
+    maps: Math.round(num(r.maps, 0, 0, 1000)),
+    mapId: str(r.mapId, 'vila', 32),
+    levelId: str(r.levelId, 'vila-1', 32),
+    chars,
+    ngPlus: bool(r.ngPlus, false),
+    team: Math.round(num(r.team, 1, 1, 5)),
+    startedAt: num(r.startedAt, 0, 0),
   };
 }
 
@@ -210,6 +234,7 @@ export function sanitizeRanking(raw: unknown): RankingV1 {
       ...(Array.isArray(r.chars) && r.chars.length > 0 && r.chars.every(isCharacterId)
         ? { chars: r.chars.slice(0, 5) }
         : {}),
+      ...(typeof r.maps === 'number' ? { maps: Math.round(num(r.maps, 0, 0, 1000)) } : {}),
     });
   }
   return { version: 1, entries: entries.sort((a, b) => b.score - a.score).slice(0, 20) };

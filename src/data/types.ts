@@ -179,7 +179,7 @@ export type MoveEffect =
 // ---------------------------------------------------------------------------
 export type CharacterId = 'robot' | 'mage' | 'military' | 'cyborg' | 'mutant';
 /** Origem do dano causado por um jogador (para os multiplicadores do personagem). */
-export type HitSource = 'melee' | 'gun' | 'staff' | 'special';
+export type HitSource = 'melee' | 'weapon' | 'gun' | 'staff' | 'special';
 
 export interface CharacterDef {
   id: CharacterId;
@@ -227,6 +227,11 @@ export interface CharacterDef {
   special: string;
   /** Modo inicial (a maga começa no cajado). */
   startMode: 'gun' | 'staff';
+  /**
+   * O que o personagem sabe usar: sem `guns` não atira (nem pega armas de fogo); sem `staff` não conjura nem bate
+   * com o cajado — mas os cajados ganhos ficam guardados no perfil para quem souber usar.
+   */
+  arms: { guns: boolean; staff: boolean };
   /** Corpo metálico (sons e faíscas ao apanhar). */
   metal: boolean;
 }
