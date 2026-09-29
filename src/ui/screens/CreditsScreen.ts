@@ -38,12 +38,13 @@ export function creditsScreen(
       'Pedro Henrique dos Passos Gomes',
       'Leo Becker',
     ),
-    block(t('Desenvolvimento'), t('Criado com Claude Code')),
+    block(t('Desenvolvimento'), t('Criado por Marcelo Jaloto')),
     block(
       t('Tecnologia'),
       t('Three.js — renderização 3D'),
       t('postprocessing (pmndrs) e N8AO — bloom, cor e oclusão'),
       t('Vite, TypeScript, Vitest e Playwright'),
+      t('Claude Code — desenvolvimento assistido'),
     ),
     block(
       t('Tudo feito em código'),
