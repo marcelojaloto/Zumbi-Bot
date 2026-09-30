@@ -10,3 +10,6 @@ dist-app/
 *.keystore
 *.jks
 !android/app/debug.keystore
+
+# Claude Code: permissões locais de cada máquina
+.claude/settings.local.json
