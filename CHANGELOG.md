@@ -7,6 +7,8 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 
 - No celular deitado, a dica "Chefe à frente!" não fica mais embaixo do nome do chefe: a dica sobe e o nome
   desce um pouco.
+- Em inglês, a aba das costas no guarda-roupa passa a se chamar "Back gear", para não se confundir com o botão
+  "Back".
 
 ## 1.6, atualização de 30/09/2026
 
