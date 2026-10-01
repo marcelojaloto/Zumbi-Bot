@@ -7,7 +7,7 @@ android {
         applicationId "io.github.marcelojaloto.zumbibot"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        // no CI: VERSION_CODE = número da execução (sempre crescente, exigido pela Play Store)
+        // no CI: VERSION_CODE = número da execução + BUILD_OFFSET (sempre crescente, exigido pela Play Store)
         versionCode((System.getenv("VERSION_CODE") ?: "1").toInteger())
         versionName(System.getenv("VERSION_NAME") ?: "1.0.0")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

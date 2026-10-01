@@ -23,7 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      VERSION_CODE: ${{ github.run_number }}
+      # somado ao número da execução, para a build nunca ficar abaixo de uma já instalada
+      # (o Android não instala um versionCode menor por cima de um maior)
+      BUILD_OFFSET: 100
       HAS_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
     steps:
       - uses: actions/checkout@v4
@@ -38,8 +40,11 @@ jobs:
           cache: gradle
       - run: npm ci
       - name: Versão
-        # 1.0.<número da execução>, a partir da versão do package.json
-        run: echo "VERSION_NAME=$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')").${{ github.run_number }}" >> "$GITHUB_ENV"
+        # 1.6.<build>, a partir da versão do package.json; a build também é o versionCode
+        run: |
+          BUILD=$((GITHUB_RUN_NUMBER + BUILD_OFFSET))
+          echo "VERSION_CODE=$BUILD" >> "$GITHUB_ENV"
+          echo "VERSION_NAME=$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')").$BUILD" >> "$GITHUB_ENV"
       - name: Build do jogo para o app e cópia para o projeto Android
         run: npm run android:sync
         env:

@@ -27,6 +27,8 @@ jobs:
         # pipefail: um comando que falha no meio de um "|" derruba o passo
         shell: bash
     env:
+      # somado ao número da execução, para a build nunca ficar abaixo de uma já enviada
+      BUILD_OFFSET: 100
       HAS_APPLE: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 != '' && secrets.APPLE_PROVISIONING_PROFILE_BASE64 != '' && secrets.APPSTORE_API_KEY_P8_BASE64 != '' }}
     steps:
       - uses: actions/checkout@v4
@@ -39,10 +41,11 @@ jobs:
           xcode-version: latest-stable
       - run: npm ci
       - name: Versão
-        # 1.2.<número da execução>, a partir da versão do package.json (o número da compilação é o da execução)
+        # 1.6.<build>, a partir da versão do package.json; a build também é o número da compilação
         run: |
-          echo "VERSION_NAME=$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')").${{ github.run_number }}" >> "$GITHUB_ENV"
-          echo "BUILD_NUMBER=${{ github.run_number }}" >> "$GITHUB_ENV"
+          BUILD=$((GITHUB_RUN_NUMBER + BUILD_OFFSET))
+          echo "VERSION_NAME=$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')").$BUILD" >> "$GITHUB_ENV"
+          echo "BUILD_NUMBER=$BUILD" >> "$GITHUB_ENV"
       - name: Build do jogo para o app e cópia para o projeto iOS
         run: npm run ios:sync
         env:
