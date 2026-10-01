@@ -117,6 +117,8 @@ export type GameEvent =
   | { t: 'reload'; id: EntityId; phase: 'start' | 'end' | 'shell'; weapon: WeaponId }
   | { t: 'dryfire'; id: EntityId }
   | { t: 'weaponSwap'; id: EntityId; mode: 'gun' | 'staff'; weapon: string }
+  /** Caixa de cura guardada: usada, guardada (vida cheia), acabou ou a vida já está cheia. `left` = quantas sobram. */
+  | { t: 'medkit'; player: EntityId; action: 'use' | 'store' | 'empty' | 'full'; left: number }
   | { t: 'meleeBreak'; id: EntityId; melee: MeleeId }
   | { t: 'levelUp'; player: EntityId; level: number }
   | { t: 'xp'; player: EntityId; amount: number }

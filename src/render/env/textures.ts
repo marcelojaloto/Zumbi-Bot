@@ -310,6 +310,36 @@ export function radialTexture(kind: 'blob' | 'glow' | 'smoke' | 'spark' = 'blob'
   return tex;
 }
 
+/** Faixas diagonais brancas que somem nas pontas (funil dos ciclones: girando, parecem vento em espiral). */
+export function swirlTexture(size = 64): Texture {
+  const key = `s:${size}`;
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const [cv, ctx] = canvas(size);
+  ctx.lineCap = 'round';
+  for (let i = 0; i < 3; i++) {
+    const x = (i / 3) * size;
+    const g = ctx.createLinearGradient(0, size, 0, 0);
+    g.addColorStop(0, 'rgba(255,255,255,0)');
+    g.addColorStop(0.25, 'rgba(255,255,255,0.9)');
+    g.addColorStop(0.8, 'rgba(255,255,255,0.7)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.strokeStyle = g;
+    ctx.lineWidth = size * 0.09;
+    // a faixa atravessa a borda da textura para emendar ao repetir
+    for (const off of [-size, 0, size]) {
+      ctx.beginPath();
+      ctx.moveTo(x + off, size);
+      ctx.lineTo(x + off + size * 0.7, 0);
+      ctx.stroke();
+    }
+  }
+  const tex = new CanvasTexture(cv);
+  tex.wrapS = RepeatWrapping;
+  cache.set(key, tex);
+  return tex;
+}
+
 export function disposeTextures(): void {
   for (const t of cache.values()) t.dispose();
   cache.clear();

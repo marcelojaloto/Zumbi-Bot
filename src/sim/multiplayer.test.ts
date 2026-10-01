@@ -130,7 +130,7 @@ describe('multijogador local', () => {
     expect(s.scrap).toBe(s.players![0]!.scrap + s.players![1]!.scrap);
   });
 
-  it('mesma semente e mesmas entradas de 5 jogadores → mesmo resultado (determinismo)', () => {
+  it('mesma semente e mesmas entradas de 5 jogadores > mesmo resultado (determinismo)', () => {
     const script = (w: World) => {
       for (let i = 0; i < 240; i++)
         step(w, {

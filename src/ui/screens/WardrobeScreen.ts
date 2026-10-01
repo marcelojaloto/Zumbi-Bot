@@ -79,7 +79,7 @@ function card(
       title: t(c.desc ?? c.name),
     },
     el('b', {}, t(c.name)),
-    el('span', { style: `color:${col}` }, `${t(RARITY_NAMES[c.rarity])} • ${t(SET_NAMES[c.set])}`),
+    el('span', { style: `color:${col}` }, `${t(RARITY_NAMES[c.rarity])} | ${t(SET_NAMES[c.set])}`),
     opts.price !== undefined && opts.price !== null
       ? el('span', { class: 'price' }, `⚙ ${fmtInt(opts.price)}`)
       : null,
@@ -116,7 +116,7 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
               ? el(
                   'span',
                   {},
-                  t('Dano {dmg} • {rpm} tiros/min • pente {mag} • recarga {reload}', {
+                  t('Dano {dmg} | {rpm} tiros/min | pente {mag} | recarga {reload}', {
                     dmg: `${w.damage}${w.pellets > 1 ? `×${w.pellets}` : ''}`,
                     rpm: w.rpm,
                     mag: w.mag,
@@ -141,7 +141,7 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
               { style: has ? `color:${hexColor(s.color)}` : '' },
               has ? t(s.name) : t('{name} (bloqueado)', { name: t(s.name) }),
             ),
-            el('span', {}, t('Mana {mana} • recarga {cd}s', { mana: s.manaCost, cd: dec(s.cooldownS) })),
+            el('span', {}, t('Mana {mana} | recarga {cd}s', { mana: s.manaCost, cd: dec(s.cooldownS) })),
             el(
               'span',
               { class: 'muted' },
@@ -364,7 +364,7 @@ export function shopScreen(host: WardrobeHost): Screen {
         el(
           'span',
           {},
-          `${t(RARITY_NAMES[c.rarity])} • ${t(SLOT_NAMES[c.slot])} • ${owned ? t('Já possui') : t('Prévia no boneco')}`,
+          `${t(RARITY_NAMES[c.rarity])} | ${t(SLOT_NAMES[c.slot])} | ${owned ? t('Já possui') : t('Prévia no boneco')}`,
         ),
       ),
       el(

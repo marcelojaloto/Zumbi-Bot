@@ -174,7 +174,7 @@ test('chat de voz: sala sem voz não liga nada; microfone bloqueado explica como
   await host.getByRole('button', { name: /Desligado/ }).click();
   await host.getByRole('button', { name: /Ligar microfone/ }).click();
   await expect(host.locator('.room-voice')).toContainText('O microfone está bloqueado');
-  await expect(host.locator('.room-voice')).toContainText('Microfone → Permitir');
+  await expect(host.locator('.room-voice')).toContainText('Microfone > Permitir');
   expect((await voice(host)).problem).toBe('denied');
   expect((await voice(host)).mic).toBe(false);
   expect(errors).toEqual([]);

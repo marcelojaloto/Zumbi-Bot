@@ -19,11 +19,11 @@ function fmtTime(ms: number): string {
 }
 
 function fmtDate(ts: number): string {
-  if (!ts) return '—';
+  if (!ts) return '-';
   try {
     return new Date(ts).toLocaleDateString(locale());
   } catch {
-    return '—';
+    return '-';
   }
 }
 
@@ -37,13 +37,13 @@ function mapName(id: string): string {
     const m = getMap(id);
     return `${m.index + 1}. ${t(m.name)}`;
   } catch {
-    return id || '—';
+    return id || '-';
   }
 }
 
 /** Apelidos dos personagens da jornada (a equipe mostra quantos eram). */
 function charsLabel(chars: CharacterId[] | undefined): string {
-  if (!chars?.length) return '—';
+  if (!chars?.length) return '-';
   return chars.map((c) => t(getCharacter(c).name)).join(', ');
 }
 
@@ -94,7 +94,7 @@ export function rankingScreen(host: RankingHost): Screen {
     note.textContent =
       run && run.score > 0
         ? t(
-            'Jornada em andamento: {pts} pontos • {n} mapas vencidos. Ela entra no ranking quando você perder todas as vidas ou terminar o jogo.',
+            'Jornada em andamento: {pts} pontos | {n} mapas vencidos. Ela entra no ranking quando você perder todas as vidas ou terminar o jogo.',
             {
               pts: fmtInt(run.score),
               n: run.maps,
@@ -139,7 +139,7 @@ export function rankingScreen(host: RankingHost): Screen {
               (r.chars?.length ?? 0) > 1 ? el('i', { class: 'rk-tag team' }, `👥${r.chars!.length}`) : null,
             ),
             el('td', { class: 'num' }, fmtInt(r.score)),
-            el('td', { class: 'num' }, r.maps === undefined ? '—' : String(r.maps)),
+            el('td', { class: 'num' }, r.maps === undefined ? '-' : String(r.maps)),
             el('td', {}, mapName(r.mapId), endTag(r.victory, r.maps !== undefined)),
             el('td', { class: 'num' }, fmtTime(r.timeMs)),
             el('td', { class: 'num' }, String(r.kills)),

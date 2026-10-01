@@ -12,7 +12,7 @@ A cada atualização da `main`, o workflow publica o APK na release **Android**:
 
 - Link fixo: https://github.com/marcelojaloto/Zumbi-Bot/releases/latest/download/zumbi-bot.apk
 - No celular: abra o link, baixe e toque no arquivo. O Android vai pedir para **permitir a instalação de apps desta
-  fonte** (o navegador ou o gerenciador de arquivos) — permita e instale.
+  fonte** (o navegador ou o gerenciador de arquivos): permita e instale.
 - Atualizar: baixe o APK novo e instale por cima. O progresso é mantido.
 
 Enquanto a chave de upload (passo 3) não estiver configurada, esse APK é de teste (assinado com uma chave de teste
@@ -39,7 +39,7 @@ Precisa do Java (vem com o [Android Studio](https://developer.android.com/studio
 keytool -genkeypair -v -keystore zumbi-bot-upload.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000
 ```
 
-Ele pede uma senha (anote) e alguns dados (nome, cidade, país — pode preencher com os seus). Guarde o arquivo
+Ele pede uma senha (anote) e alguns dados (nome, cidade, país; pode preencher com os seus). Guarde o arquivo
 `zumbi-bot-upload.jks` e a senha **em lugar seguro, fora do repositório**. Se perder, dá para pedir a troca da chave
 de upload no Play Console, mas dá trabalho.
 
@@ -52,7 +52,7 @@ Transforme o arquivo em texto (Base64) para colocar no GitHub:
 
 ## 4. Segredos no GitHub
 
-No repositório: **Settings → Secrets and variables → Actions → New repository secret**. Crie quatro segredos:
+No repositório: **Settings > Secrets and variables > Actions > New repository secret**. Crie quatro segredos:
 
 | Nome                        | Valor                                         |
 | --------------------------- | --------------------------------------------- |
@@ -63,7 +63,7 @@ No repositório: **Settings → Secrets and variables → Actions → New reposi
 
 ## 5. Gerar o AAB para a Play Store
 
-1. No GitHub: **Actions → Android → Run workflow** (branch `main`).
+1. No GitHub: **Actions > Android > Run workflow** (branch `main`).
 2. Quando terminar (uns 3 minutos), abra a execução e baixe o artefato **zumbi-bot-aab-play-store**. Dentro dele está
    o `zumbi-bot.aab`.
 3. Cada execução aumenta sozinha o número da versão (`versionCode`), como a Play Store exige.
@@ -72,7 +72,7 @@ No repositório: **Settings → Secrets and variables → Actions → New reposi
 
 1. **Criar app**: nome `Zumbi Bot`, idioma padrão Português (Brasil), tipo **Jogo**, **Gratuito**. Aceite as
    declarações.
-2. **Painel → Configurar o app** — preencha cada item:
+2. **Painel > Configurar o app**: preencha cada item:
    - **Política de privacidade:** `https://marcelojaloto.github.io/Zumbi-Bot/privacy/`
    - **Acesso ao app:** todas as funcionalidades disponíveis sem acesso especial.
    - **Anúncios:** o app não contém anúncios.
@@ -88,13 +88,13 @@ No repositório: **Settings → Secrets and variables → Actions → New reposi
      nome no jogo, o personagem e os comandos vão para os outros jogadores da sala, e o serviço de conexão do
      PeerJS recebe o código da sala e o IP, só enquanto a sala está aberta (processamento temporário, nada é
      guardado). A **voz** (só com o microfone ligado pelo jogador) vai direto para os aparelhos da sala,
-     criptografada de ponta a ponta (WebRTC/DTLS-SRTP), e não é gravada — nem o servidor de retransmissão
+     criptografada de ponta a ponta (WebRTC/DTLS-SRTP), e não é gravada: nem o servidor de retransmissão
      consegue ouvi-la. Marque que os dados são **criptografados em trânsito**. Se preferir declarar de forma
-     conservadora: **Áudio → Gravações de voz ou som**: coletado, processado temporariamente, opcional, para
+     conservadora: **Áudio > Gravações de voz ou som**: coletado, processado temporariamente, opcional, para
      funcionalidade do app, não compartilhado.
      Com o **ranking global** ligado ([RANKING_GLOBAL.md](RANKING_GLOBAL.md)), o melhor resultado do aparelho vai
-     para o Firebase e fica público: declare **Informações pessoais → Nome** (o nome do ranking, escolhido pelo
-     jogador) e **Atividade no app → Outras ações** (pontuação), **coletados**, **compartilhados: não**,
+     para o Firebase e fica público: declare **Informações pessoais > Nome** (o nome do ranking, escolhido pelo
+     jogador) e **Atividade no app > Outras ações** (pontuação), **coletados**, **compartilhados: não**,
      **opcionais: não**, finalidade **Funcionalidade do app**; e **IDs do dispositivo ou outros IDs** (a conta
      anônima do Firebase), coletado, para funcionalidade do app. Os dados podem ser apagados a pedido (issue no
      GitHub).
@@ -102,13 +102,13 @@ No repositório: **Settings → Secrets and variables → Actions → New reposi
      o jogador toca em "Ligar microfone") e vibração. O microfone não exige formulário no Play Console, mas
      precisa estar na política de privacidade (já está).
    - **Apps governamentais, recursos financeiros, saúde:** não.
-3. **Presença na loja → Página principal da loja**: use os textos e imagens de [`store/android/`](../store/android/)
+3. **Presença na loja > Página principal da loja**: use os textos e imagens de [`store/android/`](../store/android/)
    ([`listing.md`](../store/android/listing.md), ícone 512×512, recurso gráfico 1024×500 e capturas de tela).
    Adicione a tradução em inglês (en-US) com os textos em inglês do mesmo arquivo.
 
 ## 7. Teste fechado (contas pessoais)
 
-1. **Testes → Teste fechado → Criar faixa** (ou use a faixa "Alpha").
+1. **Testes > Teste fechado > Criar faixa** (ou use a faixa "Alpha").
 2. **Testadores:** crie uma lista com os e-mails (contas Google) de pelo menos 12 pessoas.
 3. **Criar versão:** envie o `zumbi-bot.aab` do passo 5, escreva as notas da versão e envie para revisão.
 4. Depois de aprovado, mande o **link de participação** para os testadores. Cada um precisa aceitar o convite e
@@ -117,7 +117,7 @@ No repositório: **Settings → Secrets and variables → Actions → New reposi
 
 ## 8. Produção
 
-Com o acesso liberado: **Produção → Criar versão**, envie o AAB mais recente, escolha os países e envie para revisão.
+Com o acesso liberado: **Produção > Criar versão**, envie o AAB mais recente, escolha os países e envie para revisão.
 A primeira revisão costuma levar alguns dias.
 
 ## 9. Atualizações

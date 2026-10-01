@@ -1,4 +1,4 @@
-# Zumbi Bot — Manual de instalação local
+# Zumbi Bot - Manual de instalação local
 
 > Versão na web, com botões de copiar e abas por sistema: https://marcelojaloto.github.io/Zumbi-Bot/manual/
 > English version: [INSTALL.md](INSTALL.md)
@@ -8,8 +8,8 @@ no celular ou no tablet. Este manual é para rodar o jogo na sua própria máqui
 
 ## 1. O que você precisa
 
-- **Node.js 22 LTS** (mínimo 20.19, exigido pelo Vite 8) — https://nodejs.org/
-- **Git** — https://git-scm.com/
+- **Node.js 22 LTS** (mínimo 20.19, exigido pelo Vite 8): https://nodejs.org/
+- **Git**: https://git-scm.com/
 - Um navegador com WebGL (Chrome, Edge, Firefox ou Safari atualizados)
 
 ## 2. Instalar as ferramentas
@@ -41,7 +41,7 @@ Quando aparecer `Local: http://localhost:5173/Zumbi-Bot/`, abra esse endereço n
 
 - **Jogar no celular pela mesma rede Wi-Fi:** `npm run dev -- --host` e abra no celular o endereço "Network" que
   aparecer (algo como `http://192.168.0.10:5173/Zumbi-Bot/`).
-- **Versão de produção (igual à do site):** `npm run build` e `npm run preview` → `http://localhost:4173/Zumbi-Bot/`.
+- **Versão de produção (igual à do site):** `npm run build` e `npm run preview` > `http://localhost:4173/Zumbi-Bot/`.
 - **Atualizar:** `git pull` e `npm install` dentro da pasta `Zumbi-Bot`.
 
 ## 4. Atalhos para testar
@@ -65,6 +65,6 @@ Acrescente ao endereço, por exemplo `http://localhost:5173/Zumbi-Bot/?map=arena
   `npm run dev` parou com erro). Rode `npm run dev` de novo dentro da pasta. O localhost só funciona no computador
   onde o comando está rodando.
 - **"Port 5173 is already in use":** feche o outro terminal ou use a porta que o Vite sugerir.
-- **Tela preta ou erro de WebGL:** ative a aceleração de hardware do navegador (Chrome: Configurações → Sistema →
+- **Tela preta ou erro de WebGL:** ative a aceleração de hardware do navegador (Chrome: Configurações > Sistema >
   "Usar aceleração de gráficos quando disponível") e reinicie o navegador.
 - **Sem som:** o navegador só libera o áudio depois do primeiro clique ou toque.

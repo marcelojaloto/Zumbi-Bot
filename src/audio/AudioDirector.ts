@@ -91,6 +91,11 @@ export class AudioDirector {
         case 'weaponSwap':
           a.play('swap', { vol: 0.5, bus: 'ui' });
           break;
+        case 'medkit':
+          // usar cura com o som de pegar vida; sem caixa, o clique seco da arma vazia
+          if (ev.action === 'use') a.play('pickupHealth', { vol: 0.7, bus: 'ui' });
+          else if (ev.action !== 'store') a.play('dryfire', { vol: 0.5, bus: 'ui' });
+          break;
         case 'explosion':
           a.play(ev.r >= 2.5 ? 'explosion' : 'explosionSmall', { x: ev.x });
           a.duck(0.4, 0.5);

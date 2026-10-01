@@ -8,8 +8,8 @@ internet (só o jogo online usa a rede).
 Tudo é gerado no GitHub Actions (workflow **iOS**, num Mac do GitHub), então **não precisa de Mac**. Para instalar
 num iPhone de verdade e publicar, precisa de uma conta de desenvolvedor Apple.
 
-> Sem iPhone? Dá para jogar no iPhone pelo navegador (Safari): https://marcelojaloto.github.io/Zumbi-Bot/ — e, pela
-> opção **Compartilhar → Adicionar à Tela de Início**, ele abre em tela cheia como um app.
+> Sem iPhone? Dá para jogar no iPhone pelo navegador (Safari): https://marcelojaloto.github.io/Zumbi-Bot/ e, pela
+> opção **Compartilhar > Adicionar à Tela de Início**, ele abre em tela cheia como um app.
 
 ## 1. O que o workflow iOS gera (sem conta Apple)
 
@@ -24,12 +24,12 @@ A cada PR e a cada atualização da `main`, o workflow **iOS**:
 ## 2. Conta de desenvolvedor Apple
 
 1. Acesse https://developer.apple.com/programs/ e entre no **Apple Developer Program** (US$ 99 por ano quando este
-   guia foi escrito) — como **pessoa física** ou **organização** (organização pede um número D-U-N-S).
-2. Anote o **Team ID** (10 letras e números): https://developer.apple.com/account → **Membership details**.
+   guia foi escrito), como **pessoa física** ou **organização** (organização pede um número D-U-N-S).
+2. Anote o **Team ID** (10 letras e números): https://developer.apple.com/account > **Membership details**.
 
 ## 3. Identificador do app (App ID)
 
-Em https://developer.apple.com/account/resources/identifiers → **+** → **App IDs** → **App**:
+Em https://developer.apple.com/account/resources/identifiers > **+** > **App IDs** > **App**:
 
 - Descrição: `Zumbi Bot`
 - Bundle ID (explícito): `io.github.marcelojaloto.zumbibot` (o mesmo do app Android)
@@ -44,7 +44,7 @@ openssl genrsa -out zumbibot.key 2048
 openssl req -new -key zumbibot.key -out zumbibot.csr -subj "/emailAddress=SEU_EMAIL/CN=SEU NOME/C=BR"
 ```
 
-Em https://developer.apple.com/account/resources/certificates → **+** → **Apple Distribution** → envie o
+Em https://developer.apple.com/account/resources/certificates > **+** > **Apple Distribution** > envie o
 `zumbibot.csr` e baixe o certificado (`distribution.cer`). Junte certificado e chave num `.p12` (escolha uma senha e
 anote):
 
@@ -57,15 +57,15 @@ Guarde `zumbibot.key`, `zumbibot.p12` e a senha **em lugar seguro, fora do repos
 
 ## 5. Perfil de distribuição
 
-Em https://developer.apple.com/account/resources/profiles → **+** → **App Store Connect** → escolha o App ID do
-passo 3 e o certificado do passo 4 → nome `Zumbi Bot App Store` → baixe o arquivo `.mobileprovision`.
+Em https://developer.apple.com/account/resources/profiles > **+** > **App Store Connect** > escolha o App ID do
+passo 3 e o certificado do passo 4 > nome `Zumbi Bot App Store` > baixe o arquivo `.mobileprovision`.
 
 ## 6. App no App Store Connect e chave da API
 
-1. https://appstoreconnect.apple.com → **Apps → + → Novo app**: plataforma iOS, nome `Zumbi Bot` (se já existir,
+1. https://appstoreconnect.apple.com > **Apps > + > Novo app**: plataforma iOS, nome `Zumbi Bot` (se já existir,
    por exemplo `Zumbi Bot: Robôs x Zumbis`), idioma principal Português (Brasil), Bundle ID do passo 3, SKU
    `zumbibot`.
-2. **Usuários e acesso → Integrações → API do App Store Connect → Chaves da equipe → +**: nome `GitHub`, acesso
+2. **Usuários e acesso > Integrações > API do App Store Connect > Chaves da equipe > +**: nome `GitHub`, acesso
    **App Manager**. Baixe o arquivo `AuthKey_XXXX.p8` (só dá para baixar uma vez) e anote o **Key ID** e o
    **Issuer ID** (aparece no topo da página).
 
@@ -77,7 +77,7 @@ Transforme os arquivos em texto (Base64):
 - **Linux:** `base64 -w0 ARQUIVO`
 - **Windows (PowerShell):** `[Convert]::ToBase64String([IO.File]::ReadAllBytes("ARQUIVO")) | Set-Clipboard`
 
-No repositório: **Settings → Secrets and variables → Actions → New repository secret**:
+No repositório: **Settings > Secrets and variables > Actions > New repository secret**:
 
 | Nome                                | Valor                                     |
 | ----------------------------------- | ----------------------------------------- |
@@ -91,9 +91,9 @@ No repositório: **Settings → Secrets and variables → Actions → New reposi
 
 ## 8. TestFlight (instalar no iPhone)
 
-1. No GitHub: **Actions → iOS → Run workflow** (branch `main`). Com os segredos, o workflow assina o app e envia para
+1. No GitHub: **Actions > iOS > Run workflow** (branch `main`). Com os segredos, o workflow assina o app e envia para
    o App Store Connect (versão `1.2.<número da execução>`).
-2. Depois de uns 15–30 minutos o build aparece em **App Store Connect → TestFlight**. Responda à pergunta de
+2. Depois de uns 15–30 minutos o build aparece em **App Store Connect > TestFlight**. Responda à pergunta de
    criptografia se aparecer (o app já declara que só usa a criptografia padrão).
 3. **Teste interno:** adicione você (e quem mais tiver acesso à conta) como testador. Instale o app **TestFlight** no
    iPhone e aceite o convite.
@@ -105,9 +105,9 @@ com um Android ou computador na mesma sala, som com a chave de silencioso, tela 
 
 ## 9. Publicar na App Store
 
-Em **App Store Connect → o app → versão iOS**:
+Em **App Store Connect > o app > versão iOS**:
 
-- **Capturas de tela:** [`store/ios/screenshots/`](../store/ios/screenshots/) — `iphone/` (6,9", 2868×1320) e
+- **Capturas de tela:** [`store/ios/screenshots/`](../store/ios/screenshots/): `iphone/` (6,9", 2868×1320) e
   `ipad/` (13", 2752×2064), em português e inglês. Para gerar de novo: `npm run store:shots:ios`.
 - **Textos:** use os de [`store/android/listing.md`](../store/android/listing.md) (descrição completa) e:
   - Subtítulo (30): `Robôs contra o apocalipse zumbi` / `Robots vs. the zombie apocalypse`
@@ -117,16 +117,16 @@ Em **App Store Connect → o app → versão iOS**:
     `https://marcelojaloto.github.io/Zumbi-Bot/privacy/`
 - **Privacidade do app:** o jogo não coleta dados (o progresso fica no aparelho; no jogo online, nome, comandos e voz
   vão direto para os outros jogadores da sala, criptografados, e nada é guardado). Dá para declarar **"Dados não
-  coletados"**. Se preferir declarar de forma conservadora: **Áudio (voz)** — não vinculado à identidade, sem
+  coletados"**. Se preferir declarar de forma conservadora: **Áudio (voz)**: não vinculado à identidade, sem
   rastreamento, para funcionalidade do app. Com o **ranking global** ligado ([RANKING_GLOBAL.md](RANKING_GLOBAL.md)),
-  declare também **Conteúdo do usuário → Outro conteúdo** (o nome do ranking) e **Dados de uso → Interação com o
-  produto** (pontuação), mais **Identificadores → ID do usuário** (a conta anônima do Firebase): não vinculados à
+  declare também **Conteúdo do usuário > Outro conteúdo** (o nome do ranking) e **Dados de uso > Interação com o
+  produto** (pontuação), mais **Identificadores > ID do usuário** (a conta anônima do Firebase): não vinculados à
   identidade, sem rastreamento, para funcionalidade do app.
 - **Classificação etária:** violência de desenho/fantasia **frequente** (lutas contra zumbis e robôs, sem sangue
   realista); **comunicação entre usuários: sim** (chat de voz opcional numa sala com código); sem compras, sem
   navegação livre na internet. A Apple calcula a idade a partir das respostas.
 - **Notas para a revisão:** "O jogo funciona offline (um jogador). O jogo online precisa de dois aparelhos: em um,
-  Jogar online → Criar sala; no outro, Entrar numa sala com o código de 4 letras. O chat de voz é opcional e pede o
+  Jogar online > Criar sala; no outro, Entrar numa sala com o código de 4 letras. O chat de voz é opcional e pede o
   microfone só ao tocar em Ligar microfone."
 
 Envie para a revisão. A primeira costuma levar de um a três dias.
@@ -149,4 +149,4 @@ versão, escolha o build e envie para a revisão.
   indicador da Tela de Início e a barra de status somem pelo plugin SystemBars do Capacitor
   (`plugins.SystemBars.hidden` no `capacitor.config.json`).
 - O código exclusivo dos apps fica atrás da constante `__NATIVE__`; o texto de ajuda do microfone muda no app de
-  iPhone (Ajustes do iPhone → Apps → Zumbi Bot → Microfone).
+  iPhone (Ajustes do iPhone > Apps > Zumbi Bot > Microfone).

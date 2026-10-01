@@ -72,4 +72,29 @@ describe('personagem secreto (Prodígio)', () => {
     expect(p.t.x - x0).toBeGreaterThan(1.5);
     expect(hits).toBeGreaterThanOrEqual(2);
   });
+
+  it('o Tornado Arcano solta ciclones para todos os lados, que acertam quem está atrás e não saem da rua', () => {
+    const w = makeWorld({ loadout: { character: 'prodigy' } });
+    const p = player(w);
+    const back = spawnEnemy(w, 'walker', p.t.x - 2.5, p.t.z, 'right');
+    back.health!.hp = back.health!.max = 999;
+    run(w, 1, { buttons: Btn.Special });
+    let hitBack = 0;
+    let most = 0;
+    const [z0, z1] = w.zBand;
+    for (let i = 0; i < 80; i++) {
+      run(w, 1);
+      const cyclones = w.entities.filter((e) => e.hazard?.fx === 'cyclone');
+      most = Math.max(most, cyclones.length);
+      // quicam nas bordas da faixa de profundidade (no máximo um quadro além dela)
+      for (const c of cyclones) expect(c.t.z).toBeGreaterThan(z0 - 0.2);
+      for (const c of cyclones) expect(c.t.z).toBeLessThan(z1 + 0.2);
+      hitBack += w.drainEvents().filter((e) => e.t === 'hit' && e.dst === back.id && e.amount > 0).length;
+    }
+    expect(most).toBe(8);
+    // os chutes só acertam na frente: quem estava atrás levou os ciclones (os das diagonais quicam e voltam)
+    expect(hitBack).toBeGreaterThanOrEqual(1);
+    // sumiram no fim
+    expect(w.entities.some((e) => e.hazard?.fx === 'cyclone')).toBe(false);
+  });
 });

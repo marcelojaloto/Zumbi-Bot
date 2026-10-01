@@ -48,7 +48,7 @@ export const banco: MapDef = {
       ],
       hints: [
         { x: 56, text: 'Alarme a laser! Cruzar o feixe vermelho chama robôs de segurança' },
-        { x: 96, text: 'Pisos energizados piscam antes do choque — espere ou pule' },
+        { x: 96, text: 'Pisos energizados piscam antes do choque: espere ou pule' },
         { x: 152, text: 'O Guardião do Cofre desperta! Fuja das casas eletrificadas' },
       ],
       segments: [

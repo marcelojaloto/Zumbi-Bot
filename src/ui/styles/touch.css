@@ -185,8 +185,39 @@
   height: 64%;
   filter: drop-shadow(0 1px 1px #000);
 }
+/* quem não usa cajado: o ⇄ vira a caixa de cura, com quantas sobram */
+.t-btn.b-mode.medkit {
+  border-color: rgba(90, 255, 154, 0.9);
+}
+.t-btn.b-mode.medkit .mk {
+  font-size: calc(24px * var(--ts));
+  color: #5aff9a;
+  line-height: 1;
+}
+.t-btn.b-mode.medkit .mk-n {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  min-width: calc(18px * var(--ts));
+  height: calc(18px * var(--ts));
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  font-size: calc(11px * var(--ts));
+  background: #1c6a3c;
+  border: 1px solid #5aff9a;
+}
+.t-btn.b-mode.medkit.empty {
+  filter: grayscale(1);
+  opacity: calc(var(--to) * 0.7);
+}
 .t-btn.b-next.staff {
   border-color: rgba(57, 230, 255, 0.9);
+}
+/* uma arma (ou um cajado) só: o botão continua lá, mais apagado */
+.t-btn.b-next.single {
+  opacity: calc(var(--to) * 0.6);
 }
 .t-btn.on {
   opacity: min(1, calc(var(--to) + 0.5));

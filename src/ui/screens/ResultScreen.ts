@@ -150,8 +150,8 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
       el(
         'div',
         { class: 'reward', style: `border-color:${hexColor(sc.color)}` },
-        el('b', { style: `color:${hexColor(sc.color)}` }, `🔓 ${t('Personagem secreto liberado!')}`),
-        el('span', {}, `${t(sc.name)} — ${sc.fullName}`),
+        el('b', { style: `color:${hexColor(sc.color)}` }, t('Personagem secreto liberado!')),
+        el('span', {}, `${t(sc.name)} (${sc.fullName})`),
       ),
     );
   }
@@ -171,8 +171,8 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
   let editor: HTMLElement | null = null;
   const runLine = (score: number, maps: number) =>
     maps === 1
-      ? t('Jornada: {pts} pontos • 1 mapa vencido', { pts: fmtInt(score) })
-      : t('Jornada: {pts} pontos • {n} mapas vencidos', { pts: fmtInt(score), n: maps });
+      ? t('Jornada: {pts} pontos | 1 mapa vencido', { pts: fmtInt(score) })
+      : t('Jornada: {pts} pontos | {n} mapas vencidos', { pts: fmtInt(score), n: maps });
   if (r.rank) {
     const { entry, pos, team } = r.rank;
     rankBox.classList.add('end');
@@ -314,7 +314,7 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     el(
       'div',
       { class: 'subtitle' },
-      `${map.index + 1}. ${t(map.name)}${s.ngPlus ? ' • NG+' : ''}${r.newRecord ? ` • ${t('NOVO RECORDE!')}` : ''}${win && !r.next ? ` • ${t('CAMPANHA CONCLUÍDA!')}` : ''}`,
+      `${map.index + 1}. ${t(map.name)}${s.ngPlus ? ' (NG+)' : ''}${r.newRecord ? ` | ${t('NOVO RECORDE!')}` : ''}${win && !r.next ? ` | ${t('CAMPANHA CONCLUÍDA!')}` : ''}`,
     ),
     win ? stars : null,
     el('div', { class: 'panel', style: 'max-width:520px' }, stats),
@@ -322,7 +322,7 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     rewards.childElementCount ? rewards : null,
     rankBox,
     easier,
-    guest ? el('p', { class: 'online-wait' }, t('Esperando o anfitrião escolher a próxima fase…')) : null,
+    guest ? el('p', { class: 'online-wait' }, t('Esperando o anfitrião escolher a próxima fase...')) : null,
     btns,
   );
   return {

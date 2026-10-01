@@ -1,5 +1,5 @@
 import { secToTicks } from '../../core/time';
-import { PLAYER } from '../../data/balance';
+import { MEDKITS, PLAYER } from '../../data/balance';
 import { getItem, ITEMS } from '../../data/items';
 import { MELEE_WEAPONS } from '../../data/melee';
 import { FIREARMS, ammoCap } from '../../data/weapons';
@@ -114,7 +114,13 @@ export function applyItem(w: World, e: Entity, item: ItemId): boolean {
   const ef = def.effect;
   switch (ef.k) {
     case 'heal':
-      if (h.hp >= h.max) return false;
+      if (h.hp >= h.max) {
+        // vida cheia: quem não usa cajado guarda a caixa para depois (até 4)
+        if (characterDef(e).arms.staff || p.medkits.length >= MEDKITS.max) return false;
+        p.medkits.push(ef.amount);
+        w.emit({ t: 'medkit', player: e.id, action: 'store', left: p.medkits.length });
+        return true;
+      }
       applyHeal(w, e, ef.amount);
       return true;
     case 'mana':

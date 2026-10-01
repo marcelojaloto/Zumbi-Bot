@@ -1019,6 +1019,25 @@ export class FxDirector {
           this.rnd,
         );
         break;
+      case 'cyclone':
+        // faíscas arcanas subindo em espiral pelo funil
+        this.add.emit(
+          {
+            x: px,
+            y: 0.2 + this.rnd() * 1.2,
+            z: pz,
+            vy: 2.5,
+            spread: 1.2,
+            life: 0.4,
+            size: 0.12,
+            sizeEnd: 0.02,
+            color: 0xc8f6ff,
+            colorEnd: c,
+            intensity: 3,
+          },
+          this.rnd,
+        );
+        break;
       case 'shockwave':
       case 'debris':
         this.norm.emit(

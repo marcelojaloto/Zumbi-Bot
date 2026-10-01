@@ -1,4 +1,4 @@
-import { PLAYER, maxHpForLevel, maxManaForLevel } from '../data/balance';
+import { MEDKITS, PLAYER, maxHpForLevel, maxManaForLevel } from '../data/balance';
 import { getCharacter } from '../data/characters';
 import type { AmmoType } from '../data/types';
 import { makeFighter, makeHealth, makeTransform, type Entity, type PlayerComp } from './Entity';
@@ -64,6 +64,8 @@ export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
       needsRelease: false,
     },
     staffs: [...lo.staffs],
+    // quem não usa cajado começa o mapa com as caixas de cura guardadas (usadas no botão do cajado)
+    medkits: ch.arms.staff ? [] : Array.from({ length: MEDKITS.start }, () => MEDKITS.heal),
     staffIdx: 0,
     staffCd: {},
     castStaff: null,

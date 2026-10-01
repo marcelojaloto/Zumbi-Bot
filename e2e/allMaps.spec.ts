@@ -126,8 +126,9 @@ test('chefe final: vitória mostra o final lendário, os créditos e libera o No
   // cinco heróis, o epílogo e, por último, a revelação do personagem secreto
   await expect(page.locator('.end-dots span')).toHaveCount(7);
   for (let i = 0; i < 5; i++) await page.keyboard.press('ArrowRight');
-  await expect(page.locator('.end-head')).toContainText('Sem disfarce');
-  await expect(page.locator('.end-name')).toContainText('Personagem secreto liberado!');
+  // título só com o nome, sem cadeado e sem subtítulo
+  await expect(page.locator('.end-head')).toHaveText('Prodígio');
+  await expect(page.locator('.end-name')).toHaveText('Jacobb Amici, personagem secreto liberado!');
   // "Pular" vai direto para os créditos
   await page.getByRole('button', { name: 'Pular' }).click();
   await page.waitForFunction(() => document.querySelector('.screen.credits') !== null);

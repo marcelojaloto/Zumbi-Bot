@@ -21,12 +21,12 @@ export function keyName(code: string): string {
   return KEY_NAMES_TO_TRANSLATE.includes(s) ? t(s) : s;
 }
 
-/** Tecla principal de cada ação (para textos como "J = soco"); "—" quando a ação ficou sem tecla. */
+/** Tecla principal de cada ação (para textos como "J = soco"); "?" quando a ação ficou sem tecla. */
 export function actionKeyNames(map: KeyMap): Record<Action, string> {
   const out = {} as Record<Action, string>;
   for (const a of Object.keys(map) as Action[]) {
     const k = editableKeys(map, a)[0];
-    out[a] = k ? keyName(k) : '—';
+    out[a] = k ? keyName(k) : '?';
   }
   return out;
 }

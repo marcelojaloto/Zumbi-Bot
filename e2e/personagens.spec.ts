@@ -128,9 +128,9 @@ test('menu Personagens no celular: carrossel com setas e o Prodígio liberado de
   await expect(right).toBeDisabled();
   const secret = page.locator('.char-card[data-char="prodigy"]');
   await expect(secret).toContainText('Prodígio');
-  await expect(secret).toContainText('Léo Aurora');
+  await expect(secret).toContainText('Jacobb Amici');
   await secret.click();
-  await expect(page.locator('.cs-full')).toHaveText('Léo Aurora');
+  await expect(page.locator('.cs-full')).toHaveText('Jacobb Amici');
   await expect(page.locator('.cs-body')).toContainText('Tornado Arcano');
   await expect(page.locator('.stat-bar.none')).toHaveCount(1);
   expect(errors).toEqual([]);

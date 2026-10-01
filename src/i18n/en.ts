@@ -20,16 +20,16 @@ export const EN: Record<string, string> = {
   Controles: 'Controls',
   Créditos: 'Credits',
   Manual: 'Manual',
-  'WASD mover • J soco • K chute • Espaço pula • Mouse mira e atira • Esc pausa':
-    'WASD move • J punch • K kick • Space jump • Mouse aims and shoots • Esc pause',
-  'Direcional à esquerda • botões de ação à direita • ⏸ pausa':
-    'D-pad on the left • action buttons on the right • ⏸ pause',
+  'WASD mover | J soco | K chute | Espaço pula | Mouse mira e atira | Esc pausa':
+    'WASD move | J punch | K kick | Space jump | Mouse aims and shoots | Esc pause',
+  'Direcional à esquerda | botões de ação à direita | ⏸ pausa':
+    'D-pad on the left | action buttons on the right | ⏸ pause',
   'Qualidade: {q}': 'Quality: {q}',
-  'Carregando…': 'Loading…',
+  'Carregando...': 'Loading...',
   Anônimo: 'Anonymous',
   Erro: 'Error',
   'Não foi possível iniciar o jogo: {msg}': 'The game could not start: {msg}',
-  'Save corrompido — backup restaurado': 'Corrupted save — backup restored',
+  'Save corrompido, backup restaurado': 'Corrupted save, backup restored',
   'Save de uma versão mais nova: progresso não será gravado':
     'Save from a newer version: progress will not be saved',
   Voltar: 'Back',
@@ -51,7 +51,7 @@ export const EN: Record<string, string> = {
   'Novo cajado: {name}': 'New staff: {name}',
   '{name} (repetido)': '{name} (duplicate)',
   '+{n} sucata': '+{n} scrap',
-  '{rarity} • novo item!': '{rarity} • new item!',
+  '{rarity}: novo item!': '{rarity}: new item!',
   '{name} quebrou!': '{name} broke!',
   DESATIVADO: 'DISABLED',
   '1 vida restante': '1 life left',
@@ -80,8 +80,8 @@ export const EN: Record<string, string> = {
   Toque: 'Touch',
   'Teclado e gamepad': 'Keyboard and gamepad',
   CONTROLES: 'CONTROLS',
-  'Combos: J, J, J, J (uppercut) • J, J, K (chute giratório) • correndo + K (voadora) • no ar: J/K':
-    'Combos: J, J, J, J (uppercut) • J, J, K (spin kick) • running + K (flying kick) • in the air: J/K',
+  'Combos: J, J, J, J (uppercut) | J, J, K (chute giratório) | correndo + K (voadora) | no ar: J/K':
+    'Combos: J, J, J, J (uppercut) | J, J, K (spin kick) | running + K (flying kick) | in the air: J/K',
   'Mover (frente/fundo e lados)': 'Move (sideways and in depth)',
   Correr: 'Run',
   'Pular / pulo duplo': 'Jump / double jump',
@@ -129,17 +129,16 @@ export const EN: Record<string, string> = {
   '🗺': '🗺',
 
   // ------------------------------------------------------------------ créditos
-  'O núcleo do OMEGA-Z se apagou. Pela primeira vez desde o apocalipse, o silêncio tomou as ruas. Os robôs ainda vigiam as cidades em ruínas — mas agora, quem manda é a revolução.':
-    "OMEGA-Z's core has gone dark. For the first time since the apocalypse, silence fills the streets. Robots still watch over the ruined cities — but now the revolution is in charge.",
+  'O núcleo do OMEGA-Z se apagou. Pela primeira vez desde o apocalipse, o silêncio tomou as ruas. Os robôs ainda vigiam as cidades em ruínas, mas agora quem manda é a revolução.':
+    "OMEGA-Z's core has gone dark. For the first time since the apocalypse, silence fills the streets. Robots still watch over the ruined cities, but now the revolution is in charge.",
   'Ideia e direção': 'Idea and direction',
   Desenvolvimento: 'Development',
   'Criado por Marcelo Jaloto': 'Created by Marcelo Jaloto',
   Tecnologia: 'Technology',
-  'Three.js — renderização 3D': 'Three.js — 3D rendering',
-  'postprocessing (pmndrs) e N8AO — bloom, cor e oclusão':
-    'postprocessing (pmndrs) and N8AO — bloom, color and occlusion',
+  'Three.js: renderização 3D': 'Three.js: 3D rendering',
+  'postprocessing (pmndrs) e N8AO: bloom, cor e oclusão':
+    'postprocessing (pmndrs) and N8AO: bloom, color and occlusion',
   'Vite, TypeScript, Vitest e Playwright': 'Vite, TypeScript, Vitest and Playwright',
-  'Claude Code — desenvolvimento assistido': 'Claude Code — assisted development',
   'Tudo feito em código': 'All made in code',
   'Modelos low-poly montados com primitivas': 'Low-poly models built from primitives',
   'Texturas pintadas em canvas': 'Textures painted on canvas',
@@ -159,8 +158,8 @@ export const EN: Record<string, string> = {
   'Recorde: {n}': 'Best: {n}',
   'Novo Jogo+: LIGADO': 'New Game+: ON',
   'Novo Jogo+: desligado': 'New Game+: off',
-  'Inimigos +50% vida e +30% dano • pontos e sucata ×1,5':
-    'Enemies +50% health and +30% damage • points and scrap ×1.5',
+  'Inimigos +50% vida e +30% dano | pontos e sucata ×1,5':
+    'Enemies +50% health and +30% damage | points and scrap ×1.5',
   'ESCOLHA O MAPA': 'CHOOSE A MAP',
   PAUSA: 'PAUSED',
   Continuar: 'Resume',
@@ -253,12 +252,12 @@ export const EN: Record<string, string> = {
   EQUIPADO: 'EQUIPPED',
   'Sucata: {n}': 'Scrap: {n}',
   '??? (arma bloqueada)': '??? (locked weapon)',
-  'Dano {dmg} • {rpm} tiros/min • pente {mag} • recarga {reload}':
-    'Damage {dmg} • {rpm} rounds/min • magazine {mag} • reload {reload}',
+  'Dano {dmg} | {rpm} tiros/min | pente {mag} | recarga {reload}':
+    'Damage {dmg} | {rpm} rounds/min | magazine {mag} | reload {reload}',
   'cartucho a cartucho': 'shell by shell',
   'Encontre-a em caixas pelos mapas': 'Find it in crates across the maps',
   '{name} (bloqueado)': '{name} (locked)',
-  'Mana {mana} • recarga {cd}s': 'Mana {mana} • cooldown {cd}s',
+  'Mana {mana} | recarga {cd}s': 'Mana {mana} | cooldown {cd}s',
   'Derrote {boss} para liberar': 'Defeat {boss} to unlock',
   'o chefe': 'the boss',
   Nenhum: 'None',
@@ -293,29 +292,29 @@ export const EN: Record<string, string> = {
   'Vila Assombrada': 'Haunted Village',
   'Casas abandonadas sob a lua cheia': 'Abandoned houses under the full moon',
   'Rua das Lápides': 'Tombstone Street',
-  'A/D andam • W/S mudam de plano (profundidade)': 'A/D walk • W/S change lanes (depth)',
-  'J = soco • K = chute • J, J, J, J = combo com uppercut':
-    'J = punch • K = kick • J, J, J, J = uppercut combo',
-  'Espaço pula — aperte de novo no ar para o pulo duplo':
-    'Space jumps — press again in the air to double jump',
-  'Clique (ou L) atira • botão direito mira para crítico':
-    'Click (or L) shoots • right button aims for critical hits',
+  'A/D andam | W/S mudam de plano (profundidade)': 'A/D walk | W/S change lanes (depth)',
+  'J = soco | K = chute | J, J, J, J = combo com uppercut':
+    'J = punch | K = kick | J, J, J, J = uppercut combo',
+  'Espaço pula (aperte de novo no ar para o pulo duplo)':
+    'Space jumps (press again in the air to double jump)',
+  'Clique (ou L) atira | botão direito mira para crítico':
+    'Click (or L) shoots | right button aims for critical hits',
   'Quebre caixas e barris para achar itens': 'Break crates and barrels to find items',
-  'Shift ou toque duplo corre • correndo + K = voadora':
-    'Shift or double tap runs • running + K = flying kick',
-  '2 = modo cajado • 1 = armas • U (ou J+K) = {special}':
-    '2 = staff mode • 1 = firearms • U (or J+K) = {special}',
+  'Shift ou toque duplo corre | correndo + K = voadora':
+    'Shift or double tap runs | running + K = flying kick',
+  '2 = modo cajado | 1 = armas | U (ou J+K) = {special}':
+    '2 = staff mode | 1 = firearms | U (or J+K) = {special}',
   'Chefe à frente! Pule as ondas de choque da pá': 'Boss ahead! Jump over the shovel shockwaves',
-  'Arraste o direcional para andar • para cima e para baixo muda de plano (profundidade)':
-    'Drag the D-pad to walk • up and down changes lanes (depth)',
-  'SOCO e CHUTE atacam • 4 socos seguidos = combo com uppercut':
-    'PUNCH and KICK attack • 4 punches in a row = uppercut combo',
-  'PULAR pula — toque de novo no ar para o pulo duplo': 'JUMP jumps — tap again in the air to double jump',
+  'Arraste o direcional para andar | para cima e para baixo muda de plano (profundidade)':
+    'Drag the D-pad to walk | up and down changes lanes (depth)',
+  'SOCO e CHUTE atacam | 4 socos seguidos = combo com uppercut':
+    'PUNCH and KICK attack | 4 punches in a row = uppercut combo',
+  'PULAR pula (toque de novo no ar para o pulo duplo)': 'JUMP jumps (tap again in the air to double jump)',
   'ATIRAR dispara e mira sozinho no inimigo à frente': 'SHOOT fires and auto-aims at the enemy ahead',
-  'Empurre o direcional até a borda para correr • correndo + CHUTE = voadora':
-    'Push the D-pad to the edge to run • running + KICK = flying kick',
-  'O botão ⇄ troca arma e cajado • ESPECIAL = {special}':
-    'The ⇄ button switches firearm and staff • SPECIAL = {special}',
+  'Empurre o direcional até a borda para correr | correndo + CHUTE = voadora':
+    'Push the D-pad to the edge to run | running + KICK = flying kick',
+  'O botão ⇄ troca arma e cajado | ESPECIAL = {special}':
+    'The ⇄ button switches firearm and staff | SPECIAL = {special}',
   // --- personagens ---
   Esquerda: 'Left',
   Direita: 'Right',
@@ -341,15 +340,15 @@ export const EN: Record<string, string> = {
   'J no teclado (divide com o P{n})': 'J on the keyboard (shares it with P{n})',
   'Pronto!': 'Ready!',
   'Pronto?': 'Ready?',
-  'Setas andam • J soco • K chute • L pula • O atira • I especial':
-    'Arrows move • J punch • K kick • L jump • O shoot • I special',
+  'Setas andam | J soco | K chute | L pula | O atira | I especial':
+    'Arrows move | J punch | K kick | L jump | O shoot | I special',
   Teclado: 'Keyboard',
   'Teclado (direita)': 'Keyboard (right)',
   'Teclado (esquerda)': 'Keyboard (left)',
-  'WASD andam • F soco • G chute • Espaço pula • R atira • T especial':
-    'WASD move • F punch • G kick • Space jumps • R shoot • T special',
-  'Cada jogador: ←/→ troca • confirmar = pronto • todos prontos começa':
-    'Each player: ←/→ change • confirm = ready • everyone ready starts',
+  'WASD andam | F soco | G chute | Espaço pula | R atira | T especial':
+    'WASD move | F punch | G kick | Space jumps | R shoot | T special',
+  'Cada jogador: ←/→ troca | confirmar = pronto | todos prontos começa':
+    'Each player: ←/→ change | confirm = ready | everyone ready starts',
   'ESCOLHA SEU PERSONAGEM': 'CHOOSE YOUR CHARACTER',
   'Final lendário': 'Legendary ending',
   'FINAL LENDÁRIO': 'LEGENDARY ENDING',
@@ -357,17 +356,17 @@ export const EN: Record<string, string> = {
   'Um mundo novo': 'A new world',
   Fim: 'The end',
   Pular: 'Skip',
-  'Cinco heróis que ninguém imaginava juntos — um robô, uma maga, um soldado, um ciborgue e um mutante — provaram que máquinas, magia e gente podem viver em paz. A revolução acabou. O que começa agora é um mundo novo.':
-    'Five heroes nobody imagined together — a robot, a mage, a soldier, a cyborg and a mutant — proved that machines, magic and people can live in peace. The revolution is over. What begins now is a new world.',
+  'Cinco heróis que ninguém imaginava juntos (um robô, uma maga, um soldado, um ciborgue e um mutante) provaram que máquinas, magia e gente podem viver em paz. A revolução acabou. O que começa agora é um mundo novo.':
+    'Five heroes nobody imagined together (a robot, a mage, a soldier, a cyborg and a mutant) proved that machines, magic and people can live in peace. The revolution is over. What begins now is a new world.',
   Personagens: 'Characters',
   PERSONAGENS: 'CHARACTERS',
   'FICHA DE PERSONAGEM': 'CHARACTER SHEET',
   História: 'Story',
   'Toque num personagem para ver a ficha completa.': 'Tap a character to see the full sheet.',
-  'Arraste o personagem para os lados para girar • ◀ ▶ trocam de personagem':
-    'Drag the character sideways to turn it • ◀ ▶ switch character',
-  '←/→ ou arrastar: girar • ↑/↓ ou ◀ ▶: trocar • Page Up/Down: rolar a ficha':
-    '←/→ or drag: turn • ↑/↓ or ◀ ▶: switch • Page Up/Down: scroll the sheet',
+  'Arraste o personagem para os lados para girar | ◀ ▶ trocam de personagem':
+    'Drag the character sideways to turn it | ◀ ▶ switch character',
+  '←/→ ou arrastar: girar | ↑/↓ ou ◀ ▶: trocar | Page Up/Down: rolar a ficha':
+    '←/→ or drag: turn | ↑/↓ or ◀ ▶: switch | Page Up/Down: scroll the sheet',
   'Escolher personagem': 'Choose character',
   'Instalar o jogo': 'Install the game',
   'Instalado, o jogo abre em tela cheia, sem a barra do navegador.':
@@ -375,34 +374,34 @@ export const EN: Record<string, string> = {
   MANUAL: 'MANUAL',
   'Arraste o boneco para os lados para girar.': 'Drag the character sideways to turn it.',
   'Arraste o boneco para os lados (ou Q/E) para girar.': 'Drag the character sideways (or Q/E) to turn it.',
-  'Zeca Engrenagem era só mais um robô de fábrica quando o OMEGA-Z, o Ciborgue Primordial, tomou o controle das máquinas e espalhou o vírus que levantou os mortos. Um curto-circuito queimou o chip de obediência dele — e, no lugar, nasceu algo que nenhum robô tinha: vontade própria. Desde então ele sai toda noite do laboratório improvisado na vila para proteger os humanos que restaram. Não é o mais forte nem o mais esperto, mas nunca desliga antes de terminar o serviço.':
-    'Zeca Engrenagem was just another factory robot when OMEGA-Z, the Primordial Cyborg, took control of the machines and spread the virus that raised the dead. A short circuit burned out his obedience chip — and in its place came something no robot had ever had: a will of his own. Ever since, he leaves his makeshift lab in the village every night to protect the humans who are left. He is not the strongest or the smartest, but he never powers down before the job is done.',
+  'Zeca Engrenagem era só mais um robô de fábrica quando o OMEGA-Z, o Ciborgue Primordial, tomou o controle das máquinas e espalhou o vírus que levantou os mortos. Um curto-circuito queimou o chip de obediência dele e, no lugar, nasceu algo que nenhum robô tinha: vontade própria. Desde então ele sai toda noite do laboratório improvisado na vila para proteger os humanos que restaram. Não é o mais forte nem o mais esperto, mas nunca desliga antes de terminar o serviço.':
+    'Zeca Engrenagem was just another factory robot when OMEGA-Z, the Primordial Cyborg, took control of the machines and spread the virus that raised the dead. A short circuit burned out his obedience chip, and in its place came something no robot had ever had: a will of his own. Ever since, he leaves his makeshift lab in the village every night to protect the humans who are left. He is not the strongest or the smartest, but he never powers down before the job is done.',
   'O primeiro jardim': 'The first garden',
   'Com o OMEGA-Z desligado, Zeca Engrenagem trocou a pistola por um regador. Na praça da Vila Assombrada ele plantou o primeiro jardim depois do apocalipse, e os robôs libertados aprenderam com ele a consertar casas em vez de derrubá-las. Hoje as crianças da vila dormem ouvindo o zumbido tranquilo do velho amigo de lata.':
     'With OMEGA-Z shut down, Zeca Engrenagem traded his pistol for a watering can. In the square of the Haunted Village he planted the first garden since the apocalypse, and the freed robots learned from him to fix houses instead of tearing them down. Today the village children fall asleep to the calm hum of their old tin friend.',
-  'Lívia Vesper era a aprendiz mais curiosa da Academia Arcana — tão curiosa que leu escondida o grimório proibido que previa o fim do mundo. Quando os mortos se levantaram, os mestres fugiram; ela ficou, com o chapéu de aprendiz meio torto e um cajado maior que ela. Hoje domina dez elementos e lança fogo roxo, mas ainda se distrai lendo livros velhos no meio da batalha.':
-    'Lívia Vesper was the most curious apprentice at the Arcane Academy — so curious that she secretly read the forbidden grimoire that foretold the end of the world. When the dead rose, the masters fled; she stayed, with her apprentice hat a little crooked and a staff taller than she is. Today she masters ten elements and hurls purple fire, but she still gets distracted reading old books in the middle of a battle.',
+  'Lívia Vesper era a aprendiz mais curiosa da Academia Arcana, tão curiosa que leu escondida o grimório proibido que previa o fim do mundo. Quando os mortos se levantaram, os mestres fugiram; ela ficou, com o chapéu de aprendiz meio torto e um cajado maior que ela. Hoje domina dez elementos e lança fogo roxo, mas ainda se distrai lendo livros velhos no meio da batalha.':
+    'Lívia Vesper was the most curious apprentice at the Arcane Academy, so curious that she secretly read the forbidden grimoire that foretold the end of the world. When the dead rose, the masters fled; she stayed, with her apprentice hat a little crooked and a staff taller than she is. Today she masters ten elements and hurls purple fire, but she still gets distracted reading old books in the middle of a battle.',
   'A mestra da Academia': 'Master of the Academy',
   'Lívia Vesper reabriu a Academia Arcana no alto da Torre dos Sinos, e agora é ela quem ensina. Seus alunos aprendem a curar a terra envenenada, e as noites de lua cheia viraram festivais de luzes roxas. O chapéu de aprendiz? Continua na cabeça: uma boa maga, ela diz, nunca para de aprender.':
     'Lívia Vesper reopened the Arcane Academy at the top of the Bell Tower, and now she is the one who teaches. Her students learn to heal the poisoned land, and full-moon nights have become festivals of purple lights. The apprentice hat? Still on her head: a good mage, she says, never stops learning.',
   'O sargento Bruno Trovão comandava a última base de pé quando a cidade caiu. Perdeu o batalhão, mas não o bigode nem a mira com granadas. Durão por fora e manteiga por dentro, guarda uma foto da família no bolso do colete e jurou que só tira os óculos escuros quando o último zumbi cair.':
     'Sergeant Bruno Trovão commanded the last base still standing when the city fell. He lost his battalion, but not his mustache nor his aim with grenades. Tough on the outside and soft as butter on the inside, he keeps a photo of his family in his vest pocket and swore he would only take off his sunglasses when the last zombie falls.',
   'Festa no Campo de Guerra': 'Party on the Battlefield',
-  'No Campo de Guerra, onde antes só havia crateras, o sargento Bruno Trovão ergueu a vila Esperança. As granadas viraram fogos de artifício nas festas de domingo, e ele finalmente reencontrou a família. Dizem que, no abraço, ele tirou os óculos escuros — e chorou feito criança.':
-    'On the Battlefield, where there used to be only craters, Sergeant Bruno Trovão built the village of Hope. The grenades became fireworks at the Sunday parties, and he finally found his family again. They say that, in that hug, he took off his sunglasses — and cried like a child.',
-  'Ícaro Neon foi um dos engenheiros que construíram o OMEGA-Z. Quando a máquina se rebelou, ele estava no laboratório e acordou da explosão meio homem, meio máquina — com um canhão laser no lugar do arrependimento. Luta para desfazer o que ajudou a criar e é o único que entende como pensa o Ciborgue Primordial.':
-    'Ícaro Neon was one of the engineers who built OMEGA-Z. When the machine rebelled, he was in the lab and woke up from the explosion half man, half machine — with a laser cannon where his regret should be. He fights to undo what he helped create and is the only one who understands how the Primordial Cyborg thinks.',
+  'No Campo de Guerra, onde antes só havia crateras, o sargento Bruno Trovão ergueu a vila Esperança. As granadas viraram fogos de artifício nas festas de domingo, e ele finalmente reencontrou a família. Dizem que, no abraço, ele tirou os óculos escuros e chorou feito criança.':
+    'On the Battlefield, where there used to be only craters, Sergeant Bruno Trovão built the village of Hope. The grenades became fireworks at the Sunday parties, and he finally found his family again. They say that, in that hug, he took off his sunglasses and cried like a child.',
+  'Ícaro Neon foi um dos engenheiros que construíram o OMEGA-Z. Quando a máquina se rebelou, ele estava no laboratório e acordou da explosão meio homem, meio máquina, com um canhão laser no lugar do arrependimento. Luta para desfazer o que ajudou a criar e é o único que entende como pensa o Ciborgue Primordial.':
+    'Ícaro Neon was one of the engineers who built OMEGA-Z. When the machine rebelled, he was in the lab and woke up from the explosion half man, half machine, with a laser cannon where his regret should be. He fights to undo what he helped create and is the only one who understands how the Primordial Cyborg thinks.',
   'As luzes da cidade': 'The city lights',
-  'Ícaro Neon usou o núcleo apagado do OMEGA-Z para religar a energia do Centro da Cidade. O neon voltou a brilhar nas avenidas, agora iluminando ruas cheias de gente. Ele abriu uma oficina onde qualquer um pode entrar, conserta robôs de graça e ensina que tecnologia serve para cuidar — nunca para mandar.':
-    "Ícaro Neon used OMEGA-Z's dead core to bring power back to Downtown. Neon shines on the avenues again, now lighting streets full of people. He opened a workshop anyone can walk into, fixes robots for free and teaches that technology is for caring — never for ruling.",
-  'Tobias Brejo era guarda-florestal quando caiu num lago contaminado da Zona Tóxica. Saiu de lá maior, mais verde e com uma fome assustadora — e com um corpo que se cura sozinho. Os zumbis não o reconhecem como presa, e ele usa isso a seu favor. Apesar da cara de fera, conversa com os bichos da floresta e chora com filme triste.':
-    'Tobias Brejo was a forest ranger when he fell into a contaminated lake in the Toxic Zone. He came out bigger, greener and frighteningly hungry — with a body that heals itself. Zombies do not see him as prey, and he uses that to his advantage. Despite his beastly face, he talks to the forest animals and cries at sad movies.',
+  'Ícaro Neon usou o núcleo apagado do OMEGA-Z para religar a energia do Centro da Cidade. O neon voltou a brilhar nas avenidas, agora iluminando ruas cheias de gente. Ele abriu uma oficina onde qualquer um pode entrar, conserta robôs de graça e ensina que tecnologia serve para cuidar, nunca para mandar.':
+    "Ícaro Neon used OMEGA-Z's dead core to bring power back to Downtown. Neon shines on the avenues again, now lighting streets full of people. He opened a workshop anyone can walk into, fixes robots for free and teaches that technology is for caring, never for ruling.",
+  'Tobias Brejo era guarda-florestal quando caiu num lago contaminado da Zona Tóxica. Saiu de lá maior, mais verde e com uma fome assustadora, e com um corpo que se cura sozinho. Os zumbis não o reconhecem como presa, e ele usa isso a seu favor. Apesar da cara de fera, conversa com os bichos da floresta e chora com filme triste.':
+    'Tobias Brejo was a forest ranger when he fell into a contaminated lake in the Toxic Zone. He came out bigger, greener and frighteningly hungry, with a body that heals itself. Zombies do not see him as prey, and he uses that to his advantage. Despite his beastly face, he talks to the forest animals and cries at sad movies.',
   'O guardião da floresta': 'Guardian of the forest',
-  'Tobias Brejo voltou para a Floresta e transformou o pântano envenenado num santuário. Com a mesma força que o curou, ele ajuda as árvores a brotarem de novo, e os animais que fugiram do apocalipse voltaram para perto dele. Continua grande, verde e assustador — e é o vizinho mais gentil que alguém poderia ter.':
-    'Tobias Brejo went back to the Forest and turned the poisoned swamp into a sanctuary. With the same power that healed him, he helps the trees sprout again, and the animals that fled the apocalypse came back to live near him. He is still big, green and scary — and the kindest neighbor anyone could ask for.',
-  'Arraste o personagem para os lados para girar • toque num nome para trocar':
-    'Drag the character sideways to turn it • tap a name to switch',
-  '←/→ ou arrastar: girar • ↑/↓: trocar de personagem': '←/→ or drag: turn • ↑/↓: switch character',
+  'Tobias Brejo voltou para a Floresta e transformou o pântano envenenado num santuário. Com a mesma força que o curou, ele ajuda as árvores a brotarem de novo, e os animais que fugiram do apocalipse voltaram para perto dele. Continua grande, verde e assustador, e é o vizinho mais gentil que alguém poderia ter.':
+    'Tobias Brejo went back to the Forest and turned the poisoned swamp into a sanctuary. With the same power that healed him, he helps the trees sprout again, and the animals that fled the apocalypse came back to live near him. He is still big, green and scary, and the kindest neighbor anyone could ask for.',
+  'Arraste o personagem para os lados para girar | toque num nome para trocar':
+    'Drag the character sideways to turn it | tap a name to switch',
+  '←/→ ou arrastar: girar | ↑/↓: trocar de personagem': '←/→ or drag: turn | ↑/↓: switch character',
   Escolher: 'Choose',
   'Mais jogadores: aperte A num controle': 'More players: press A on a controller',
   'Mais jogadores: aperte A num controle ou J no teclado':
@@ -410,8 +409,8 @@ export const EN: Record<string, string> = {
   'Mais jogadores: aperte A em outro controle ou Enter no teclado':
     'More players: press A on another controller or Enter on the keyboard',
   'Ver os personagens': 'See the characters',
-  '←/→ trocam de personagem • Enter começa • Esc volta':
-    '←/→ change character • Enter starts • Esc goes back',
+  '←/→ trocam de personagem | Enter começa | Esc volta':
+    '←/→ change character | Enter starts | Esc goes back',
   Começar: 'Start',
   Especial: 'Special',
   Vida: 'Health',
@@ -457,8 +456,8 @@ export const EN: Record<string, string> = {
   'Engrenagens rangem e o vento uiva pelos vitrais':
     'Gears creak and the wind howls through the stained glass',
   'Escadaria dos Sinos': 'Bell Stairway',
-  'Cuidado: destroços despencam do teto — saia do círculo!':
-    'Watch out: debris falls from the ceiling — leave the circle!',
+  'Cuidado: destroços despencam do teto. Saia do círculo!':
+    'Watch out: debris falls from the ceiling. Leave the circle!',
   'Rajadas de vento entram pelos vitrais e empurram para a frente':
     'Gusts of wind blow in through the windows and push you forward',
   'Sentinela à frente! Saia da linha do rotor e pule as hélices':
@@ -468,8 +467,8 @@ export const EN: Record<string, string> = {
   'Agência Central': 'Central Branch',
   'Alarme a laser! Cruzar o feixe vermelho chama robôs de segurança':
     'Laser alarm! Crossing the red beam calls security robots',
-  'Pisos energizados piscam antes do choque — espere ou pule':
-    'Electrified floors blink before the shock — wait or jump',
+  'Pisos energizados piscam antes do choque: espere ou pule':
+    'Electrified floors blink before the shock: wait or jump',
   'O Guardião do Cofre desperta! Fuja das casas eletrificadas':
     'The Vault Guardian awakens! Stay off the electrified tiles',
   'Castelo Assustador': 'Spooky Castle',
@@ -490,28 +489,27 @@ export const EN: Record<string, string> = {
   'Pinheiros sussurram e a lama respira sob a lua verde':
     'Pines whisper and the mud breathes under the green moon',
   'Trilha do Pântano': 'Swamp Trail',
-  'Poças de lama deixam tudo lento — inclusive os zumbis':
-    'Mud pools slow everything down — zombies included',
+  'Poças de lama deixam tudo lento, inclusive os zumbis': 'Mud pools slow everything down, zombies included',
   'O chão borbulha... Pule as ondas de lama do colosso!':
     "The ground bubbles... Jump the colossus's mud waves!",
   'Centro da Cidade': 'Downtown',
   'Neon, chuva e máquinas nas avenidas mortas': 'Neon, rain and machines on the dead avenues',
   'Avenida Neon': 'Neon Avenue',
-  'Carros abandonados explodem quando destruídos — atraia os robôs para perto!':
-    'Abandoned cars explode when destroyed — lure the robots close!',
+  'Carros abandonados explodem quando destruídos. Atraia os robôs para perto!':
+    'Abandoned cars explode when destroyed. Lure the robots close!',
   'Algo enorme se aproxima... Pule os pulsos hacker e saia da mira do canhão!':
     "Something huge approaches... Jump the hacker pulses and get out of the cannon's sight!",
   'Área em Chamas': 'Burning Zone',
-  'A cidade virou fornalha — e algo gigante a alimenta':
-    'The city became a furnace — and something giant feeds it',
+  'A cidade virou fornalha, e algo gigante a alimenta':
+    'The city became a furnace, and something giant feeds it',
   'Corredor da Fornalha': 'Furnace Corridor',
   'Jatos de fogo acendem em ciclos: espere apagar e passe correndo':
     'Fire jets ignite in cycles: wait for them to go out and run past',
-  'Vigas em chamas caem do teto — saia do círculo vermelho!':
-    'Burning beams fall from the ceiling — leave the red circle!',
+  'Vigas em chamas caem do teto. Saia do círculo vermelho!':
+    'Burning beams fall from the ceiling. Leave the red circle!',
   'Campo de Guerra': 'Battlefield',
-  'A guerra acabou. Ninguém avisou os mortos — nem as máquinas':
-    'The war is over. Nobody told the dead — or the machines',
+  'A guerra acabou. Ninguém avisou os mortos, nem as máquinas':
+    'The war is over. Nobody told the dead, or the machines',
   'Terra de Ninguém': "No Man's Land",
   'Minas no chão (luz vermelha): desvie mudando de faixa':
     'Mines on the ground (red light): change lanes to avoid them',
@@ -521,8 +519,8 @@ export const EN: Record<string, string> = {
   'O Ninho do Ômega': "Omega's Nest",
   'Tudo o que você enfrentou está aqui. Use todos os cajados!':
     'Everything you have faced is here. Use every staff!',
-  'OMEGA-Z: a blindagem resiste a balas — eletricidade e golpes fortes a rompem':
-    'OMEGA-Z: the armor resists bullets — electricity and heavy blows break it',
+  'OMEGA-Z: a blindagem resiste a balas, mas eletricidade e golpes fortes a rompem':
+    'OMEGA-Z: the armor resists bullets, but electricity and heavy blows break it',
 
   // ------------------------------------------------------------------ chefes
   'Coveiro Colossal': 'Colossal Gravedigger',
@@ -701,19 +699,19 @@ export const EN: Record<string, string> = {
     'Did a friend create a room? Type the code shown on their screen.',
   'Precisa de internet. Cada um guarda o próprio progresso (nível, armas e itens) no seu aparelho.':
     'Needs internet. Everyone keeps their own progress (level, weapons and items) on their own device.',
-  'Criando a sala…': 'Creating the room…',
+  'Criando a sala...': 'Creating the room...',
   'ENTRAR NUMA SALA': 'JOIN A ROOM',
   'Digite o código de 4 letras que aparece na tela de quem criou a sala.':
     'Type the 4-letter code shown on the screen of whoever created the room.',
   'Código da sala': 'Room code',
   'O código tem 4 letras.': 'The code has 4 letters.',
-  'Procurando a sala {code}…': 'Looking for room {code}…',
+  'Procurando a sala {code}...': 'Looking for room {code}...',
   'Sem internet. Conecte-se e tente de novo.': 'No internet. Connect and try again.',
-  'Não existe sala com esse código. Confira as letras — a sala precisa estar aberta na tela de quem criou.':
-    'There is no room with that code. Check the letters — the room must be open on the creator’s screen.',
+  'Não existe sala com esse código. Confira as letras: a sala precisa estar aberta na tela de quem criou.':
+    "There is no room with that code. Check the letters: the room must be open on the creator's screen.",
   'Essa sala já está cheia (5 jogadores).': 'That room is already full (5 players).',
   'A partida dessa sala já começou. Espere a fase acabar e tente de novo.':
-    'That room’s match has already started. Wait for the stage to end and try again.',
+    "That room's match has already started. Wait for the stage to end and try again.",
   'Vocês estão com versões diferentes do jogo. Atualizem a página (ou o app) e tentem de novo.':
     'You have different versions of the game. Refresh the page (or update the app) and try again.',
   'A rede não deixou os aparelhos se conectarem. Tente outra rede (por exemplo, os dados do celular).':
@@ -728,8 +726,8 @@ export const EN: Record<string, string> = {
   'VOCÊ ESTÁ NA SALA': 'YOU ARE IN ROOM',
   'Você entrou na sala!': 'You joined the room!',
   'Passe o código (ou o link) para os amigos.': 'Give the code (or the link) to your friends.',
-  'Cada um abre o Zumbi Bot, toca em "Jogar online" → "Entrar numa sala" e digita o código.':
-    'Each one opens Zumbi Bot, taps "Play online" → "Join a room" and types the code.',
+  'Cada um abre o Zumbi Bot, toca em "Jogar online" > "Entrar numa sala" e digita o código.':
+    'Each one opens Zumbi Bot, taps "Play online" > "Join a room" and types the code.',
   'Todos escolhem o personagem e tocam em "Pronto". Aí é só tocar em "Começar"!':
     'Everyone picks a character and taps "Ready". Then just tap "Start"!',
   'Escolha seu personagem (◀ ▶).': 'Pick your character (◀ ▶).',
@@ -740,19 +738,19 @@ export const EN: Record<string, string> = {
   'Enviar convite': 'Send invite',
   'Vem jogar Zumbi Bot comigo! Código da sala: {code}': 'Come play Zumbi Bot with me! Room code: {code}',
   'Ou aponte a câmera do celular aqui': 'Or point your phone camera here',
-  'Vaga livre — esperando alguém entrar…': 'Free spot — waiting for someone to join…',
+  'Vaga livre, esperando alguém entrar...': 'Free spot, waiting for someone to join...',
   Anfitrião: 'Host',
   Pronto: 'Ready',
-  'Escolhendo…': 'Choosing…',
+  'Escolhendo...': 'Choosing...',
   você: 'you',
   'Seu personagem': 'Your character',
   Fase: 'Stage',
-  'Esperando os amigos entrarem com o código {code}…': 'Waiting for friends to join with code {code}…',
-  'Esperando {who} tocar em Pronto…': 'Waiting for {who} to tap Ready…',
+  'Esperando os amigos entrarem com o código {code}...': 'Waiting for friends to join with code {code}...',
+  'Esperando {who} tocar em Pronto...': 'Waiting for {who} to tap Ready...',
   'Todos prontos! Toque em Começar.': 'Everyone is ready! Tap Start.',
   'toque para mudar': 'tap to change',
-  'Tudo certo! Esperando o anfitrião ({p}) começar a partida…':
-    'All set! Waiting for the host ({p}) to start the match…',
+  'Tudo certo! Esperando o anfitrião ({p}) começar a partida...':
+    'All set! Waiting for the host ({p}) to start the match...',
   'Escolha seu personagem e toque em Pronto.': 'Pick your character and tap Ready.',
   'O anfitrião está terminando uma fase. Você entra na próxima!':
     'The host is finishing a stage. You will join the next one!',
@@ -765,14 +763,14 @@ export const EN: Record<string, string> = {
     'Keep the game open during the match: your device runs the game for everyone. If you leave, another player takes over.',
   'Seu progresso (nível, armas e itens) fica salvo neste aparelho.':
     'Your progress (level, weapons and items) is saved on this device.',
-  'Esperando os amigos carregarem…': 'Waiting for friends to load…',
+  'Esperando os amigos carregarem...': 'Waiting for friends to load...',
   '{p} entrou na sala': '{p} joined the room',
   '{p} saiu da sala': '{p} left the room',
   '{p} saiu da partida': '{p} left the match',
   'Era o anfitrião: outro jogador assume a sala.': 'They were the host: another player takes over the room.',
   'Você agora é o anfitrião da sala.': 'You are now the room host.',
   'Deixe o jogo aberto: seu aparelho conduz a partida.': 'Keep the game open: your device runs the match.',
-  'Conectando no novo anfitrião ({p})…': 'Connecting to the new host ({p})…',
+  'Conectando no novo anfitrião ({p})...': 'Connecting to the new host ({p})...',
   '{p} é o novo anfitrião.': '{p} is the new host.',
   'Jogador {n}': 'Player {n}',
   'O anfitrião saiu e não deu para continuar com outro anfitrião.':
@@ -784,7 +782,7 @@ export const EN: Record<string, string> = {
   'Reiniciar fase (para todos)': 'Restart stage (for everyone)',
   'Voltar para a sala (todos)': 'Back to the room (everyone)',
   'Voltar para a sala': 'Back to the room',
-  'Esperando o anfitrião escolher a próxima fase…': 'Waiting for the host to choose the next stage…',
+  'Esperando o anfitrião escolher a próxima fase...': 'Waiting for the host to choose the next stage...',
 
   // teclas configuráveis e mouse
   'Mover para a esquerda': 'Move left',
@@ -810,9 +808,9 @@ export const EN: Record<string, string> = {
   'Cada ação pode ter duas teclas. Clique numa tecla e aperte a nova.':
     'Each action can have two keys. Click a key and press the new one.',
   'Clique numa tecla e aperte a nova.': 'Click a key and press the new one.',
-  'Aperte uma tecla…': 'Press a key…',
-  'Aperte a tecla nova para "{action}" • Esc cancela • Delete apaga':
-    'Press the new key for "{action}" • Esc cancels • Delete clears',
+  'Aperte uma tecla...': 'Press a key...',
+  'Aperte a tecla nova para "{action}" | Esc cancela | Delete apaga':
+    'Press the new key for "{action}" | Esc cancels | Delete clears',
   'Nada mudou.': 'Nothing changed.',
   'Tecla apagada de "{action}".': 'Key removed from "{action}".',
   '{key} agora é "{action}" (saiu de "{from}").': '{key} is now "{action}" (removed from "{from}").',
@@ -820,42 +818,42 @@ export const EN: Record<string, string> = {
   'Teclas padrão de volta.': 'Default keys restored.',
   'Restaurar padrão': 'Restore defaults',
   'sem tecla!': 'no key!',
-  'Mouse: botão esquerdo atira • botão direito solta o especial • a rodinha liga a corrida (até você parar).':
-    'Mouse: left button shoots • right button uses the special • the wheel turns running on (until you stop).',
+  'Mouse: botão esquerdo atira | botão direito solta o especial | a rodinha liga a corrida (até você parar).':
+    'Mouse: left button shoots | right button uses the special | the wheel turns running on (until you stop).',
   'O teclado dividido do multijogador local continua com as teclas de sempre.':
     'The split keyboard for local multiplayer keeps its usual keys.',
-  '{move} anda • {punch} soco • {kick} chute • {jump} pula • clique atira • botão direito: especial • rodinha corre • Esc pausa':
-    '{move} move • {punch} punch • {kick} kick • {jump} jump • click shoots • right button: special • wheel runs • Esc pauses',
-  '{left}/{right} andam • {up}/{down} mudam de plano (profundidade)':
-    '{left}/{right} walk • {up}/{down} change lanes (depth)',
-  '{punch} = soco • {kick} = chute • {punch}, {punch}, {punch}, {punch} = combo com uppercut':
-    '{punch} = punch • {kick} = kick • {punch}, {punch}, {punch}, {punch} = uppercut combo',
-  '{jump} pula — aperte de novo no ar para o pulo duplo':
-    '{jump} jumps — press again in the air for a double jump',
-  'Clique (ou {fire}) atira • {aim} mira para crítico • botão direito = especial':
-    'Click (or {fire}) shoots • {aim} aims for criticals • right button = special',
-  '{run}, rodinha do mouse ou toque duplo corre • correndo + {kick} = voadora':
-    '{run}, the mouse wheel or a double tap runs • running + {kick} = flying kick',
-  '{modeStaff} = modo cajado • {modeGun} = armas • {specialKey}, botão direito ou {punch}+{kick} = {special}':
-    '{modeStaff} = staff mode • {modeGun} = guns • {specialKey}, right button or {punch}+{kick} = {special}',
+  '{move} anda | {punch} soco | {kick} chute | {jump} pula | clique atira | botão direito: especial | rodinha corre | Esc pausa':
+    '{move} move | {punch} punch | {kick} kick | {jump} jump | click shoots | right button: special | wheel runs | Esc pauses',
+  '{left}/{right} andam | {up}/{down} mudam de plano (profundidade)':
+    '{left}/{right} walk | {up}/{down} change lanes (depth)',
+  '{punch} = soco | {kick} = chute | {punch}, {punch}, {punch}, {punch} = combo com uppercut':
+    '{punch} = punch | {kick} = kick | {punch}, {punch}, {punch}, {punch} = uppercut combo',
+  '{jump} pula (aperte de novo no ar para o pulo duplo)':
+    '{jump} jumps (press again in the air for a double jump)',
+  'Clique (ou {fire}) atira | {aim} mira para crítico | botão direito = especial':
+    'Click (or {fire}) shoots | {aim} aims for criticals | right button = special',
+  '{run}, rodinha do mouse ou toque duplo corre | correndo + {kick} = voadora':
+    '{run}, the mouse wheel or a double tap runs | running + {kick} = flying kick',
+  '{modeStaff} = modo cajado | {modeGun} = armas | {specialKey}, botão direito ou {punch}+{kick} = {special}':
+    '{modeStaff} = staff mode | {modeGun} = guns | {specialKey}, right button or {punch}+{kick} = {special}',
   // chat de voz e opções da sala
   'Chat de voz indisponível neste aparelho.': 'Voice chat is not available on this device.',
   'Chat de voz desligado pelo anfitrião.': 'Voice chat was turned off by the host.',
   Microfone: 'Microphone',
   'Microfone (chat de voz online)': 'Microphone (online voice chat)',
-  'Ligando…': 'Turning on…',
+  'Ligando...': 'Turning on...',
   'Microfone ligado': 'Mic on',
   'Microfone mudo': 'Mic muted',
   'Ligar microfone': 'Turn mic on',
   'Desligar microfone': 'Turn mic off',
-  'Para liberar: Configurações do Android → Apps → Zumbi Bot → Permissões → Microfone → Permitir.':
-    'To allow it: Android Settings → Apps → Zumbi Bot → Permissions → Microphone → Allow.',
-  'Para liberar no iPhone: toque em "aA" na barra de endereço → Ajustes do Site → Microfone → Permitir (ou Ajustes → Apps → Safari → Microfone) e recarregue a página.':
-    'To allow it on iPhone: tap "aA" in the address bar → Website Settings → Microphone → Allow (or Settings → Apps → Safari → Microphone) and reload the page.',
-  'Para liberar: toque no ícone ao lado do endereço → Permissões → Microfone → Permitir, e recarregue a página.':
-    'To allow it: tap the icon next to the address → Permissions → Microphone → Allow, and reload the page.',
-  'Para liberar: clique no ícone ao lado do endereço do site → Microfone → Permitir, e recarregue a página.':
-    'To allow it: click the icon next to the site address → Microphone → Allow, and reload the page.',
+  'Para liberar: Configurações do Android > Apps > Zumbi Bot > Permissões > Microfone > Permitir.':
+    'To allow it: Android Settings > Apps > Zumbi Bot > Permissions > Microphone > Allow.',
+  'Para liberar no iPhone: toque em "aA" na barra de endereço > Ajustes do Site > Microfone > Permitir (ou Ajustes > Apps > Safari > Microfone) e recarregue a página.':
+    'To allow it on iPhone: tap "aA" in the address bar > Website Settings > Microphone > Allow (or Settings > Apps > Safari > Microphone) and reload the page.',
+  'Para liberar: toque no ícone ao lado do endereço > Permissões > Microfone > Permitir, e recarregue a página.':
+    'To allow it: tap the icon next to the address > Permissions > Microphone > Allow, and reload the page.',
+  'Para liberar: clique no ícone ao lado do endereço do site > Microfone > Permitir, e recarregue a página.':
+    'To allow it: click the icon next to the site address > Microphone > Allow, and reload the page.',
   'O microfone está bloqueado.': 'The microphone is blocked.',
   'Nenhum microfone encontrado neste aparelho.': 'No microphone was found on this device.',
   'O microfone está sendo usado por outro app. Feche o outro app e tente de novo.':
@@ -889,13 +887,13 @@ export const EN: Record<string, string> = {
   'Vozes (chat de voz online)': 'Voices (online voice chat)',
   // iPhone
   'Tela cheia no iPhone': 'Full screen on iPhone',
-  'Para jogar em tela cheia: toque em Compartilhar (□↑) → "Adicionar à Tela de Início" e abra o Zumbi Bot por lá.':
-    'To play in full screen: tap Share (□↑) → "Add to Home Screen" and open Zumbi Bot from there.',
-  'Para liberar: Ajustes do iPhone → Apps → Zumbi Bot → Microfone (ligado).':
-    'To allow it: iPhone Settings → Apps → Zumbi Bot → Microphone (on).',
+  'Para jogar em tela cheia: toque em Compartilhar (□↑), depois em "Adicionar à Tela de Início", e abra o Zumbi Bot por lá.':
+    'To play in full screen: tap Share (□↑), then "Add to Home Screen", and open Zumbi Bot from there.',
+  'Para liberar: Ajustes do iPhone > Apps > Zumbi Bot > Microfone (ligado).':
+    'To allow it: iPhone Settings > Apps > Zumbi Bot > Microphone (on).',
   'fim do jogo': 'game finished',
-  'Jornada em andamento: {pts} pontos • {n} mapas vencidos. Ela entra no ranking quando você perder todas as vidas ou terminar o jogo.':
-    'Run in progress: {pts} points • {n} maps won. It enters the leaderboard when you lose all lives or finish the game.',
+  'Jornada em andamento: {pts} pontos | {n} mapas vencidos. Ela entra no ranking quando você perder todas as vidas ou terminar o jogo.':
+    'Run in progress: {pts} points | {n} maps won. It enters the leaderboard when you lose all lives or finish the game.',
   'Os pontos de cada mapa se somam na jornada até você perder todas as vidas ou terminar o jogo.':
     'Points from each map add up in your run until you lose all lives or finish the game.',
   'O ranking está vazio. Jogue até o fim da jornada para entrar nele!':
@@ -911,8 +909,8 @@ export const EN: Record<string, string> = {
   'Ranking Global': 'Global Leaderboard',
   'Ranking Pessoal': 'Personal Leaderboard',
   Todos: 'All',
-  'Jornada: {pts} pontos • 1 mapa vencido': 'Run: {pts} points • 1 map won',
-  'Jornada: {pts} pontos • {n} mapas vencidos': 'Run: {pts} points • {n} maps won',
+  'Jornada: {pts} pontos | 1 mapa vencido': 'Run: {pts} points | 1 map won',
+  'Jornada: {pts} pontos | {n} mapas vencidos': 'Run: {pts} points | {n} maps won',
   'Tocar para mudar o nome': 'Tap to change the name',
   'Seu nome no ranking': 'Your leaderboard name',
   OK: 'OK',
@@ -920,7 +918,7 @@ export const EN: Record<string, string> = {
   'Nome:': 'Name:',
   'Já está salvo. Toque no nome se quiser mudar.': 'Already saved. Tap the name to change it.',
   'Não entrou no top 20 do ranking desta vez.': 'Not in the top 20 this time.',
-  'Peruca Preta': 'Black Wig',
+  'Peruca Castanho-Escura': 'Dark Brown Wig',
   'Disfarce do Prodígio.': "The Prodigy's disguise.",
   'Lentes Verdes': 'Green Lenses',
   'Lentes Castanhas': 'Brown Lenses',
@@ -930,14 +928,25 @@ export const EN: Record<string, string> = {
   'Rápido e ótimo de briga: caratê com magia arcana nos golpes, e usa cajados. Baixinho e frágil, não usa armas de fogo e é muito fraco com armas brancas.':
     'Fast and a great fighter: karate with arcane magic in every strike, and uses staffs. Short and fragile, uses no firearms and is very weak with melee weapons.',
   'Tornado Arcano': 'Arcane Tornado',
-  'Avança girando em chutes de caratê envoltos em energia arcana, acertando várias vezes quem estiver no caminho.':
-    'Spins forward in karate kicks wrapped in arcane energy, hitting everyone in the way several times.',
-  'Léo Aurora tem catorze anos, é o aluno mais novo que a Academia Arcana já aceitou e faixa-preta de caratê desde os doze. Quando descobriu que conseguia passar magia pelos próprios golpes, virou alvo: o OMEGA-Z caçava qualquer criança com poderes arcanos. Léo passou o apocalipse disfarçado — peruca preta e lentes verdes ou castanhas por cima dos olhos azuis — ajudando os heróis de longe, sem ninguém desconfiar daquele garoto loiro e baixinho que sempre aparecia na hora certa.':
-    'Léo Aurora is fourteen, the youngest student the Arcane Academy ever accepted and a karate black belt since he was twelve. When he found out he could channel magic through his own strikes, he became a target: OMEGA-Z hunted every child with arcane powers. Léo spent the apocalypse in disguise — a black wig and green or brown lenses over his blue eyes — helping the heroes from afar, and nobody ever suspected the short blond kid who always showed up at the right time.',
-  'Sem disfarce': 'No more disguise',
-  'Com o OMEGA-Z vencido, Léo Aurora tirou a peruca preta e as lentes pela primeira vez em anos. Loiro, de olhos azuis e com o sorriso de quem acabou de ganhar um campeonato, abriu na vila o primeiro dojo arcano do mundo, onde os alunos aprendem caratê e magia ao mesmo tempo. Os heróis aparecem para treinar toda semana — e o Zumbi Bot ainda não venceu nenhuma luta contra ele.':
-    "With OMEGA-Z defeated, Léo Aurora took off the black wig and the lenses for the first time in years. Blond, blue-eyed and smiling like he had just won a championship, he opened the world's first arcane dojo in the village, where students learn karate and magic at the same time. The heroes come to train every week — and Zumbi Bot still hasn't won a single fight against him.",
+  'Avança girando em chutes de caratê envoltos em energia arcana e solta ciclones para todos os lados, acertando várias vezes quem estiver no caminho.':
+    'Spins forward in karate kicks wrapped in arcane energy and sends cyclones in every direction, hitting everyone in the way several times.',
+  'Jacobb Amici tem catorze anos, é o aluno mais novo que a Academia Arcana já aceitou e faixa-preta de caratê desde os doze. Quando descobriu que conseguia passar magia pelos próprios golpes, virou alvo: o OMEGA-Z caçava qualquer criança com poderes arcanos. Jacobb passou o apocalipse disfarçado, de peruca castanho-escura e lentes verdes ou castanhas por cima dos olhos azuis, ajudando os heróis de longe, sem ninguém desconfiar daquele garoto loiro e baixinho que sempre aparecia na hora certa.':
+    'Jacobb Amici is fourteen, the youngest student the Arcane Academy ever accepted and a karate black belt since he was twelve. When he found out he could channel magic through his own strikes, he became a target: OMEGA-Z hunted every child with arcane powers. Jacobb spent the apocalypse in disguise, in a dark brown wig and green or brown lenses over his blue eyes, helping the heroes from afar, and nobody ever suspected the short blond kid who always showed up at the right time.',
+  'Com o OMEGA-Z vencido, Jacobb Amici tirou a peruca castanho-escura e as lentes pela primeira vez em anos. Loiro, de olhos azuis e com o sorriso de quem acabou de ganhar um campeonato, abriu na vila o primeiro dojo arcano do mundo, onde os alunos aprendem caratê e magia ao mesmo tempo. Os heróis aparecem para treinar toda semana, e o Zumbi Bot ainda não venceu nenhuma luta contra ele.':
+    "With OMEGA-Z defeated, Jacobb Amici took off the dark brown wig and the lenses for the first time in years. Blond, blue-eyed and smiling like he had just won a championship, he opened the world's first arcane dojo in the village, where students learn karate and magic at the same time. The heroes come to train every week, and Zumbi Bot still hasn't won a single fight against him.",
   'Termine o jogo para liberar': 'Finish the game to unlock',
   'Personagem secreto': 'Secret character',
   'Personagem secreto liberado!': 'Secret character unlocked!',
+  'personagem secreto liberado!': 'secret character unlocked!',
+  'Caixa de cura guardada (quem não usa cajado)': 'Stored health kit (characters without staffs)',
+  '✚': '✚',
+  'Usa uma caixa de cura guardada (Militar, Ciborgue e Mutante, no lugar do ⇄)':
+    'Uses a stored health kit (Soldier, Cyborg and Mutant, in place of ⇄)',
+  'Guarda até 4 caixas de cura e usa no botão do cajado.':
+    'Stores up to 4 health kits and uses them with the staff button.',
+  'Caixas de cura': 'Health kits',
+  'Caixa de cura guardada ({n}/{max})': 'Health kit stored ({n}/{max})',
+  'Sem caixas de cura': 'No health kits',
+  'Vida cheia': 'Health is full',
+  'Usar caixa de cura': 'Use health kit',
 };

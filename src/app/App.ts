@@ -69,7 +69,7 @@ const SITE_URL = 'https://marcelojaloto.github.io/Zumbi-Bot/';
 /** Como jogar em tela cheia no iPhone (a página sozinha não consegue). */
 function homeScreenTip(): string {
   return t(
-    'Para jogar em tela cheia: toque em Compartilhar (□↑) → "Adicionar à Tela de Início" e abra o Zumbi Bot por lá.',
+    'Para jogar em tela cheia: toque em Compartilhar (□↑), depois em "Adicionar à Tela de Início", e abra o Zumbi Bot por lá.',
   );
 }
 
@@ -425,6 +425,8 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
         p.mode,
         arms.guns && arms.staff && p.staffs.length > 0,
         p.mode === 'staff' ? p.staffs.length : p.guns.length,
+        // quem não usa cajado: o ⇄ vira o botão da caixa de cura
+        arms.staff ? null : (p.medkits?.length ?? 0),
       );
     }
   }
@@ -670,7 +672,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       el(
         'div',
         { class: 'menu-footer muted' },
-        this.touchOn ? t('Direcional à esquerda • botões de ação à direita • ⏸ pausa') : this.keyHelp(),
+        this.touchOn ? t('Direcional à esquerda | botões de ação à direita | ⏸ pausa') : this.keyHelp(),
       ),
     );
     this.screens.push({ el: e, id: 'menu', onBack: () => false });
@@ -680,7 +682,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
   private keyHelp(): string {
     const n = actionKeyNames(this.input.bindings);
     return t(
-      '{move} anda • {punch} soco • {kick} chute • {jump} pula • clique atira • botão direito: especial • rodinha corre • Esc pausa',
+      '{move} anda | {punch} soco | {kick} chute | {jump} pula | clique atira | botão direito: especial | rodinha corre | Esc pausa',
       { move: moveKeys(n), punch: n.punch, kick: n.kick, jump: n.jump },
     );
   }
@@ -750,7 +752,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     const lang: Lang = choice === 'auto' ? detectLang(navigator.language) : choice;
     setLang(lang);
     document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
-    document.title = `Zumbi Bot — ${t('A revolução dos robôs no apocalipse zumbi')}`;
+    document.title = `Zumbi Bot - ${t('A revolução dos robôs no apocalipse zumbi')}`;
     this.touch?.relabel();
   }
 
@@ -789,7 +791,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       { class: 'loading' },
       el('div', { class: 'ltitle' }, title),
       el('div', { class: 'lbar' }, el('i')),
-      el('div', { class: 'muted' }, t('Carregando…')),
+      el('div', { class: 'muted' }, t('Carregando...')),
     );
     this.ui.appendChild(this.loadingEl);
   }
@@ -818,7 +820,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       if (this.session?.net === net && room.guestCount > 0) {
         this.session.hold = true;
         this.holdTimer = 15;
-        this.hud?.toast(t('Esperando os amigos carregarem…'), '#39e6ff');
+        this.hud?.toast(t('Esperando os amigos carregarem...'), '#39e6ff');
       }
       return;
     }
@@ -1177,7 +1179,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     room.onPromote = (old) => this.promote(room, old);
     room.onReconnect = (to) => {
       if (this.online !== room) return;
-      if (to) this.notify(t('Conectando no novo anfitrião ({p})…', { p: playerTag(to.slot) }), '#39e6ff');
+      if (to) this.notify(t('Conectando no novo anfitrião ({p})...', { p: playerTag(to.slot) }), '#39e6ff');
       else
         this.notify(
           t('{p} é o novo anfitrião.', { p: playerTag(room.hostSlot) }),

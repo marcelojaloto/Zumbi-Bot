@@ -174,7 +174,12 @@ export type MoveEffect =
   /** Projétil lançado para a frente (bola de fogo da Maga), na altura `y`; `element` dá a cor da explosão. */
   | { k: 'bolt'; spec: ProjectileSpec; y: number; element?: Element }
   /** Rastro visual: um anel que cresce onde o lutador está, a cada `every` quadros ativos (tornado do Prodígio). */
-  | { k: 'trail'; r: number; every: number; ticks: number; fx: string };
+  | { k: 'trail'; r: number; every: number; ticks: number; fx: string }
+  /**
+   * Ciclones que saem girando em todas as direções (tornado do Prodígio): `count` redemoinhos a `speed` m/s por
+   * `ticks` quadros; cada um acerta uma vez quem encontrar e quica nas bordas da rua.
+   */
+  | { k: 'cyclones'; count: number; speed: number; r: number; ticks: number; hit: HitSpec; fx: string };
 
 // ---------------------------------------------------------------------------
 // Personagens jogáveis
@@ -194,7 +199,7 @@ export interface CharacterDef {
   /** História do personagem no jogo (ficha de personagem). */
   story: string;
   /** Final feliz dele no final lendário (depois do OMEGA-Z). */
-  ending: { title: string; text: string };
+  ending: { title?: string; text: string };
   specialName: string;
   specialDesc: string;
   /** Cor de destaque na interface. */

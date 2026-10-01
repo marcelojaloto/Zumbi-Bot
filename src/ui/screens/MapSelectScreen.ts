@@ -66,7 +66,7 @@ export function mapSelectScreen(host: UiHost): Screen {
       'div',
       { class: 'ng-row' },
       btn,
-      el('span', { class: 'muted' }, t('Inimigos +50% vida e +30% dano • pontos e sucata ×1,5')),
+      el('span', { class: 'muted' }, t('Inimigos +50% vida e +30% dano | pontos e sucata ×1,5')),
     );
   }
   // dificuldade à mão na escolha do mapa (Configurações → Jogo também muda)

@@ -1,3 +1,4 @@
+import { PRODIGY_HAIR } from '../../data/prodigyHair';
 import type { CharacterId, MeshRecipe } from '../../data/types';
 import type { PartSpec, RigSpec, SocketSpec } from './RigBuilder';
 import { humanSockets, limbs, robotPlayerRig } from './rigs';
@@ -516,7 +517,7 @@ export function mutantRig(): RigSpec {
 
 // ---------------------------------------------------------------------------
 // Prodígio (secreto): adolescente baixinho, loiro de olhos azuis, quimono de caratê branco com faixa preta,
-// bandana azul e punhos envoltos em energia arcana
+// munhequeiras pretas e bandana azul
 // ---------------------------------------------------------------------------
 export function prodigyRig(): RigSpec {
   const gi = 0xf2f1ea;
@@ -526,7 +527,6 @@ export function prodigyRig(): RigSpec {
   const hair = 0xf2d060;
   const hairHi = 0xffe890;
   const band = 0x2a5aff;
-  const arcane = 0x4ad8ff;
   const pr: Proportions = {
     ...HUMAN,
     hipH: 0.8,
@@ -589,15 +589,6 @@ export function prodigyRig(): RigSpec {
       rot: [0, 0, 0.35],
       color: giShade,
     },
-    {
-      j: J.chest,
-      shape: 'oct',
-      size: [0.032],
-      at: [-0.095, 0.08, 0.115],
-      color: arcane,
-      glow: true,
-      glowI: 2.5,
-    },
     { j: J.neck, shape: 'cyl', size: [0.045, 0.05, 0.1, 6], at: [0, 0, 0], color: skin },
     // cabeça um pouco grande (ainda é um garoto), nariz, sorriso
     { j: J.head, shape: 'box', size: [0.23, 0.25, 0.22], at: [0, 0.13, 0.01], color: skin },
@@ -605,43 +596,15 @@ export function prodigyRig(): RigSpec {
     { j: J.head, shape: 'box', size: [0.07, 0.015, 0.01], at: [0, 0.068, 0.122], color: 0xb55252 },
     ...eye(0.052),
     ...eye(-0.052),
-    // cabelo loiro espetado
-    { j: J.head, shape: 'box', size: [0.25, 0.07, 0.24], at: [0, 0.28, -0.005], color: hair },
-    {
+    // cabelo loiro espetado (a peruca do disfarce tem o mesmo desenho)
+    ...PRODIGY_HAIR.map((h): PartSpec => ({
       j: J.head,
-      shape: 'box',
-      size: [0.1, 0.07, 0.05],
-      at: [0.045, 0.262, 0.112],
-      rot: [0.35, 0, -0.25],
-      color: hairHi,
-    },
-    {
-      j: J.head,
-      shape: 'box',
-      size: [0.09, 0.06, 0.05],
-      at: [-0.06, 0.255, 0.108],
-      rot: [0.3, 0, 0.3],
-      color: hair,
-    },
-    { j: J.head, shape: 'box', size: [0.03, 0.12, 0.18], at: [0.125, 0.2, -0.01], color: hair },
-    { j: J.head, shape: 'box', size: [0.03, 0.12, 0.18], at: [-0.125, 0.2, -0.01], color: hair },
-    { j: J.head, shape: 'box', size: [0.24, 0.16, 0.05], at: [0, 0.19, -0.115], color: hair },
-    {
-      j: J.head,
-      shape: 'cone',
-      size: [0.05, 0.11, 5],
-      at: [0.03, 0.335, -0.02],
-      rot: [0, 0, -0.45],
-      color: hairHi,
-    },
-    {
-      j: J.head,
-      shape: 'cone',
-      size: [0.045, 0.09, 5],
-      at: [-0.05, 0.325, -0.04],
-      rot: [0.2, 0, 0.5],
-      color: hair,
-    },
+      shape: h.shape,
+      size: h.size,
+      at: h.at,
+      rot: h.rot,
+      color: h.hi ? hairHi : hair,
+    })),
     // bandana azul com as pontas soltas atrás
     { j: J.head, shape: 'box', size: [0.245, 0.035, 0.235], at: [0, 0.215, 0], color: band },
     {
@@ -660,25 +623,9 @@ export function prodigyRig(): RigSpec {
       rot: [0.2, 0, -0.1],
       color: band,
     },
-    // punhos com energia arcana
-    {
-      j: J.foreArmL,
-      shape: 'box',
-      size: [0.1, 0.05, 0.1],
-      at: [0, -0.19, 0],
-      color: arcane,
-      glow: true,
-      glowI: 2,
-    },
-    {
-      j: J.foreArmR,
-      shape: 'box',
-      size: [0.1, 0.05, 0.1],
-      at: [0, -0.19, 0],
-      color: arcane,
-      glow: true,
-      glowI: 2,
-    },
+    // munhequeiras pretas, iguais à faixa
+    { j: J.foreArmL, shape: 'box', size: [0.1, 0.05, 0.1], at: [0, -0.19, 0], color: belt },
+    { j: J.foreArmR, shape: 'box', size: [0.1, 0.05, 0.1], at: [0, -0.19, 0], color: belt },
     ...limbs({
       upper: gi,
       fore: gi,

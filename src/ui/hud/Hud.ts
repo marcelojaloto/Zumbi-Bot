@@ -1,4 +1,5 @@
 import { ITEMS } from '../../data/items';
+import { MEDKITS } from '../../data/balance';
 import { MELEE_WEAPONS } from '../../data/melee';
 import { STAFFS } from '../../data/staffs';
 import { FIREARMS } from '../../data/weapons';
@@ -31,18 +32,18 @@ export const ELEMENT_NAMES: Record<Element, string> = {
 
 /** Dicas do tutorial que citam teclas: versão para os controles de toque. */
 export const TOUCH_HINTS: Record<string, string> = {
-  'A/D andam • W/S mudam de plano (profundidade)':
-    'Arraste o direcional para andar • para cima e para baixo muda de plano (profundidade)',
-  'J = soco • K = chute • J, J, J, J = combo com uppercut':
-    'SOCO e CHUTE atacam • 4 socos seguidos = combo com uppercut',
-  'Espaço pula — aperte de novo no ar para o pulo duplo':
-    'PULAR pula — toque de novo no ar para o pulo duplo',
-  'Clique (ou L) atira • botão direito mira para crítico':
+  'A/D andam | W/S mudam de plano (profundidade)':
+    'Arraste o direcional para andar | para cima e para baixo muda de plano (profundidade)',
+  'J = soco | K = chute | J, J, J, J = combo com uppercut':
+    'SOCO e CHUTE atacam | 4 socos seguidos = combo com uppercut',
+  'Espaço pula (aperte de novo no ar para o pulo duplo)':
+    'PULAR pula (toque de novo no ar para o pulo duplo)',
+  'Clique (ou L) atira | botão direito mira para crítico':
     'ATIRAR dispara e mira sozinho no inimigo à frente',
-  'Shift ou toque duplo corre • correndo + K = voadora':
-    'Empurre o direcional até a borda para correr • correndo + CHUTE = voadora',
-  '2 = modo cajado • 1 = armas • U (ou J+K) = {special}':
-    'O botão ⇄ troca arma e cajado • ESPECIAL = {special}',
+  'Shift ou toque duplo corre | correndo + K = voadora':
+    'Empurre o direcional até a borda para correr | correndo + CHUTE = voadora',
+  '2 = modo cajado | 1 = armas | U (ou J+K) = {special}':
+    'O botão ⇄ troca arma e cajado | ESPECIAL = {special}',
 };
 
 /**
@@ -50,18 +51,18 @@ export const TOUCH_HINTS: Record<string, string> = {
  * tecla do especial; `{special}`, o nome do golpe.
  */
 export const KEY_HINTS: Record<string, string> = {
-  'A/D andam • W/S mudam de plano (profundidade)':
-    '{left}/{right} andam • {up}/{down} mudam de plano (profundidade)',
-  'J = soco • K = chute • J, J, J, J = combo com uppercut':
-    '{punch} = soco • {kick} = chute • {punch}, {punch}, {punch}, {punch} = combo com uppercut',
-  'Espaço pula — aperte de novo no ar para o pulo duplo':
-    '{jump} pula — aperte de novo no ar para o pulo duplo',
-  'Clique (ou L) atira • botão direito mira para crítico':
-    'Clique (ou {fire}) atira • {aim} mira para crítico • botão direito = especial',
-  'Shift ou toque duplo corre • correndo + K = voadora':
-    '{run}, rodinha do mouse ou toque duplo corre • correndo + {kick} = voadora',
-  '2 = modo cajado • 1 = armas • U (ou J+K) = {special}':
-    '{modeStaff} = modo cajado • {modeGun} = armas • {specialKey}, botão direito ou {punch}+{kick} = {special}',
+  'A/D andam | W/S mudam de plano (profundidade)':
+    '{left}/{right} andam | {up}/{down} mudam de plano (profundidade)',
+  'J = soco | K = chute | J, J, J, J = combo com uppercut':
+    '{punch} = soco | {kick} = chute | {punch}, {punch}, {punch}, {punch} = combo com uppercut',
+  'Espaço pula (aperte de novo no ar para o pulo duplo)':
+    '{jump} pula (aperte de novo no ar para o pulo duplo)',
+  'Clique (ou L) atira | botão direito mira para crítico':
+    'Clique (ou {fire}) atira | {aim} mira para crítico | botão direito = especial',
+  'Shift ou toque duplo corre | correndo + K = voadora':
+    '{run}, rodinha do mouse ou toque duplo corre | correndo + {kick} = voadora',
+  '2 = modo cajado | 1 = armas | U (ou J+K) = {special}':
+    '{modeStaff} = modo cajado | {modeGun} = armas | {specialKey}, botão direito ou {punch}+{kick} = {special}',
 };
 
 /** Chat de voz online visto pelo HUD (botão do microfone e quem está falando). */
@@ -90,6 +91,8 @@ export class Hud {
   private ammo: HTMLDivElement;
   private ring: HTMLDivElement;
   private meleeBox: HTMLDivElement;
+  private medkitBox: HTMLDivElement;
+  private medkitKey = '';
   private slots: HTMLDivElement;
   private toasts: HTMLDivElement;
   private hint: HTMLDivElement;
@@ -163,12 +166,14 @@ export class Hud {
     this.ammo = el('div', { class: 'ammo' });
     this.ring = el('div', { class: 'ring' });
     this.meleeBox = el('div', { class: 'melee' });
+    this.medkitBox = el('div', { class: 'medkits' });
     this.slots = el('div', { class: 'slots' });
     const br = el(
       'div',
       { class: 'hud-br' },
       el('div', { class: 'weapon' }, this.ring, el('div', {}, this.weaponName, this.ammo)),
       this.meleeBox,
+      this.medkitBox,
       this.slots,
     );
     this.hint = el('div', { class: 'hint' });
@@ -195,8 +200,8 @@ export class Hud {
     if (!m) return;
     // só o ícone e o atalho; o texto completo fica na dica do botão
     const k = this.keyNames.voice ?? '';
-    const label = m.busy ? t('Ligando…') : m.on ? t('Microfone ligado') : t('Microfone mudo');
-    this.voiceBtn.textContent = `${m.busy ? '🎤…' : m.on ? '🎤' : '🔇'}${k ? ` ${k}` : ''}`;
+    const label = m.busy ? t('Ligando...') : m.on ? t('Microfone ligado') : t('Microfone mudo');
+    this.voiceBtn.textContent = `${m.busy ? '🎤...' : m.on ? '🎤' : '🔇'}${k ? ` ${k}` : ''}`;
     this.voiceBtn.title = k ? `${label} (${k})` : label;
     this.voiceBtn.setAttribute('aria-label', this.voiceBtn.title);
     this.voiceBtn.classList.toggle('on', m.on);
@@ -301,7 +306,7 @@ export class Hud {
                 this.toast(
                   who(ev.player) + t(c.name),
                   col,
-                  t('{rarity} • novo item!', { rarity: t(RARITY_NAMES[c.rarity]) }),
+                  t('{rarity}: novo item!', { rarity: t(RARITY_NAMES[c.rarity]) }),
                 );
             }
           } else if (ev.scrap) this.toast(who(ev.player) + t('+{n} sucata', { n: ev.scrap }), '#c8d0d8');
@@ -311,6 +316,16 @@ export class Hud {
           const d = ITEMS[ev.item];
           if (d && (d.effect.k === 'power' || d.effect.k === 'melee'))
             this.toast(who(ev.player) + t(d.name), hexColor(d.color));
+          break;
+        }
+        case 'medkit': {
+          // só para quem apertou (no multijogador, cada um vê os seus)
+          const mine = !multi || w.get(ev.player)?.player?.slot === this.localSlot;
+          if (!mine) break;
+          if (ev.action === 'store')
+            this.toast(t('Caixa de cura guardada ({n}/{max})', { n: ev.left, max: MEDKITS.max }), '#5aff9a');
+          else if (ev.action === 'empty') this.toast(t('Sem caixas de cura'), '#ff7a5a');
+          else if (ev.action === 'full') this.toast(t('Vida cheia'), '#c8d0d8');
           break;
         }
         case 'meleeBreak':
@@ -415,7 +430,7 @@ export class Hud {
     }
     this.mapName.textContent =
       (w.map.index >= 0 ? `${w.map.index + 1}. ${t(w.map.name)}` : t(w.map.name)) +
-      (w.ngPlus ? ' • NG+' : '');
+      (w.ngPlus ? ' (NG+)' : '');
     const segs = w.level.segments.filter((s) => s.lock);
     const pipKey = `${segs.length}:${w.levelState.cleared.join(',')}:${w.levelState.segmentIdx}:${w.levelState.active}`;
     if (this.pips.dataset.k !== pipKey) {
@@ -469,6 +484,19 @@ export class Hud {
       key = `s:${pc.staffIdx}:${pc.staffs.join(',')}`;
     }
     if (pc.mode === 'gun') this.ring.style.color = '';
+    // caixas de cura guardadas (quem não usa cajado): ✚ cheias e vazias, com a tecla do cajado
+    const kits = getCharacter(pc.character).arms.staff ? null : (pc.medkits?.length ?? 0);
+    const kitKey = kits === null ? '' : `${kits}|${this.touchMode}|${this.keyNames.modeStaff ?? ''}`;
+    if (kitKey !== this.medkitKey) {
+      this.medkitKey = kitKey;
+      this.medkitBox.hidden = kits === null;
+      if (kits !== null)
+        this.medkitBox.replaceChildren(
+          ...Array.from({ length: MEDKITS.max }, (_, i) => el('i', { class: i < kits ? 'on' : '' }, '✚')),
+          el('span', {}, t('Caixas de cura')),
+          ...(this.touchMode ? [] : [el('kbd', {}, this.keyNames.modeStaff ?? '2')]),
+        );
+    }
     if (pc.melee) {
       const m = MELEE_WEAPONS[pc.melee.id];
       this.meleeBox.style.display = 'flex';

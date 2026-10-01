@@ -47,7 +47,7 @@ export const arena: MapDef = {
       playerStart: { x: 3, z: 0 },
       hints: [
         { x: 4, text: 'Tudo o que você enfrentou está aqui. Use todos os cajados!' },
-        { x: 170, text: 'OMEGA-Z: a blindagem resiste a balas — eletricidade e golpes fortes a rompem' },
+        { x: 170, text: 'OMEGA-Z: a blindagem resiste a balas, mas eletricidade e golpes fortes a rompem' },
       ],
       hazards: [
         { kind: 'toxicPool', x: 72, z: -2.6, w: 2.2 },

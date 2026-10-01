@@ -46,6 +46,29 @@ export function runMoveEffects(w: World, e: Entity, m: MeleeMoveDef, rel: number
           height: -1,
         });
         break;
+      case 'cyclones':
+        if (rel !== 0) break;
+        for (let i = 0; i < fx.count; i++) {
+          // em todas as direções; em profundidade andam mais devagar (a rua é estreita) e quicam nas bordas
+          const a = (i / fx.count) * Math.PI * 2;
+          spawnHazard(w, {
+            x: e.t.x + Math.cos(a) * 0.4,
+            z: e.t.z + Math.sin(a) * 0.25,
+            owner: e.id,
+            team: e.team,
+            shape: { k: 'circle', r: fx.r },
+            hit: fx.hit,
+            active: fx.ticks,
+            vx: Math.cos(a) * fx.speed,
+            vz: Math.sin(a) * fx.speed * 0.6,
+            height: 2,
+            fx: fx.fx,
+            bounceZ: true,
+            source: e.player ? 'special' : undefined,
+          });
+        }
+        w.emit({ t: 'sfx', id: 'whooshHeavy', x: e.t.x });
+        break;
       case 'shockwave':
         if (rel !== 0) break;
         spawnHazard(w, {

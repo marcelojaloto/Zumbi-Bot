@@ -42,7 +42,7 @@ export const centro: MapDef = {
       parTimeS: 440,
       playerStart: { x: 3, z: 0 },
       hints: [
-        { x: 28, text: 'Carros abandonados explodem quando destruídos — atraia os robôs para perto!' },
+        { x: 28, text: 'Carros abandonados explodem quando destruídos. Atraia os robôs para perto!' },
         { x: 162, text: 'Algo enorme se aproxima... Pule os pulsos hacker e saia da mira do canhão!' },
       ],
       segments: [

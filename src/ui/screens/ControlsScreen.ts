@@ -22,6 +22,7 @@ export const ROWS: [string, string[], string][] = [
   ['Recarregar', ['@reload'], 'D-pad ↓'],
   ['Arma / cajado anterior e próximo', ['@prev', '@next'], 'LB / RB'],
   ['Modo arma de fogo / cajado', ['@modeGun', '@modeStaff'], 'D-pad ↑'],
+  ['Caixa de cura guardada (quem não usa cajado)', ['@modeStaff'], 'D-pad ↑'],
   ['Mapa ampliado', ['@map'], 'Back'],
   ['Pausa', ['Esc', '@pause'], 'Start'],
 ];
@@ -38,6 +39,7 @@ export const TOUCH_ROWS: [string, string][] = [
   ['ATIRAR', 'Atira ou conjura o cajado, mirando sozinho no inimigo à frente'],
   ['ESPECIAL', 'Especial do personagem (gasta mana)'],
   ['⇄', 'Alterna entre arma de fogo e cajado (só quem usa os dois)'],
+  ['✚', 'Usa uma caixa de cura guardada (Militar, Ciborgue e Mutante, no lugar do ⇄)'],
   ['⟳', 'Troca de cajado (no modo arma, de arma); fica à direita do ⇄'],
   ['⏸', 'Pausa'],
   ['🗺', 'Mostra ou esconde o minimapa'],
@@ -48,7 +50,7 @@ export function controlsScreen(host: UiHost): Screen {
   const fillKeys = () => {
     const n = actionKeyNames(bindingsFrom(host.profile.settings.controls.keys));
     const name = (a: string) =>
-      a === 'move' ? [n.up, n.left, n.down, n.right].join(' ') : (n[a as Action] ?? '—');
+      a === 'move' ? [n.up, n.left, n.down, n.right].join(' ') : (n[a as Action] ?? '?');
     const label = (k: string) =>
       k.startsWith('@')
         ? k
@@ -58,7 +60,7 @@ export function controlsScreen(host: UiHost): Screen {
         : t(k);
     keys.replaceChildren(el('b', {}, t('Ação')), el('b', {}, t('Teclado / mouse')), el('b', {}, 'Gamepad'));
     for (const [row, ks, pad] of ROWS) {
-      const names = ks.map(label).filter((k) => !k.includes('—'));
+      const names = ks.map(label).filter((k) => !k.includes('?'));
       keys.append(
         el('span', {}, t(row)),
         el('span', {}, ...names.map((k) => el('kbd', {}, k))),
@@ -85,15 +87,15 @@ export function controlsScreen(host: UiHost): Screen {
       'p',
       {},
       el('b', {}, t('Esquerda')),
-      ' — ',
-      t('WASD andam • F soco • G chute • Espaço pula • R atira • T especial'),
+      ': ',
+      t('WASD andam | F soco | G chute | Espaço pula | R atira | T especial'),
     ),
     el(
       'p',
       {},
       el('b', {}, t('Direita')),
-      ' — ',
-      t('Setas andam • J soco • K chute • L pula • O atira • I especial'),
+      ': ',
+      t('Setas andam | J soco | K chute | L pula | O atira | I especial'),
     ),
     el(
       'p',
@@ -126,7 +128,7 @@ export function controlsScreen(host: UiHost): Screen {
     el(
       'p',
       { class: 'muted' },
-      t('Combos: J, J, J, J (uppercut) • J, J, K (chute giratório) • correndo + K (voadora) • no ar: J/K'),
+      t('Combos: J, J, J, J (uppercut) | J, J, K (chute giratório) | correndo + K (voadora) | no ar: J/K'),
     ),
     el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, t('Voltar')),
   );

@@ -15,7 +15,7 @@ export function creditsScreen(
   const bosses = MAPS.map((m) => {
     const id = m.levels[m.levels.length - 1]?.boss?.id;
     const b = id ? BOSSES[id] : undefined;
-    return b ? `${m.index + 1}. ${t(m.name)} — ${t(b.name)}, ${t(b.title)}` : `${m.index + 1}. ${t(m.name)}`;
+    return b ? `${m.index + 1}. ${t(m.name)}: ${t(b.name)}, ${t(b.title)}` : `${m.index + 1}. ${t(m.name)}`;
   });
   const roll = el(
     'div',
@@ -27,7 +27,7 @@ export function creditsScreen(
           'p',
           { class: 'cr-story' },
           t(
-            'O núcleo do OMEGA-Z se apagou. Pela primeira vez desde o apocalipse, o silêncio tomou as ruas. Os robôs ainda vigiam as cidades em ruínas — mas agora, quem manda é a revolução.',
+            'O núcleo do OMEGA-Z se apagou. Pela primeira vez desde o apocalipse, o silêncio tomou as ruas. Os robôs ainda vigiam as cidades em ruínas, mas agora quem manda é a revolução.',
           ),
         )
       : null,
@@ -41,10 +41,9 @@ export function creditsScreen(
     block(t('Desenvolvimento'), t('Criado por Marcelo Jaloto')),
     block(
       t('Tecnologia'),
-      t('Three.js — renderização 3D'),
-      t('postprocessing (pmndrs) e N8AO — bloom, cor e oclusão'),
+      t('Three.js: renderização 3D'),
+      t('postprocessing (pmndrs) e N8AO: bloom, cor e oclusão'),
       t('Vite, TypeScript, Vitest e Playwright'),
-      t('Claude Code — desenvolvimento assistido'),
     ),
     block(
       t('Tudo feito em código'),

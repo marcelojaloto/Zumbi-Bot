@@ -43,6 +43,10 @@ export function hazardSystem(w: World): void {
     }
     h.t.x += h.t.vx / 60;
     h.t.z += h.t.vz / 60;
+    if (hz.bounceZ) {
+      const [z0, z1] = w.zBand;
+      if ((h.t.z < z0 && h.t.vz < 0) || (h.t.z > z1 && h.t.vz > 0)) h.t.vz = -h.t.vz;
+    }
     if (hz.grow) {
       if (hz.shape.k === 'circle' || hz.shape.k === 'ring') hz.shape.r += hz.grow;
       else if (hz.shape.k === 'cone') hz.shape.range += hz.grow;

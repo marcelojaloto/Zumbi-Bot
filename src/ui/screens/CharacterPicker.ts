@@ -230,6 +230,16 @@ export function characterSheet(o: {
       el('div', { class: 'cs-full' }, c.fullName),
       el('p', { class: 'ci-desc' }, t(c.desc)),
       statBars(c),
+      // quem não usa cajado guarda caixas de cura (no botão do cajado)
+      ...(c.arms.staff
+        ? []
+        : [
+            el(
+              'p',
+              { class: 'cs-medkit' },
+              `✚ ${t('Guarda até 4 caixas de cura e usa no botão do cajado.')}`,
+            ),
+          ]),
       el('h4', { class: 'cs-h' }, t('Especial')),
       el('div', { class: 'ci-special' }, el('b', {}, t(c.specialName)), el('span', {}, t(c.specialDesc))),
       el('h4', { class: 'cs-h' }, t('História')),
@@ -248,8 +258,8 @@ export function characterSheet(o: {
 /** Dica do giro e da troca (toque ou teclado/controle). */
 export function spinTip(touch: boolean): string {
   return touch
-    ? t('Arraste o personagem para os lados para girar • ◀ ▶ trocam de personagem')
-    : t('←/→ ou arrastar: girar • ↑/↓ ou ◀ ▶: trocar • Page Up/Down: rolar a ficha');
+    ? t('Arraste o personagem para os lados para girar | ◀ ▶ trocam de personagem')
+    : t('←/→ ou arrastar: girar | ↑/↓ ou ◀ ▶: trocar | Page Up/Down: rolar a ficha');
 }
 
 /** Rolagem da ficha pelo teclado. */

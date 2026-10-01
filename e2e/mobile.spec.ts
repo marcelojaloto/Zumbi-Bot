@@ -106,3 +106,39 @@ test('celular deitado: controles de toque andam, socam e pausam; retrato pede pa
   await expect(page.locator('.rotate')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('celular: quem não usa cajado tem o botão ✚ da caixa de cura no lugar do ⇄', async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto(`./${DEBUG_QUERY}&char=military`);
+  await page.waitForFunction(() => (window as unknown as { __game?: G }).__game?.isReady());
+  await page.evaluate(() => (window as unknown as { __game: G }).__game.startLevel('vila', 0));
+  await page.waitForFunction(() => (window as unknown as { __game: G }).__game.state().screen === 'playing');
+  const kit = page.locator('.t-btn.b-mode');
+  await expect(kit).toHaveClass(/medkit/);
+  await expect(kit.locator('.mk-n')).toHaveText('4');
+  // machucado: tocar no ✚ cura e gasta uma caixa
+  await page.evaluate(() => {
+    const game = (window as unknown as { __game: G }).__game;
+    game.god(false);
+    const p = (
+      game.app.session as unknown as { world: { get(id: number): { health: { hp: number } } } }
+    ).world.get(1);
+    p.health.hp = 30;
+  });
+  const b = (await kit.boundingBox())!;
+  await pointer(page, '.t-pad', 'pointerdown', b.x + b.width / 2, b.y + b.height / 2, 11);
+  await page.waitForTimeout(150);
+  await pointer(page, '.t-pad', 'pointerup', b.x + b.width / 2, b.y + b.height / 2, 11);
+  await expect(kit.locator('.mk-n')).toHaveText('3');
+  expect(
+    await page.evaluate(
+      () =>
+        (
+          (window as unknown as { __game: G }).__game.app.session as unknown as {
+            world: { get(id: number): { health: { hp: number } } };
+          }
+        ).world.get(1).health.hp,
+    ),
+  ).toBeGreaterThanOrEqual(55);
+  expect(errors).toEqual([]);
+});

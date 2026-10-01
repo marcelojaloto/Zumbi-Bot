@@ -43,7 +43,7 @@ export const torre: MapDef = {
       parTimeS: 420,
       playerStart: { x: 3, z: -0.5 },
       hints: [
-        { x: 38, text: 'Cuidado: destroços despencam do teto — saia do círculo!' },
+        { x: 38, text: 'Cuidado: destroços despencam do teto. Saia do círculo!' },
         { x: 70, text: 'Rajadas de vento entram pelos vitrais e empurram para a frente' },
         { x: 150, text: 'Sentinela à frente! Saia da linha do rotor e pule as hélices' },
       ],

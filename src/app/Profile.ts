@@ -29,7 +29,7 @@ export class Profile {
     this.save = s.data;
     this.settings = st.data;
     this.ranking = r.data;
-    if (s.recovered) this.notices.push('Save corrompido — backup restaurado');
+    if (s.recovered) this.notices.push('Save corrompido, backup restaurado');
     if (s.readOnly) this.notices.push('Save de uma versão mais nova: progresso não será gravado');
     if (s.migratedFrom !== null) this.persist();
     // quem já terminou o jogo antes desta versão também ganha o disfarce do personagem secreto

@@ -1,10 +1,10 @@
 # Textos da ficha na Play Store / Play Store listing texts
 
-Copie e cole no Play Console (**Crescer → Presença na loja → Página principal da loja**). Os limites de caracteres
-estão entre parênteses. / Copy into Play Console (**Grow → Store presence → Main store listing**). Character limits
+Copie e cole no Play Console (**Crescer > Presença na loja > Página principal da loja**). Os limites de caracteres
+estão entre parênteses. / Copy into Play Console (**Grow > Store presence > Main store listing**). Character limits
 are in parentheses.
 
-## Português (Brasil) — pt-BR
+## Português (Brasil) - pt-BR
 
 **Nome do app** (30): Zumbi Bot
 
@@ -20,28 +20,28 @@ Um robô contra o apocalipse zumbi: socos, armas, magias e chefes gigantes.
 Os zumbis tomaram a cidade e só um robô pode detê-los. Zumbi Bot é um beat 'em up 2.5D de ação rápida: ande pelas
 ruas, pule, soque, chute e atire para limpar 10 mapas cheios de mortos-vivos e robôs rebeldes.
 
-• 10 mapas, da Vila Assombrada à Arena Final, cada um com seu chefe gigante e seus próprios ataques
-• 5 personagens para escolher — robô, maga, militar, ciborgue e mutante — cada um com seu golpe especial, e um personagem secreto para quem terminar o jogo
-• Jogue online com até 4 amigos: crie uma sala, mande o código de 4 letras e joguem juntos, cada um no seu celular
-• Chat de voz na sala: todos conversam com todos — cada um liga ou desliga o próprio microfone
-• Ou até 5 jogadores no mesmo aparelho, com controles
-• Combos de socos e chutes, voadora e pulo duplo
-• 7 armas de fogo — pistola, escopeta, submetralhadora, fuzil, sniper, metralhadora e lança-granadas
-• 10 cajados mágicos com elementos: fogo, gelo, água, raio, veneno, vento, terra e mais
-• Poderes, itens e armas brancas espalhados pelas fases
-• Guarda-roupa com mais de 40 peças para deixar o seu robô com a sua cara
-• Suba de nível, junte sucata, compre na loja e bata seu recorde no ranking pessoal e no ranking global
-• Quatro dificuldades, de Muito fácil a Difícil, e Novo Jogo+ depois do chefe final
-• Controles de toque confortáveis: direcional à esquerda, botões à direita, tamanho e transparência ajustáveis
-• Em português e inglês
-• Sem anúncios e sem compras. Joga offline (a internet só é usada no jogo online e no ranking global).
+- 10 mapas, da Vila Assombrada à Arena Final, cada um com seu chefe gigante e seus próprios ataques
+- 5 personagens para escolher (robô, maga, militar, ciborgue e mutante), cada um com seu golpe especial, e um personagem secreto para quem terminar o jogo
+- Jogue online com até 4 amigos: crie uma sala, mande o código de 4 letras e joguem juntos, cada um no seu celular
+- Chat de voz na sala: todos conversam com todos, e cada um liga ou desliga o próprio microfone
+- Ou até 5 jogadores no mesmo aparelho, com controles
+- Combos de socos e chutes, voadora e pulo duplo
+- 7 armas de fogo: pistola, escopeta, submetralhadora, fuzil, sniper, metralhadora e lança-granadas
+- 10 cajados mágicos com elementos: fogo, gelo, água, raio, veneno, vento, terra e mais
+- Poderes, itens e armas brancas espalhados pelas fases
+- Guarda-roupa com mais de 40 peças para deixar o seu robô com a sua cara
+- Suba de nível, junte sucata, compre na loja e bata seu recorde no ranking pessoal e no ranking global
+- Quatro dificuldades, de Muito fácil a Difícil, e Novo Jogo+ depois do chefe final
+- Controles de toque confortáveis: direcional à esquerda, botões à direita, tamanho e transparência ajustáveis
+- Em português e inglês
+- Sem anúncios e sem compras. Joga offline (a internet só é usada no jogo online e no ranking global).
 
 Também dá para jogar no navegador (computador, Android e iPhone): marcelojaloto.github.io/Zumbi-Bot
 ```
 
-**Categoria**: Jogos → Ação · **Tags sugeridas**: beat 'em up, zumbis, robôs, ação, arcade
+**Categoria**: Jogos > Ação · **Tags sugeridas**: beat 'em up, zumbis, robôs, ação, arcade
 
-## English — en-US
+## English - en-US
 
 **App name** (30): Zumbi Bot
 
@@ -57,26 +57,26 @@ One robot vs. the zombie apocalypse: punches, guns, magic and giant bosses.
 Zombies have taken over the city and only one robot can stop them. Zumbi Bot is a fast 2.5D beat 'em up: walk the
 streets, jump, punch, kick and shoot your way through 10 maps packed with the undead and rogue robots.
 
-• 10 maps, from the Haunted Village to the Final Arena, each with its own giant boss and attacks
-• 5 characters to pick — robot, mage, soldier, cyborg and mutant — each with a special move, plus a secret character for those who finish the game
-• Play online with up to 4 friends: create a room, share the 4-letter code and play together, each on their phone
-• Voice chat in the room: everyone talks with everyone — each player turns their own mic on or off
-• Or up to 5 players on the same device with controllers
-• Punch and kick combos, flying kick and double jump
-• 7 firearms — pistol, shotgun, SMG, assault rifle, sniper, machine gun and grenade launcher
-• 10 magic staffs with elements: fire, ice, water, lightning, poison, wind, earth and more
-• Powers, items and melee weapons scattered across the levels
-• A wardrobe with more than 40 pieces to make your robot your own
-• Level up, collect scrap, shop and beat your high score on the personal and global leaderboards
-• Four difficulties, from Very easy to Hard, plus New Game+ after the final boss
-• Comfortable touch controls: D-pad on the left, buttons on the right, adjustable size and opacity
-• In English and Portuguese
-• No ads and no purchases. Plays offline (the internet is only used for online play and the global leaderboard).
+- 10 maps, from the Haunted Village to the Final Arena, each with its own giant boss and attacks
+- 5 characters to pick (robot, mage, soldier, cyborg and mutant), each with a special move, plus a secret character for those who finish the game
+- Play online with up to 4 friends: create a room, share the 4-letter code and play together, each on their phone
+- Voice chat in the room: everyone talks with everyone, and each player turns their own mic on or off
+- Or up to 5 players on the same device with controllers
+- Punch and kick combos, flying kick and double jump
+- 7 firearms: pistol, shotgun, SMG, assault rifle, sniper, machine gun and grenade launcher
+- 10 magic staffs with elements: fire, ice, water, lightning, poison, wind, earth and more
+- Powers, items and melee weapons scattered across the levels
+- A wardrobe with more than 40 pieces to make your robot your own
+- Level up, collect scrap, shop and beat your high score on the personal and global leaderboards
+- Four difficulties, from Very easy to Hard, plus New Game+ after the final boss
+- Comfortable touch controls: D-pad on the left, buttons on the right, adjustable size and opacity
+- In English and Portuguese
+- No ads and no purchases. Plays offline (the internet is only used for online play and the global leaderboard).
 
 You can also play in the browser (computer, Android and iPhone): marcelojaloto.github.io/Zumbi-Bot
 ```
 
-**Category**: Games → Action · **Suggested tags**: beat 'em up, zombies, robots, action, arcade
+**Category**: Games > Action · **Suggested tags**: beat 'em up, zombies, robots, action, arcade
 
 ## Imagens / Images
 

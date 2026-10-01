@@ -42,7 +42,7 @@ export const floresta: MapDef = {
       parTimeS: 440,
       playerStart: { x: 3, z: 0 },
       hints: [
-        { x: 6, text: 'Poças de lama deixam tudo lento — inclusive os zumbis' },
+        { x: 6, text: 'Poças de lama deixam tudo lento, inclusive os zumbis' },
         { x: 160, text: 'O chão borbulha... Pule as ondas de lama do colosso!' },
       ],
       segments: [

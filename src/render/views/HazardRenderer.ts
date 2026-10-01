@@ -10,12 +10,13 @@ import {
   MeshBasicMaterial,
   PlaneGeometry,
   RingGeometry,
+  TorusGeometry,
   type BufferGeometry,
   type Scene,
 } from 'three';
 import type { Entity, EntityId, HazardShape } from '../../sim/Entity';
 import type { World } from '../../sim/World';
-import { radialTexture } from '../env/textures';
+import { radialTexture, swirlTexture } from '../env/textures';
 
 const FX_COLORS: Record<string, number> = {
   acidPool: 0x7aff2a,
@@ -33,6 +34,7 @@ const FX_COLORS: Record<string, number> = {
   shock: 0xfff15a,
   necro: 0xb05aff,
   arcane: 0x4ad8ff,
+  cyclone: 0x4ad8ff,
   water: 0x3a9cff,
   mud: 0x8a6a3a,
   swamp: 0x4a6a3a,
@@ -82,7 +84,27 @@ interface HzView {
   fillMat: MeshBasicMaterial | null;
   /** Lâmina pendular (perigo "pendulum"): pivô no alto, balança em profundidade. */
   blade: Group | null;
+  /** Funil girando (ciclone do Prodígio). */
+  funnel: Group | null;
+  /** Duração (quadros) quando apareceu: o funil cresce ao nascer e encolhe no fim. */
+  maxActive: number;
 }
+
+interface CycloneKit {
+  outer: CylinderGeometry;
+  inner: CylinderGeometry;
+  ring: TorusGeometry;
+  outerMat: MeshBasicMaterial;
+  innerMat: MeshBasicMaterial;
+  ringMat: MeshBasicMaterial;
+}
+
+/** Alturas e raios dos anéis de vento em volta do funil. */
+const CYCLONE_RINGS: [number, number][] = [
+  [0.3, 0.2],
+  [0.9, 0.38],
+  [1.5, 0.55],
+];
 
 const PEND_TOP = 4.4;
 
@@ -113,6 +135,50 @@ export class HazardRenderer {
     blade.castShadow = true;
     pivot.add(blade);
     return pivot;
+  }
+
+  private cycloneKit: CycloneKit | null = null;
+
+  private makeFunnel(): Group {
+    if (!this.cycloneKit) {
+      const swirl = swirlTexture();
+      swirl.repeat.set(2, 1);
+      const mat = (color: number, opacity: number, map = true): MeshBasicMaterial =>
+        new MeshBasicMaterial({
+          color,
+          map: map ? swirl : null,
+          transparent: true,
+          opacity,
+          depthWrite: false,
+          side: DoubleSide,
+          blending: AdditiveBlending,
+          toneMapped: false,
+        });
+      this.cycloneKit = {
+        // funil aberto: estreito no chão e largo em cima
+        outer: new CylinderGeometry(0.62, 0.1, 1.9, 16, 1, true).translate(0, 0.95, 0),
+        inner: new CylinderGeometry(0.38, 0.05, 1.6, 12, 1, true).translate(0, 0.8, 0),
+        ring: new TorusGeometry(1, 0.035, 4, 20),
+        outerMat: mat(fxColor('cyclone'), 0.8),
+        innerMat: mat(0xc8f6ff, 0.55),
+        ringMat: mat(fxColor('cyclone'), 0.85, false),
+      };
+    }
+    const k = this.cycloneKit;
+    const root = new Group();
+    const spin = new Group();
+    spin.add(new Mesh(k.outer, k.outerMat));
+    spin.add(new Mesh(k.inner, k.innerMat));
+    // anéis de vento, cada um um pouco torto e fora do centro (girando, o funil bamboleia)
+    for (const [y, r] of CYCLONE_RINGS) {
+      const ring = new Mesh(k.ring, k.ringMat);
+      ring.scale.setScalar(r);
+      ring.position.set(r * 0.18, y, 0);
+      ring.rotation.set(Math.PI / 2 + 0.22, 0, 0);
+      spin.add(ring);
+    }
+    root.add(spin);
+    return root;
   }
 
   constructor(private scene: Scene) {}
@@ -170,6 +236,11 @@ export class HazardRenderer {
       blade = this.makeBlade();
       this.scene.add(blade);
     }
+    let funnel: Group | null = null;
+    if (hz.fx === 'cyclone') {
+      funnel = this.makeFunnel();
+      this.scene.add(funnel);
+    }
     this.scene.add(group);
     return {
       group,
@@ -180,6 +251,8 @@ export class HazardRenderer {
       mat,
       fillMat,
       blade,
+      funnel,
+      maxActive: Math.max(1, hz.active),
     };
   }
 
@@ -217,6 +290,20 @@ export class HazardRenderer {
         v.blade.position.set(e.t.x, PEND_TOP, zc);
         v.blade.rotation.x = Math.asin(Math.max(-0.95, Math.min(0.95, (e.t.z - zc) / (len + 0.4))));
       }
+      if (v.funnel) {
+        // nasce crescendo, gira rápido bamboleando e some encolhendo
+        const age = v.maxActive - hz.active;
+        const k = Math.max(0.05, Math.min(1, (age + 1) / 6) * Math.min(1, hz.active / 10));
+        v.funnel.position.set(e.t.x, e.t.y, e.t.z);
+        v.funnel.scale.set(k, 0.4 + 0.6 * k, k);
+        const spin = v.funnel.children[0]!;
+        spin.rotation.set(
+          Math.sin(this.t * 9 + e.id) * 0.1,
+          -this.t * 14 - e.id,
+          Math.cos(this.t * 7 + e.id) * 0.1,
+        );
+        spin.children[1]!.rotation.y = this.t * 22;
+      }
       const telegraph = hz.delay > 0;
       const envInactive = !!hz.env && hz.phase === 0;
       if (telegraph) {
@@ -241,6 +328,7 @@ export class HazardRenderer {
     if (!v) return;
     this.scene.remove(v.group);
     if (v.blade) this.scene.remove(v.blade);
+    if (v.funnel) this.scene.remove(v.funnel);
     v.base.geometry.dispose();
     v.fill?.geometry.dispose();
     v.mat.dispose();
@@ -255,6 +343,11 @@ export class HazardRenderer {
       this.bladeKit.blade.dispose();
       this.bladeKit.mat.dispose();
       this.bladeKit = null;
+    }
+    if (this.cycloneKit) {
+      const k = this.cycloneKit;
+      for (const d of [k.outer, k.inner, k.ring, k.outerMat, k.innerMat, k.ringMat]) d.dispose();
+      this.cycloneKit = null;
     }
   }
 }

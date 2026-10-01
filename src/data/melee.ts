@@ -331,7 +331,19 @@ export const MOVES: Record<string, MeleeMoveDef> = {
     hpCost: 10,
     special: true,
     sfx: 'cast_electric',
-    effects: [{ k: 'trail', r: 1.5, every: 4, ticks: 14, fx: 'arcane' }],
+    effects: [
+      { k: 'trail', r: 1.5, every: 4, ticks: 14, fx: 'arcane' },
+      // ciclones arcanos saem girando para todos os lados
+      {
+        k: 'cyclones',
+        count: 8,
+        speed: 6.5,
+        r: 0.55,
+        ticks: 55,
+        hit: { damage: 9, dtype: 'wind', knockback: 5, launch: 5, knockdown: true, hitstun: 24, hitstop: 3 },
+        fx: 'cyclone',
+      },
+    ],
   },
 
   // --- cajado: no modo cajado (sem arma branca), J bate com o cajado em vez de socar ---

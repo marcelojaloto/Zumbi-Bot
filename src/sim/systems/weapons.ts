@@ -5,7 +5,7 @@ import type { FirearmDef, HitSpec, WeaponId } from '../../data/types';
 import { isCharacter, isHostile, type Entity, type PlayerComp } from '../Entity';
 import { Btn, held, pressed } from '../InputFrame';
 import type { World } from '../World';
-import { applyHit } from '../combat/applyHit';
+import { applyHeal, applyHit } from '../combat/applyHit';
 import { falloff } from '../combat/damage';
 import { shootDown, spawnProjectile } from './projectiles';
 import { LOCOMOTION } from './playerControl';
@@ -33,12 +33,17 @@ function handleSwitching(w: World, e: Entity): void {
   const p = e.player!;
   const b = p.buttons;
   const pb = p.prevButtons;
+  const arms = characterDef(e).arms;
+  // quem não usa cajado: o botão do cajado usa uma caixa de cura guardada
+  if (!arms.staff && (pressed(b, pb, Btn.ModeStaff) || pressed(b, pb, Btn.ToggleMode))) {
+    useMedkit(w, e);
+    return;
+  }
   let newMode = p.mode;
   if (pressed(b, pb, Btn.ModeGun)) newMode = 'gun';
   if (pressed(b, pb, Btn.ModeStaff)) newMode = 'staff';
   if (pressed(b, pb, Btn.ToggleMode)) newMode = p.mode === 'gun' ? 'staff' : 'gun';
   // cada personagem só troca para o que sabe usar (a maga não atira; militar, ciborgue e mutante não conjuram)
-  const arms = characterDef(e).arms;
   if (newMode === 'gun' && !arms.guns) newMode = p.mode;
   if (newMode === 'staff' && (!arms.staff || p.staffs.length === 0)) newMode = arms.guns ? 'gun' : p.mode;
   if (newMode !== p.mode) {
@@ -64,6 +69,24 @@ function handleSwitching(w: World, e: Entity): void {
     p.staffIdx = (p.staffIdx + dir + p.staffs.length) % p.staffs.length;
     w.emit({ t: 'weaponSwap', id: e.id, mode: 'staff', weapon: p.staffs[p.staffIdx]! });
   }
+}
+
+/** Usa a última caixa de cura guardada (vida cheia ou sem caixas: só avisa). */
+export function useMedkit(w: World, e: Entity): boolean {
+  const p = e.player!;
+  const h = e.health;
+  if (!h || e.fighter?.state === 'dead') return false;
+  if (p.medkits.length === 0) {
+    w.emit({ t: 'medkit', player: e.id, action: 'empty', left: 0 });
+    return false;
+  }
+  if (h.hp >= h.max) {
+    w.emit({ t: 'medkit', player: e.id, action: 'full', left: p.medkits.length });
+    return false;
+  }
+  applyHeal(w, e, p.medkits.pop()!);
+  w.emit({ t: 'medkit', player: e.id, action: 'use', left: p.medkits.length });
+  return true;
 }
 
 function cancelReload(p: PlayerComp): void {

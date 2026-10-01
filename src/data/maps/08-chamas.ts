@@ -10,7 +10,7 @@ export const chamas: MapDef = {
   id: 'chamas',
   index: 7,
   name: 'Área em Chamas',
-  subtitle: 'A cidade virou fornalha — e algo gigante a alimenta',
+  subtitle: 'A cidade virou fornalha, e algo gigante a alimenta',
   color: 0xff6a2a,
   music: 'chamas',
   wizardBias: 0.3,
@@ -47,7 +47,7 @@ export const chamas: MapDef = {
       playerStart: { x: 3, z: 0 },
       hints: [
         { x: 30, text: 'Jatos de fogo acendem em ciclos: espere apagar e passe correndo' },
-        { x: 66, text: 'Vigas em chamas caem do teto — saia do círculo vermelho!' },
+        { x: 66, text: 'Vigas em chamas caem do teto. Saia do círculo vermelho!' },
       ],
       hazards: [
         { kind: 'fire', x: 8, z: -1.15, w: 1 },

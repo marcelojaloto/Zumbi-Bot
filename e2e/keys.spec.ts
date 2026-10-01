@@ -35,7 +35,7 @@ test('teclas configuráveis: troca o pulo, joga com a tecla nova, guarda e resta
   await page.getByRole('button', { name: 'Controles' }).click();
   await page.getByRole('button', { name: /Trocar teclas/ }).click();
   await page.locator('.kb-key[data-action="jump"][data-slot="0"]').click();
-  await expect(page.locator('.kb-key.listening')).toHaveText('Aperte uma tecla…');
+  await expect(page.locator('.kb-key.listening')).toHaveText('Aperte uma tecla...');
   await page.keyboard.press('KeyH');
   await expect(page.locator('.kb-key[data-action="jump"][data-slot="0"]')).toHaveText('H');
   await expect(page.locator('.kb-status')).toContainText('H agora é');

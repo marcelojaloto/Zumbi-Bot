@@ -61,7 +61,7 @@ describe('i18n', () => {
     expect(missing).toEqual([]);
   });
 
-  it("toda chamada t('…') da interface tem tradução em inglês", () => {
+  it("toda chamada t('...') da interface tem tradução em inglês", () => {
     const missing = new Set<string>();
     for (const f of sources('src'))
       for (const k of literalKeys(readFileSync(f, 'utf8'))) if (!(k in EN)) missing.add(`${f}: ${k}`);

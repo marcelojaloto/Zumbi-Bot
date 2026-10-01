@@ -63,6 +63,12 @@ export const DIFFICULTY: Record<
   hard: { enemyDmg: 1.3, enemyHp: 1.2, bossHp: 1.2, bossPace: 0.9, meleeTokens: 3, rangedTokens: 2 },
 };
 
+/**
+ * Caixas de cura guardadas de quem não usa cajado (Militar, Ciborgue, Mutante): começa cada mapa com o estoque cheio
+ * e usa no botão do cajado; pegar uma caixa de cura com a vida cheia guarda ela (até `max`).
+ */
+export const MEDKITS = { max: 4, start: 4, heal: 25 };
+
 export const DIFFICULTY_ORDER: Difficulty[] = ['veryEasy', 'easy', 'normal', 'hard'];
 
 /** Novo Jogo+: inimigos mais resistentes e fortes, pontuação e sucata maiores. */

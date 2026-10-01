@@ -110,3 +110,64 @@ describe('o que cada personagem usa', () => {
     expect(mageRatio).toBeLessThan(robotRatio * 0.7);
   });
 });
+
+describe('caixas de cura guardadas (quem não usa cajado)', () => {
+  const kitEvents = (w: World) =>
+    w.drainEvents().filter((e): e is Extract<typeof e, { t: 'medkit' }> => e.t === 'medkit');
+
+  it('Militar, Ciborgue e Mutante começam o mapa com 4; quem usa cajado não tem', () => {
+    for (const c of ['military', 'cyborg', 'mutant'] as const)
+      expect(player(makeWorld({ loadout: { character: c } })).player!.medkits, c).toHaveLength(4);
+    for (const c of ['robot', 'mage', 'prodigy'] as const)
+      expect(player(makeWorld({ loadout: { character: c } })).player!.medkits, c).toHaveLength(0);
+  });
+
+  it('o botão do cajado usa uma caixa e cura; com a vida cheia não gasta; sem caixas avisa', () => {
+    const w = makeWorld({ loadout: { character: 'military' } });
+    const p = player(w);
+    const pc = p.player!;
+    const h = p.health!;
+    run(w, 1, { buttons: Btn.ToggleMode });
+    run(w, 1);
+    expect(pc.medkits).toHaveLength(4);
+    expect(kitEvents(w).map((e) => e.action)).toEqual(['full']);
+    h.hp = h.max - 40;
+    run(w, 1, { buttons: Btn.ModeStaff });
+    run(w, 1);
+    expect(h.hp).toBe(h.max - 15);
+    expect(pc.medkits).toHaveLength(3);
+    expect(pc.mode).toBe('gun');
+    pc.medkits = [];
+    run(w, 1, { buttons: Btn.ToggleMode });
+    run(w, 1);
+    expect(kitEvents(w).map((e) => e.action)).toEqual(['use', 'empty']);
+  });
+
+  it('com a vida cheia, a caixa de cura do chão é guardada até 4', () => {
+    const w = makeWorld({ loadout: { character: 'cyborg' } });
+    const pc = player(w).player!;
+    pc.medkits = [25, 25, 25];
+    dropAt(w, 'medkitL');
+    run(w, 3);
+    expect(pc.medkits).toEqual([25, 25, 25, 60]);
+    expect(onGround(w, 'medkitL')).toBe(0);
+    dropAt(w, 'medkitS');
+    run(w, 3);
+    expect(pc.medkits).toHaveLength(4);
+    expect(onGround(w, 'medkitS')).toBe(1);
+    // a próxima usada é a última guardada (a grande); a pequena do chão sai antes, senão curaria na hora
+    for (const e of [...w.entities]) if (e.kind === 'pickup') w.remove(e.id);
+    player(w).health!.hp = 10;
+    run(w, 1, { buttons: Btn.ToggleMode });
+    run(w, 1);
+    expect(player(w).health!.hp).toBe(70);
+  });
+
+  it('quem usa cajado não guarda: com a vida cheia a caixa fica no chão', () => {
+    const w = makeWorld();
+    dropAt(w, 'medkitS');
+    run(w, 5);
+    expect(player(w).player!.medkits).toEqual([]);
+    expect(onGround(w, 'medkitS')).toBe(1);
+  });
+});

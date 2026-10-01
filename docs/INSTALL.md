@@ -1,4 +1,4 @@
-# Zumbi Bot — Local installation manual
+# Zumbi Bot - Local installation manual
 
 > Web version, with copy buttons and per-system tabs: https://marcelojaloto.github.io/Zumbi-Bot/manual/
 > Versão em português: [INSTALACAO.md](INSTALACAO.md)
@@ -8,8 +8,8 @@ computers, phones and tablets. This manual is for running the game on your own m
 
 ## 1. What you need
 
-- **Node.js 22 LTS** (minimum 20.19, required by Vite 8) — https://nodejs.org/
-- **Git** — https://git-scm.com/
+- **Node.js 22 LTS** (minimum 20.19, required by Vite 8): https://nodejs.org/
+- **Git**: https://git-scm.com/
 - A WebGL browser (up-to-date Chrome, Edge, Firefox or Safari)
 
 ## 2. Install the tools
@@ -41,7 +41,7 @@ When `Local: http://localhost:5173/Zumbi-Bot/` appears, open that address in you
 
 - **Play on your phone over the same Wi-Fi:** run `npm run dev -- --host` and open the "Network" address it prints
   on your phone (something like `http://192.168.0.10:5173/Zumbi-Bot/`).
-- **Production build (same as the website):** `npm run build` then `npm run preview` →
+- **Production build (same as the website):** `npm run build` then `npm run preview` >
   `http://localhost:4173/Zumbi-Bot/`.
 - **Update:** `git pull` and `npm install` inside the `Zumbi-Bot` folder.
 
@@ -66,6 +66,6 @@ Add these to the address, for example `http://localhost:5173/Zumbi-Bot/?map=aren
   stopped with an error). Run `npm run dev` again inside the folder. localhost only works on the computer where the
   command is running.
 - **"Port 5173 is already in use":** close the other terminal or use the port Vite suggests.
-- **Black screen or WebGL error:** turn on hardware acceleration in your browser (Chrome: Settings → System → "Use
+- **Black screen or WebGL error:** turn on hardware acceleration in your browser (Chrome: Settings > System > "Use
   graphics acceleration when available") and restart the browser.
 - **No sound:** browsers only allow audio after the first click or tap.

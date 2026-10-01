@@ -12,7 +12,7 @@ export interface EndingHost extends UiHost {
 }
 
 const EPILOGUE =
-  'Cinco heróis que ninguém imaginava juntos — um robô, uma maga, um soldado, um ciborgue e um mutante — provaram que máquinas, magia e gente podem viver em paz. A revolução acabou. O que começa agora é um mundo novo.';
+  'Cinco heróis que ninguém imaginava juntos (um robô, uma maga, um soldado, um ciborgue e um mutante) provaram que máquinas, magia e gente podem viver em paz. A revolução acabou. O que começa agora é um mundo novo.';
 
 /** Texto de um capítulo: título, nome e o final feliz. */
 function chapterText(c: EndingChapter): { color: string; title: string; name: string; text: string } {
@@ -21,9 +21,9 @@ function chapterText(c: EndingChapter): { color: string; title: string; name: st
   const d = CHARACTERS[c];
   return {
     color: hexColor(d.color),
-    title: `${d.secret ? '🔓 ' : ''}${t(d.name)} — ${t(d.ending.title)}`,
+    title: d.ending.title ? `${t(d.name)}: ${t(d.ending.title)}` : t(d.name),
     // o secreto é liberado bem aqui
-    name: d.secret ? `${d.fullName} • ${t('Personagem secreto liberado!')}` : d.fullName,
+    name: d.secret ? `${d.fullName}, ${t('personagem secreto liberado!')}` : d.fullName,
     text: t(d.ending.text),
   };
 }

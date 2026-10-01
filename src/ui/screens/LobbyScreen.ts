@@ -49,8 +49,8 @@ function deviceLabel(d: DeviceRef): string {
 function splitHelp(d: DeviceRef): string | null {
   if (d.k !== 'kb' || d.layout === 'full') return null;
   return d.layout === 'left'
-    ? t('WASD andam • F soco • G chute • Espaço pula • R atira • T especial')
-    : t('Setas andam • J soco • K chute • L pula • O atira • I especial');
+    ? t('WASD andam | F soco | G chute | Espaço pula | R atira | T especial')
+    : t('Setas andam | J soco | K chute | L pula | O atira | I especial');
 }
 
 /** Teclas da seleção para cada lado do teclado. */
@@ -259,8 +259,8 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
     cards.dataset.players = String(n);
     help.textContent =
       n > 1
-        ? t('Cada jogador: ←/→ troca • confirmar = pronto • todos prontos começa')
-        : t('←/→ trocam de personagem • Enter começa • Esc volta');
+        ? t('Cada jogador: ←/→ troca | confirmar = pronto | todos prontos começa')
+        : t('←/→ trocam de personagem | Enter começa | Esc volta');
     count.textContent = countdown >= 0 ? t('Começando em {s}...', { s: Math.ceil(countdown) }) : '';
   }
 

@@ -107,6 +107,8 @@ export interface HazardOpts {
   defId?: string;
   /** Origem do dano quando o dono é um jogador. */
   source?: HitSource;
+  /** Quica nas bordas da faixa de profundidade. */
+  bounceZ?: boolean;
 }
 
 export function spawnHazard(w: World, o: HazardOpts): Entity {
@@ -132,6 +134,7 @@ export function spawnHazard(w: World, o: HazardOpts): Entity {
     pushX: o.pushX ?? 0,
     pushZ: o.pushZ ?? 0,
     ...(o.source ? { source: o.source } : {}),
+    ...(o.bounceZ ? { bounceZ: true } : {}),
   };
   const t = makeTransform(o.x, o.y ?? 0, o.z);
   t.vx = o.vx ?? 0;

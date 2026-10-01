@@ -1363,6 +1363,11 @@ a.btn {
 .cs-body .stat-row {
   font-size: 12px;
 }
+.cs-medkit {
+  margin: 0;
+  font-size: 12px;
+  color: #5aff9a;
+}
 .cs-h {
   margin: 6px 0 0;
   font-family: var(--title-font);

@@ -54,7 +54,7 @@ export function keyBindScreen(host: UiHost): Screen {
           data: { nav: '', action: a, slot: String(i) },
           onclick: () => listen(a, i),
         },
-        on ? t('Aperte uma tecla…') : code ? keyName(code) : '—',
+        on ? t('Aperte uma tecla...') : code ? keyName(code) : '?',
       );
     });
     return el(
@@ -77,7 +77,7 @@ export function keyBindScreen(host: UiHost): Screen {
 
   const listen = (a: Action, slot: number) => {
     listening = { action: a, slot };
-    status.textContent = t('Aperte a tecla nova para "{action}" • Esc cancela • Delete apaga', {
+    status.textContent = t('Aperte a tecla nova para "{action}" | Esc cancela | Delete apaga', {
       action: label(a),
     });
     host.playUi('ui_click');
@@ -132,7 +132,7 @@ export function keyBindScreen(host: UiHost): Screen {
       'p',
       { class: 'muted kb-note' },
       t(
-        'Mouse: botão esquerdo atira • botão direito solta o especial • a rodinha liga a corrida (até você parar).',
+        'Mouse: botão esquerdo atira | botão direito solta o especial | a rodinha liga a corrida (até você parar).',
       ),
     ),
     el(

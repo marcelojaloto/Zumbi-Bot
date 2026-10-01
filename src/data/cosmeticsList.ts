@@ -1,4 +1,5 @@
 import { PRICES, registerCosmetics } from './cosmeticsBase';
+import { hairWig } from './prodigyHair';
 import type { CosmeticDef, CosmeticSlot, MeshPart, Rarity } from './types';
 
 /**
@@ -419,22 +420,10 @@ export const COSMETIC_LIST: CosmeticDef[] = [
   ]),
 
   // ---------------------------------------------------------------- disfarce do Prodígio (vem com ele)
-  c(
-    'wig_black',
-    'Peruca Preta',
-    'head',
-    'secret',
-    'epic',
-    [
-      { shape: 'box', size: [0.34, 0.2, 0.36], pos: [0, 0.07, 0], color: 0x141414 },
-      { shape: 'box', size: [0.05, 0.22, 0.3], pos: [0.175, -0.07, -0.01], color: 0x141414 },
-      { shape: 'box', size: [0.05, 0.22, 0.3], pos: [-0.175, -0.07, -0.01], color: 0x141414 },
-      { shape: 'box', size: [0.34, 0.3, 0.06], pos: [0, -0.08, -0.165], color: 0x141414 },
-      { shape: 'box', size: [0.3, 0.06, 0.06], pos: [0, -0.01, 0.16], color: 0x1c1c1c },
-      { shape: 'box', size: [0.2, 0.025, 0.3], pos: [0.02, 0.172, 0], color: 0x2c2c30 },
-    ],
-    { desc: 'Disfarce do Prodígio.' },
-  ),
+  // (o id continua "wig_black" para não sumir dos saves de quem já tem)
+  c('wig_black', 'Peruca Castanho-Escura', 'head', 'secret', 'epic', hairWig(0x3b2415, 0x5a3a22), {
+    desc: 'Disfarce do Prodígio.',
+  }),
   c('lens_green', 'Lentes Verdes', 'eyes', 'secret', 'rare', lenses(0x3aa84a), {
     desc: 'Disfarce do Prodígio.',
   }),

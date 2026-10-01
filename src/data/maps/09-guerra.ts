@@ -10,7 +10,7 @@ export const guerra: MapDef = {
   id: 'guerra',
   index: 8,
   name: 'Campo de Guerra',
-  subtitle: 'A guerra acabou. Ninguém avisou os mortos — nem as máquinas',
+  subtitle: 'A guerra acabou. Ninguém avisou os mortos, nem as máquinas',
   color: 0xc8a86a,
   music: 'guerra',
   wizardBias: 0.3,

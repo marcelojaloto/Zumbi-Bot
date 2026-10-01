@@ -198,18 +198,32 @@ export class TouchControls {
 
   /**
    * Botões de armas do personagem: Atirar mostra o modo atual (arma de fogo ou cajado); Arma ⇄ Cajado só para
-   * quem usa os dois; o de trocar (com o ícone do cajado ou da arma) só com mais de um para escolher.
+   * quem usa os dois; o de trocar (com o ícone do cajado ou da arma) fica sempre, apagado com um só para escolher. Quem não usa
+   * cajado (`medkits` = quantas caixas de cura guardou) tem no lugar do ⇄ o botão ✚ que usa uma caixa.
    */
-  setArms(mode: 'gun' | 'staff', canToggle: boolean, choices: number): void {
-    const key = `${mode}|${canToggle}|${choices > 1}`;
+  setArms(mode: 'gun' | 'staff', canToggle: boolean, choices: number, medkits: number | null = null): void {
+    const key = `${mode}|${canToggle}|${choices > 1}|${medkits}`;
     if (key === this.armsKey) return;
     this.armsKey = key;
     const fire = this.btnEls.get('fire')!;
     fire.textContent = mode === 'staff' ? t('CONJURAR') : t('ATIRAR');
     fire.classList.toggle('staff', mode === 'staff');
-    this.btnEls.get('mode')!.hidden = !canToggle;
+    const toggle = this.btnEls.get('mode')!;
+    toggle.hidden = !canToggle && medkits === null;
+    toggle.classList.toggle('medkit', medkits !== null);
+    toggle.classList.toggle('empty', medkits === 0);
+    if (medkits !== null) {
+      toggle.innerHTML = '<span class="mk">✚</span><i class="mk-n"></i>';
+      toggle.querySelector('.mk-n')!.textContent = String(medkits);
+      toggle.setAttribute('aria-label', t('Usar caixa de cura'));
+    } else {
+      toggle.textContent = '⇄';
+      toggle.setAttribute('aria-label', t('Arma ⇄ Cajado'));
+    }
     const next = this.btnEls.get('next')!;
-    next.hidden = choices <= 1;
+    // sempre à mostra (com uma arma só, fica mais apagado até pegar outra)
+    next.hidden = false;
+    next.classList.toggle('single', choices <= 1);
     next.innerHTML = NEXT_ICON[mode];
     next.classList.toggle('staff', mode === 'staff');
     next.setAttribute('aria-label', mode === 'staff' ? t('Trocar de cajado') : t('Trocar de arma'));

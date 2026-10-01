@@ -16,6 +16,7 @@ import {
 import { getMap } from '../data/maps';
 import { ENEMIES } from '../data/enemies';
 import { CHARACTERS, HERO_ORDER, getCharacter } from '../data/characters';
+import { COSMETICS } from '../data/cosmetics';
 import { MOVES } from '../data/melee';
 import type { CharacterId } from '../data/types';
 import { makeFighter, makeTransform, type Entity } from '../sim/Entity';
@@ -27,6 +28,7 @@ import { characterRig, characterStyle } from './rig/characterRigs';
 import { J } from './rig/skeleton';
 import { CharacterView } from './views/CharacterView';
 import { CosmeticRig } from './views/Attachments';
+import { recipeMesh } from './meshCache';
 import { BlobShadows } from './fx/BlobShadows';
 
 /**
@@ -562,7 +564,7 @@ export class EndingScene {
   }
 
   /**
-   * Personagem secreto: um garoto de peruca preta e lentes verdes treina caratê na vila; num estalo de energia
+   * Personagem secreto: um garoto de peruca castanho-escura e lentes verdes treina caratê na vila; num estalo de energia
    * arcana, o disfarce voa longe (loiro, olhos azuis) e ele solta o Tornado Arcano, quebrando as tábuas do dojo.
    */
   private reveal(): void {
@@ -592,9 +594,11 @@ export class EndingScene {
           glow: 5,
         });
       }
-      const wig = this.mesh(this.box, 0x141414);
-      wig.scale.set(0.24, 0.14, 0.26);
+      // a própria peruca (mesmo penteado do cabelo, em castanho-escuro) sai voando
+      const wig = recipeMesh('cos:wig_black', COSMETICS.wig_black!.mesh);
+      wig.scale.setScalar(0.78 * 0.94);
       wig.position.copy(_v);
+      this.props.add(wig);
       const w0 = _v.clone();
       this.updaters.push((t) => {
         const k = t - 2.2;

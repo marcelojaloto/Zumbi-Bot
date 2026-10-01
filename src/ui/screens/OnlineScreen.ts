@@ -48,7 +48,7 @@ export function netErrorText(e: unknown): string {
       return t('Sem internet. Conecte-se e tente de novo.');
     case 'not-found':
       return t(
-        'Não existe sala com esse código. Confira as letras — a sala precisa estar aberta na tela de quem criou.',
+        'Não existe sala com esse código. Confira as letras: a sala precisa estar aberta na tela de quem criou.',
       );
     case 'full':
       return t('Essa sala já está cheia (5 jogadores).');
@@ -83,21 +83,21 @@ export function micHelp(p: Platform = platform()): string {
   switch (p) {
     case 'android-app':
       return t(
-        'Para liberar: Configurações do Android → Apps → Zumbi Bot → Permissões → Microfone → Permitir.',
+        'Para liberar: Configurações do Android > Apps > Zumbi Bot > Permissões > Microfone > Permitir.',
       );
     case 'ios-app':
-      return t('Para liberar: Ajustes do iPhone → Apps → Zumbi Bot → Microfone (ligado).');
+      return t('Para liberar: Ajustes do iPhone > Apps > Zumbi Bot > Microfone (ligado).');
     case 'ios-web':
       return t(
-        'Para liberar no iPhone: toque em "aA" na barra de endereço → Ajustes do Site → Microfone → Permitir (ou Ajustes → Apps → Safari → Microfone) e recarregue a página.',
+        'Para liberar no iPhone: toque em "aA" na barra de endereço > Ajustes do Site > Microfone > Permitir (ou Ajustes > Apps > Safari > Microfone) e recarregue a página.',
       );
     case 'android-web':
       return t(
-        'Para liberar: toque no ícone ao lado do endereço → Permissões → Microfone → Permitir, e recarregue a página.',
+        'Para liberar: toque no ícone ao lado do endereço > Permissões > Microfone > Permitir, e recarregue a página.',
       );
     default:
       return t(
-        'Para liberar: clique no ícone ao lado do endereço do site → Microfone → Permitir, e recarregue a página.',
+        'Para liberar: clique no ícone ao lado do endereço do site > Microfone > Permitir, e recarregue a página.',
       );
   }
 }
@@ -147,7 +147,7 @@ function levelLabel(mapId: string, levelIdx: number): string {
   const m = getMap(mapId);
   const l = m.levels[levelIdx];
   const map = m.index >= 0 ? `${m.index + 1}. ${t(m.name)}` : t(m.name);
-  return m.levels.length > 1 && l ? `${map} — ${levelIdx + 1}. ${t(l.name)}` : map;
+  return m.levels.length > 1 && l ? `${map}: ${levelIdx + 1}. ${t(l.name)}` : map;
 }
 
 /** Tela "Jogar online": criar uma sala ou entrar na sala de um amigo. */
@@ -231,7 +231,7 @@ export function createRoomScreen(host: OnlineHost): Screen {
     busy = true;
     go.disabled = true;
     status.className = 'online-status';
-    status.textContent = t('Criando a sala…');
+    status.textContent = t('Criando a sala...');
     host
       .createRoom({ difficulty, voice })
       .then(
@@ -325,7 +325,7 @@ export function joinScreen(host: OnlineHost, prefill?: string): Screen {
     busy = true;
     refresh();
     status.className = 'online-status';
-    status.textContent = t('Procurando a sala {code}…', { code });
+    status.textContent = t('Procurando a sala {code}...', { code });
     try {
       await host.joinRoom(code);
       busy = false;
@@ -502,7 +502,7 @@ export function roomScreen(host: OnlineHost): Screen {
         'div',
         { class: 'rp empty', style: `--pc:${color}` },
         tag,
-        el('span', { class: 'muted' }, t('Vaga livre — esperando alguém entrar…')),
+        el('span', { class: 'muted' }, t('Vaga livre, esperando alguém entrar...')),
       );
     const c = CHARACTERS[p.char];
     const you = p.slot === mySlot();
@@ -512,7 +512,7 @@ export function roomScreen(host: OnlineHost): Screen {
         ? el('span', { class: 'rp-state host' }, `👑 ${t('Anfitrião')}`)
         : p.ready
           ? el('span', { class: 'rp-state ok' }, `✓ ${t('Pronto')}`)
-          : el('span', { class: 'rp-state wait' }, t('Escolhendo…'));
+          : el('span', { class: 'rp-state wait' }, t('Escolhendo...'));
     return el(
       'div',
       { class: `rp${you ? ' you' : ''}`, style: `--pc:${color}`, data: { slot: String(p.slot) } },
@@ -547,7 +547,7 @@ export function roomScreen(host: OnlineHost): Screen {
     micBtn.hidden = !(r.voice && v);
     if (v) {
       micBtn.textContent = v.starting
-        ? `🎤 ${t('Ligando…')}`
+        ? `🎤 ${t('Ligando...')}`
         : v.micOn
           ? `🔇 ${t('Desligar microfone')}`
           : `🎤 ${t('Ligar microfone')}`;
@@ -629,7 +629,7 @@ export function roomScreen(host: OnlineHost): Screen {
     }
     // Fase como o Personagem: título centralizado em cima e, para o anfitrião, as setas nas pontas (alinhadas às
     // do personagem)
-    const label = r.mapId ? levelLabel(r.mapId, r.levelIdx) : '…';
+    const label = r.mapId ? levelLabel(r.mapId, r.levelIdx) : '...';
     stageText.replaceChildren(
       el('div', { class: 'room-me-title' }, t('Fase')),
       r.role === 'host'
@@ -659,9 +659,9 @@ export function roomScreen(host: OnlineHost): Screen {
       mainBtn.disabled = !r.allReady();
       status.textContent =
         r.guestCount === 0
-          ? t('Esperando os amigos entrarem com o código {code}…', { code })
+          ? t('Esperando os amigos entrarem com o código {code}...', { code })
           : waiting.length
-            ? t('Esperando {who} tocar em Pronto…', { who: waiting.join(', ') })
+            ? t('Esperando {who} tocar em Pronto...', { who: waiting.join(', ') })
             : t('Todos prontos! Toque em Começar.');
     } else {
       const ready = !!p?.ready;
@@ -671,7 +671,7 @@ export function roomScreen(host: OnlineHost): Screen {
       status.textContent =
         r.phase === 'lobby'
           ? ready
-            ? t('Tudo certo! Esperando o anfitrião ({p}) começar a partida…', { p: playerTag(r.hostSlot) })
+            ? t('Tudo certo! Esperando o anfitrião ({p}) começar a partida...', { p: playerTag(r.hostSlot) })
             : t('Escolha seu personagem e toque em Pronto.')
           : t('O anfitrião está terminando uma fase. Você entra na próxima!');
     }
@@ -775,7 +775,7 @@ export function roomScreen(host: OnlineHost): Screen {
         el(
           'li',
           {},
-          t('Cada um abre o Zumbi Bot, toca em "Jogar online" → "Entrar numa sala" e digita o código.'),
+          t('Cada um abre o Zumbi Bot, toca em "Jogar online" > "Entrar numa sala" e digita o código.'),
         ),
         el('li', {}, t('Todos escolhem o personagem e tocam em "Pronto". Aí é só tocar em "Começar"!')),
       )

@@ -177,6 +177,8 @@ export interface PlayerComp {
   fire: FirearmState;
   staffs: StaffId[];
   staffIdx: number;
+  /** Caixas de cura guardadas (quem não usa cajado): quanto cada uma cura, a última é a próxima a usar. */
+  medkits: number[];
   staffCd: Partial<Record<StaffId, number>>;
   castStaff: StaffId | null;
   /** O efeito da conjuração atual já foi liberado. */
@@ -320,6 +322,8 @@ export interface HazardComp {
   pushZ: number;
   /** Origem do dano quando o dono é um jogador. */
   source?: HitSource;
+  /** Quica nas bordas da faixa de profundidade em vez de sair da rua (ciclones do Prodígio). */
+  bounceZ?: boolean;
 }
 
 export interface PickupComp {
