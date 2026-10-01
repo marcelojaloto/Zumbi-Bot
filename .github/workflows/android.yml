@@ -1,4 +1,5 @@
 name: Android
+run-name: "Android: ${{ github.event.head_commit.message || github.event.pull_request.title || 'execução manual' }}"
 
 # Gera o app Android (Capacitor) a partir do mesmo jogo web. O site no GitHub Pages não muda.
 # - Sempre: APK instalável (artefato "zumbi-bot-apk").

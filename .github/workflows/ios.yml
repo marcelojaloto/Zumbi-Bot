@@ -1,4 +1,5 @@
 name: iOS
+run-name: "iOS: ${{ github.event.head_commit.message || github.event.pull_request.title || 'execução manual' }}"
 
 # Gera o app de iPhone (Capacitor) a partir do mesmo jogo web, num Mac do GitHub. O site não muda.
 # - Sempre: compila para o simulador, abre o app num iPhone simulado e tira uma foto da tela (prova que roda),
