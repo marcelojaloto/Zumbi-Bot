@@ -372,4 +372,11 @@ body.touch .crosshair {
   .t-mini {
     font-size: 16px;
   }
+  /* a dica sobe e o nome do chefe desce, para um não cobrir o outro na chegada ao chefe */
+  body.touch .hint {
+    top: 22%;
+  }
+  body.touch .banner {
+    top: 40%;
+  }
 }

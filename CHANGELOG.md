@@ -3,6 +3,11 @@
 O que mudou em cada versão do Zumbi Bot, da mais nova para a mais antiga. No app Android, o último número da
 versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter várias builds.
 
+## 1.6, atualização de 01/10/2026
+
+- No celular deitado, a dica "Chefe à frente!" não fica mais embaixo do nome do chefe: a dica sobe e o nome
+  desce um pouco.
+
 ## 1.6, atualização de 30/09/2026
 
 ### Prodígio (personagem secreto)
