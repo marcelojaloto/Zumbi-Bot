@@ -3,7 +3,7 @@ import { env } from '../env';
 import type { MapDef } from '../types';
 
 /**
- * Mapa 10 — Arena Final: o ninho do OMEGA-Z, onde restos de todos os mapas se misturam.
+ * Mapa 10 (Arena Final): o ninho do OMEGA-Z, onde restos de todos os mapas se misturam.
  * Cada trecho ecoa dois mapas anteriores (inimigos, perigos e cenário) até a arena do chefe final.
  */
 export const arena: MapDef = {

@@ -97,7 +97,7 @@ const cape = (col: number, col2: number, len = 1.1, width = 0.55): Partial<Cosme
 });
 
 export const COSMETIC_LIST: CosmeticDef[] = [
-  // ======================= MAGO — cabeça
+  // ======================= cabeça do MAGO
   c(
     'hat_apprentice',
     'Chapéu de Aprendiz',
@@ -157,7 +157,7 @@ export const COSMETIC_LIST: CosmeticDef[] = [
       glowIntensity: 3,
     },
   ]),
-  // ======================= ZUMBI — cabeça
+  // ======================= cabeça do ZUMBI
   c('cap_torn', 'Boné Rasgado', 'head', 'zombie', 'common', cap(0x8a2a2a, 0x6a1a1a, true)),
   c('cap_trucker', 'Boné de Caminhoneiro', 'head', 'zombie', 'common', cap(0x3a5a8a, 0xe8e8e8)),
   c('tophat_rotten', 'Cartola Podre', 'head', 'zombie', 'uncommon', [

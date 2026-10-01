@@ -37,7 +37,7 @@ export interface RoomPlayer {
   char: CharacterId;
   ready: boolean;
   level: number;
-  /** Id de voz (PeerJS) do aparelho — para a malha de áudio. */
+  /** Id de voz (PeerJS) do aparelho, usado na malha de áudio. */
   pid?: string;
   /** Microfone ligado. */
   mic?: boolean;

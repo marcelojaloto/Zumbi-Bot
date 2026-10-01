@@ -46,7 +46,7 @@ export function borrowLife(w: World, e: Entity): boolean {
 }
 
 /**
- * Online: quem saiu da sala sai da partida — o boneco some e os inimigos procuram outro alvo; os outros
+ * Online: quem saiu da sala sai da partida: o boneco some e os inimigos procuram outro alvo; os outros
  * continuam. Sem ninguém com vida ou vidas, a partida acaba.
  */
 export function removePlayer(w: World, e: Entity): void {

@@ -55,7 +55,7 @@ function endTag(victory: boolean, run: boolean): HTMLElement | null {
 
 /**
  * Ranking: abre no Ranking Pessoal (top 20 deste aparelho, com filtro por mapa e a carreira). O botão Ranking Global
- * (o melhor resultado de cada jogador/aparelho) só aparece quando o ranking global responde — fora do ar, some.
+ * (o melhor resultado de cada jogador/aparelho) só aparece quando o ranking global responde. Fora do ar, some.
  */
 export function rankingScreen(host: RankingHost): Screen {
   const prof = host.profile;

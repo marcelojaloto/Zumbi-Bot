@@ -2,7 +2,7 @@ import type { KeyLayout } from './keymap';
 
 /**
  * Dispositivo de entrada de um jogador local.
- * - auto: tudo junto (teclado + mouse + toque + 1º controle) — o jogo solo de sempre.
+ * - auto: tudo junto (teclado + mouse + toque + 1º controle), o jogo solo de sempre.
  * - kb: teclado inteiro (com mouse) ou metade dele (teclado dividido entre duas pessoas).
  * - pad: um controle específico (índice do navegador).
  * - touch: controles na tela.

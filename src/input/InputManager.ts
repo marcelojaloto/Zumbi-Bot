@@ -74,7 +74,7 @@ export class InputManager implements InputSource {
   gamepadConnected = false;
   onPause: (() => void) | null = null;
   onMap: (() => void) | null = null;
-  /** Liga/desliga o microfone (chat de voz online) — funciona também nos menus. */
+  /** Liga/desliga o microfone (chat de voz online). Funciona também nos menus. */
   onVoice: (() => void) | null = null;
   /** Ações de interface (tecla pressionada) ouvidas pelo menu. */
   onKeyDown: ((code: string, e: KeyboardEvent) => void) | null = null;

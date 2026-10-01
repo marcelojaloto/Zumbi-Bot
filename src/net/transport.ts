@@ -46,7 +46,7 @@ export interface Link {
 }
 
 /**
- * Este aparelho no serviço de conexão. Vive a sala inteira — mesmo se a conexão com o anfitrião cair: a voz
+ * Este aparelho no serviço de conexão. Vive a sala inteira, mesmo se a conexão com o anfitrião cair: a voz
  * continua e, se o anfitrião sair, um dos jogadores vira o novo anfitrião e os outros se conectam nele.
  */
 export interface Endpoint {
@@ -115,7 +115,7 @@ export function netRandom(): number {
 }
 
 /**
- * Transporte escolhido pela URL: `?net=local` (testes, abas do mesmo navegador) ou PeerJS — no serviço público
+ * Transporte escolhido pela URL: `?net=local` (testes, abas do mesmo navegador) ou PeerJS, no serviço público
  * ou em outro servidor (`?peer=host:porta/caminho`).
  */
 export async function createTransport(kind: 'peer' | 'local', server?: string | null): Promise<Transport> {

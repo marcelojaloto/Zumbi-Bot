@@ -19,7 +19,7 @@ export interface UrlFlags {
   net: 'peer' | 'local';
   /** Link de sala (?sala=ABCD): abre a tela de entrar com o código. */
   sala: string | null;
-  /** Outro servidor PeerJS (?peer=host:porta/caminho) — testes ou servidor próprio. */
+  /** Outro servidor PeerJS (?peer=host:porta/caminho), para testes ou servidor próprio. */
   peer: string | null;
   /** Testes: outro banco para o ranking global (?rankdb=https://...; só com ?debug=1). */
   rankdb: string | null;

@@ -88,7 +88,7 @@ class PeerLink implements Link {
 
 /**
  * Voz leve: Opus mono até 24 kbps, com DTX (não transmite nas pausas) e correção de perdas. Cada lado pede isso ao
- * outro no próprio SDP — sobra rede para o estado do jogo, que não trava quando a voz está ligada.
+ * outro no próprio SDP. Assim sobra rede para o estado do jogo, que não trava quando a voz está ligada.
  */
 export function tuneOpus(sdp: string): string {
   const m = /a=rtpmap:(\d+) opus\/48000[^\r\n]*/i.exec(sdp);
@@ -372,7 +372,7 @@ class PeerEndpoint implements Endpoint {
  * código (depois a conversa é direta entre eles, ou por um servidor de retransmissão quando a rede exige).
  */
 export class PeerTransport implements Transport {
-  /** `server`: outro servidor PeerJS ("host:porta/caminho", sem https) — testes ou servidor próprio. */
+  /** `server`: outro servidor PeerJS ("host:porta/caminho", sem https), para testes ou servidor próprio. */
   constructor(private server?: string | null) {}
 
   private options(): PeerOptions {

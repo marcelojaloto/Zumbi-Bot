@@ -1,7 +1,7 @@
 import type { Difficulty } from './types';
 
 /**
- * A câmera inclinada achata a profundidade: 1 m em Z aparece na tela menor que 1 m em X — ~3× no fundo da faixa
+ * A câmera inclinada achata a profundidade: 1 m em Z aparece na tela menor que 1 m em X, ~3× no fundo da faixa
  * e ~2,2× na frente (perspectiva). Para cima/para baixo anda essa razão mais rápido em metros e fica na mesma
  * velocidade na tela que para os lados, em qualquer profundidade; as diagonais ficam iguais também (um teste
  * confere a conta com a câmera de verdade).

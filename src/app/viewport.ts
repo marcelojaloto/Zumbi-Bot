@@ -9,7 +9,7 @@ export const HOLD_MS = 3000;
 
 /**
  * A tela encolheu "sozinha" (barra do navegador voltou ao sair da tela cheia, gesto de sair do app, janela de
- * instalar)? Então o jogo segura o tamanho antigo por um tempo em vez de se rearrumar na hora — quase sempre ela
+ * instalar)? Então o jogo segura o tamanho antigo por um tempo em vez de se rearrumar na hora: quase sempre ela
  * volta logo. Crescer, girar o aparelho, digitar (teclado na tela) e o computador reajustam na hora.
  */
 export function holdOnResize(

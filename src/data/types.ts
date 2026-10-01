@@ -216,7 +216,7 @@ export interface CharacterDef {
     /** Velocidade de recarga (>1 = mais rápida). */
     reload: number;
     /**
-     * Tempo de recarga da pistola (s) deste personagem — a pistola nunca acaba, então é a recarga que dita o
+     * Tempo de recarga da pistola (s) deste personagem. A pistola nunca acaba, então é a recarga que dita o
      * ritmo. Sem valor, vale o da própria pistola (o ciborgue, especialista em armas).
      */
     pistolReloadS?: number;
@@ -236,7 +236,7 @@ export interface CharacterDef {
   startMode: 'gun' | 'staff';
   /**
    * O que o personagem sabe usar: sem `guns` não atira (nem pega armas de fogo); sem `staff` não conjura nem bate
-   * com o cajado — mas os cajados ganhos ficam guardados no perfil para quem souber usar.
+   * com o cajado, mas os cajados ganhos ficam guardados no perfil para quem souber usar.
    */
   arms: { guns: boolean; staff: boolean };
   /** Corpo metálico (sons e faíscas ao apanhar). */

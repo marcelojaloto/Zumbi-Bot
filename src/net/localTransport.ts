@@ -70,7 +70,7 @@ class LocalEndpoint implements Endpoint {
 
 /**
  * Transporte local (testes automatizados): abas do mesmo navegador conversam por um BroadcastChannel.
- * Mesmo comportamento do PeerJS para o jogo — código de sala, conexões pelo id, mensagens em ordem e troca de
+ * Mesmo comportamento do PeerJS para o jogo: código de sala, conexões pelo id, mensagens em ordem e troca de
  * anfitrião (a porta do código muda de aparelho).
  */
 export class LocalTransport implements Transport {

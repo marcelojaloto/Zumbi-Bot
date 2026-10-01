@@ -282,7 +282,7 @@ export class HostRoom {
 
   /**
    * Estado para quem está na partida: as diferenças para todos, e um quadro completo (do mesmo tick) para quem
-   * pediu — depois dele, as próximas diferenças valem também para essa pessoa.
+   * pediu. Depois dele, as próximas diferenças valem também para essa pessoa.
    */
   sendSnap(w: World, s: SnapDelta, ev: GameEvent[]): void {
     let full: SnapDelta | null = null;

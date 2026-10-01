@@ -175,7 +175,7 @@ export class Profile {
   }
 
   /**
-   * Soma o mapa que acabou (vencido ou o da derrota) à jornada em andamento — começa uma nova se não houver.
+   * Soma o mapa que acabou (vencido ou o da derrota) à jornada em andamento, ou a uma nova se não houver.
    * A jornada só vai para o ranking quando o jogador perde todas as vidas ou termina o jogo ({@link closeRun}).
    */
   addToRun(stats: RunStats): CampaignRun {

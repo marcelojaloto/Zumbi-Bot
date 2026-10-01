@@ -234,7 +234,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     // fechando a aba ou o app no meio da sala: os outros ficam sabendo na hora (e um deles assume como anfitrião)
     addEventListener('pagehide', () => this.leaveRoomQuiet());
     // celular/tablet: se o navegador sair da tela cheia sem o jogador pedir (outra aba, outro app), o próximo
-    // toque volta para ela — sem a barra do navegador o jogo não se desarruma
+    // toque volta para ela, para o jogo não se desarrumar com a barra do navegador
     const refull = () => {
       if (this.wantFullscreen && !this.isFullscreen() && !document.hidden) this.toggleFullscreen(true);
     };

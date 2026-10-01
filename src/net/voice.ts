@@ -5,7 +5,7 @@ import type { VoiceCall, VoicePeer } from './transport';
 /**
  * Chat de voz da sala: todos falam com todos e todos ouvem todos. Cada par de aparelhos tem uma chamada de áudio
  * direta (malha); os dados do jogo continuam passando pelo anfitrião. A chamada é feita com uma trilha de silêncio
- * e, conectada, só manda áudio com o microfone ligado — mudo, não gasta rede nenhuma (a troca não religa as
+ * e, conectada, só manda áudio com o microfone ligado. Mudo, não gasta rede nenhuma (a troca não religa as
  * chamadas). A voz vai em Opus leve (ver `tuneOpus`), para não disputar a rede com o estado do jogo.
  */
 

@@ -7,7 +7,7 @@ import { registerBoss } from './index';
  * 1. Blindagem: couraça que resiste a balas e lâminas (mas conduz eletricidade), mísseis e laser.
  * 2. Carne Exposta: a couraça cai; o elemento gira a cada poucos segundos e muda todos os ataques.
  * 3. Colosso: cresce 30% e a arena encolhe em profundidade; pisões e varreduras.
- * 4. Núcleo: o núcleo pulsa, invoca zumbis e os absorve para se curar — mate-os antes!
+ * 4. Núcleo: o núcleo pulsa, invoca zumbis e os absorve para se curar. Mate-os antes!
  */
 
 const punch: MeleeMoveDef = {

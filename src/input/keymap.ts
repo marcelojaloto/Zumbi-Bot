@@ -289,7 +289,7 @@ export const KEY_NAMES_TO_TRANSLATE = ['Espaço', 'Shift esq.', 'Shift dir.', 'C
 
 /**
  * Nome curto de uma tecla (`KeyboardEvent.code`). `layout` (quando o navegador informa o teclado do jogador) mostra o
- * caractere impresso na tecla — num teclado ABNT2, "Semicolon" vira "Ç".
+ * caractere impresso na tecla (num teclado ABNT2, "Semicolon" vira "Ç").
  */
 export function keyLabel(code: string, layout?: ReadonlyMap<string, string> | null): string {
   const printed = layout?.get(code);

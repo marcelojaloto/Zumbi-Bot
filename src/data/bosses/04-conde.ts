@@ -51,7 +51,7 @@ const ceifa: MeleeMoveDef = {
 };
 MOVES[ceifa.id] = ceifa;
 
-/** Crânio uivante: lento e teleguiado — dá para correr dele ou desviar mudando de plano cedo. */
+/** Crânio uivante: lento e teleguiado. Dá para correr dele ou desviar mudando de plano cedo. */
 const cranio: ProjectileSpec = {
   visual: 'skull_necro',
   speed: 6.5,

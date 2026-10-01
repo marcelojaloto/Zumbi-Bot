@@ -2048,7 +2048,7 @@ a.btn {
     grid-template-columns: 1fr;
   }
 }
-/* celular deitado: tudo numa tela só (o QR some — no celular o link é enviado pelo botão) */
+/* celular deitado: tudo numa tela só (o QR some, porque no celular o link é enviado pelo botão) */
 @media (max-height: 520px) {
   .screen.room,
   .screen.online {

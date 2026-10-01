@@ -35,7 +35,7 @@ const POWER_ICONS = { doubleDamage: '✖2', turbo: '⚡', invulnerable: '🛡', 
 
 /**
  * Barras de energia no alto da tela, centralizadas: um painel por jogador (também no jogo solo), sem caixa nem
- * borda — só o nome na cor do jogador, as barras (vida, mana e XP), as vidas, a arma e os poderes. Cada painel tem
+ * borda: só o nome na cor do jogador, as barras (vida, mana e XP), as vidas, a arma e os poderes. Cada painel tem
  * largura fixa, calculada para caberem 5 jogadores entre os botões da esquerda e a pontuação (ver hud.css).
  * Sem vidas, mostra como pegar uma vida emprestada de um colega.
  */

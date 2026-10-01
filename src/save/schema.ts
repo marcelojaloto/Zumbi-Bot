@@ -48,7 +48,7 @@ export interface SaveV1 {
   stats: { kills: number; deaths: number; bosses: number; playTimeMs: number; runs: number };
   /**
    * ngPlus = Novo Jogo+ desbloqueado; ngPlusOn = ativo nas próximas partidas; credits = jogo terminado (créditos
-   * vistos) — também libera o personagem secreto.
+   * vistos), que também libera o personagem secreto.
    */
   flags: { ngPlus: boolean; ngPlusOn: boolean; tutorialDone: boolean; credits: boolean };
   /** Jornada em andamento: pontos somados mapa a mapa até perder todas as vidas ou terminar o jogo. */

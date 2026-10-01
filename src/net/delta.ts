@@ -33,7 +33,7 @@ export interface SnapDelta {
   r?: EntityId[];
 }
 
-/** Campos que a tela não usa (ou que o cliente recria) — não viajam pela rede. */
+/** Campos que a tela não usa (ou que o cliente recria): não viajam pela rede. */
 const STRIP: Record<string, readonly string[]> = {
   t: ['px', 'py', 'pz'],
   fighter: ['hitSet', 'buffer', 'bufferTicks'],
@@ -114,7 +114,7 @@ export function reduceEntity(e: Entity): Obj {
 
 /**
  * Dados do mundo fora das entidades: os que a tela usa e o progresso inteiro da fase (ondas, quem ainda vai
- * entrar...) — com eles, quem assume como anfitrião continua a fase de onde parou.
+ * entrar...). Com eles, quem assume como anfitrião continua a fase de onde parou.
  */
 export function worldMeta(w: World): Obj {
   return copy({

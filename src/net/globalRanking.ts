@@ -99,7 +99,7 @@ async function fetchJson(url: string, init?: RequestInit): Promise<unknown> {
 
 /**
  * Ranking global no Firebase (Realtime Database pela API REST, sem biblioteca): cada aparelho entra com uma conta
- * anônima e só pode escrever o próprio registro — o melhor do seu ranking pessoal. Qualquer falha (sem internet,
+ * anônima e só pode escrever o próprio registro: o melhor do seu ranking pessoal. Qualquer falha (sem internet,
  * banco fora do ar, projeto não configurado) deixa o ranking global escondido, sem atrapalhar o jogo.
  */
 export class GlobalRanking {
