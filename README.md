@@ -267,6 +267,10 @@ da conta Apple, assina e envia para o TestFlight. O passo a passo (conta, certif
 [docs/APP_STORE.md](docs/APP_STORE.md) e as capturas da App Store em [store/ios/](store/ios/)
 (`npm run store:shots:ios`).
 
+## Histórico de versões
+
+O que mudou em cada versão está em [CHANGELOG.md](CHANGELOG.md).
+
 ## Licença
 
 CC0 1.0, domínio público.
