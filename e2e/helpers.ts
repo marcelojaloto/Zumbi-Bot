@@ -49,7 +49,8 @@ export async function releaseVoice(page: Page): Promise<void> {
  */
 export async function openChest(page: Page, cont = 'Pegar prêmios'): Promise<void> {
   const chest = page.locator('.chest');
-  await chest.waitFor({ state: 'visible', timeout: 30_000 });
+  // depois do chefe final o fim da fase demora (câmera lenta e a espera até o resultado), e mais ainda no CI
+  await chest.waitFor({ state: 'visible', timeout: 120_000 });
   for (let i = 0; i < 3; i++) await chest.click({ force: true });
   await page.locator('.prize').first().waitFor({ state: 'visible' });
   const go = page.getByRole('button', { name: cont, exact: true });
