@@ -10,7 +10,7 @@ import type {
 } from '../data/types';
 import type { KeyMap } from '../input/keymap';
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 export const SETTINGS_VERSION = 2;
 export const RANKING_VERSION = 1;
 
@@ -21,8 +21,11 @@ export interface LevelProgress {
   stars: number;
 }
 
-export interface SaveV1 {
-  version: 1;
+/**
+ * v2: Oficina de cada personagem (melhorias compradas e especial escolhido).
+ */
+export interface SaveV2 {
+  version: 2;
   createdAt: number;
   updatedAt: number;
   /**
@@ -51,8 +54,17 @@ export interface SaveV1 {
    * vistos), que também libera o personagem secreto.
    */
   flags: { ngPlus: boolean; ngPlusOn: boolean; tutorialDone: boolean; credits: boolean };
+  /** Oficina: melhorias compradas e especial em uso, por personagem. */
+  workshop: Partial<Record<CharacterId, WorkshopState>>;
   /** Jornada em andamento: pontos somados mapa a mapa até perder todas as vidas ou terminar o jogo. */
   run?: CampaignRun;
+}
+
+/** Oficina de um personagem. */
+export interface WorkshopState {
+  perks: string[];
+  /** Especial em uso (id do golpe); sem ele, o especial original. */
+  special?: string;
 }
 
 /**
@@ -144,9 +156,9 @@ export interface RankingV1 {
   entries: RankEntry[];
 }
 
-export function defaultSave(now = 0): SaveV1 {
+export function defaultSave(now = 0): SaveV2 {
   return {
-    version: 1,
+    version: 2,
     createdAt: now,
     updatedAt: now,
     profile: { name: 'Zumbi Bot', level: 1, xp: 0, scrap: 0, character: 'robot' },
@@ -155,6 +167,7 @@ export function defaultSave(now = 0): SaveV1 {
     cosmetics: { owned: [], equipped: {}, seen: [], pity: 0 },
     stats: { kills: 0, deaths: 0, bosses: 0, playTimeMs: 0, runs: 0 },
     flags: { ngPlus: false, ngPlusOn: false, tutorialDone: false, credits: false },
+    workshop: {},
   };
 }
 

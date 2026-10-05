@@ -3,7 +3,7 @@ import {
   defaultSave,
   defaultSettings,
   type RankingV1,
-  type SaveV1,
+  type SaveV2,
   type SettingsV2,
 } from './schema';
 import {
@@ -120,7 +120,7 @@ export class Storage {
 
   constructor(readonly kv: KV = defaultKV()) {}
 
-  loadSave(now = Date.now()): LoadResult<SaveV1> {
+  loadSave(now = Date.now()): LoadResult<SaveV2> {
     const r = loadVersioned(kv(this), KEYS.save, VERSIONS.save, SAVE_MIGRATIONS, sanitizeSave, () =>
       defaultSave(now),
     );
@@ -128,7 +128,7 @@ export class Storage {
     return r;
   }
 
-  writeSave(s: SaveV1, now = Date.now()): boolean {
+  writeSave(s: SaveV2, now = Date.now()): boolean {
     if (this.saveReadOnly) return false;
     s.updatedAt = now;
     return write(this.kv, KEYS.save, s);

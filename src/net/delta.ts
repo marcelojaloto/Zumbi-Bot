@@ -50,6 +50,10 @@ const STRIP: Record<string, readonly string[]> = {
     'lastFireTick',
     'manaDelay',
     'aimTicks',
+    'prevMoveZ',
+    'zTapDir',
+    'zTapTick',
+    'dodgeCd',
   ],
   boss: [
     'steps',

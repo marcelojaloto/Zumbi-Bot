@@ -7,6 +7,8 @@ import { computeDamage } from './damage';
 import { applyStatus, removeStatus } from '../systems/status';
 import { characterDef, getPhaseResist, getResist, isBossEntity } from '../defs';
 import { onEntityKilled } from '../systems/deaths';
+import { incomingDefense, onGuardBlock } from '../systems/defense';
+import { playerPerks } from '../perks';
 
 export interface HitOpts {
   crit?: boolean;
@@ -35,7 +37,8 @@ export interface HitOpts {
 /** Multiplicador do personagem para a origem do dano (× fúria nos golpes corpo a corpo). */
 function characterMult(src: Entity, source: HitSource | undefined): number {
   if (!source || !src.player) return 1;
-  const m = characterDef(src).stats.dmg[source];
+  // força do personagem nessa origem de dano, mais o que a Oficina melhorou
+  const m = characterDef(src).stats.dmg[source] * (1 + playerPerks(src).dmg[source]);
   const rage =
     src.player.powers.rage > 0 && (source === 'melee' || source === 'weapon' || source === 'special')
       ? RAGE.melee
@@ -91,8 +94,14 @@ export function applyHit(
     return 0;
   }
 
+  // defesas da Oficina de quem apanha (Couraça e Guarda)
+  const def = incomingDefense(w, src, dst, {
+    x: opts.x,
+    dirX: opts.dirX,
+    continuous: !!opts.ignoreInvuln || !!opts.noReact,
+  });
   const res = computeDamage({
-    base: hit.damage * (opts.mult ?? 1),
+    base: hit.damage * (opts.mult ?? 1) * def.mult,
     dtype: hit.dtype,
     falloffMult: opts.falloff,
     crit: opts.crit,
@@ -185,6 +194,11 @@ export function applyHit(
     return res.total;
   }
 
+  // bloqueado pela Guarda: sem status, sem cair; só recua um pouco
+  if (def.blocked) {
+    onGuardBlock(w, dst, dir(src, dst, opts).x);
+    return res.total;
+  }
   if (hit.status) applyStatus(w, dst, hit.status, src?.id ?? 0);
   if (!opts.noReact) react(w, src, dst, hit, opts);
   return res.total;

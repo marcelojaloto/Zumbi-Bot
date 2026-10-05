@@ -48,6 +48,19 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   antigo Difícil virou o Insano.
 - Quem já jogava vai para o novo Normal (quem estava no Muito fácil, para o Fácil).
 
+### Oficina
+
+- Nova tela **Oficina** no menu: escolha o personagem e veja a árvore de melhorias dele, em quatro ramos. Cada
+  melhoria libera com XP (a soma de tudo o que o jogador já ganhou) e se compra com sucata; algumas pedem a
+  anterior do mesmo ramo.
+- **Atributos** em três níveis (vigor, força, agilidade, energia e pontaria ou magia), ponderados pelos limites de
+  cada personagem.
+- **Combos** novos, dois por personagem: J depois do uppercut (ou do terceiro golpe do cajado) e K, K.
+- **Especiais** novos, dois por personagem; só um fica em uso, escolhido na Oficina. Entre eles, Pulso EMP,
+  Chuva de Meteoros, Ataque Aéreo, Canhão de Plasma, Salto Sísmico e Palma do Dragão.
+- **Defesas**: esquiva (toque duplo para cima ou para baixo), guarda (bloqueia golpes e tiros de frente), couraça,
+  escudo de energia que recarrega e contra-golpe.
+
 ## 1.6, atualização de 01/10/2026
 
 - No celular deitado, a dica "Chefe à frente!" não fica mais embaixo do nome do chefe: a dica sobe e o nome

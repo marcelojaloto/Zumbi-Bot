@@ -196,6 +196,16 @@ export interface PlayerComp {
   mash: number;
   god: boolean;
   lastFireTick: number;
+  /** Melhorias da Oficina (ids) e o especial em uso (id do golpe). */
+  perks: string[];
+  special: string;
+  /** Esquiva da Oficina: ticks da esquiva em andamento e espera até a próxima. */
+  dodge: number;
+  dodgeCd: number;
+  /** Toque duplo em profundidade (esquiva): último sentido e tick, e o eixo Z do tick anterior. */
+  zTapDir: number;
+  zTapTick: number;
+  prevMoveZ: number;
 }
 
 export type AiMode = 'approach' | 'wait' | 'windup' | 'attack' | 'recover' | 'retreat' | 'spawn' | 'idle';

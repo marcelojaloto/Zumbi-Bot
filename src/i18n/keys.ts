@@ -7,6 +7,7 @@ import { MELEE_WEAPONS } from '../data/melee';
 import { ITEMS } from '../data/items';
 import { COSMETICS, RARITY_NAMES } from '../data/cosmetics';
 import { CHARACTERS } from '../data/characters';
+import { ATTRS, DEFENSE_DESC, PERKS } from '../data/workshop';
 
 /**
  * Todos os textos de dados que aparecem na tela (chaves do dicionário). Usado pelo teste de cobertura
@@ -57,6 +58,13 @@ export function dataKeys(): string[] {
     if (c.ending.title) add(c.ending.title);
     add(c.ending.text);
   }
+  // Oficina
+  for (const p of PERKS) {
+    add(p.name);
+    add(p.desc);
+  }
+  for (const a of Object.values(ATTRS)) add(a.name);
+  for (const d of Object.values(DEFENSE_DESC)) add(d);
   return [...out];
 }
 

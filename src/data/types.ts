@@ -179,7 +179,12 @@ export type MoveEffect =
    * Ciclones que saem girando em todas as direções (tornado do Prodígio): `count` redemoinhos a `speed` m/s por
    * `ticks` quadros; cada um acerta uma vez quem encontrar e quica nas bordas da rua.
    */
-  | { k: 'cyclones'; count: number; speed: number; r: number; ticks: number; hit: HitSpec; fx: string };
+  | { k: 'cyclones'; count: number; speed: number; r: number; ticks: number; hit: HitSpec; fx: string }
+  /**
+   * Projéteis que caem do céu à frente (meteoros da Maga, ataque aéreo do Militar): `count` quedas espalhadas
+   * entre `dist[0]` e `dist[1]` metros à frente, cada uma avisada por um círculo no chão `delayS` antes.
+   */
+  | { k: 'meteors'; count: number; dist: [number, number]; delayS: [number, number]; spec: ProjectileSpec };
 
 // ---------------------------------------------------------------------------
 // Personagens jogáveis

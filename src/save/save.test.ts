@@ -30,7 +30,7 @@ describe('save', () => {
     kv.setItem(KEYS.save, JSON.stringify({ level: 7 }));
     const r = new Storage(kv).loadSave();
     expect(r.migratedFrom).toBe(0);
-    expect(r.data.version).toBe(1);
+    expect(r.data.version).toBe(2);
     expect(r.data.profile.level).toBe(7);
     expect(kv.getItem(`${KEYS.save}:bak`)).not.toBeNull();
   });

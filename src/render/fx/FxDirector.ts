@@ -476,6 +476,14 @@ export class FxDirector {
           }
           break;
         }
+        // defesas da Oficina: poeira na esquiva e faíscas no bloqueio
+        case 'dodge':
+          this.smoke(ev.x, 0.2, ev.z, 5, 0.45, 0xb8b0a0, 0.8);
+          break;
+        case 'guard':
+          this.burst(ev.x, ev.y, ev.z, 12, 0x9fe8ff, 4, 0.09, 0.3, true, 4, 4);
+          this.flash(ev.x, ev.y, ev.z, 0x9fe8ff, 6, 4, 0.15, 2);
+          break;
         case 'interaction': {
           const e = w.get(ev.id);
           if (!e) break;

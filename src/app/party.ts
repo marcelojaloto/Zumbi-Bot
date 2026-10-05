@@ -1,6 +1,6 @@
 import type { CharacterId } from '../data/types';
 import type { DeviceRef } from '../input/devices';
-import { totalXp } from '../sim/level/LevelRunner';
+import { totalXp } from '../data/balance';
 import type { PlayerComp, PlayerSlot } from '../sim/Entity';
 import type { World } from '../sim/World';
 

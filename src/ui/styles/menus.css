@@ -2264,3 +2264,81 @@ a.btn {
 .controls-screen .panel > .row-btns {
   margin-top: 12px;
 }
+
+/* ------------------------------------------------------------------ Oficina (árvore de melhorias) */
+.ws-wallet {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.ws-xp {
+  color: #9fe8ff;
+  font-weight: 700;
+}
+.ws-intro {
+  margin: 0 0 8px;
+  font-size: 12px;
+}
+/* atributos: nome e os três níveis ligados por uma linha */
+.ws-row {
+  display: grid;
+  grid-template-columns: 92px 1fr 14px 1fr 14px 1fr;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 8px;
+}
+.ws-attr {
+  font-size: 13px;
+  color: var(--cc);
+}
+.ws-link {
+  display: block;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 2px;
+}
+/* combos, especiais e defesas: um nível embaixo do outro */
+.ws-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  max-width: 420px;
+}
+.ws-link.down {
+  width: 3px;
+  height: 14px;
+  margin: 0 auto;
+}
+.ws-node {
+  --rc: rgba(255, 255, 255, 0.25);
+}
+.ws-node .ws-st {
+  font-weight: 700;
+}
+.ws-node.owned {
+  --rc: var(--cc);
+  background: linear-gradient(160deg, #233046, #141a26);
+}
+.ws-node.owned .ws-st {
+  color: var(--cc);
+}
+.ws-node.available {
+  --rc: #ffd24a;
+}
+.ws-node.available .ws-st {
+  color: #ffd24a;
+}
+.ws-node.locked {
+  opacity: 0.6;
+}
+.ws-node.locked .ws-st {
+  color: var(--muted);
+}
+@media (max-width: 800px) {
+  .ws-row {
+    grid-template-columns: 70px 1fr 8px 1fr 8px 1fr;
+  }
+  .ws-node b {
+    font-size: 12px;
+  }
+}

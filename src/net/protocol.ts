@@ -100,7 +100,8 @@ export interface StartMsg {
 export type GuestMsg =
   /** `rejoin`: voltando para o novo anfitrião (troca de anfitrião), com o mesmo número de jogador. */
   | { t: 'hello'; v: number; lo: PlayerLoadout; rejoin?: PlayerSlot }
-  | { t: 'pick'; char: CharacterId; ready: boolean }
+  /** `lo`: o equipamento do personagem novo (Oficina), quando ele trocou de personagem. */
+  | { t: 'pick'; char: CharacterId; ready: boolean; lo?: PlayerLoadout }
   | { t: 'in'; f: PackedInput }
   /** Terminou de carregar a fase. */
   | { t: 'loaded' }
@@ -175,10 +176,13 @@ export function sanitizeLoadout(raw: unknown, slot: PlayerSlot): PlayerLoadout {
     unlocks: { firearms: lo.guns, staffs: lo.staffs },
     cosmetics: { owned: lo.ownedCosmetics, equipped: lo.cosmetics, pity: lo.pity },
   });
+  // Oficina do personagem escolhido: só melhorias dele e um especial que elas liberam
+  const c = s.profile.character;
+  const ws = sanitizeSave({ workshop: { [c]: { perks: lo.perks, special: lo.special } } }).workshop[c];
   return {
     slot,
     name: s.profile.name,
-    character: s.profile.character,
+    character: c,
     level: s.profile.level,
     xp: s.profile.xp,
     guns: s.unlocks.firearms,
@@ -186,5 +190,7 @@ export function sanitizeLoadout(raw: unknown, slot: PlayerSlot): PlayerLoadout {
     cosmetics: s.cosmetics.equipped,
     pity: s.cosmetics.pity,
     ownedCosmetics: s.cosmetics.owned,
+    perks: ws?.perks ?? [],
+    ...(ws?.special ? { special: ws.special } : {}),
   };
 }

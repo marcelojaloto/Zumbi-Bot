@@ -83,6 +83,18 @@ export function xpToNext(level: number): number {
   return Math.floor(100 * Math.pow(level, 1.5));
 }
 
+/** XP somado para chegar a um nível (do nível 1 até lá). */
+export function xpForLevel(level: number): number {
+  let n = 0;
+  for (let l = 1; l < level; l++) n += xpToNext(l);
+  return n;
+}
+
+/** XP total já ganho (nível atual e o XP dentro dele). */
+export function totalXp(level: number, xp: number): number {
+  return xpForLevel(level) + xp;
+}
+
 /** Vida máxima no nível; `base` = vida do personagem no nível 1 (robô: 100). */
 export function maxHpForLevel(level: number, base: number = PLAYER.hp): number {
   return base + PLAYER.hpPerLevel * (level - 1);

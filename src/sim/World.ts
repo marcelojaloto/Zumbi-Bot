@@ -29,6 +29,9 @@ export interface PlayerLoadout {
   cosmetics: Partial<Record<CosmeticSlot, CosmeticId>>;
   pity: number;
   ownedCosmetics: CosmeticId[];
+  /** Melhorias da Oficina do personagem e o especial em uso (sem ele, o original). */
+  perks?: string[];
+  special?: string;
 }
 
 export interface WorldOptions {

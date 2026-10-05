@@ -960,4 +960,130 @@ export const EN: Record<string, string> = {
   'Sem caixas de cura': 'No health kits',
   'Vida cheia': 'Health is full',
   'Usar caixa de cura': 'Use health kit',
+  // ------------------------------------------------------------------ Oficina, loja, baú e continuação
+  // Oficina: atributos
+  Oficina: 'Workshop',
+  OFICINA: 'WORKSHOP',
+  Atributos: 'Attributes',
+  Especiais: 'Specials',
+  Defesas: 'Defenses',
+  Vigor: 'Vigor',
+  Agilidade: 'Agility',
+  Energia: 'Energy',
+  Pontaria: 'Marksmanship',
+  '+{n} de vida': '+{n} health',
+  '+{n} de mana': '+{n} mana',
+  '+{n}% de recuperação de mana': '+{n}% mana recovery',
+  '+{n}% de dano em golpes, armas brancas e especial': '+{n}% damage with strikes, melee weapons and special',
+  '+{n}% de dano com armas de fogo': '+{n}% firearm damage',
+  '+{n}% de dano com cajados': '+{n}% staff damage',
+  '+{n}% de velocidade': '+{n}% speed',
+  '+{n}% de pulo': '+{n}% jump',
+  '+{n}% de velocidade de recarga': '+{n}% reload speed',
+  'Cada personagem cresce mais no que já é bom e menos no que é fraco.':
+    'Each character grows more in what they are good at and less in what they are weak at.',
+  'Melhorias liberam com XP e se compram com sucata. Cada personagem tem a própria árvore.':
+    'Upgrades unlock with XP and are bought with scrap. Each character has their own tree.',
+  'XP total: {n}': 'Total XP: {n}',
+  Comprado: 'Owned',
+  'Antes: {name}': 'First: {name}',
+  '{n} XP': '{n} XP',
+  'Em uso': 'In use',
+  Original: 'Original',
+  'Usar este especial': 'Use this special',
+  '{name} em uso.': '{name} in use.',
+  'Compre antes: {name}': 'Buy first: {name}',
+  'Libera com {need} XP (você tem {have})': 'Unlocks at {need} XP (you have {have})',
+  '{name} liberado!': '{name} unlocked!',
+  'Custa {n} de mana': 'Costs {n} mana',
+  // Oficina: combos, especiais e defesas
+  'Pistão Turbo': 'Turbo Piston',
+  'J depois do uppercut: um soco de pistão que arremessa o inimigo longe.':
+    'J after the uppercut: a piston punch that sends the enemy flying.',
+  'Chute Foguete': 'Rocket Kick',
+  'K, K: o segundo chute vira uma voadora com propulsão.':
+    'K, K: the second kick turns into a jet-powered flying kick.',
+  'Pulso EMP': 'EMP Pulse',
+  'Explosão elétrica em volta que atordoa todo mundo, e uma onda que corre pelo chão.':
+    'An electric blast around you that stuns everyone, plus a wave that runs along the ground.',
+  'Míssil Teleguiado': 'Homing Missile',
+  'Dispara um míssil que persegue o inimigo mais próximo e explode.':
+    'Fires a missile that chases the nearest enemy and explodes.',
+  'Blindagem Frontal': 'Front Plating',
+  'Às vezes bloqueia golpes e tiros de frente (quando não está atacando): leva só um quarto do dano e não cai.':
+    'Sometimes blocks strikes and shots from the front (when not attacking): takes only a quarter of the damage and stays standing.',
+  'Escudo de Bateria': 'Battery Shield',
+  'Começa cada fase com um escudo de energia, que se recarrega sozinho depois de um tempo sem apanhar.':
+    'Starts every stage with an energy shield, which recharges by itself after a while without taking hits.',
+  'Palma Arcana': 'Arcane Palm',
+  'J no fim do combo (depois do uppercut ou do terceiro golpe do cajado): uma rajada arcana que pode atordoar.':
+    'J at the end of the combo (after the uppercut or the third staff strike): an arcane blast that may stun.',
+  'Giro do Manto': 'Cloak Spin',
+  'K, K: um giro com o manto em chamas.': 'K, K: a spin with a burning cloak.',
+  'Chuva de Meteoros': 'Meteor Shower',
+  'Meteoros de fogo caem à frente, cada um avisado por um círculo no chão.':
+    'Fire meteors fall ahead of you, each one marked by a circle on the ground.',
+  'Prisão de Gelo': 'Ice Prison',
+  'Congela quem estiver em volta.': 'Freezes everyone around you.',
+  'Passo Etéreo': 'Ethereal Step',
+  'Toque duas vezes para cima ou para baixo: uma esquiva rápida em profundidade, sem levar dano.':
+    'Tap up or down twice: a quick dodge in depth, taking no damage.',
+  'Barreira Arcana': 'Arcane Barrier',
+  'Marreta Dupla': 'Double Hammer',
+  'J depois do uppercut: soca o chão com as duas mãos e derruba todos em volta.':
+    'J after the uppercut: pounds the ground with both fists and knocks down everyone around.',
+  Rasteira: 'Leg Sweep',
+  'K, K: uma rasteira que derruba.': 'K, K: a sweep that trips enemies.',
+  'Ataque Aéreo': 'Air Strike',
+  'Pede mísseis pelo rádio: eles caem à frente, cada um avisado por um círculo no chão.':
+    'Calls in missiles by radio: they fall ahead of you, each one marked by a circle on the ground.',
+  'Escudo Tático': 'Tactical Shield',
+  'Fica invencível por alguns segundos e empurra quem estiver colado.':
+    'Becomes invincible for a few seconds and pushes back anyone up close.',
+  'Guarda Tática': 'Tactical Guard',
+  'Colete Reforçado': 'Reinforced Vest',
+  'Leva 15% menos dano de tudo.': 'Takes 15% less damage from everything.',
+  'Soco de Plasma': 'Plasma Punch',
+  'J depois do uppercut: um soco elétrico que ainda dispara um tiro de plasma.':
+    'J after the uppercut: an electric punch that also fires a plasma shot.',
+  'Chute Servo': 'Servo Kick',
+  'K, K: chutes em sequência, rápidos como uma metralhadora.': 'K, K: kicks in a row, fast as a machine gun.',
+  Sobrecarga: 'Overload',
+  'Dano dobrado por 7 segundos e um choque em volta.': 'Double damage for 7 seconds and a shock around you.',
+  'Canhão de Plasma': 'Plasma Cannon',
+  'Um tiro de plasma enorme que atravessa vários inimigos.':
+    'A huge plasma shot that goes through several enemies.',
+  Propulsores: 'Thrusters',
+  'Campo de Força': 'Force Field',
+  'Garra Dupla': 'Twin Claws',
+  'J depois do uppercut: garras envenenadas.': 'J after the uppercut: poisoned claws.',
+  'Investida Mutante': 'Mutant Rush',
+  'K, K: atropela quem estiver na frente.': 'K, K: runs over anyone in front.',
+  'Salto Sísmico': 'Seismic Leap',
+  'Bate no chão e solta uma onda de choque que derruba quem estiver no chão.':
+    'Slams the ground and sends out a shockwave that knocks down anyone on the ground.',
+  'Nuvem Tóxica': 'Toxic Cloud',
+  'Solta uma nuvem venenosa em volta por alguns segundos.':
+    'Releases a poison cloud around you for a few seconds.',
+  'Couro Grosso': 'Thick Hide',
+  'Braço Escudo': 'Shield Arm',
+  'Punho do Dragão': 'Dragon Fist',
+  'J no fim do combo (depois do uppercut ou do terceiro golpe do cajado): um soco arcano que lança o inimigo alto.':
+    'J at the end of the combo (after the uppercut or the third staff strike): an arcane punch that launches the enemy high.',
+  'Chute Meia-Lua': 'Crescent Kick',
+  'K, K: um chute giratório que acerta dos dois lados.': 'K, K: a spinning kick that hits both sides.',
+  'Palma do Dragão': 'Dragon Palm',
+  'Uma bola de fogo arcano gigante que atravessa inimigos e explode.':
+    'A giant arcane fireball that goes through enemies and explodes.',
+  'Chute Lunar': 'Lunar Kick',
+  'Gira em chutes de vento que lançam os inimigos e soltam ciclones.':
+    'Spins in wind kicks that launch enemies and release cyclones.',
+  'Esquiva do Dojo': 'Dojo Dodge',
+  'Contra-golpe': 'Counterstrike',
+  'Depois de uma esquiva ou de um bloqueio, o próximo golpe dá o dobro de dano.':
+    'After a dodge or a block, the next strike deals double damage.',
+  BLOQUEIO: 'BLOCKED',
+  'Esquiva (defesa da Oficina)': 'Dodge (Workshop defense)',
+  'Direcional: 2× ↑ ou ↓': 'D-pad: 2× ↑ or ↓',
+  'Esquiva em profundidade (com a defesa da Oficina)': 'Dodge in depth (with the Workshop defense)',
 };

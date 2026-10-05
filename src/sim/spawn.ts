@@ -1,5 +1,7 @@
-import { MEDKITS, PLAYER, maxHpForLevel, maxManaForLevel } from '../data/balance';
+import { MEDKITS, PLAYER } from '../data/balance';
 import { getCharacter } from '../data/characters';
+import { DEFENSE, perkEffects } from '../data/workshop';
+import { chosenSpecial, playerMaxHp, playerMaxMana } from './perks';
 import type { AmmoType } from '../data/types';
 import { makeFighter, makeHealth, makeTransform, type Entity, type PlayerComp } from './Entity';
 import type { PlayerLoadout, World } from './World';
@@ -11,7 +13,8 @@ export function emptyAmmo(): Record<AmmoType, number> {
 
 export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
   const ch = getCharacter(lo.character);
-  const manaMax = maxManaForLevel(lo.level, ch.stats.mana);
+  const perks = [...(lo.perks ?? [])];
+  const manaMax = playerMaxMana(ch.id, lo.level, perks);
   return {
     slot: lo.slot,
     name: lo.name,
@@ -81,6 +84,13 @@ export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
     mash: 0,
     god: false,
     lastFireTick: -999,
+    perks,
+    special: chosenSpecial(ch.id, perks, lo.special),
+    dodge: 0,
+    dodgeCd: 0,
+    zTapDir: 0,
+    zTapTick: -999,
+    prevMoveZ: 0,
   };
 }
 
@@ -107,11 +117,13 @@ export function spawnPlayer(w: World, lo: PlayerLoadout): Entity {
       grounded: true,
       gravityScale: 1,
     },
-    health: makeHealth(maxHpForLevel(lo.level, ch.stats.hp), 0),
+    health: makeHealth(playerMaxHp(ch.id, lo.level, lo.perks), 0),
     fighter: makeFighter('idle'),
     statuses: [],
     player: makePlayerComp(lo),
   });
   initAmmo(e.player!);
+  // escudo de energia da Oficina: já começa a fase carregado
+  if (perkEffects(ch.id, lo.perks).defenses.has('shield')) e.health!.shield = DEFENSE.shield.max;
   return e;
 }

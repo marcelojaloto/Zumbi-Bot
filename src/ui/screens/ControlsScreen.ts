@@ -23,6 +23,7 @@ export const ROWS: [string, string[], string][] = [
   ['Arma / cajado anterior e próximo', ['@prev', '@next'], 'LB / RB'],
   ['Modo arma de fogo / cajado', ['@modeGun', '@modeStaff'], 'D-pad ↑'],
   ['Caixa de cura guardada (quem não usa cajado)', ['@modeStaff'], 'D-pad ↑'],
+  ['Esquiva (defesa da Oficina)', ['2× ↑ ↓'], '2× ↑ ↓'],
   ['Mapa ampliado', ['@map'], 'Back'],
   ['Pausa', ['Esc', '@pause'], 'Start'],
 ];
@@ -41,6 +42,7 @@ export const TOUCH_ROWS: [string, string][] = [
   ['⇄', 'Alterna entre arma de fogo e cajado (só quem usa os dois)'],
   ['✚', 'Usa uma caixa de cura guardada (Militar, Ciborgue e Mutante, no lugar do ⇄)'],
   ['⟳', 'Troca de cajado (no modo arma, de arma); fica à direita do ⇄'],
+  ['Direcional: 2× ↑ ou ↓', 'Esquiva em profundidade (com a defesa da Oficina)'],
   ['⏸', 'Pausa'],
   ['🗺', 'Mostra ou esconde o minimapa'],
 ];

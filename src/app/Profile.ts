@@ -1,5 +1,6 @@
 import { t } from '../i18n';
-import { PLAYER, xpToNext } from '../data/balance';
+import { PLAYER, totalXp, xpForLevel, xpToNext } from '../data/balance';
+import { PERK_BY_ID, specialsOf } from '../data/workshop';
 import { getMap, MAPS } from '../data/maps';
 import { STAFFS } from '../data/staffs';
 import { getCharacter, playableCharacters } from '../data/characters';
@@ -7,7 +8,7 @@ import type { CharacterId, CosmeticId, CosmeticSlot, StaffId, WeaponId } from '.
 import { COSMETICS, SECRET_GIFTS, SELL_VALUE } from '../data/cosmetics';
 import { Rng } from '../core/rng';
 import { insertRank } from '../save/ranking';
-import type { CampaignRun, RankEntry, RankingV1, SaveV1, SettingsV2 } from '../save/schema';
+import type { CampaignRun, RankEntry, RankingV1, SaveV2, SettingsV2 } from '../save/schema';
 import { Storage } from '../save/storage';
 import type { RunStats } from '../sim/events';
 import type { PlayerLoadout } from '../sim/World';
@@ -15,7 +16,7 @@ import type { PlayerLoadout } from '../sim/World';
 /** Estado persistente do jogador (progresso, configurações e ranking) e regras de desbloqueio. */
 export class Profile {
   readonly storage: Storage;
-  save: SaveV1;
+  save: SaveV2;
   settings: SettingsV2;
   ranking: RankingV1;
   notices: string[] = [];
@@ -77,13 +78,19 @@ export class Profile {
     this.storage.writeSettings(this.settings);
   }
 
-  loadout(): PlayerLoadout {
+  /**
+   * Equipamento para a partida: o personagem escolhido (ou `character`, no multijogador local), com a Oficina
+   * dele.
+   */
+  loadout(character?: CharacterId): PlayerLoadout {
     const s = this.save;
+    // o secreto só entra depois de liberado
+    const ch = character ?? (this.roster.includes(s.profile.character) ? s.profile.character : 'robot');
+    const ws = s.workshop[ch];
     return {
       slot: 0,
       name: s.profile.name,
-      // o secreto só entra depois de liberado
-      character: this.roster.includes(s.profile.character) ? s.profile.character : 'robot',
+      character: ch,
       level: s.profile.level,
       xp: s.profile.xp,
       guns: [...s.unlocks.firearms] as WeaponId[],
@@ -91,6 +98,8 @@ export class Profile {
       cosmetics: { ...s.cosmetics.equipped },
       pity: s.cosmetics.pity,
       ownedCosmetics: [...s.cosmetics.owned],
+      perks: [...(ws?.perks ?? [])],
+      ...(ws?.special ? { special: ws.special } : {}),
     };
   }
 
@@ -305,6 +314,60 @@ export class Profile {
     this.save.profile.scrap += SELL_VALUE[c.rarity];
     this.persist();
     return true;
+  }
+
+  // ------------------------------------------------------------ Oficina
+  /** Gasta sucata (false se não tem o bastante). */
+  private spend(price: number): boolean {
+    if (this.save.profile.scrap < price) return false;
+    this.save.profile.scrap -= price;
+    return true;
+  }
+
+  /** XP total já ganho (libera as melhorias). */
+  get totalXp(): number {
+    return totalXp(this.save.profile.level, this.save.profile.xp);
+  }
+
+  perksOf(c: CharacterId): string[] {
+    return this.save.workshop[c]?.perks ?? [];
+  }
+
+  /**
+   * Situação de uma melhoria: comprada, disponível (dá para comprar, se houver sucata), sem XP suficiente ou
+   * esperando a anterior do mesmo ramo.
+   */
+  perkStatus(id: string): 'owned' | 'available' | 'xp' | 'requires' {
+    const p = PERK_BY_ID[id];
+    if (!p) return 'requires';
+    const mine = this.perksOf(p.character);
+    if (mine.includes(id)) return 'owned';
+    if (p.requires && !mine.includes(p.requires)) return 'requires';
+    if (this.totalXp < xpForLevel(p.level)) return 'xp';
+    return 'available';
+  }
+
+  /** Compra uma melhoria da Oficina (XP suficiente, a anterior comprada e sucata). Especial novo já fica em uso. */
+  buyPerk(id: string): boolean {
+    const p = PERK_BY_ID[id];
+    if (!p || this.perkStatus(id) !== 'available' || !this.spend(p.price)) return false;
+    const ws = (this.save.workshop[p.character] ??= { perks: [] });
+    ws.perks.push(id);
+    if (p.special) ws.special = p.special;
+    this.persist();
+    return true;
+  }
+
+  /** Especial em uso do personagem (null ou o original = o original). */
+  chooseSpecial(c: CharacterId, move: string | null): void {
+    const ws = (this.save.workshop[c] ??= { perks: [] });
+    if (move && specialsOf(c, ws.perks).slice(1).includes(move)) ws.special = move;
+    else delete ws.special;
+    this.persistSoon();
+  }
+
+  specialOf(c: CharacterId): string {
+    return this.save.workshop[c]?.special ?? getCharacter(c).special;
   }
 
   wipe(): void {

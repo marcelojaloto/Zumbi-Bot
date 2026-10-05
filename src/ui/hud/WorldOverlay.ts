@@ -105,6 +105,9 @@ export class WorldOverlay {
         );
       } else if (ev.t === 'heal' && this.showNumbers) {
         this.spawnNum(`+${ev.amount}`, '#5aff9a', ev.x, ev.y, ev.z, false);
+      } else if (ev.t === 'guard') {
+        // Guarda da Oficina segurou o golpe
+        this.spawnNum(t('BLOQUEIO'), '#9fe8ff', ev.x, ev.y + 0.5, ev.z, false);
       } else if (ev.t === 'death') {
         const b = this.bars.get(ev.id);
         if (b) b.lastHit = -99;

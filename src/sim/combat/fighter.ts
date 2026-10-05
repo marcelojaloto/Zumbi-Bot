@@ -10,6 +10,7 @@ import { isAoe, meleeHits } from './hitbox';
 import { LOCOMOTION } from '../systems/playerControl';
 import { characterDef } from '../defs';
 import { runMoveEffects } from './moveEffects';
+import { comboLink } from '../perks';
 
 const FRICTION = 16;
 
@@ -78,7 +79,8 @@ export function playerMeleeInput(w: World, e: Entity): void {
   if (!LOCOMOTION.has(fi.state)) return;
 
   if (sP && grounded) {
-    const sp = characterDef(e).special;
+    // o especial escolhido na Oficina (ou o original do personagem)
+    const sp = p.special || characterDef(e).special;
     // especial à distância (raio, bola de fogo) com a mira do mouse: vira para o lado da mira antes de disparar
     if (MOVES[sp]?.faceAim && p.aimMode === 1) {
       const c = Math.cos(p.aimYaw);
@@ -251,10 +253,13 @@ function updateAttack(w: World, e: Entity): void {
     return;
   }
 
-  // cancelamento em combo
-  if (e.player && fi.buffer && m.next) {
-    const next = m.next[fi.buffer];
-    const can = st >= (m.cancelFrom ?? total) && (fi.hitSet.length > 0 || st >= activeEnd);
+  // cancelamento em combo (os combos da Oficina têm preferência e saem logo depois dos quadros ativos, mesmo de um
+  // golpe que fechava a sequência)
+  const link = e.player && fi.buffer ? comboLink(e, m.id, fi.buffer) : undefined;
+  if (e.player && fi.buffer && (m.next || link)) {
+    const next = link ?? m.next?.[fi.buffer];
+    const from = m.cancelFrom ?? (link ? activeEnd : total);
+    const can = st >= from && (fi.hitSet.length > 0 || st >= activeEnd);
     if (next && can) {
       startMove(w, e, next);
       return;

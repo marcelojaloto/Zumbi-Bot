@@ -64,6 +64,10 @@ function repairEntity(e: Entity): void {
     p.lastFireTick ??= -999;
     p.manaDelay ??= 0;
     p.aimTicks ??= 0;
+    p.prevMoveZ ??= 0;
+    p.zTapDir ??= 0;
+    p.zTapTick ??= -999;
+    p.dodgeCd ??= 0;
   }
   if (e.ai) {
     const ai = makeAi(e.ai.fromSpawn ?? 'sides');

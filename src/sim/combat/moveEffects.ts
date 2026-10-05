@@ -137,6 +137,47 @@ export function runMoveEffects(w: World, e: Entity, m: MeleeMoveDef, rel: number
         w.emit({ t: 'sfx', id: 'whooshHeavy', x: e.t.x });
         break;
       }
+      case 'meteors': {
+        if (rel !== 0) break;
+        const [z0, z1] = w.zBand;
+        const r = Math.max(0.8, (fx.spec.onImpact?.explosion?.radius ?? 1) * 0.9);
+        for (let i = 0; i < fx.count; i++) {
+          // espalhados à frente, um pouco ao acaso; cada queda é avisada por um círculo no chão
+          const d = fx.dist[0] + ((i + w.rng.next()) / fx.count) * (fx.dist[1] - fx.dist[0]);
+          const x = e.t.x + e.t.facing * d;
+          const z = Math.max(z0 + 0.2, Math.min(z1 - 0.2, e.t.z + w.rng.range(-1.6, 1.6)));
+          const fall = fx.delayS[0] + w.rng.next() * (fx.delayS[1] - fx.delayS[0]);
+          spawnHazard(w, {
+            x,
+            z,
+            owner: e.id,
+            team: e.team,
+            shape: { k: 'circle', r },
+            hit: NO_HIT,
+            delay: secToTicks(fall),
+            active: 1,
+            fx: 'telegraph',
+            height: -1,
+            telegraph: { k: 'circle', r },
+            telegraphColor: 0xffb02a,
+          });
+          const top = 10;
+          const pr = spawnProjectile(w, {
+            owner: e,
+            x,
+            y: top,
+            z,
+            yaw: 0,
+            spec: { ...fx.spec, gravity: 0, lob: false, lifeS: Math.max(fx.spec.lifeS, fall + 0.5) },
+            fromSpecial: !!e.player,
+          });
+          pr.t.vx = 0;
+          pr.t.vz = 0;
+          pr.t.vy = -top / fall;
+        }
+        w.emit({ t: 'sfx', id: 'hz_artillery', x: e.t.x });
+        break;
+      }
       case 'bolt': {
         if (rel !== 0) break;
         const f = e.t.facing;

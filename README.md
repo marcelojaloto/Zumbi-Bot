@@ -60,6 +60,13 @@ Web Audio.
 - **Loot cosmético**: cerca de 40 peças dos conjuntos mago e zumbi (chapéus, óculos, máscaras, roupas e capas
   com física), inventário no **Guarda-roupa** com prévia 3D e uma **Loja** com ofertas do dia (escolher um item
   veste o boneco para ver antes, e a compra só acontece ao confirmar).
+- **Oficina**: escolha o personagem e veja a árvore de melhorias dele, em quatro ramos. **Atributos** (vigor,
+  força, agilidade, energia, pontaria ou magia) sobem em três níveis, ponderados pelos limites de cada um: a Maga
+  ganha pouca vida e muita magia, o Militar muita vida e pouca agilidade. **Combos** novos saem do fim da sequência
+  de socos (J depois do uppercut) ou do chute (K, K). **Especiais** novos, dois por personagem, trocam o especial:
+  só um fica em uso, escolhido ali. **Defesas**: esquiva (toque duplo para cima ou para baixo), guarda (bloqueia
+  golpes de frente), couraça, escudo de energia que recarrega e contra-golpe. Cada melhoria libera com XP (a soma
+  de tudo o que já ganhou) e se compra com sucata.
 - **Progressão**: XP e níveis, pontuação com combos, estrelas por nível, recordes e **Novo Jogo+** depois de
   derrotar o OMEGA-Z. O progresso fica salvo no navegador (`localStorage`).
 - **Ranking por jornada**: os pontos de cada mapa se somam até você **perder todas as vidas** ou **terminar o
@@ -86,6 +93,7 @@ Web Audio.
 | Arma ou cajado anterior / próximo   | Q / E                                  | LB / RB            |
 | Modo arma de fogo / cajado          | 1 / 2                                  | D-pad ↑            |
 | Caixa de cura (quem não usa cajado) | 2                                      | D-pad ↑            |
+| Esquiva (defesa da Oficina)         | toque duplo em W ou S (↑ ou ↓)         | toque duplo ↑ ou ↓ |
 | Mapa ampliado                       | M                                      | Back               |
 | Microfone (chat de voz online)      | V                                      | -                  |
 | Pausa                               | Esc ou P                               | Start              |
@@ -98,7 +106,8 @@ rodinha também corre).
 Andar para cima e para baixo (mudar de plano) tem na tela a mesma velocidade de andar para os lados.
 
 Combos: J, J, J, J termina em uppercut; J, J, K faz o chute giratório; correndo + K é a voadora; no ar,
-J e K atacam.
+J e K atacam. Com os combos da Oficina, J depois do uppercut (ou do terceiro golpe do cajado) e K, K saem golpes
+próprios de cada personagem.
 
 Os tiros sempre saem para a frente, na faixa de profundidade do robô (o mouse escolhe o lado): alinhe-se com o
 inimigo usando W/S e a mira ajusta sozinha para acertar quem estiver à frente, na mesma faixa. Andar tem a mesma

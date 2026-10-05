@@ -58,6 +58,7 @@ import { resultScreen } from '../ui/screens/ResultScreen';
 import { mapSelectScreen } from '../ui/screens/MapSelectScreen';
 import { creditsScreen } from '../ui/screens/CreditsScreen';
 import { rankingScreen } from '../ui/screens/RankingScreen';
+import { workshopScreen } from '../ui/screens/WorkshopScreen';
 import type { RunStats } from '../sim/events';
 import { MAPS, getMap } from '../data/maps';
 import { xpToNext } from '../data/balance';
@@ -656,6 +657,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
         b(`🌐 ${t('Jogar online')}`, () => this.openOnline()),
         b(t('Mapas'), () => this.screens.push(mapSelectScreen(this))),
         b(t('Personagens'), () => this.screens.push(charactersScreen(this))),
+        b(`🔧 ${t('Oficina')}`, () => this.screens.push(workshopScreen(this))),
         b(t('Guarda-roupa'), () => this.screens.push(wardrobeScreen(this))),
         b(t('Loja'), () => this.screens.push(shopScreen(this))),
         b(t('Ranking'), () => this.screens.push(rankingScreen(this))),
@@ -830,9 +832,9 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     const base = this.profile.loadout();
     const loadouts = party
       ? party.map((m) => ({
-          ...base,
+          // cada um com a Oficina do próprio personagem
+          ...this.profile.loadout(m.character),
           slot: m.slot,
-          character: m.character,
           name: m.slot === 0 ? base.name : playerTag(m.slot),
           // convidados jogam com o nível e as armas do perfil, sem os cosméticos do jogador 1
           cosmetics: m.slot === 0 ? base.cosmetics : {},
@@ -1175,6 +1177,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     this.leaveRoomQuiet();
     const room = await GuestRoom.join(await this.getTransport(), code, this.profile.loadout());
     this.online = room;
+    room.loadoutFor = (c) => this.profile.loadout(c);
     room.onChange = () => this.roomChanged();
     room.onStart = (m) => void this.startGuest(room, m);
     room.onNotice = (n) => this.roomNotice(n);

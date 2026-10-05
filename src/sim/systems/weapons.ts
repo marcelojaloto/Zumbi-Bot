@@ -1,5 +1,6 @@
 import { DEG } from '../../core/math';
 import { DT, secToTicks } from '../../core/time';
+import { playerPerks } from '../perks';
 import { FIREARMS } from '../../data/weapons';
 import type { FirearmDef, HitSpec, WeaponId } from '../../data/types';
 import { isCharacter, isHostile, type Entity, type PlayerComp } from '../Entity';
@@ -132,7 +133,7 @@ function tickReload(w: World, e: Entity, d: FirearmDef): void {
   const p = e.player!;
   if (p.fire.reload <= 0) return;
   const turbo = p.powers.turbo > 0 ? 1.3 : 1;
-  p.fire.reload -= turbo * characterDef(e).stats.reload;
+  p.fire.reload -= turbo * characterDef(e).stats.reload * (1 + playerPerks(e).reload);
   if (p.fire.reload > 0) return;
   if (d.reload.kind === 'mag') {
     const need = d.mag - (p.ammoMag[d.id] ?? 0);

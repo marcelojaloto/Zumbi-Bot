@@ -1,5 +1,5 @@
 import { secToTicks } from '../../core/time';
-import { NG_PLUS, coopCapMult, coopScaling, xpToNext } from '../../data/balance';
+import { NG_PLUS, coopCapMult, coopScaling, totalXp } from '../../data/balance';
 import { getBoss } from '../../data/bosses';
 import type { SegmentDef, SpawnFrom, StaffId, WaveDef, WeaponId } from '../../data/types';
 import type { PlayerRunStats, RunStats } from '../events';
@@ -37,12 +37,6 @@ export interface LevelState {
   startGuns: WeaponId[][];
   levelHazards: boolean;
   bossCosmetics: string[];
-}
-
-export function totalXp(level: number, xp: number): number {
-  let t = xp;
-  for (let l = 1; l < level; l++) t += xpToNext(l);
-  return t;
 }
 
 export function createLevelState(w: World): LevelState {

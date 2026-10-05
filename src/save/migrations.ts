@@ -1,8 +1,9 @@
 import { isCharacterId } from '../data/characters';
+import { PERK_BY_ID, specialsOf } from '../data/workshop';
 import { COSMETICS, SELL_VALUE } from '../data/cosmetics';
 import { STAFFS } from '../data/staffs';
 import { FIREARMS } from '../data/weapons';
-import type { CosmeticSlot, Difficulty, StaffId, WeaponId } from '../data/types';
+import type { CharacterId, CosmeticSlot, Difficulty, StaffId, WeaponId } from '../data/types';
 import { sanitizeKeys } from '../input/keymap';
 import {
   defaultRanking,
@@ -14,8 +15,9 @@ import {
   type CampaignRun,
   type RankEntry,
   type RankingV1,
-  type SaveV1,
+  type SaveV2,
   type SettingsV2,
+  type WorkshopState,
 } from './schema';
 
 type Any = Record<string, unknown>;
@@ -30,6 +32,8 @@ export const SAVE_MIGRATIONS: Record<number, Migration> = {
     (s.profile as Any).level = Number.isFinite(lvl) ? lvl : 1;
     return s;
   },
+  // v1 → v2: a Oficina começa vazia na validação
+  1: (d) => ({ ...d, version: 2 }),
 };
 
 export const SETTINGS_MIGRATIONS: Record<number, Migration> = {
@@ -78,7 +82,7 @@ const arr = (v: unknown): unknown[] => (Array.isArray(v) ? v : []);
 const obj = (v: unknown): Any => (v && typeof v === 'object' && !Array.isArray(v) ? (v as Any) : {});
 
 /** Normaliza um save: completa campos, limita números e descarta ids desconhecidos (reembolsa cosméticos removidos). */
-export function sanitizeSave(raw: unknown): SaveV1 {
+export function sanitizeSave(raw: unknown): SaveV2 {
   const d = obj(raw);
   const def = defaultSave();
   const profile = obj(d.profile);
@@ -95,12 +99,12 @@ export function sanitizeSave(raw: unknown): SaveV1 {
       if (!owned.includes(id)) owned.push(id);
     } else scrap += SELL_VALUE.common;
   }
-  const equipped: SaveV1['cosmetics']['equipped'] = {};
+  const equipped: SaveV2['cosmetics']['equipped'] = {};
   for (const [slot, id] of Object.entries(obj(cos.equipped))) {
     const c = typeof id === 'string' ? COSMETICS[id] : undefined;
     if (c && c.slot === slot && owned.includes(c.id)) equipped[slot as CosmeticSlot] = c.id;
   }
-  const levels: SaveV1['progress']['levels'] = {};
+  const levels: SaveV2['progress']['levels'] = {};
   for (const [id, lp] of Object.entries(obj(progress.levels))) {
     const l = obj(lp);
     levels[id] = {
@@ -117,7 +121,7 @@ export function sanitizeSave(raw: unknown): SaveV1 {
   const staffs = arr(unlocks.staffs).filter((x): x is StaffId => typeof x === 'string' && x in STAFFS);
   if (!staffs.includes('heal')) staffs.unshift('heal');
   return {
-    version: 1,
+    version: 2,
     createdAt: num(d.createdAt, def.createdAt, 0),
     updatedAt: num(d.updatedAt, def.updatedAt, 0),
     profile: {
@@ -151,8 +155,33 @@ export function sanitizeSave(raw: unknown): SaveV1 {
       tutorialDone: bool(flags.tutorialDone, false),
       credits: bool(flags.credits, false),
     },
+    workshop: sanitizeWorkshop(d.workshop),
     ...(sanitizeRun(d.run) ? { run: sanitizeRun(d.run) } : {}),
   };
+}
+
+/** Oficina: só melhorias que existem e são do personagem; o especial escolhido precisa estar liberado. */
+function sanitizeWorkshop(raw: unknown): SaveV2['workshop'] {
+  const out: SaveV2['workshop'] = {};
+  for (const [c, v] of Object.entries(obj(raw))) {
+    if (!isCharacterId(c)) continue;
+    const ws = obj(v);
+    const perks = [
+      ...new Set(
+        arr(ws.perks).filter((id): id is string => typeof id === 'string' && PERK_BY_ID[id]?.character === c),
+      ),
+    ];
+    const st: WorkshopState = { perks };
+    if (
+      typeof ws.special === 'string' &&
+      specialsOf(c as CharacterId, perks)
+        .slice(1)
+        .includes(ws.special)
+    )
+      st.special = ws.special;
+    out[c as CharacterId] = st;
+  }
+  return out;
 }
 
 function sanitizeRun(raw: unknown): CampaignRun | undefined {
