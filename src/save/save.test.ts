@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Storage, MemoryKV, KEYS } from './storage';
-import { defaultSave } from './schema';
+import { defaultSave, defaultSettings } from './schema';
 import { insertRank, rankPosition } from './ranking';
 import { sanitizeSave, sanitizeSettings } from './migrations';
 
@@ -33,6 +33,25 @@ describe('save', () => {
     expect(r.data.version).toBe(1);
     expect(r.data.profile.level).toBe(7);
     expect(kv.getItem(`${KEYS.save}:bak`)).not.toBeNull();
+  });
+
+  it('configurações v1: Muito fácil vira o novo Fácil e as outras dificuldades vão para o novo Normal', () => {
+    for (const [old, now] of [
+      ['veryEasy', 'easy'],
+      ['easy', 'normal'],
+      ['normal', 'normal'],
+      ['hard', 'normal'],
+    ]) {
+      const kv = new MemoryKV();
+      kv.setItem(
+        KEYS.settings,
+        JSON.stringify({ ...defaultSettings(), version: 1, gameplay: { difficulty: old } }),
+      );
+      const r = new Storage(kv).loadSettings();
+      expect(r.migratedFrom).toBe(1);
+      expect(r.data.version).toBe(2);
+      expect(r.data.gameplay.difficulty).toBe(now);
+    }
   });
 
   it('JSON corrompido restaura o backup', () => {

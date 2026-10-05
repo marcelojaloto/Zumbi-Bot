@@ -11,7 +11,7 @@ import type {
 import type { KeyMap } from '../input/keymap';
 
 export const SAVE_VERSION = 1;
-export const SETTINGS_VERSION = 1;
+export const SETTINGS_VERSION = 2;
 export const RANKING_VERSION = 1;
 
 export interface LevelProgress {
@@ -77,8 +77,11 @@ export interface CampaignRun {
 
 export type QualityChoice = 'auto' | 'low' | 'medium' | 'high';
 
-export interface SettingsV1 {
-  version: 1;
+/**
+ * v2: as dificuldades mudaram de nome e de força (Fácil, Normal, Difícil e Insano; o antigo Fácil virou o Normal).
+ */
+export interface SettingsV2 {
+  version: 2;
   /** `voice`: volume das vozes do chat de voz online. */
   audio: { master: number; music: number; sfx: number; voice: number; muted: boolean };
   controls: {
@@ -155,9 +158,9 @@ export function defaultSave(now = 0): SaveV1 {
   };
 }
 
-export function defaultSettings(): SettingsV1 {
+export function defaultSettings(): SettingsV2 {
   return {
-    version: 1,
+    version: 2,
     audio: { master: 0.8, music: 0.55, sfx: 0.85, voice: 1, muted: false },
     controls: {
       mouseSensitivity: 1,

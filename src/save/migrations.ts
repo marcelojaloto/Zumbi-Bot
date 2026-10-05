@@ -15,7 +15,7 @@ import {
   type RankEntry,
   type RankingV1,
   type SaveV1,
-  type SettingsV1,
+  type SettingsV2,
 } from './schema';
 
 type Any = Record<string, unknown>;
@@ -34,6 +34,16 @@ export const SAVE_MIGRATIONS: Record<number, Migration> = {
 
 export const SETTINGS_MIGRATIONS: Record<number, Migration> = {
   0: () => defaultSettings() as unknown as Any,
+  // v1 → v2: o antigo Muito fácil virou o Fácil (ainda mais fácil); todos os outros vão para o novo Normal (o antigo
+  // Fácil), que passou a ser o padrão
+  1: (d) => {
+    const gp = obj(d.gameplay);
+    return {
+      ...d,
+      version: 2,
+      gameplay: { ...gp, difficulty: gp.difficulty === 'veryEasy' ? 'easy' : 'normal' },
+    };
+  },
 };
 
 export const RANKING_MIGRATIONS: Record<number, Migration> = {
@@ -164,7 +174,7 @@ function sanitizeRun(raw: unknown): CampaignRun | undefined {
   };
 }
 
-export function sanitizeSettings(raw: unknown): SettingsV1 {
+export function sanitizeSettings(raw: unknown): SettingsV2 {
   const d = obj(raw);
   const def = defaultSettings();
   const a = obj(d.audio);
@@ -176,7 +186,7 @@ export function sanitizeSettings(raw: unknown): SettingsV1 {
   const aim = c.aimAssist;
   const tc = obj(c.touch);
   return {
-    version: 1,
+    version: 2,
     audio: {
       master: num(a.master, def.audio.master, 0, 1),
       music: num(a.music, def.audio.music, 0, 1),
@@ -206,7 +216,7 @@ export function sanitizeSettings(raw: unknown): SettingsV1 {
       reduceFlashes: bool(g.reduceFlashes, false),
     },
     gameplay: {
-      difficulty: (diff === 'veryEasy' || diff === 'easy' || diff === 'normal' || diff === 'hard'
+      difficulty: (diff === 'easy' || diff === 'normal' || diff === 'hard' || diff === 'insane'
         ? diff
         : 'normal') as Difficulty,
     },

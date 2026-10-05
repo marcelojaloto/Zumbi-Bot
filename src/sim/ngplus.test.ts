@@ -67,14 +67,17 @@ describe('OMEGA-Z', () => {
 });
 
 describe('dificuldade', () => {
-  it('Muito fácil: chefe com metade da vida e mais tempo entre ataques', () => {
-    const a = makeWorld();
-    const b = makeWorld({ difficulty: 'veryEasy' });
+  it('Fácil: chefe com menos da metade da vida e mais tempo entre ataques; o Difícil é a referência', () => {
+    const a = makeWorld({ difficulty: 'hard' });
+    const b = makeWorld({ difficulty: 'easy' });
     const ba = spawnBoss(a, getBoss('omega'), 8, 0);
     const bb = spawnBoss(b, getBoss('omega'), 8, 0);
-    expect(bb.health!.max).toBe(Math.round(ba.health!.max * DIFFICULTY.veryEasy.bossHp));
-    expect(DIFFICULTY.veryEasy.bossHp).toBeLessThan(DIFFICULTY.easy.bossHp);
-    expect(DIFFICULTY.veryEasy.bossPace).toBeGreaterThan(DIFFICULTY.easy.bossPace);
-    expect(DIFFICULTY.normal).toMatchObject({ enemyDmg: 1, enemyHp: 1, bossHp: 1, bossPace: 1 });
+    expect(bb.health!.max).toBe(Math.round(ba.health!.max * DIFFICULTY.easy.bossHp));
+    expect(DIFFICULTY.easy.bossHp).toBeLessThan(0.5);
+    expect(DIFFICULTY.easy.bossHp).toBeLessThan(DIFFICULTY.normal.bossHp);
+    expect(DIFFICULTY.easy.bossPace).toBeGreaterThan(DIFFICULTY.normal.bossPace);
+    expect(DIFFICULTY.normal.enemyDmg).toBeLessThan(1);
+    expect(DIFFICULTY.hard).toMatchObject({ enemyDmg: 1, enemyHp: 1, bossHp: 1, bossPace: 1 });
+    expect(DIFFICULTY.insane.enemyDmg).toBeGreaterThan(1);
   });
 });

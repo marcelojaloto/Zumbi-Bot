@@ -191,7 +191,7 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
   publicar na App Store é preciso uma conta de desenvolvedor Apple (passo a passo em
   [docs/APP_STORE.md](docs/APP_STORE.md)). Até lá, jogue no Safari (acima).
 - **Idiomas:** português e inglês, escolhidos pelo idioma do navegador e trocáveis em Configurações > Jogo.
-- **Dificuldade:** Muito fácil, Fácil, Normal (padrão) e Difícil; escolha na tela de mapas ou em Configurações >
+- **Dificuldade:** Fácil, Normal (padrão), Difícil e Insano; escolha na tela de mapas ou em Configurações >
   Jogo. Nas mais fáceis os chefes têm menos vida e atacam com mais pausa; ao perder, o jogo oferece tentar de
   novo numa dificuldade menor.
 

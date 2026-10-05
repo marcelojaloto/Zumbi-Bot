@@ -35,7 +35,8 @@ export function makeWorld(
     map: opts.map ?? sandbox,
     levelIdx: 0,
     loadouts: [loadout(opts.loadout)],
-    difficulty: opts.difficulty ?? 'normal',
+    // Difícil: a força de referência (todos os multiplicadores 1), para as contas dos testes
+    difficulty: opts.difficulty ?? 'hard',
     enemyCap: 14,
     noLevel: opts.noLevel ?? true,
     ngPlus: opts.ngPlus,

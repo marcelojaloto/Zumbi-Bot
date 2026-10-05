@@ -31,7 +31,7 @@ ruas, pule, soque, chute e atire para limpar 10 mapas cheios de mortos-vivos e r
 - Poderes, itens e armas brancas espalhados pelas fases
 - Guarda-roupa com mais de 40 peças para deixar o seu robô com a sua cara
 - Suba de nível, junte sucata, compre na loja e bata seu recorde no ranking pessoal e no ranking global
-- Quatro dificuldades, de Muito fácil a Difícil, e Novo Jogo+ depois do chefe final
+- Quatro dificuldades, de Fácil a Insano, e Novo Jogo+ depois do chefe final
 - Controles de toque confortáveis: direcional à esquerda, botões à direita, tamanho e transparência ajustáveis
 - Em português e inglês
 - Sem anúncios e sem compras. Joga offline (a internet só é usada no jogo online e no ranking global).
@@ -68,7 +68,7 @@ streets, jump, punch, kick and shoot your way through 10 maps packed with the un
 - Powers, items and melee weapons scattered across the levels
 - A wardrobe with more than 40 pieces to make your robot your own
 - Level up, collect scrap, shop and beat your high score on the personal and global leaderboards
-- Four difficulties, from Very easy to Hard, plus New Game+ after the final boss
+- Four difficulties, from Easy to Insane, plus New Game+ after the final boss
 - Comfortable touch controls: D-pad on the left, buttons on the right, adjustable size and opacity
 - In English and Portuguese
 - No ads and no purchases. Plays offline (the internet is only used for online play and the global leaderboard).

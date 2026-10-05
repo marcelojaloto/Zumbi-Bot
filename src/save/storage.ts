@@ -4,7 +4,7 @@ import {
   defaultSettings,
   type RankingV1,
   type SaveV1,
-  type SettingsV1,
+  type SettingsV2,
 } from './schema';
 import {
   RANKING_MIGRATIONS,
@@ -134,7 +134,7 @@ export class Storage {
     return write(this.kv, KEYS.save, s);
   }
 
-  loadSettings(): LoadResult<SettingsV1> {
+  loadSettings(): LoadResult<SettingsV2> {
     const r = loadVersioned(
       kv(this),
       KEYS.settings,
@@ -147,7 +147,7 @@ export class Storage {
     return r;
   }
 
-  writeSettings(s: SettingsV1): boolean {
+  writeSettings(s: SettingsV2): boolean {
     if (this.settingsReadOnly) return false;
     return write(this.kv, KEYS.settings, s);
   }

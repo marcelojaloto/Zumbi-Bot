@@ -52,7 +52,7 @@ export interface RoomOptions {
   voice: boolean;
 }
 
-const DIFFICULTIES: readonly Difficulty[] = ['veryEasy', 'easy', 'normal', 'hard'];
+const DIFFICULTIES: readonly Difficulty[] = ['easy', 'normal', 'hard', 'insane'];
 
 export function isDifficulty(v: unknown): v is Difficulty {
   return DIFFICULTIES.includes(v as Difficulty);

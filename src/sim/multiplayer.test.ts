@@ -24,7 +24,7 @@ function party(chars: CharacterId[], map = sandbox, seed = 7): World {
     map,
     levelIdx: 0,
     loadouts: chars.map((c, i) => loadout({ slot: i as PlayerSlot, character: c, name: `P${i + 1}` })),
-    difficulty: 'normal',
+    difficulty: 'hard',
     enemyCap: 14,
     noLevel: map === sandbox,
   });

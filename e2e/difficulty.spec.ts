@@ -34,13 +34,14 @@ test('dificuldade: escolha no mapa e "tentar mais fácil" após a derrota', asyn
   const row = page.locator('.diff-row');
   await expect(row.locator('button')).toHaveCount(4);
   await expect(row.getByRole('button', { name: 'Normal' })).toHaveClass(/\bon\b/);
-  await row.getByRole('button', { name: 'Muito fácil' }).click();
-  await expect(row.getByRole('button', { name: 'Muito fácil' })).toHaveClass(/\bon\b/);
-  expect(await diff()).toBe('veryEasy');
+  await expect(row.getByRole('button', { name: 'Insano' })).toBeVisible();
+  await row.getByRole('button', { name: 'Fácil', exact: true }).click();
+  await expect(row.getByRole('button', { name: 'Fácil', exact: true })).toHaveClass(/\bon\b/);
+  expect(await diff()).toBe('easy');
   await row.getByRole('button', { name: 'Normal' }).click();
   expect(await diff()).toBe('normal');
 
-  // derrota no Normal → botão "Tentar no Fácil" reinicia a fase com chefe mais fraco
+  // derrota no Normal → botão "Tentar no Fácil" reinicia a fase com chefe bem mais fraco
   await page.evaluate(() => (window as unknown as { __game: G }).__game.startLevel('vila', 0));
   await page.waitForFunction(() => (window as unknown as { __game: G }).__game.state().screen === 'playing');
   await page.waitForFunction(
@@ -68,6 +69,6 @@ test('dificuldade: escolha no mapa e "tentar mais fácil" após a derrota', asyn
   expect(await diff()).toBe('easy');
   expect(
     await page.evaluate(() => (window as unknown as { __game: G }).__game.app.session!.world.diff.bossHp),
-  ).toBe(0.75);
+  ).toBe(0.4);
   expect(errors).toEqual([]);
 });

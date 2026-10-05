@@ -1,7 +1,7 @@
 import { el } from '../dom';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
-import type { LanguageChoice, SettingsV1 } from '../../save/schema';
+import type { LanguageChoice, SettingsV2 } from '../../save/schema';
 import { dec, t } from '../../i18n';
 import { keyBindScreen } from './KeyBindScreen';
 import { manualScreen } from './ManualScreen';
@@ -48,7 +48,7 @@ function select<T extends string>(label: string, get: () => T, set: (v: T) => vo
 }
 
 export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
-  const st = (): SettingsV1 => host.profile.settings;
+  const st = (): SettingsV2 => host.profile.settings;
   const apply = () => {
     host.applySettings();
     host.profile.persistSettings();
@@ -274,10 +274,10 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
         () => st().gameplay.difficulty,
         (v) => ((st().gameplay.difficulty = v), apply()),
         [
-          ['veryEasy', t('Muito fácil')],
           ['easy', t('Fácil')],
           ['normal', t('Normal')],
           ['hard', t('Difícil')],
+          ['insane', t('Insano')],
         ],
       ),
     ]),

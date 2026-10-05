@@ -234,7 +234,7 @@ export const EN: Record<string, string> = {
   'Apagar progresso': 'Erase progress',
   Dificuldade: 'Difficulty',
   Fácil: 'Easy',
-  'Muito fácil': 'Very easy',
+  Insano: 'Insane',
   'Difícil demais? Tente de novo numa dificuldade menor.': 'Too hard? Try again on a lower difficulty.',
   'Tentar no {d}': 'Retry on {d}',
   Normal: 'Normal',

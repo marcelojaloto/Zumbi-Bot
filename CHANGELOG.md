@@ -41,6 +41,13 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - Os destroços agora caem do teto de verdade: as pedras aparecem lá no alto durante o aviso e chegam ao chão bem
   quando ele acaba, com o teto estalando antes, estrondo, tremor e cascalho voando no impacto.
 
+### Dificuldade
+
+- As dificuldades passam a ser **Fácil**, **Normal** (padrão), **Difícil** e **Insano**. O antigo Muito fácil
+  virou o Fácil e ficou ainda mais fácil; o antigo Fácil virou o Normal; o antigo Normal virou o Difícil; o
+  antigo Difícil virou o Insano.
+- Quem já jogava vai para o novo Normal (quem estava no Muito fácil, para o Fácil).
+
 ## 1.6, atualização de 01/10/2026
 
 - No celular deitado, a dica "Chefe à frente!" não fica mais embaixo do nome do chefe: a dica sobe e o nome

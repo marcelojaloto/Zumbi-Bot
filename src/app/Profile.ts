@@ -7,7 +7,7 @@ import type { CharacterId, CosmeticId, CosmeticSlot, StaffId, WeaponId } from '.
 import { COSMETICS, SECRET_GIFTS, SELL_VALUE } from '../data/cosmetics';
 import { Rng } from '../core/rng';
 import { insertRank } from '../save/ranking';
-import type { CampaignRun, RankEntry, RankingV1, SaveV1, SettingsV1 } from '../save/schema';
+import type { CampaignRun, RankEntry, RankingV1, SaveV1, SettingsV2 } from '../save/schema';
 import { Storage } from '../save/storage';
 import type { RunStats } from '../sim/events';
 import type { PlayerLoadout } from '../sim/World';
@@ -16,7 +16,7 @@ import type { PlayerLoadout } from '../sim/World';
 export class Profile {
   readonly storage: Storage;
   save: SaveV1;
-  settings: SettingsV1;
+  settings: SettingsV2;
   ranking: RankingV1;
   notices: string[] = [];
   private saveTimer: ReturnType<typeof setTimeout> | null = null;
