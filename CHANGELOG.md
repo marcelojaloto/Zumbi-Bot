@@ -12,6 +12,7 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - Adulto confirmado pela loja usa a voz como antes. Com a comunicação limitada pelos pais, a voz fica bloqueada.
 - Nos outros casos, inclusive no site, a voz começa desligada no aparelho: um adulto responsável libera na sala, em
   **🔓 Liberar a voz (adulto)**, e pode bloquear de novo em **Configurações > Áudio**.
+- A política de privacidade explica a trava da voz.
 
 ## 1.6, atualização de 04/10/2026
 

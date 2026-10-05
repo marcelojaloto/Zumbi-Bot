@@ -81,9 +81,13 @@ No repositório: **Settings > Secrets and variables > Actions > New repository s
      (sala com código, sem bate-papo por texto; o único texto que os outros veem é o nome do jogador) com
      **chat de voz** entre os jogadores da sala: responda que os usuários **podem interagir e se comunicar (voz)**
      e que não há compartilhamento de localização nem compras. O chat de voz é opcional: quem cria a sala pode
-     desligá-lo, cada jogador liga o próprio microfone e a voz não é gravada.
+     desligá-lo, cada jogador liga o próprio microfone e a voz não é gravada. Ele também respeita a idade: o app
+     pergunta à Play (Age Signals API) se quem joga tem 18 anos ou mais e, para menores ou idade desconhecida, a
+     voz só liga com a liberação de um adulto; com a mudança recusada pelo responsável no Family Link, fica
+     bloqueada.
    - **Público-alvo:** escolha faixas de **13 anos ou mais** (marcar menores de 13 exige cumprir a política de
-     Famílias).
+     Famílias). No Brasil, a Play pede que apps com acesso provável de menores usem a faixa de idade que ela
+     fornece: o chat de voz já usa, pela Age Signals API (só funciona no app instalado pela Play).
    - **Segurança dos dados:** o progresso fica salvo só no aparelho. No jogo online (iniciado pelo usuário), o
      nome no jogo, o personagem e os comandos vão para os outros jogadores da sala, e o serviço de conexão do
      PeerJS recebe o código da sala e o IP, só enquanto a sala está aberta (processamento temporário, nada é
@@ -99,7 +103,8 @@ No repositório: **Settings > Secrets and variables > Actions > New repository s
      **Informações pessoais > Nome** não é coletado: o nome do ranking fica só no aparelho. Marque que o usuário
      **pode pedir a exclusão** dos dados: o botão **Sair do ranking global** apaga o registro e a conta anônima, e
      quem não tem mais o jogo pede pelo e-mail da política. Se o formulário perguntar sobre exclusão de conta,
-     informe esse mesmo botão.
+     informe esse mesmo botão. A faixa de idade lida da Play para o chat de voz só é usada no aparelho e não sai
+     dele, então não entra como coletada.
    - **Permissões:** o app declara **microfone** (`RECORD_AUDIO`, para o chat de voz; o Android só pergunta quando
      o jogador toca em "Ligar microfone") e vibração. O microfone não exige formulário no Play Console, mas
      precisa estar na política de privacidade (já está).

@@ -33,7 +33,12 @@ Em https://developer.apple.com/account/resources/identifiers > **+** > **App IDs
 
 - Descrição: `Zumbi Bot`
 - Bundle ID (explícito): `io.github.marcelojaloto.zumbibot` (o mesmo do app Android)
-- Não precisa marcar nenhum recurso extra.
+- Em **Capabilities**, marque **Declared Age Range**: é como o chat de voz pergunta à App Store se quem joga tem 18
+  anos ou mais (iOS 26 ou mais novo). Se o App ID já existir, edite, marque e salve; depois gere de novo o perfil do
+  passo 5 e troque o segredo `APPLE_PROVISIONING_PROFILE_BASE64`. Só então o projeto pode ganhar o entitlement
+  `com.apple.developer.declared-age-range` (arquivo `App.entitlements` em `CODE_SIGN_ENTITLEMENTS`): com o
+  entitlement e sem a capability no perfil, a assinatura falha. Enquanto isso, o iPhone trata a idade como
+  desconhecida, e a voz começa desligada até um adulto liberar na sala.
 
 ## 4. Certificado de distribuição (sem Mac)
 
@@ -124,13 +129,16 @@ Em **App Store Connect > o app > versão iOS**:
   ID do usuário** (o código da conta anônima do Firebase), **vinculados ao usuário** (a Apple trata como vinculado
   tudo o que fica associado a um ID de conta), sem rastreamento, para funcionalidade do app. O nome do ranking não é
   coletado: fica só no aparelho. A conta anônima e o registro se apagam no próprio jogo, em **Sair do ranking
-  global**, como pede a diretriz 5.1.1(v) também para contas criadas automaticamente.
+  global**, como pede a diretriz 5.1.1(v) também para contas criadas automaticamente. A faixa de idade que o chat de
+  voz lê da App Store (Declared Age Range) só é usada no aparelho e não sai dele: não entra como coletada.
 - **Classificação etária:** violência de desenho/fantasia **frequente** (lutas contra zumbis e robôs, sem sangue
-  realista); **comunicação entre usuários: sim** (chat de voz opcional numa sala com código); sem compras, sem
-  navegação livre na internet. A Apple calcula a idade a partir das respostas.
+  realista); **comunicação entre usuários: sim** (chat de voz opcional numa sala com código, que respeita o controle
+  dos pais e, para menores ou idade desconhecida, só liga com a liberação de um adulto); sem compras, sem navegação
+  livre na internet. A Apple calcula a idade a partir das respostas.
 - **Notas para a revisão:** "O jogo funciona offline (um jogador). O jogo online precisa de dois aparelhos: em um,
-  Jogar online > Criar sala; no outro, Entrar numa sala com o código de 4 letras. O chat de voz é opcional e pede o
-  microfone só ao tocar em Ligar microfone."
+  Jogar online > Criar sala; no outro, Entrar numa sala com o código de 4 letras. O chat de voz é opcional: quando a
+  App Store não confirma que quem joga é adulto, ele começa desligado e um adulto libera em Liberar a voz (adulto),
+  na sala. Depois, o microfone só é pedido ao tocar em Ligar microfone."
 
 Envie para a revisão. A primeira costuma levar de um a três dias.
 
