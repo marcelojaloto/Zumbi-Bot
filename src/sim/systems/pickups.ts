@@ -1,5 +1,5 @@
 import { secToTicks } from '../../core/time';
-import { MEDKITS, PLAYER } from '../../data/balance';
+import { MEDKITS, PLAYER, kitHeal } from '../../data/balance';
 import { getItem, ITEMS } from '../../data/items';
 import { MELEE_WEAPONS } from '../../data/melee';
 import { FIREARMS, ammoCap } from '../../data/weapons';
@@ -121,7 +121,7 @@ export function applyItem(w: World, e: Entity, item: ItemId): boolean {
         w.emit({ t: 'medkit', player: e.id, action: 'store', left: p.medkits.length });
         return true;
       }
-      applyHeal(w, e, ef.amount);
+      applyHeal(w, e, kitHeal(ef.amount, h.max));
       return true;
     case 'mana':
       if (p.mana >= p.manaMax) return false;

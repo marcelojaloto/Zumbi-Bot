@@ -1,6 +1,7 @@
 import { DEG } from '../../core/math';
 import { DT, secToTicks } from '../../core/time';
 import { playerPerks } from '../perks';
+import { kitHeal } from '../../data/balance';
 import { FIREARMS } from '../../data/weapons';
 import type { FirearmDef, HitSpec, WeaponId } from '../../data/types';
 import { isCharacter, isHostile, type Entity, type PlayerComp } from '../Entity';
@@ -85,7 +86,7 @@ export function useMedkit(w: World, e: Entity): boolean {
     w.emit({ t: 'medkit', player: e.id, action: 'full', left: p.medkits.length });
     return false;
   }
-  applyHeal(w, e, p.medkits.pop()!);
+  applyHeal(w, e, kitHeal(p.medkits.pop()!, h.max));
   w.emit({ t: 'medkit', player: e.id, action: 'use', left: p.medkits.length });
   return true;
 }

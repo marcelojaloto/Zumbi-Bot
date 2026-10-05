@@ -74,6 +74,7 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - 14 acessórios novos: coroa de engrenagens, elmo viking, antenas de ET, auréola arcana, faixa de ninja, visor de
   neon, óculos de aviador, máscara de samurai, bigode elegante, armadura de cavaleiro, quimono do dojo, mochila a
   jato, asas de anjo e capa de fênix.
+- O kit médico cura mais: o pequeno, 40% da vida máxima, e o grande, 80% (nunca menos que 40 e 80).
 
 ### Novo jogo e continuação
 

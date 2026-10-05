@@ -63,7 +63,8 @@ Web Audio.
 - **10 cajados elementais** (cura, fogo, água, gelo, eletricidade, tóxico, cibernético, vento, terra e
   necromancia) com efeitos de status que interagem entre si: molhado + elétrico atordoa, congelado quebra com
   golpes fortes, fogo inflama nuvens tóxicas, o cibernético hackeia robôs e o necromante controla zumbis.
-- **Itens e power-ups**: kits médicos, escudo, mana, munição, dano dobrado, turbo e invulnerabilidade.
+- **Itens e power-ups**: kits médicos (o pequeno cura 40% da vida máxima e o grande 80%, nunca menos que 40 e
+  80), escudo, mana, munição, dano dobrado, turbo e invulnerabilidade.
 - **Loot cosmético**: cerca de 55 peças dos conjuntos mago e zumbi (chapéus, elmos, óculos, máscaras, roupas,
   armaduras, capas com física, asas e mochila a jato), inventário no **Guarda-roupa** com prévia 3D e uma
   **Loja** em três abas: Visual (ofertas do dia; escolher um item veste o boneco para ver antes), Armas (de fogo e

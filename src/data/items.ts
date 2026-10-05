@@ -10,7 +10,8 @@ function item(d: ItemDef): ItemDef {
 item({
   id: 'medkitS',
   name: 'Kit Médico',
-  effect: { k: 'heal', amount: 25 },
+  // cura 40 ou 40% da vida máxima, o que for maior (`kitHeal`)
+  effect: { k: 'heal', amount: 40 },
   auto: true,
   despawnS: 20,
   color: 0xff3b3b,
@@ -19,7 +20,7 @@ item({
 item({
   id: 'medkitL',
   name: 'Kit Médico Grande',
-  effect: { k: 'heal', amount: 60 },
+  effect: { k: 'heal', amount: 80 },
   auto: true,
   despawnS: 30,
   color: 0xff3b3b,

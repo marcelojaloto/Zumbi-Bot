@@ -68,7 +68,15 @@ export const DIFFICULTY: Record<
  * Caixas de cura guardadas de quem não usa cajado (Militar, Ciborgue, Mutante): começa cada mapa com o estoque cheio
  * e usa no botão do cajado; pegar uma caixa de cura com a vida cheia guarda ela (até `max`).
  */
-export const MEDKITS = { max: 4, start: 4, heal: 25 };
+export const MEDKITS = { max: 4, start: 4, heal: 40 };
+
+/**
+ * Cura de um kit médico: `amount` vale como pontos de vida e como porcentagem da vida máxima, o que for maior. Assim o
+ * kit continua enchendo boa parte da barra nos níveis altos (o pequeno, 40%; o grande, 80%).
+ */
+export function kitHeal(amount: number, maxHp: number): number {
+  return Math.max(amount, Math.round((amount / 100) * maxHp));
+}
 
 export const DIFFICULTY_ORDER: Difficulty[] = ['easy', 'normal', 'hard', 'insane'];
 

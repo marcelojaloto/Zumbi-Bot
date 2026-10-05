@@ -3,6 +3,7 @@ import { spawnEnemy } from '../ai/spawnEnemy';
 import { Btn } from '../InputFrame';
 import { makeWorld, player, run } from '../test/helpers';
 import { spawnPickup } from './pickups';
+import { kitHeal } from '../../data/balance';
 import type { CharacterId } from '../../data/types';
 import type { World } from '../World';
 
@@ -131,10 +132,11 @@ describe('caixas de cura guardadas (quem não usa cajado)', () => {
     run(w, 1);
     expect(pc.medkits).toHaveLength(4);
     expect(kitEvents(w).map((e) => e.action)).toEqual(['full']);
-    h.hp = h.max - 40;
+    h.hp = h.max - 60;
     run(w, 1, { buttons: Btn.ModeStaff });
     run(w, 1);
-    expect(h.hp).toBe(h.max - 15);
+    // cura 40 ou 40% da vida máxima, o que for maior
+    expect(h.hp).toBe(h.max - 60 + Math.max(40, Math.round(0.4 * h.max)));
     expect(pc.medkits).toHaveLength(3);
     expect(pc.mode).toBe('gun');
     pc.medkits = [];
@@ -146,10 +148,10 @@ describe('caixas de cura guardadas (quem não usa cajado)', () => {
   it('com a vida cheia, a caixa de cura do chão é guardada até 4', () => {
     const w = makeWorld({ loadout: { character: 'cyborg' } });
     const pc = player(w).player!;
-    pc.medkits = [25, 25, 25];
+    pc.medkits = [40, 40, 40];
     dropAt(w, 'medkitL');
     run(w, 3);
-    expect(pc.medkits).toEqual([25, 25, 25, 60]);
+    expect(pc.medkits).toEqual([40, 40, 40, 80]);
     expect(onGround(w, 'medkitL')).toBe(0);
     dropAt(w, 'medkitS');
     run(w, 3);
@@ -160,7 +162,9 @@ describe('caixas de cura guardadas (quem não usa cajado)', () => {
     player(w).health!.hp = 10;
     run(w, 1, { buttons: Btn.ToggleMode });
     run(w, 1);
-    expect(player(w).health!.hp).toBe(70);
+    expect(player(w).health!.hp).toBe(
+      Math.min(player(w).health!.max, 10 + kitHeal(80, player(w).health!.max)),
+    );
   });
 
   it('quem usa cajado não guarda: com a vida cheia a caixa fica no chão', () => {
@@ -169,5 +173,20 @@ describe('caixas de cura guardadas (quem não usa cajado)', () => {
     run(w, 5);
     expect(player(w).player!.medkits).toEqual([]);
     expect(onGround(w, 'medkitS')).toBe(1);
+  });
+});
+
+describe('kit médico', () => {
+  it('cura 40 (pequeno) e 80 (grande), ou essa porcentagem da vida máxima nos níveis altos', () => {
+    expect(kitHeal(40, 100)).toBe(40);
+    expect(kitHeal(80, 100)).toBe(80);
+    expect(kitHeal(40, 245)).toBe(98);
+    expect(kitHeal(80, 245)).toBe(196);
+    const w = makeWorld({ loadout: { level: 30 } });
+    const h = player(w).health!;
+    h.hp = 20;
+    dropAt(w, 'medkitS');
+    run(w, 3);
+    expect(h.hp).toBe(20 + Math.round(0.4 * h.max));
   });
 });
