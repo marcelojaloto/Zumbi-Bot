@@ -108,6 +108,8 @@ export type GuestMsg =
   | { t: 'key' }
   /** Ligou ou desligou o microfone (para os outros verem 🎤/🔇). */
   | { t: 'mic'; on: boolean }
+  /** Saiu do jogo por um instante (outro app, compartilhar o convite) ou voltou: o anfitrião espera mais. */
+  | { t: 'away'; on: boolean }
   | { t: 'ping' }
   | { t: 'bye' };
 
@@ -126,6 +128,8 @@ export type HostMsg =
     } & RoomOptions)
   | StartMsg
   | { t: 'snap'; s: SnapDelta; ev: GameEvent[] }
+  /** O anfitrião saiu do jogo por um instante (mandando o convite, outro app) ou voltou: os outros esperam mais. */
+  | { t: 'away'; on: boolean }
   | { t: 'ping' }
   | { t: 'bye' };
 

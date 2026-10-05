@@ -56,8 +56,8 @@ export interface Endpoint {
   readonly voice?: VoicePeer;
   /** Alguém conectou neste aparelho (pelo id ou pela porta do código): só o anfitrião aceita; null recusa. */
   onLink: ((l: Link) => void) | null;
-  /** Conecta em outro aparelho pelo id (quando o anfitrião muda). */
-  connect(to: string): Promise<Link>;
+  /** Conecta em outro aparelho pelo id (quando o anfitrião muda); `timeoutMs` limita a espera. */
+  connect(to: string, timeoutMs?: number): Promise<Link>;
   /**
    * Abre a "porta" do código da sala neste aparelho: quem digitar o código chega aqui. O novo anfitrião tenta
    * até conseguir (o endereço do código fica livre quando o antigo anfitrião sai do serviço).

@@ -43,7 +43,8 @@ function mapError(err: PeerError<string> | Error): NetError {
 }
 
 /**
- * Conexão de dados com outro aparelho. Mensagens grandes vão em pedaços (o PeerJS recusa as de 16 KB ou mais).
+ * Conexão de dados com outro aparelho. Mensagens grandes vão em pedaços (o PeerJS recusa as de 16 KB ou mais) e
+ * qualquer erro fecha a conexão de verdade, para o outro lado saber na hora em vez de esperar o silêncio.
  */
 export class PeerLink implements Link {
   onMessage: ((msg: unknown) => void) | null = null;
@@ -57,10 +58,13 @@ export class PeerLink implements Link {
       if (m !== undefined) this.onMessage?.(m);
     });
     c.on('close', () => this.end());
-    c.on('error', () => this.end());
+    c.on('error', (err) => {
+      console.warn('zumbibot net:', err.type, err.message);
+      this.close();
+    });
     // WebRTC: rede caiu de vez
     c.on('iceStateChanged', (s) => {
-      if (s === 'failed' || s === 'closed') this.end();
+      if (s === 'failed' || s === 'closed') this.close();
     });
   }
 
@@ -73,7 +77,7 @@ export class PeerLink implements Link {
     try {
       for (const part of splitMessage(msg, MAX_FRAME_BYTES, jsonOf(msg))) void this.c.send(part);
     } catch {
-      this.end();
+      this.close();
     }
   }
 
@@ -278,14 +282,15 @@ function acceptLinks(peer: Peer, onLink: (l: Link) => void): void {
   });
 }
 
-/** Conecta num Peer pelo id e espera abrir. */
-function connectTo(peer: Peer, to: string): Promise<Link> {
+/** Conecta num Peer pelo id e espera abrir (`timeoutMs`: desiste antes, para tentar outro aparelho). */
+function connectTo(peer: Peer, to: string, timeoutMs = CONNECT_TIMEOUT): Promise<Link> {
   const c = peer.connect(to, { reliable: true, serialization: 'json' });
   return new Promise<Link>((resolve, reject) => {
     const timer = setTimeout(() => {
+      peer.off('error', fail);
       c.close();
       reject(new NetError('timeout', 'connect'));
-    }, CONNECT_TIMEOUT);
+    }, timeoutMs);
     const fail = (err: PeerError<string> | Error) => {
       clearTimeout(timer);
       peer.off('error', fail);
@@ -337,9 +342,9 @@ class PeerEndpoint implements Endpoint {
     this.stops.push(keepSignaling(p));
   }
 
-  connect(to: string): Promise<Link> {
+  connect(to: string, timeoutMs?: number): Promise<Link> {
     if (this.closed) return Promise.reject(new NetError('lost', 'closed'));
-    return connectTo(this.peer, to);
+    return connectTo(this.peer, to, timeoutMs);
   }
 
   async openDoor(code: string): Promise<boolean> {

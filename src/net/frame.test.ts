@@ -75,4 +75,20 @@ describe('mensagens grandes em pedaços', () => {
     for (const x of a.sent) b.emit('data', x);
     expect(got).toEqual([m, { t: 'ping' }]);
   });
+
+  it('erro na conexão fecha de verdade (o outro lado fica sabendo na hora)', () => {
+    const c = new FakeConn();
+    const link = new PeerLink(c as unknown as DataConnection);
+    let closed = 0;
+    link.onClose = () => closed++;
+    const warn = console.warn;
+    console.warn = () => {};
+    try {
+      c.emit('error', { type: 'negotiation-failed', message: 'x' });
+    } finally {
+      console.warn = warn;
+    }
+    expect(c.closed).toBe(1);
+    expect(closed).toBe(1);
+  });
 });

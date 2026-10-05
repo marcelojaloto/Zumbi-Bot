@@ -64,8 +64,8 @@ class LocalEndpoint implements Endpoint {
     return this.t.id;
   }
 
-  connect(to: string): Promise<Link> {
-    return this.t.dial({ to });
+  connect(to: string, timeoutMs?: number): Promise<Link> {
+    return this.t.dial({ to }, timeoutMs);
   }
 
   async openDoor(code: string): Promise<boolean> {
@@ -95,9 +95,10 @@ export class LocalTransport implements Transport {
 
   /**
    * `maxBytes`: como o canal JSON do PeerJS, mensagens desse tamanho ou maiores não saem (testes de mensagens
-   * grandes).
+   * grandes). `muted`: aparelhos com quem a conversa sumiu sem aviso (testes de queda de rede).
    */
   private maxBytes: number;
+  readonly muted = new Set<string>();
 
   constructor(name = 'zumbibot-net', opts: { maxBytes?: number } = {}) {
     this.maxBytes = opts.maxBytes ?? Infinity;
@@ -108,10 +109,24 @@ export class LocalTransport implements Transport {
   }
 
   post(f: Omit<Frame, 'from'>): void {
-    if (this.closed) return;
+    if (this.closed || (f.k !== 'syn' && f.to && this.muted.has(f.to))) return;
     if (f.k === 'msg' && this.maxBytes < Infinity && utf8Bytes(JSON.stringify(f.data)) >= this.maxBytes)
       return;
     this.ch.postMessage({ ...f, from: this.id });
+  }
+
+  /**
+   * Testes: a conexão com `peer` cai. `quiet`: sem aviso para nenhum dos lados (só o silêncio, como o Wi-Fi
+   * sumindo); senão os dois lados ficam sabendo na hora. Novas conexões com ele voltam a funcionar.
+   */
+  cut(peer: string, quiet = false): void {
+    const l = this.links.get(peer);
+    if (quiet) {
+      this.muted.add(peer);
+      if (l) this.links.delete(peer);
+      return;
+    }
+    l?.close();
   }
 
   forget(l: LocalLink): void {
@@ -125,6 +140,7 @@ export class LocalTransport implements Transport {
       if (!onLink) return;
       const l = new LocalLink(this, f.from);
       this.links.get(f.from)?.end();
+      this.muted.delete(f.from);
       this.links.set(f.from, l);
       this.post({ k: 'ack', to: f.from, req: f.req });
       onLink(l);
@@ -142,18 +158,22 @@ export class LocalTransport implements Transport {
   }
 
   /** Pede conexão pela porta de um código ou direto a um aparelho. */
-  dial(target: { code?: string; to?: string }): Promise<Link> {
+  dial(target: { code?: string; to?: string }, timeoutMs = 1500): Promise<Link> {
     const req = ++this.req;
     return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => {
-        this.waiting.delete(req);
-        reject(new NetError(target.code ? 'not-found' : 'timeout'));
-      }, 1500);
+      const timer = setTimeout(
+        () => {
+          this.waiting.delete(req);
+          reject(new NetError(target.code ? 'not-found' : 'timeout'));
+        },
+        Math.min(1500, timeoutMs),
+      );
       this.waiting.set(req, (peer) => {
         clearTimeout(timer);
         this.waiting.delete(req);
         const l = new LocalLink(this, peer);
         this.links.get(peer)?.end();
+        this.muted.delete(peer);
         this.links.set(peer, l);
         resolve(l);
       });

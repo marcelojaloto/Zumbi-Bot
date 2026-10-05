@@ -20,6 +20,13 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - O estado completo do jogo, que com 3 jogadores e uma onda de inimigos passava de 16 KB, era recusado em silêncio
   pelo PeerJS, e a conexão morria sem aviso. Agora ele vai em pedaços e é montado de novo do outro lado, e o
   estado igual para todos vira texto uma vez só.
+- Um erro na conexão fecha a conexão de verdade, e o outro lado fica sabendo na hora, em vez de esperar 8 s de
+  silêncio.
+- Quando a rede de um aparelho oscila, ele tenta antes voltar no mesmo anfitrião, que guarda o lugar dele por
+  30 s. Só se o anfitrião não responder é que o jogador de menor número assume. Isso acaba com os dois anfitriões
+  ao mesmo tempo quando o anfitrião caía numa sala de 3.
+- Sair do jogo por um instante (mandar o convite, outro app) avisa os outros, que esperam até um minuto. Um
+  aparelho que travou alguns segundos (fase carregando) não derruba mais ninguém.
 
 ## 1.6, atualização de 01/10/2026
 

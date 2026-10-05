@@ -21,17 +21,31 @@ import {
 import { NetError, type Endpoint, type Link, type Transport, type VoicePeer } from './transport';
 import type { NetAdapter } from './types';
 
-/** Intervalo dos "sinais de vida" e quanto tempo sem notícias derruba a conexão. */
-const PING_MS = 1000;
-const TIMEOUT_MS = 8000;
+/** Tempos da sala, em milissegundos (os testes encurtam). */
+export const ROOM_TIMES = {
+  /** Intervalo dos "sinais de vida". */
+  pingMs: 1000,
+  /** Sem notícias por esse tempo, a conexão caiu. */
+  timeoutMs: 8000,
+  /** Quem avisou que saiu do jogo por um instante (outro app, mandando o convite) tem esse tempo para voltar. */
+  awayMs: 60000,
+  /** Quanto tempo o anfitrião guarda o lugar de quem caiu ou de quem volta depois da troca de anfitrião. */
+  rejoinWaitMs: 30000,
+  /** Troca de anfitrião: quanto tempo os outros tentam se conectar no novo anfitrião. */
+  rejoinTryMs: 20000,
+  /** Quem perdeu a conexão tenta antes voltar no mesmo anfitrião (pode ter caído só a própria rede). */
+  sameHostMs: 6000,
+  /** Cada tentativa de conexão desiste depois disso (para tentar de novo ou tentar outro aparelho). */
+  attemptMs: 5000,
+  /** Intervalo entre dois sinais de vida maior que isso: o aparelho ficou parado (aba escondida, fase carregando). */
+  stallMs: 3000,
+};
+
+const stallMs = (): number => ROOM_TIMES.stallMs;
 /** O estado vai a cada 3 ticks (20 vezes por segundo). */
 const SNAP_EVERY = 3;
 /** Estados guardados no máximo (~1 min); passou disso, pede um quadro completo. */
 const MAX_QUEUE = 1200;
-/** Troca de anfitrião: quanto tempo o novo anfitrião guarda o lugar de quem ainda vai se reconectar. */
-const REJOIN_WAIT_MS = 20000;
-/** Troca de anfitrião: quanto tempo os outros tentam se conectar no novo anfitrião. */
-const REJOIN_TRY_MS = 20000;
 
 type Clock = () => number;
 const defaultClock: Clock = () => performance.now();
@@ -48,6 +62,8 @@ interface Guest {
   needKey: boolean;
   /** Microfone ligado. */
   mic: boolean;
+  /** Saiu do jogo por um instante (espera mais antes de achar que caiu). */
+  away: boolean;
   input: RemoteInputSource;
   seen: number;
 }
@@ -92,6 +108,7 @@ export class HostRoom {
   private expected = new Map<PlayerSlot, Expected>();
   private ep: Endpoint | null = null;
   private timer: ReturnType<typeof setInterval>;
+  private lastBeat: number;
   private closed = false;
 
   private constructor(
@@ -103,7 +120,8 @@ export class HostRoom {
   ) {
     this.difficulty = opts.difficulty;
     this.voice = opts.voice;
-    this.timer = setInterval(() => this.heartbeat(), PING_MS);
+    this.lastBeat = now();
+    this.timer = setInterval(() => this.heartbeat(), ROOM_TIMES.pingMs);
   }
 
   static async open(
@@ -301,6 +319,11 @@ export class HostRoom {
     }
   }
 
+  /** O anfitrião saiu do jogo por um instante (outro app, mandando o convite) ou voltou. */
+  setAway(on: boolean): void {
+    this.broadcast({ t: 'away', on });
+  }
+
   /** Sair da sala: os outros ficam sabendo na hora e um deles assume como anfitrião. */
   close(): void {
     if (this.closed) return;
@@ -355,14 +378,25 @@ export class HostRoom {
       if (slot === null) {
         if (m.t !== 'hello') return;
         clearTimeout(helloTimer);
-        // o mesmo aparelho já está na sala (aviso repetido da conexão): não vira outro jogador; este link é
-        // ignorado sem fechar (pode ser a mesma conexão do jogador que já entrou)
-        if (link.peerId && [...this.guests.values()].some((x) => x.link.peerId === link.peerId)) {
-          link.onMessage = null;
-          return;
+        const same = link.peerId
+          ? [...this.guests.values()].find((x) => x.link.peerId === link.peerId)
+          : undefined;
+        if (same) {
+          // o mesmo aparelho já está na sala (aviso repetido da conexão): não vira outro jogador; este link é
+          // ignorado sem fechar (pode ser a mesma conexão do jogador que já entrou)
+          if (m.rejoin !== same.slot) {
+            link.onMessage = null;
+            return;
+          }
+          // voltou por uma conexão nova antes de a antiga cair aqui: a antiga sai e o lugar dele fica guardado
+          this.drop(same.slot);
         }
-        // voltando depois da troca de anfitrião: o lugar dele estava guardado (mesmo no meio da partida)
-        const back = m.rejoin !== undefined ? this.expected.get(m.rejoin) : undefined;
+        // voltando (conexão caiu ou troca de anfitrião): o lugar dele estava guardado, mesmo no meio da partida
+        const saved = m.rejoin !== undefined ? this.expected.get(m.rejoin) : undefined;
+        const back =
+          saved && (!saved.player.pid || !link.peerId || saved.player.pid === link.peerId)
+            ? saved
+            : undefined;
         const why =
           m.v !== NET_VERSION
             ? 'version'
@@ -391,6 +425,7 @@ export class HostRoom {
           // de volta no meio da partida: recebe um quadro completo
           needKey: !!back?.inGame,
           mic: false,
+          away: false,
           input: new RemoteInputSource(s, this.now),
           seen: this.now(),
         };
@@ -424,8 +459,11 @@ export class HostRoom {
           g.mic = !!m.on;
           this.changed();
           break;
+        case 'away':
+          g.away = !!m.on;
+          break;
         case 'bye':
-          this.drop(slot);
+          this.drop(slot, true);
           break;
         default:
           break;
@@ -437,14 +475,34 @@ export class HostRoom {
     };
   }
 
-  private drop(slot: PlayerSlot): void {
+  /**
+   * Tira um jogador da conexão. `gone`: ele saiu de propósito (avisou), e sai da sala na hora. Sem aviso (a rede
+   * caiu), o lugar fica guardado por um tempo para ele voltar pela mesma sala, e o boneco dele espera parado.
+   */
+  private drop(slot: PlayerSlot, gone = false): void {
     const g = this.guests.get(slot);
     if (!g) return;
     this.guests.delete(slot);
     g.link.onClose = null;
     g.link.close();
-    this.onNotice?.({ kind: 'left', slot, name: g.lo.name });
-    if (g.inGame) this.onGuestLeft?.(slot);
+    if (!gone && !this.closed) {
+      this.expected.set(slot, {
+        player: {
+          slot,
+          name: g.lo.name,
+          char: g.lo.character,
+          ready: g.ready,
+          level: g.lo.level,
+          pid: g.link.peerId,
+          mic: false,
+        },
+        inGame: g.inGame,
+        at: this.now(),
+      });
+    } else {
+      this.onNotice?.({ kind: 'left', slot, name: g.lo.name });
+      if (g.inGame) this.onGuestLeft?.(slot);
+    }
     this.changed();
   }
 
@@ -464,13 +522,22 @@ export class HostRoom {
 
   private heartbeat(): void {
     const now = this.now();
+    const gap = now - this.lastBeat;
+    this.lastBeat = now;
+    if (gap > stallMs()) {
+      // este aparelho ficou parado (fase carregando, aba escondida): as mensagens de todos estão chegando agora,
+      // ninguém caiu por causa disso
+      for (const g of this.guests.values()) g.seen = now;
+      for (const x of this.expected.values()) x.at += gap;
+      return;
+    }
     for (const g of [...this.guests.values()]) {
-      if (now - g.seen > TIMEOUT_MS) this.drop(g.slot);
+      if (now - g.seen > (g.away ? ROOM_TIMES.awayMs : ROOM_TIMES.timeoutMs)) this.drop(g.slot);
       else g.link.send({ t: 'ping' } satisfies HostMsg);
     }
     let gone = false;
     for (const [s, x] of [...this.expected])
-      if (now - x.at > REJOIN_WAIT_MS) {
+      if (now - x.at > ROOM_TIMES.rejoinWaitMs) {
         this.expire(s);
         gone = true;
       }
@@ -525,13 +592,18 @@ export class HostAdapter implements NetAdapter {
 export type LeaveReason = 'host-left' | 'lost';
 
 /** Apresenta-se ao anfitrião (entrando ou voltando depois da troca) e espera o número de jogador. */
-function handshake(link: Link, lo: PlayerLoadout, rejoin?: PlayerSlot): Promise<PlayerSlot> {
+function handshake(
+  link: Link,
+  lo: PlayerLoadout,
+  rejoin?: PlayerSlot,
+  timeoutMs = 10000,
+): Promise<PlayerSlot> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
       link.onClose = null;
       link.close();
       reject(new NetError('timeout', 'welcome'));
-    }, 10000);
+    }, timeoutMs);
     link.onMessage = (raw) => {
       const m = raw as HostMsg;
       if (m?.t === 'welcome') {
@@ -576,13 +648,19 @@ export class GuestRoom {
   onNotice: ((n: RoomNotice) => void) | null = null;
   /** O anfitrião saiu e este jogador assume a sala (criar o `HostRoom.takeOver`). */
   onPromote: ((oldHost: RoomPlayer | undefined) => void) | null = null;
-  /** Reconectando no novo anfitrião (`to`) ou de volta (null). */
+  /**
+   * Reconectando (`to`: no próprio anfitrião, se a conexão caiu só aqui, ou no novo anfitrião) ou de volta
+   * (null).
+   */
   onReconnect: ((to: RoomPlayer | null) => void) | null = null;
   /** Estado que chegou antes da partida deste aparelho terminar de carregar. */
   private buffer: Snap[] = [];
   private waitKey = false;
   private client: ClientAdapter | null = null;
   private seen: number;
+  private lastBeat: number;
+  /** O anfitrião avisou que saiu do jogo por um instante (desde quando). */
+  private hostAwayAt: number | null = null;
   private timer: ReturnType<typeof setInterval>;
   private closed = false;
   private rejoining = false;
@@ -597,13 +675,24 @@ export class GuestRoom {
     readonly loadout: PlayerLoadout,
     private now: Clock,
   ) {
-    this.seen = now();
+    this.seen = this.lastBeat = now();
     this.useLink(link);
-    this.timer = setInterval(() => {
-      if (this.rejoining) return;
-      if (this.now() - this.seen > TIMEOUT_MS) this.hostLost();
-      else this.send({ t: 'ping' });
-    }, PING_MS);
+    this.timer = setInterval(() => this.heartbeat(), ROOM_TIMES.pingMs);
+  }
+
+  private heartbeat(): void {
+    const now = this.now();
+    const gap = now - this.lastBeat;
+    this.lastBeat = now;
+    if (this.rejoining) return;
+    // este aparelho ficou parado (fase carregando, aba escondida): o silêncio foi daqui, não do anfitrião
+    if (gap > stallMs()) {
+      this.seen = now;
+      return;
+    }
+    const limit = this.hostAwayAt !== null ? ROOM_TIMES.awayMs : ROOM_TIMES.timeoutMs;
+    if (now - this.seen > limit) this.hostLost(false);
+    else this.send({ t: 'ping' });
   }
 
   /** Conecta, se apresenta e espera o "bem-vindo" do anfitrião. */
@@ -671,6 +760,11 @@ export class GuestRoom {
     this.onChange?.();
   }
 
+  /** Este aparelho saiu do jogo por um instante (outro app, mandando o convite) ou voltou. */
+  setAway(on: boolean): void {
+    this.send({ t: 'away', on });
+  }
+
   /** Ficou para trás demais: descarta o que tem e pede um quadro completo ao anfitrião. */
   requestKey(): void {
     this.buffer = [];
@@ -710,7 +804,7 @@ export class GuestRoom {
   private useLink(link: Link): void {
     this.link = link;
     link.onMessage = (raw) => this.recv(raw as HostMsg);
-    link.onClose = () => this.hostLost();
+    link.onClose = () => this.hostLost(false);
   }
 
   private end(why: LeaveReason): void {
@@ -722,57 +816,89 @@ export class GuestRoom {
   }
 
   /**
-   * A conexão com o anfitrião acabou (ele saiu ou caiu): o jogador de menor número entre os que ficaram assume;
-   * este aparelho vira o anfitrião ou se conecta no novo.
+   * A conexão com o anfitrião acabou. `bye`: ele avisou que saiu. Sem aviso, pode ter caído só a rede deste
+   * aparelho: tenta voltar nele antes (o anfitrião guarda o lugar por um tempo). Saiu mesmo: o jogador de menor
+   * número entre os que ficaram assume; este aparelho vira o anfitrião ou se conecta no novo.
    */
-  private hostLost(): void {
+  private hostLost(bye: boolean): void {
     if (this.closed || this.rejoining) return;
     const old = this.players.find((p) => p.slot === this.hostSlot);
     this.link.onClose = null;
     this.link.onMessage = null;
     this.link.close();
+    this.rejoining = true;
+    void this.recover(old, bye);
+  }
+
+  private async recover(old: RoomPlayer | undefined, bye: boolean): Promise<void> {
+    if (!bye && old?.pid) {
+      // o anfitrião avisou que ia sair um instante: espera por ele o resto desse tempo
+      const away = this.hostAwayAt !== null ? ROOM_TIMES.awayMs - (this.now() - this.hostAwayAt) : 0;
+      this.onReconnect?.(old);
+      const r = await this.rejoin([old], Math.max(ROOM_TIMES.sameHostMs, away));
+      if (r === 'ok' || this.closed) return;
+      // o anfitrião está lá e não guardou o lugar: ninguém assume por isso
+      if (r === 'refused') return this.fail('lost');
+    }
+    this.hostAwayAt = null;
     if (old) this.onNotice?.({ kind: 'left', slot: old.slot, name: old.name, host: true });
     this.players = this.players.filter((p) => p.slot !== this.hostSlot);
     const next = [...this.players].sort((a, b) => a.slot - b.slot)[0];
     if (!next || next.slot === this.slot) {
+      this.rejoining = false;
       this.handOver();
       this.onPromote?.(old);
       return;
     }
-    this.rejoining = true;
     this.onReconnect?.(next);
-    void this.rejoin(next);
+    // sem aviso, o antigo anfitrião ainda pode estar lá: tenta os dois (só um deles pode ser o anfitrião)
+    const r = await this.rejoin(bye || !old?.pid ? [next] : [old, next], ROOM_TIMES.rejoinTryMs);
+    if (r !== 'ok') this.fail(r === 'refused' ? 'lost' : 'host-left');
   }
 
-  private async rejoin(next: RoomPlayer): Promise<void> {
-    const until = this.now() + REJOIN_TRY_MS;
+  private fail(why: LeaveReason): void {
+    this.rejoining = false;
+    this.end(why);
+  }
+
+  /**
+   * Tenta entrar de novo, com o mesmo número, num dos aparelhos (um de cada vez, até `ms`). 'refused': um
+   * anfitrião respondeu e recusou (a partida seguiu sem este jogador); 'gone': ninguém atendeu.
+   */
+  private async rejoin(targets: RoomPlayer[], ms: number): Promise<'ok' | 'refused' | 'gone'> {
+    const until = this.now() + ms;
     const lo = { ...this.loadout, character: this.me()?.char ?? this.loadout.character };
-    while (!this.closed && next.pid && this.now() < until) {
+    const list = targets.filter((p) => p.pid);
+    for (let i = 0; !this.closed && list.length && this.now() < until; i++) {
+      const to = list[i % list.length]!;
+      const wait = Math.max(500, Math.min(ROOM_TIMES.attemptMs, until - this.now()));
       try {
-        const link = await this.ep.connect(next.pid);
-        await handshake(link, lo, this.slot);
+        const link = await this.ep.connect(to.pid!, wait);
+        await handshake(link, lo, this.slot, wait);
         if (this.closed) {
           link.close();
-          return;
+          return 'gone';
         }
         this.rejoining = false;
-        this.hostSlot = next.slot;
-        this.seen = this.now();
+        this.hostSlot = to.slot;
+        this.hostAwayAt = null;
+        this.seen = this.lastBeat = this.now();
         this.useLink(link);
         if (this.myMic) this.send({ t: 'mic', on: true });
-        // no meio da partida o novo anfitrião manda um quadro completo; até lá a tela espera
+        // no meio da partida o anfitrião manda um quadro completo; até lá a tela espera
         if (this.phase === 'playing') {
           this.buffer = [];
           this.waitKey = true;
         }
         this.onReconnect?.(null);
-        return;
-      } catch {
-        await new Promise((r) => setTimeout(r, 1000));
+        return 'ok';
+      } catch (e) {
+        if (e instanceof NetError && (e.kind === 'started' || e.kind === 'full' || e.kind === 'version'))
+          return 'refused';
+        await new Promise((r) => setTimeout(r, Math.min(1000, ROOM_TIMES.pingMs)));
       }
     }
-    this.rejoining = false;
-    this.end('host-left');
+    return 'gone';
   }
 
   /** Quem entrou e quem saiu, comparando a lista nova com a anterior. */
@@ -822,9 +948,12 @@ export class GuestRoom {
         else if (this.buffer.length < MAX_QUEUE) this.buffer.push(m);
         else this.requestKey();
         break;
+      case 'away':
+        this.hostAwayAt = m.on ? this.now() : null;
+        break;
       case 'bye':
         // o anfitrião saiu: um dos jogadores assume
-        this.hostLost();
+        this.hostLost(true);
         break;
       default:
         break;

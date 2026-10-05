@@ -225,6 +225,8 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       document.addEventListener(ev, (e) => e.preventDefault(), { passive: false });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden && this.screen === 'playing') this.pause();
+      // online: saiu um instante (mandar o convite, outro app); os outros esperam mais antes de achar que caiu
+      this.online?.setAway(document.hidden);
       // app Android: sem som com o app em segundo plano
       if (__NATIVE__) {
         if (document.hidden) this.audio.suspend();
@@ -1177,14 +1179,20 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     room.onStart = (m) => void this.startGuest(room, m);
     room.onNotice = (n) => this.roomNotice(n);
     room.onPromote = (old) => this.promote(room, old);
+    // anfitrião antes da conexão cair: voltar nele é só uma reconexão, não troca de anfitrião
+    let before = room.hostSlot;
     room.onReconnect = (to) => {
       if (this.online !== room) return;
-      if (to) this.notify(t('Conectando no novo anfitrião ({p})...', { p: playerTag(to.slot) }), '#39e6ff');
+      if (to?.slot === before) this.notify(t('Conexão instável: reconectando na sala...'), '#39e6ff');
+      else if (to)
+        this.notify(t('Conectando no novo anfitrião ({p})...', { p: playerTag(to.slot) }), '#39e6ff');
+      else if (room.hostSlot === before) this.notify(t('Conectado de novo.'), '#5aff9a');
       else
         this.notify(
           t('{p} é o novo anfitrião.', { p: playerTag(room.hostSlot) }),
           SLOT_COLORS[room.hostSlot]!,
         );
+      if (!to) before = room.hostSlot;
     };
     room.onClosed = (why) => {
       if (this.online !== room) return;

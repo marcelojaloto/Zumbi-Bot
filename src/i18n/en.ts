@@ -772,6 +772,8 @@ export const EN: Record<string, string> = {
   'Deixe o jogo aberto: seu aparelho conduz a partida.': 'Keep the game open: your device runs the match.',
   'Conectando no novo anfitrião ({p})...': 'Connecting to the new host ({p})...',
   '{p} é o novo anfitrião.': '{p} is the new host.',
+  'Conexão instável: reconectando na sala...': 'Unstable connection: reconnecting to the room...',
+  'Conectado de novo.': 'Connected again.',
   'Jogador {n}': 'Player {n}',
   'O anfitrião saiu e não deu para continuar com outro anfitrião.':
     'The host left and the room could not continue with another host.',

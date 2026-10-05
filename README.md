@@ -154,10 +154,12 @@ Cada um guarda o próprio progresso (nível, armas, itens) no seu aparelho, e na
 criou a sala é o anfitrião (👑): o aparelho dele roda a partida e manda o estado para os outros ~20 vezes por
 segundo; o estado completo, que com 3 ou mais jogadores e muitos inimigos passa do tamanho que o PeerJS aceita
 numa mensagem, vai em pedaços. No fim da fase o anfitrião escolhe a próxima (ou volta todos para a sala). **Se o
-anfitrião sair** (ou o aparelho dele cair), o jogador de menor número assume na hora: a sala, o código e a
-partida continuam para quem ficou, todos são avisados e o boneco de quem saiu some. Quando qualquer outro jogador
-sai ou cai, todos veem o aviso ("P3 saiu da partida") e o boneco dele sai do jogo. A tela de quem entrou mostra o
-jogo um pouquinho
+anfitrião sair** (ou o aparelho dele cair), o jogador de menor número assume: a sala, o código e a partida
+continuam para quem ficou, todos são avisados e o boneco de quem saiu some. Quando só a rede de um aparelho
+oscila, ele tenta antes voltar no mesmo anfitrião, que guarda o lugar dele por 30 segundos; assim ninguém vira um
+segundo anfitrião por engano. Sair do jogo por um instante (mandar o convite pelo WhatsApp, por exemplo) avisa os
+outros, que esperam até um minuto. Quando um jogador sai de vez, todos veem o aviso ("P3 saiu da partida") e o
+boneco dele sai do jogo. A tela de quem entrou mostra o jogo um pouquinho
 atrasado (~0,1 s) para andar liso mesmo com a rede oscilando, e com o chat de voz ligado o áudio usa pouca banda e
 não envia nada com o microfone desligado. A conexão usa WebRTC com o serviço gratuito do
 PeerJS para achar a sala pelo código, sem cadastro e sem servidor próprio. Algumas redes (de empresas e escolas)
