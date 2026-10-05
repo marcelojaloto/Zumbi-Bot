@@ -90,3 +90,22 @@ Pronto: no jogo, **Ranking > 🌎 Ranking Global > Participar**.
 
 O plano gratuito (**Spark**) aguenta com folga: cada registro tem poucas centenas de bytes e a lista dos 100
 melhores é baixada só quando alguém abre o Ranking Global (no máximo uma vez por minuto por aparelho).
+
+## LGPD e lojas
+
+- A política de privacidade ([`public/privacy/index.html`](../public/privacy/index.html)) já descreve o ranking
+  global: a Jaloto Software como responsável, o e-mail de contato, os dados guardados nos EUA, por quanto tempo e
+  como sair. Nas lojas, a declaração de dados está em [PLAY_STORE.md](PLAY_STORE.md) e [APP_STORE.md](APP_STORE.md).
+- Como agente de pequeno porte (Resolução CD/ANPD nº 2/2022), a Jaloto Software não precisa indicar encarregado,
+  mas mantém o e-mail da política como canal com os titulares e um registro simplificado das operações. Para o
+  ranking global, o registro é este:
+
+  | Item             | Ranking global                                                                            |
+  | ---------------- | ----------------------------------------------------------------------------------------- |
+  | Dados            | Código aleatório da conta anônima, pontuação, mapas, onde parou, personagens, nível, data |
+  | Titulares        | Jogadores que tocaram em Participar                                                       |
+  | Finalidade       | Montar o ranking global                                                                   |
+  | Base legal       | Execução do serviço pedido pelo titular (LGPD, art. 7º, V)                                |
+  | Operador e local | Google (Firebase Authentication e Realtime Database), Estados Unidos                      |
+  | Prazo            | Até o jogador sair, pedir a exclusão ou o ranking global ser desativado                   |
+  | Segurança        | HTTPS, regras do banco (cada aparelho só escreve o próprio registro, sem texto livre)     |

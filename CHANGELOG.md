@@ -12,6 +12,8 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - O nome escrito no ranking não sai mais do aparelho. No Ranking Global, os outros jogadores aparecem pelos
   apelidos dos personagens, e só a sua própria linha mostra o seu nome.
 - As regras do banco não aceitam mais nenhum texto livre: só números, datas e os códigos de mapas e personagens.
+- Nova política de privacidade, com a Jaloto Software como responsável, o e-mail de contato, os dados guardados
+  fora do Brasil e os direitos de quem joga.
 
 ## 1.6, atualização de 01/10/2026
 

@@ -92,12 +92,14 @@ No repositório: **Settings > Secrets and variables > Actions > New repository s
      consegue ouvi-la. Marque que os dados são **criptografados em trânsito**. Se preferir declarar de forma
      conservadora: **Áudio > Gravações de voz ou som**: coletado, processado temporariamente, opcional, para
      funcionalidade do app, não compartilhado.
-     Com o **ranking global** ligado ([RANKING_GLOBAL.md](RANKING_GLOBAL.md)), o melhor resultado do aparelho vai
-     para o Firebase e fica público: declare **Informações pessoais > Nome** (o nome do ranking, escolhido pelo
-     jogador) e **Atividade no app > Outras ações** (pontuação), **coletados**, **compartilhados: não**,
-     **opcionais: não**, finalidade **Funcionalidade do app**; e **IDs do dispositivo ou outros IDs** (a conta
-     anônima do Firebase), coletado, para funcionalidade do app. Os dados podem ser apagados a pedido (issue no
-     GitHub).
+     Com o **ranking global** configurado ([RANKING_GLOBAL.md](RANKING_GLOBAL.md)), quem toca em **Participar**
+     envia o melhor resultado do aparelho para o Firebase, **sem nome**: declare **Atividade no app > Outras
+     ações** (pontuação, mapas e personagens) e **IDs do dispositivo ou outros IDs** (o código da conta anônima do
+     Firebase), **coletados**, **compartilhados: não**, **opcionais: sim**, finalidade **Funcionalidade do app**.
+     **Informações pessoais > Nome** não é coletado: o nome do ranking fica só no aparelho. Marque que o usuário
+     **pode pedir a exclusão** dos dados: o botão **Sair do ranking global** apaga o registro e a conta anônima, e
+     quem não tem mais o jogo pede pelo e-mail da política. Se o formulário perguntar sobre exclusão de conta,
+     informe esse mesmo botão.
    - **Permissões:** o app declara **microfone** (`RECORD_AUDIO`, para o chat de voz; o Android só pergunta quando
      o jogador toca em "Ligar microfone") e vibração. O microfone não exige formulário no Play Console, mas
      precisa estar na política de privacidade (já está).
