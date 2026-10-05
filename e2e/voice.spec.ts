@@ -84,7 +84,8 @@ test('chat de voz: opções da sala, todos ouvem todos (3 aparelhos), microfone,
   expect((await voice(host)).available).toBe(false);
   await releaseVoice(host);
   await expect(host.locator('.room-voice')).toContainText('Todos da sala se ouvem');
-  expect((await voice(host)).permission).toBe('granted');
+  // a voz nasce na liberação, e a permissão do microfone é lida logo depois
+  await expect.poll(async () => (await voice(host)).permission).toBe('granted');
 
   // convidado entra: vê as opções e a voz conecta (todos ouvem todos, microfone começa desligado)
   await join(guest, code);
