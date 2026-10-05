@@ -8,6 +8,7 @@ import { ITEMS } from '../data/items';
 import { COSMETICS, RARITY_NAMES } from '../data/cosmetics';
 import { CHARACTERS } from '../data/characters';
 import { ATTRS, DEFENSE_DESC, PERKS } from '../data/workshop';
+import { REVIVE_ITEMS } from '../data/revive';
 
 /**
  * Todos os textos de dados que aparecem na tela (chaves do dicionário). Usado pelo teste de cobertura
@@ -58,13 +59,17 @@ export function dataKeys(): string[] {
     if (c.ending.title) add(c.ending.title);
     add(c.ending.text);
   }
-  // Oficina
+  // Oficina e itens de reviver
   for (const p of PERKS) {
     add(p.name);
     add(p.desc);
   }
   for (const a of Object.values(ATTRS)) add(a.name);
   for (const d of Object.values(DEFENSE_DESC)) add(d);
+  for (const r of Object.values(REVIVE_ITEMS)) {
+    add(r.name);
+    add(r.story);
+  }
   return [...out];
 }
 

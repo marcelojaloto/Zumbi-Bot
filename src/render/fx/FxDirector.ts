@@ -1,3 +1,4 @@
+import { REVIVE_ITEMS } from '../../data/revive';
 import type { Scene } from 'three';
 import { BOSSES } from '../../data/bosses';
 import { getCharacter } from '../../data/characters';
@@ -484,6 +485,37 @@ export class FxDirector {
           this.burst(ev.x, ev.y, ev.z, 12, 0x9fe8ff, 4, 0.09, 0.3, true, 4, 4);
           this.flash(ev.x, ev.y, ev.z, 0x9fe8ff, 6, 4, 0.15, 2);
           break;
+        // item de reviver: brilha no chão e, ao levantar, uma coluna de luz na cor do item
+        case 'revive': {
+          const pc = w.get(ev.player)?.player;
+          const c = pc ? REVIVE_ITEMS[pc.character].color : 0x5aff9a;
+          if (ev.phase === 'down') {
+            this.burst(ev.x, 0.4, ev.z, 10, c, 2, 0.12, 0.8, true, -1, 3);
+            break;
+          }
+          for (let i = 0; i < 36; i++) {
+            const a = (i / 36) * Math.PI * 2;
+            this.add.emit(
+              {
+                x: ev.x + Math.cos(a) * 0.6,
+                y: 0.15,
+                z: ev.z + Math.sin(a) * 0.4,
+                vy: 6,
+                spread: 0.4,
+                life: 1.1,
+                size: 0.24,
+                sizeEnd: 0.02,
+                color: c,
+                colorEnd: 0xffffff,
+                intensity: 3.5,
+              },
+              this.rnd,
+            );
+          }
+          this.flash(ev.x, 1.6, ev.z, c, 16, 9, 0.8, 1);
+          this.cam.addTrauma(0.25);
+          break;
+        }
         case 'interaction': {
           const e = w.get(ev.id);
           if (!e) break;

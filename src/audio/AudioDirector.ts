@@ -141,12 +141,18 @@ export class AudioDirector {
         case 'levelUp':
           a.play('levelUp', { bus: 'ui' });
           break;
-        // defesas da Oficina
+        // defesas da Oficina e item de reviver
         case 'dodge':
           a.play('whoosh', { x: ev.x, vol: 0.6, rate: 1.3 });
           break;
         case 'guard':
           a.play('robotHit', { x: ev.x, vol: 0.7, rate: 1.6 });
+          break;
+        case 'revive':
+          if (ev.phase === 'up') {
+            a.play('unlock', { bus: 'ui' });
+            a.play('cast_heal', { x: ev.x, vol: 0.8 });
+          }
           break;
         case 'unlock':
           a.play('unlock', { bus: 'ui' });

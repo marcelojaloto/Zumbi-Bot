@@ -1,9 +1,10 @@
 import { isCharacterId } from '../data/characters';
+import { MELEE_WEAPONS } from '../data/melee';
 import { PERK_BY_ID, specialsOf } from '../data/workshop';
 import { COSMETICS, SELL_VALUE } from '../data/cosmetics';
 import { STAFFS } from '../data/staffs';
 import { FIREARMS } from '../data/weapons';
-import type { CharacterId, CosmeticSlot, Difficulty, StaffId, WeaponId } from '../data/types';
+import type { CharacterId, CosmeticSlot, Difficulty, MeleeId, StaffId, WeaponId } from '../data/types';
 import { sanitizeKeys } from '../input/keymap';
 import {
   defaultRanking,
@@ -32,7 +33,7 @@ export const SAVE_MIGRATIONS: Record<number, Migration> = {
     (s.profile as Any).level = Number.isFinite(lvl) ? lvl : 1;
     return s;
   },
-  // v1 → v2: a Oficina começa vazia na validação
+  // v1 → v2: os campos novos (Loja, item de reviver, Oficina) começam vazios na validação
   1: (d) => ({ ...d, version: 2 }),
 };
 
@@ -120,6 +121,10 @@ export function sanitizeSave(raw: unknown): SaveV2 {
   if (!firearms.includes('pistol')) firearms.unshift('pistol');
   const staffs = arr(unlocks.staffs).filter((x): x is StaffId => typeof x === 'string' && x in STAFFS);
   if (!staffs.includes('heal')) staffs.unshift('heal');
+  const melee = [
+    ...new Set(arr(unlocks.melee).filter((x): x is MeleeId => typeof x === 'string' && x in MELEE_WEAPONS)),
+  ];
+  const revive = [...new Set(arr(d.revive).filter(isCharacterId))];
   return {
     version: 2,
     createdAt: num(d.createdAt, def.createdAt, 0),
@@ -133,9 +138,11 @@ export function sanitizeSave(raw: unknown): SaveV2 {
       ...(typeof profile.rankName === 'string' && profile.rankName.trim()
         ? { rankName: str(profile.rankName, '', 16) }
         : {}),
+      // só uma arma branca que foi comprada
+      ...(melee.includes(profile.melee as MeleeId) ? { melee: profile.melee as MeleeId } : {}),
     },
     progress: { unlockedLevels: [...new Set(unlockedLevels)], levels },
-    unlocks: { firearms: [...new Set(firearms)], staffs: [...new Set(staffs)] },
+    unlocks: { firearms: [...new Set(firearms)], staffs: [...new Set(staffs)], melee },
     cosmetics: {
       owned,
       equipped,
@@ -155,6 +162,7 @@ export function sanitizeSave(raw: unknown): SaveV2 {
       tutorialDone: bool(flags.tutorialDone, false),
       credits: bool(flags.credits, false),
     },
+    revive,
     workshop: sanitizeWorkshop(d.workshop),
     ...(sanitizeRun(d.run) ? { run: sanitizeRun(d.run) } : {}),
   };

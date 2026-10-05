@@ -199,6 +199,11 @@ export interface PlayerComp {
   /** Melhorias da Oficina (ids) e o especial em uso (id do golpe). */
   perks: string[];
   special: string;
+  /** Carrega o item especial de reviver; `reviving` = ticks até levantar com ele (caído). */
+  revive: boolean;
+  reviving: number;
+  /** Usou o item de reviver nesta fase (o perfil tira ele do save no fim). */
+  reviveUsed: boolean;
   /** Esquiva da Oficina: ticks da esquiva em andamento e espera até a próxima. */
   dodge: number;
   dodgeCd: number;

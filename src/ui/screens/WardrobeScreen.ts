@@ -1,7 +1,11 @@
 import { COSMETICS, RARITY_COLORS, RARITY_NAMES, RARITY_ORDER, SELL_VALUE } from '../../data/cosmetics';
 import { STAFFS, STAFF_ORDER } from '../../data/staffs';
-import type { CosmeticDef, CosmeticSlot } from '../../data/types';
+import type { CharacterId, CosmeticDef, CosmeticSlot, MeleeId, WeaponId } from '../../data/types';
 import { FIREARMS, WEAPON_ORDER } from '../../data/weapons';
+import { MELEE_WEAPONS } from '../../data/melee';
+import { FIREARM_PRICES, MELEE_ORDER, MELEE_PRICES, REVIVE_PRICE } from '../../data/shop';
+import { REVIVE_ITEMS } from '../../data/revive';
+import { CHARACTERS } from '../../data/characters';
 import { BOSSES } from '../../data/bosses';
 import { dailyDeals } from '../../app/Profile';
 import { el, fmtInt, hexColor } from '../dom';
@@ -277,9 +281,25 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
   };
 }
 
+/** Item da loja selecionado (prévia e barra de confirmação). */
+type ShopSel =
+  | { kind: 'cos'; c: CosmeticDef }
+  | { kind: 'gun'; id: WeaponId }
+  | { kind: 'melee'; id: MeleeId }
+  | { kind: 'revive'; c: CharacterId };
+
+const SHOP_TABS: [ShopTab, string][] = [
+  ['visual', 'Visual'],
+  ['weapons', 'Armas'],
+  ['special', 'Itens especiais'],
+];
+type ShopTab = 'visual' | 'weapons' | 'special';
+
 /**
- * Loja: ofertas do dia (-20%) e catálogo completo por encaixe, comprados com sucata. Tocar num item veste o
- * boneco com ele (prévia) e abre a barra de confirmação: nada é comprado sem apertar "Comprar".
+ * Loja, em três abas. Visual: ofertas do dia (-20%) e catálogo completo por encaixe; tocar num item veste o boneco
+ * com ele (prévia). Armas: armas de fogo (ficam no arsenal para sempre) e armas brancas (a escolhida começa cada
+ * fase na mão). Itens especiais: o item de reviver de cada personagem. Tudo com sucata, e nada é comprado sem
+ * apertar "Comprar" na barra de confirmação.
  */
 export function shopScreen(host: WardrobeHost): Screen {
   const prof = host.profile;
@@ -287,8 +307,10 @@ export function shopScreen(host: WardrobeHost): Screen {
   const scrap = el('div', { class: 'scrap' });
   const msg = el('div', { class: 'shop-msg' });
   const bar = el('div', { class: 'buy-bar', hidden: true });
-  /** Item em prévia (vestido no boneco, esperando a confirmação). */
-  let sel: CosmeticDef | null = null;
+  const tabs = el('div', { class: 'tabs' });
+  let tab: ShopTab = 'visual';
+  /** Item em prévia ou esperando a confirmação. */
+  let sel: ShopSel | null = null;
   let msgTimer = 0;
   const say = (text: string) => {
     msg.textContent = text;
@@ -296,77 +318,116 @@ export function shopScreen(host: WardrobeHost): Screen {
     clearTimeout(msgTimer);
     msgTimer = window.setTimeout(() => msg.classList.remove('show'), 3000);
   };
-  const preview = () =>
+  const preview = () => {
+    const c = sel?.kind === 'cos' ? sel.c : null;
     host.previewCosmetics(
-      sel ? { ...prof.save.cosmetics.equipped, [sel.slot]: sel.id } : prof.save.cosmetics.equipped,
-      sel?.slot === 'back',
+      c ? { ...prof.save.cosmetics.equipped, [c.slot]: c.id } : prof.save.cosmetics.equipped,
+      c?.slot === 'back',
     );
+  };
   const close = () => {
     sel = null;
     render();
   };
+  const same = (a: ShopSel | null, b: ShopSel): boolean =>
+    !!a &&
+    a.kind === b.kind &&
+    (a.kind === 'cos'
+      ? a.c.id === (b as typeof a).c.id
+      : a.kind === 'revive'
+        ? a.c === (b as typeof a).c
+        : a.id === (b as typeof a).id);
+  const pick = (s: ShopSel) => {
+    sel = same(sel, s) ? null : s;
+    render();
+  };
+  const btn = (label: string, fn?: () => void) =>
+    el(
+      'button',
+      { class: `btn small ${fn ? 'primary' : ''}`, data: { nav: '' }, disabled: !fn, onclick: fn },
+      label,
+    );
+  /** Botão de comprar (ou quanto falta). */
+  const buyBtn = (price: number, buy: () => boolean, done: string) => {
+    const have = prof.save.profile.scrap;
+    if (have < price) return btn(t('Faltam ⚙ {n}', { n: fmtInt(price - have) }));
+    return btn(t('Comprar por ⚙ {n}', { n: fmtInt(price) }), () => {
+      if (!buy()) {
+        say(t('Sucata insuficiente.'));
+        return;
+      }
+      host.playUi('loot');
+      say(done);
+      close();
+    });
+  };
+
   const renderBar = () => {
     bar.hidden = !sel;
     bar.innerHTML = '';
     if (!sel) return;
-    const c = sel;
-    const col = hexColor(RARITY_COLORS[c.rarity]);
-    const owned = prof.owns(c.id);
-    const equipped = prof.save.cosmetics.equipped[c.slot] === c.id;
-    const price = prof.priceOf(c.id) ?? 0;
-    const have = prof.save.profile.scrap;
+    let title: string;
+    let color = '#ffd24a';
+    let info: string;
     let main: HTMLButtonElement;
-    if (owned)
-      main = el(
-        'button',
-        {
-          class: 'btn primary small',
-          data: { nav: '' },
-          disabled: equipped,
-          onclick: () => {
-            prof.equip(c.slot, c.id);
-            say(t('{name} equipado.', { name: t(c.name) }));
+    const s = sel;
+    if (s.kind === 'cos') {
+      const c = s.c;
+      color = hexColor(RARITY_COLORS[c.rarity]);
+      title = t(c.name);
+      const owned = prof.owns(c.id);
+      const equipped = prof.save.cosmetics.equipped[c.slot] === c.id;
+      info = `${t(RARITY_NAMES[c.rarity])} | ${t(SLOT_NAMES[c.slot])} | ${owned ? t('Já possui') : t('Prévia no boneco')}`;
+      main = owned
+        ? btn(
+            equipped ? t('Equipado') : t('Equipar'),
+            equipped
+              ? undefined
+              : () => {
+                  prof.equip(c.slot, c.id);
+                  say(t('{name} equipado.', { name: t(c.name) }));
+                  close();
+                },
+          )
+        : buyBtn(
+            prof.priceOf(c.id) ?? 0,
+            () => prof.buy(c.id) && (prof.equip(c.slot, c.id), true),
+            t('Você comprou {name}!', { name: t(c.name) }),
+          );
+    } else if (s.kind === 'gun') {
+      const w = FIREARMS[s.id];
+      title = t(w.name);
+      info = t(w.desc);
+      main = prof.save.unlocks.firearms.includes(s.id)
+        ? btn(t('Já possui'))
+        : buyBtn(
+            FIREARM_PRICES[s.id] ?? 0,
+            () => prof.buyFirearm(s.id),
+            t('Você comprou {name}!', { name: t(w.name) }),
+          );
+    } else if (s.kind === 'melee') {
+      const m = MELEE_WEAPONS[s.id];
+      title = t(m.name);
+      info = t('Começa cada fase na mão, inteira. Quebrando ou trocando, só volta na próxima fase.');
+      const on = prof.save.profile.melee === s.id;
+      main = prof.ownsMelee(s.id)
+        ? btn(on ? t('Guardar (começar sem ela)') : t('Levar para as fases'), () => {
+            prof.setMelee(on ? null : s.id);
+            say(on ? t('{name} guardada.', { name: t(m.name) }) : t('{name} na mão!', { name: t(m.name) }));
             close();
-          },
-        },
-        equipped ? t('Equipado') : t('Equipar'),
-      );
-    else if (have >= price)
-      main = el(
-        'button',
-        {
-          class: 'btn primary small',
-          data: { nav: '' },
-          onclick: () => {
-            if (!prof.buy(c.id)) {
-              say(t('Sucata insuficiente.'));
-              return;
-            }
-            prof.equip(c.slot, c.id);
-            host.playUi('loot');
-            say(t('Você comprou {name}!', { name: t(c.name) }));
-            close();
-          },
-        },
-        t('Comprar por ⚙ {n}', { n: fmtInt(price) }),
-      );
-    else
-      main = el(
-        'button',
-        { class: 'btn small', disabled: true },
-        t('Faltam ⚙ {n}', { n: fmtInt(price - have) }),
-      );
+          })
+        : buyBtn(MELEE_PRICES[s.id], () => prof.buyMelee(s.id), t('{name} na mão!', { name: t(m.name) }));
+    } else {
+      const it = REVIVE_ITEMS[s.c];
+      color = hexColor(it.color);
+      title = `${it.icon} ${t(it.name)}`;
+      info = t(it.story);
+      main = prof.hasRevive(s.c)
+        ? btn(t('Já carrega'))
+        : buyBtn(REVIVE_PRICE, () => prof.buyRevive(s.c), t('Você comprou {name}!', { name: t(it.name) }));
+    }
     bar.append(
-      el(
-        'div',
-        { class: 'bb-info' },
-        el('b', { style: `color:${col}` }, t(c.name)),
-        el(
-          'span',
-          {},
-          `${t(RARITY_NAMES[c.rarity])} | ${t(SLOT_NAMES[c.slot])} | ${owned ? t('Já possui') : t('Prévia no boneco')}`,
-        ),
-      ),
+      el('div', { class: 'bb-info' }, el('b', { style: `color:${color}` }, title), el('span', {}, info)),
       el(
         'div',
         { class: 'row-btns' },
@@ -376,15 +437,35 @@ export function shopScreen(host: WardrobeHost): Screen {
     );
     if (!main.disabled) main.focus();
   };
-  const render = () => {
-    scrap.textContent = t('Sucata: {n}', { n: fmtInt(prof.save.profile.scrap) });
-    preview();
-    const top = body.scrollTop;
-    body.innerHTML = '';
-    const pick = (c: CosmeticDef) => {
-      sel = sel?.id === c.id ? null : c;
-      render();
-    };
+
+  /** Cartão simples (armas e itens especiais). */
+  const itemCard = (
+    s: ShopSel,
+    title: string,
+    lines: (string | null)[],
+    opts: { color?: string; price?: number; owned?: boolean; on?: boolean; onLabel?: string },
+  ) => {
+    const b = el(
+      'button',
+      {
+        class: `cos-card ${opts.on ? 'on' : ''} ${opts.owned === false ? 'unowned' : ''}`,
+        style: `--rc:${opts.color ?? '#ffb02a'}`,
+        data: { nav: '' },
+        onclick: () => pick(s),
+      },
+      el('b', {}, title),
+      ...lines.filter((l): l is string => !!l).map((l) => el('span', { class: 'muted' }, l)),
+      opts.owned ? el('span', { class: 'muted' }, t('Já possui')) : null,
+      !opts.owned && opts.price !== undefined
+        ? el('span', { class: 'price' }, `⚙ ${fmtInt(opts.price)}`)
+        : null,
+      opts.on ? el('i', { class: 'eq' }, opts.onLabel ?? t('EQUIPADO')) : null,
+    );
+    if (same(sel, s)) b.classList.add('sel');
+    return b;
+  };
+
+  const renderVisual = () => {
     const shopCard = (c: CosmeticDef) => {
       const owned = prof.owns(c.id);
       const b = card(c, {
@@ -392,9 +473,9 @@ export function shopScreen(host: WardrobeHost): Screen {
         equipped: prof.save.cosmetics.equipped[c.slot] === c.id,
         price: owned ? undefined : prof.priceOf(c.id),
         note: owned ? t('Já possui') : undefined,
-        onClick: () => pick(c),
+        onClick: () => pick({ kind: 'cos', c }),
       });
-      if (sel?.id === c.id) b.classList.add('sel');
+      if (sel?.kind === 'cos' && sel.c.id === c.id) b.classList.add('sel');
       return b;
     };
     body.appendChild(el('h3', {}, t('Ofertas do dia (−20%)')));
@@ -413,9 +494,105 @@ export function shopScreen(host: WardrobeHost): Screen {
       for (const c of items) g.appendChild(shopCard(c));
       body.appendChild(g);
     }
+  };
+
+  const renderWeapons = () => {
+    body.appendChild(el('h3', {}, t('Armas de fogo')));
+    body.appendChild(
+      el(
+        'p',
+        { class: 'muted shop-tip' },
+        t('Ficam no arsenal para sempre (quem não atira guarda para quem atira).'),
+      ),
+    );
+    const g = el('div', { class: 'cos-grid' });
+    for (const id of WEAPON_ORDER) {
+      const price = FIREARM_PRICES[id];
+      if (price === undefined) continue;
+      const w = FIREARMS[id];
+      g.appendChild(
+        itemCard(
+          { kind: 'gun', id },
+          t(w.name),
+          [`${t('Dano')} ${w.damage}${w.pellets > 1 ? `×${w.pellets}` : ''}`],
+          {
+            price,
+            owned: prof.save.unlocks.firearms.includes(id),
+          },
+        ),
+      );
+    }
+    body.appendChild(g);
+    body.appendChild(el('h3', {}, t('Armas brancas')));
+    body.appendChild(el('p', { class: 'muted shop-tip' }, t('A escolhida começa cada fase na mão.')));
+    const m = el('div', { class: 'cos-grid' });
+    for (const id of MELEE_ORDER)
+      m.appendChild(
+        itemCard({ kind: 'melee', id }, t(MELEE_WEAPONS[id].name), [], {
+          color: '#e0e0e0',
+          price: MELEE_PRICES[id],
+          owned: prof.ownsMelee(id),
+          on: prof.save.profile.melee === id,
+          onLabel: t('NA MÃO'),
+        }),
+      );
+    body.appendChild(m);
+  };
+
+  const renderSpecial = () => {
+    body.appendChild(el('h3', {}, t('Item de reviver')));
+    body.appendChild(
+      el(
+        'p',
+        { class: 'muted shop-tip' },
+        t(
+          'Cada personagem carrega um só. Se ele cair, o item o levanta ali mesmo, sem gastar vida, e se gasta.',
+        ),
+      ),
+    );
+    const g = el('div', { class: 'cos-grid' });
+    for (const c of prof.roster) {
+      const it = REVIVE_ITEMS[c];
+      g.appendChild(
+        itemCard({ kind: 'revive', c }, `${it.icon} ${t(it.name)}`, [t(CHARACTERS[c].name)], {
+          color: hexColor(it.color),
+          price: REVIVE_PRICE,
+          owned: prof.hasRevive(c),
+        }),
+      );
+    }
+    body.appendChild(g);
+  };
+
+  const render = () => {
+    scrap.textContent = t('Sucata: {n}', { n: fmtInt(prof.save.profile.scrap) });
+    for (const b of tabs.children) b.classList.toggle('on', (b as HTMLElement).dataset.k === tab);
+    preview();
+    const top = body.scrollTop;
+    body.innerHTML = '';
+    if (tab === 'visual') renderVisual();
+    else if (tab === 'weapons') renderWeapons();
+    else renderSpecial();
     body.scrollTop = top;
     renderBar();
   };
+  for (const [k, label] of SHOP_TABS)
+    tabs.appendChild(
+      el(
+        'button',
+        {
+          class: 'btn',
+          data: { nav: '', k },
+          onclick: () => {
+            tab = k;
+            sel = null;
+            body.scrollTop = 0;
+            render();
+          },
+        },
+        t(label),
+      ),
+    );
   const panel = el(
     'div',
     { class: 'wr-panel' },
@@ -426,6 +603,7 @@ export function shopScreen(host: WardrobeHost): Screen {
       { class: 'muted shop-tip' },
       `${t('Escolha um item para ver no boneco antes de comprar.')} ${spinHint(host)}`,
     ),
+    tabs,
     body,
     bar,
     el(

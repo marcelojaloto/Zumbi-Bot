@@ -832,7 +832,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     const base = this.profile.loadout();
     const loadouts = party
       ? party.map((m) => ({
-          // cada um com a Oficina do próprio personagem
+          // cada um com a Oficina e o item de reviver do próprio personagem
           ...this.profile.loadout(m.character),
           slot: m.slot,
           name: m.slot === 0 ? base.name : playerTag(m.slot),
@@ -1016,6 +1016,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     for (const c of p.loot) if (!s.cosmetics.owned.includes(c)) s.cosmetics.owned.push(c);
     for (const g of p.guns) if (!s.unlocks.firearms.includes(g)) s.unlocks.firearms.push(g);
     s.cosmetics.pity = p.pity;
+    this.profile.consumeRevive(p.reviveUsed);
     this.profile.persist();
   }
 

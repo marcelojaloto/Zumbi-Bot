@@ -19,7 +19,9 @@ const save = (page: import('@playwright/test').Page) =>
     JSON.parse(JSON.stringify((window as unknown as { __game: G }).__game.app.profile.save)),
   );
 
-test('Oficina: melhoria com XP e sucata, especial em uso', async ({ page }) => {
+test('Oficina e loja: melhoria com XP e sucata, especial em uso, arma e item de reviver', async ({
+  page,
+}) => {
   test.setTimeout(420_000);
   const errors = collectErrors(page);
   await page.goto(`./${DEBUG_QUERY}`);
@@ -58,5 +60,22 @@ test('Oficina: melhoria com XP e sucata, especial em uso', async ({ page }) => {
   await page.getByRole('button', { name: 'Usar este especial' }).click();
   expect((await save(page)).workshop.robot.special).toBeUndefined();
   await page.getByRole('button', { name: 'Voltar', exact: true }).click();
+
+  // loja: arma de fogo e item de reviver
+  await page.getByRole('button', { name: 'Loja', exact: true }).click();
+  await page.getByRole('button', { name: 'Armas', exact: true }).click();
+  await page.locator('.cos-card', { hasText: 'Escopeta' }).click();
+  await page.getByRole('button', { name: /Comprar por/ }).click();
+  await page.locator('.cos-card', { hasText: 'Katana' }).click();
+  await page.getByRole('button', { name: /Comprar por/ }).click();
+  await page.getByRole('button', { name: 'Itens especiais', exact: true }).click();
+  await page.locator('.cos-card', { hasText: 'Bateria de Reserva' }).click();
+  await expect(page.locator('.buy-bar')).toContainText('Zeca Engrenagem');
+  await page.getByRole('button', { name: /Comprar por/ }).click();
+  const s = await save(page);
+  expect(s.unlocks.firearms).toContain('shotgun');
+  expect(s.unlocks.melee).toEqual(['katana']);
+  expect(s.profile.melee).toBe('katana');
+  expect(s.revive).toEqual(['robot']);
   expect(errors).toEqual([]);
 });

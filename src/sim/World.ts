@@ -7,6 +7,7 @@ import type {
   Difficulty,
   LevelDef,
   MapDef,
+  MeleeId,
   StaffId,
   WeaponId,
 } from '../data/types';
@@ -29,6 +30,10 @@ export interface PlayerLoadout {
   cosmetics: Partial<Record<CosmeticSlot, CosmeticId>>;
   pity: number;
   ownedCosmetics: CosmeticId[];
+  /** Arma branca que começa a fase na mão (comprada na Loja). */
+  melee?: MeleeId | null;
+  /** Carrega o item especial de reviver do personagem. */
+  revive?: boolean;
   /** Melhorias da Oficina do personagem e o especial em uso (sem ele, o original). */
   perks?: string[];
   special?: string;

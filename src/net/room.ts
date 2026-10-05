@@ -444,7 +444,7 @@ export class HostRoom {
           if (Array.isArray(m.f)) g.input.push(m.f);
           break;
         case 'pick':
-          // trocou de personagem: vale a Oficina do novo personagem
+          // trocou de personagem: vale a Oficina e o item de reviver do novo personagem
           if (isCharacterId(m.char))
             g.lo = m.lo
               ? sanitizeLoadout({ ...m.lo, character: m.char }, g.slot)
@@ -761,7 +761,7 @@ export class GuestRoom {
       me.char = char;
       me.ready = ready;
     }
-    // equipamento do personagem escolhido (a Oficina é de cada personagem)
+    // equipamento do personagem escolhido (Oficina e item de reviver são de cada personagem)
     const lo = this.loadoutFor?.(char);
     if (lo) Object.assign(this.loadout, lo, { slot: this.loadout.slot });
     this.loadout.character = char;

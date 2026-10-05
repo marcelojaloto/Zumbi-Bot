@@ -1,5 +1,6 @@
 import { ITEMS } from '../../data/items';
 import { MEDKITS } from '../../data/balance';
+import { REVIVE_ITEMS } from '../../data/revive';
 import { MELEE_WEAPONS } from '../../data/melee';
 import { STAFFS } from '../../data/staffs';
 import { FIREARMS } from '../../data/weapons';
@@ -93,6 +94,9 @@ export class Hud {
   private meleeBox: HTMLDivElement;
   private medkitBox: HTMLDivElement;
   private medkitKey = '';
+  /** Item de reviver que o jogador carrega (some quando é usado). */
+  private reviveBox: HTMLDivElement;
+  private reviveKey = '';
   private slots: HTMLDivElement;
   private toasts: HTMLDivElement;
   private hint: HTMLDivElement;
@@ -167,6 +171,7 @@ export class Hud {
     this.ring = el('div', { class: 'ring' });
     this.meleeBox = el('div', { class: 'melee' });
     this.medkitBox = el('div', { class: 'medkits' });
+    this.reviveBox = el('div', { class: 'revive-badge', hidden: true });
     this.slots = el('div', { class: 'slots' });
     const br = el(
       'div',
@@ -174,6 +179,7 @@ export class Hud {
       el('div', { class: 'weapon' }, this.ring, el('div', {}, this.weaponName, this.ammo)),
       this.meleeBox,
       this.medkitBox,
+      this.reviveBox,
       this.slots,
     );
     this.hint = el('div', { class: 'hint' });
@@ -318,6 +324,18 @@ export class Hud {
             this.toast(who(ev.player) + t(d.name), hexColor(d.color));
           break;
         }
+        case 'revive':
+          // item de reviver: todos veem (é um momento da partida)
+          if (ev.phase === 'up') {
+            const pc = w.get(ev.player)?.player;
+            const it = pc ? REVIVE_ITEMS[pc.character] : undefined;
+            this.toast(
+              who(ev.player) + t('DE PÉ DE NOVO!'),
+              '#5aff9a',
+              it ? `${it.icon} ${t(it.name)}` : undefined,
+            );
+          }
+          break;
         case 'medkit': {
           // só para quem apertou (no multijogador, cada um vê os seus)
           const mine = !multi || w.get(ev.player)?.player?.slot === this.localSlot;
@@ -496,6 +514,16 @@ export class Hud {
           el('span', {}, t('Caixas de cura')),
           ...(this.touchMode ? [] : [el('kbd', {}, this.keyNames.modeStaff ?? '2')]),
         );
+    }
+    const rv = pc.revive ? REVIVE_ITEMS[pc.character] : undefined;
+    const rvKey = rv ? rv.name : '';
+    if (rvKey !== this.reviveKey) {
+      this.reviveKey = rvKey;
+      this.reviveBox.hidden = !rv;
+      if (rv) {
+        this.reviveBox.style.setProperty('--rv', hexColor(rv.color));
+        this.reviveBox.replaceChildren(el('i', {}, rv.icon), el('span', {}, t(rv.name)));
+      }
     }
     if (pc.melee) {
       const m = MELEE_WEAPONS[pc.melee.id];

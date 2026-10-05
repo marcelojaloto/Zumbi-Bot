@@ -141,6 +141,8 @@ export type GameEvent =
   /** Defesas da Oficina: esquiva em profundidade e golpe bloqueado pela Guarda. */
   | { t: 'dodge'; player: EntityId; x: number; z: number }
   | { t: 'guard'; player: EntityId; x: number; y: number; z: number }
+  /** Item especial de reviver: caiu com ele ('down') e levantou ('up'). */
+  | { t: 'revive'; player: EntityId; phase: 'down' | 'up'; x: number; y: number; z: number }
   | { t: 'bossElement'; id: EntityId; element: Element }
   | { t: 'shake'; trauma: number }
   | { t: 'sfx'; id: string; x: number; vol?: number }

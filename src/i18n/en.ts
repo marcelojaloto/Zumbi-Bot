@@ -1083,6 +1083,46 @@ export const EN: Record<string, string> = {
   'Depois de uma esquiva ou de um bloqueio, o próximo golpe dá o dobro de dano.':
     'After a dodge or a block, the next strike deals double damage.',
   BLOQUEIO: 'BLOCKED',
+  // itens de reviver
+  'Item de reviver': 'Revive item',
+  'Bateria de Reserva': 'Spare Battery',
+  'A primeira bateria que Zeca Engrenagem tirou da sucata da fábrica, na noite em que ganhou vontade própria. Ele a guarda no peito, ligada a um fio solto: quando o corpo dele apaga, ela dá a partida de novo.':
+    'The first battery Zeca Engrenagem pulled from the factory scrap, on the night he gained a will of his own. He keeps it in his chest, wired to a loose cable: when his body shuts down, it jump-starts him again.',
+  'Pena de Fênix': 'Phoenix Feather',
+  'Lívia Vesper ganhou a pena da fênix que guardava a biblioteca da Academia Arcana, depois de passar três noites lendo para ela. Quando a dona cai, a pena acende em fogo roxo e a ergue das cinzas.':
+    'Lívia Vesper earned the feather from the phoenix that guarded the Arcane Academy library, after spending three nights reading to it. When its owner falls, the feather bursts into purple flame and raises her from the ashes.',
+  'Plaqueta do Batalhão': 'Battalion Dog Tag',
+  'A plaqueta de identificação que Bruno Trovão carrega junto da foto da família, gravada com o nome de cada soldado do batalhão que ele perdeu. Caído, ele lembra de todos eles e levanta de novo.':
+    'The dog tag Bruno Trovão carries next to his family photo, engraved with the name of every soldier of the battalion he lost. Knocked down, he remembers each one of them and gets back up.',
+  'Chip de Backup': 'Backup Chip',
+  'Uma cópia da mente de Ícaro Neon, gravada no último chip que ele roubou do laboratório do OMEGA-Z. Se o corpo para, o chip reinicia tudo em segundos, com a memória intacta.':
+    "A copy of Ícaro Neon's mind, saved on the last chip he stole from OMEGA-Z's lab. If his body stops, the chip reboots everything in seconds, memory intact.",
+  'Soro do Lago': 'Lake Serum',
+  'Um frasco da água do lago que transformou Tobias Brejo, filtrada pelas raízes da floresta até ficar limpa. Uma gota no chão onde ele caiu e o corpo dele se refaz na hora.':
+    'A vial of water from the lake that transformed Tobias Brejo, filtered through the forest roots until it ran clean. One drop on the ground where he fell and his body heals at once.',
+  'Faixa do Mestre': "Master's Belt",
+  'A faixa-preta que o velho mestre deu a Jacobb Amici antes de sumir no apocalipse, bordada com uma runa arcana de proteção. Enquanto ele a carrega, nenhuma queda é a última.':
+    'The black belt the old master gave Jacobb Amici before vanishing in the apocalypse, embroidered with an arcane rune of protection. As long as he carries it, no fall is the last.',
+  'DE PÉ DE NOVO!': 'BACK ON YOUR FEET!',
+  // loja
+  Visual: 'Look',
+  'Itens especiais': 'Special items',
+  'Armas de fogo': 'Firearms',
+  'Ficam no arsenal para sempre (quem não atira guarda para quem atira).':
+    "They stay in the arsenal for good (characters who don't shoot keep them for those who do).",
+  Dano: 'Damage',
+  'Armas brancas': 'Melee weapons',
+  'A escolhida começa cada fase na mão.': 'The chosen one starts every stage in hand.',
+  'NA MÃO': 'IN HAND',
+  'Começa cada fase na mão, inteira. Quebrando ou trocando, só volta na próxima fase.':
+    'Starts every stage in hand, as good as new. If it breaks or you swap it, it only comes back next stage.',
+  'Guardar (começar sem ela)': 'Put away (start without it)',
+  'Levar para as fases': 'Take it into stages',
+  '{name} guardada.': '{name} put away.',
+  '{name} na mão!': '{name} in hand!',
+  'Já carrega': 'Already carrying',
+  'Cada personagem carrega um só. Se ele cair, o item o levanta ali mesmo, sem gastar vida, e se gasta.':
+    'Each character carries only one. If they fall, the item gets them back up on the spot, without using a life, and is used up.',
   'Esquiva (defesa da Oficina)': 'Dodge (Workshop defense)',
   'Direcional: 2× ↑ ou ↓': 'D-pad: 2× ↑ or ↓',
   'Esquiva em profundidade (com a defesa da Oficina)': 'Dodge in depth (with the Workshop defense)',

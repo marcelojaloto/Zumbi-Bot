@@ -1,4 +1,5 @@
 import { CHARACTERS, CHARACTER_ORDER } from '../../data/characters';
+import { REVIVE_ITEMS } from '../../data/revive';
 import type { CharacterDef, CharacterId } from '../../data/types';
 import { connectedPads, padDir } from '../../input/pads';
 import { el, hexColor } from '../dom';
@@ -242,6 +243,14 @@ export function characterSheet(o: {
           ]),
       el('h4', { class: 'cs-h' }, t('Especial')),
       el('div', { class: 'ci-special' }, el('b', {}, t(c.specialName)), el('span', {}, t(c.specialDesc))),
+      // item especial de reviver do personagem (Loja ou baú)
+      el('h4', { class: 'cs-h' }, t('Item de reviver')),
+      el(
+        'div',
+        { class: 'ci-special' },
+        el('b', {}, `${REVIVE_ITEMS[id].icon} ${t(REVIVE_ITEMS[id].name)}`),
+        el('span', {}, t(REVIVE_ITEMS[id].story)),
+      ),
       el('h4', { class: 'cs-h' }, t('História')),
       el('p', { class: 'cs-story' }, t(c.story)),
     );

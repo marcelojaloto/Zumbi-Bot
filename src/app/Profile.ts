@@ -1,10 +1,12 @@
 import { t } from '../i18n';
 import { PLAYER, totalXp, xpForLevel, xpToNext } from '../data/balance';
+import { FIREARM_PRICES, MELEE_PRICES, REVIVE_PRICE } from '../data/shop';
+import { WEAPON_ORDER } from '../data/weapons';
 import { PERK_BY_ID, specialsOf } from '../data/workshop';
 import { getMap, MAPS } from '../data/maps';
 import { STAFFS } from '../data/staffs';
 import { getCharacter, playableCharacters } from '../data/characters';
-import type { CharacterId, CosmeticId, CosmeticSlot, StaffId, WeaponId } from '../data/types';
+import type { CharacterId, CosmeticId, CosmeticSlot, MeleeId, StaffId, WeaponId } from '../data/types';
 import { COSMETICS, SECRET_GIFTS, SELL_VALUE } from '../data/cosmetics';
 import { Rng } from '../core/rng';
 import { insertRank } from '../save/ranking';
@@ -80,7 +82,7 @@ export class Profile {
 
   /**
    * Equipamento para a partida: o personagem escolhido (ou `character`, no multijogador local), com a Oficina
-   * dele.
+   * dele, o item de reviver se ele tiver e a arma branca da Loja.
    */
   loadout(character?: CharacterId): PlayerLoadout {
     const s = this.save;
@@ -98,6 +100,8 @@ export class Profile {
       cosmetics: { ...s.cosmetics.equipped },
       pity: s.cosmetics.pity,
       ownedCosmetics: [...s.cosmetics.owned],
+      melee: s.profile.melee ?? null,
+      revive: s.revive.includes(ch),
       perks: [...(ws?.perks ?? [])],
       ...(ws?.special ? { special: ws.special } : {}),
     };
@@ -123,7 +127,15 @@ export class Profile {
   /** Aplica o resultado de uma partida ao save. Retorna informações para a tela de resultado. */
   applyRun(
     stats: RunStats,
-    final: { level: number; xp: number; guns: WeaponId[]; loot: string[]; scrap: number; pity: number },
+    final: {
+      level: number;
+      xp: number;
+      guns: WeaponId[];
+      loot: string[];
+      scrap: number;
+      pity: number;
+      reviveUsed?: CharacterId[];
+    },
   ): {
     newRecord: boolean;
     unlockedNext: string | null;
@@ -141,6 +153,7 @@ export class Profile {
     for (const c of final.loot) if (!s.cosmetics.owned.includes(c)) s.cosmetics.owned.push(c);
     if (stats.unlockedStaff && STAFFS[stats.unlockedStaff] && !s.unlocks.staffs.includes(stats.unlockedStaff))
       s.unlocks.staffs.push(stats.unlockedStaff);
+    this.consumeRevive(final.reviveUsed ?? []);
     s.stats.kills += stats.kills;
     s.stats.deaths += stats.livesLost;
     s.stats.bosses += stats.bossKills;
@@ -316,7 +329,7 @@ export class Profile {
     return true;
   }
 
-  // ------------------------------------------------------------ Oficina
+  // ------------------------------------------------------------ loja: armas e item de reviver
   /** Gasta sucata (false se não tem o bastante). */
   private spend(price: number): boolean {
     if (this.save.profile.scrap < price) return false;
@@ -324,6 +337,55 @@ export class Profile {
     return true;
   }
 
+  /** Compra uma arma de fogo: fica no arsenal para sempre, como as achadas nos mapas. */
+  buyFirearm(id: WeaponId): boolean {
+    const price = FIREARM_PRICES[id];
+    const owned = this.save.unlocks.firearms;
+    if (price === undefined || owned.includes(id) || !this.spend(price)) return false;
+    owned.push(id);
+    owned.sort((a, b) => WEAPON_ORDER.indexOf(a) - WEAPON_ORDER.indexOf(b));
+    this.persist();
+    return true;
+  }
+
+  ownsMelee(id: MeleeId): boolean {
+    return this.save.unlocks.melee.includes(id);
+  }
+
+  /** Compra uma arma branca e já leva ela para as próximas fases. */
+  buyMelee(id: MeleeId): boolean {
+    if (this.ownsMelee(id) || !this.spend(MELEE_PRICES[id])) return false;
+    this.save.unlocks.melee.push(id);
+    this.save.profile.melee = id;
+    this.persist();
+    return true;
+  }
+
+  /** Arma branca que começa cada fase na mão (null = nenhuma). */
+  setMelee(id: MeleeId | null): void {
+    if (id === null) delete this.save.profile.melee;
+    else if (this.ownsMelee(id)) this.save.profile.melee = id;
+    this.persistSoon();
+  }
+
+  hasRevive(c: CharacterId): boolean {
+    return this.save.revive.includes(c);
+  }
+
+  /** Compra o item de reviver de um personagem (cada um carrega no máximo um). */
+  buyRevive(c: CharacterId): boolean {
+    if (this.hasRevive(c) || !this.spend(REVIVE_PRICE)) return false;
+    this.save.revive.push(c);
+    this.persist();
+    return true;
+  }
+
+  /** Itens de reviver gastos na partida saem do save. */
+  consumeRevive(chars: readonly CharacterId[]): void {
+    if (chars.length) this.save.revive = this.save.revive.filter((c) => !chars.includes(c));
+  }
+
+  // ------------------------------------------------------------ Oficina
   /** XP total já ganho (libera as melhorias). */
   get totalXp(): number {
     return totalXp(this.save.profile.level, this.save.profile.xp);

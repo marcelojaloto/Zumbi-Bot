@@ -3,12 +3,15 @@ import { PLAYER } from '../../data/balance';
 import type { Entity } from '../Entity';
 import type { World } from '../World';
 import { finishRun } from '../level/LevelRunner';
+import { startRevive } from './defense';
 
 const RESPAWN_TICKS = 150;
 
 /** Jogador derrubado: perde uma vida e renasce caindo do alto, ou fim de jogo. */
 export function onPlayerDown(w: World, e: Entity): void {
   const p = e.player!;
+  // item especial de reviver: levanta ali mesmo, sem gastar vida
+  if (startRevive(w, e)) return;
   p.lives--;
   p.livesLost++;
   p.combo = 0;

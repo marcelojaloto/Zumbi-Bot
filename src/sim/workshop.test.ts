@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { CHARACTERS } from '../data/characters';
 import { MOVES } from '../data/melee';
+import { REVIVE } from '../data/revive';
 import { DEFENSE, PERKS, perkEffects, perksOf, specialsOf } from '../data/workshop';
 import { spawnEnemy } from './ai/spawnEnemy';
 import { applyHit } from './combat/applyHit';
@@ -151,6 +152,34 @@ describe('defesas da Oficina', () => {
     expect(h.shield).toBe(0);
     run(w, 60 * (DEFENSE.shield.delayS + 2));
     expect(h.shield).toBeGreaterThan(5);
+  });
+});
+
+describe('item especial de reviver', () => {
+  it('caiu com o item: levanta ali mesmo com metade da vida, sem gastar vida, e o item se gasta', () => {
+    const w = makeWorld({ loadout: { revive: true } });
+    const p = player(w);
+    const lives = p.player!.lives;
+    const x = p.t.x;
+    applyHit(w, undefined, p, { ...PUNCH, damage: 9999 });
+    expect(p.fighter!.state).toBe('dead');
+    expect(p.player!.revive).toBe(false);
+    expect(p.player!.reviveUsed).toBe(true);
+    run(w, REVIVE.delayTicks + 2);
+    expect(p.player!.lives).toBe(lives);
+    expect(p.fighter!.state).not.toBe('dead');
+    expect(p.health!.hp).toBe(Math.round(p.health!.max * REVIVE.hpFrac));
+    expect(Math.abs(p.t.x - x)).toBeLessThan(2);
+    expect(
+      w
+        .drainEvents()
+        .filter((ev) => ev.t === 'revive')
+        .map((ev) => ev.t === 'revive' && ev.phase),
+    ).toEqual(['down', 'up']);
+    // na próxima queda já não tem: perde uma vida como sempre
+    p.health!.invuln = 0;
+    applyHit(w, undefined, p, { ...PUNCH, damage: 9999 });
+    expect(p.player!.lives).toBe(lives - 1);
   });
 });
 

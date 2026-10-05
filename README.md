@@ -46,20 +46,27 @@ Web Audio.
   ◀ ▶) e, depois de vencer o OMEGA-Z, no **final lendário**, com um capítulo por personagem, cada um num mini cenário
   animado (dá para rever pelos Créditos).
 
+  **Item de reviver:** cada personagem tem o seu, ligado à história dele (a Bateria de Reserva do Zumbi Bot, a Pena
+  de Fênix da Maga, a Plaqueta do Batalhão do Militar, o Chip de Backup do Ciborgue, o Soro do Lago do Mutante e a
+  Faixa do Mestre do Prodígio), e carrega no máximo um. Se ele cai com o item, levanta ali mesmo com metade da
+  vida, sem gastar vida, e o item se gasta. Compra-se na Loja; a história de cada um está na ficha do personagem.
+
   **Personagem secreto:** terminando o jogo pela primeira vez, o último capítulo do final lendário revela o
   **Prodígio** (Jacobb Amici), um adolescente loiro de olhos azuis que luta caratê com magia arcana. O disfarce dele vai para o guarda-roupa e veste quem quiser:
   **peruca castanho-escura** (o mesmo penteado dele) e **lentes verdes ou castanhas**.
 
 - **7 armas de fogo** (pistola, escopeta, submetralhadora, fuzil de assalto, rifle de precisão, metralhadora e
   lança-granadas), com dano, cadência, recuo, munição e recarga próprios. As armas novas aparecem em caixas
-  pelos mapas: é só **passar por cima** para pegar (armas de fogo e armas brancas).
+  pelos mapas: é só **passar por cima** para pegar (armas de fogo e armas brancas). Também dá para comprar na
+  **Loja**: as armas de fogo ficam no arsenal para sempre, e a arma branca escolhida já começa cada fase na mão.
 - **10 cajados elementais** (cura, fogo, água, gelo, eletricidade, tóxico, cibernético, vento, terra e
   necromancia) com efeitos de status que interagem entre si: molhado + elétrico atordoa, congelado quebra com
   golpes fortes, fogo inflama nuvens tóxicas, o cibernético hackeia robôs e o necromante controla zumbis.
 - **Itens e power-ups**: kits médicos, escudo, mana, munição, dano dobrado, turbo e invulnerabilidade.
 - **Loot cosmético**: cerca de 40 peças dos conjuntos mago e zumbi (chapéus, óculos, máscaras, roupas e capas
-  com física), inventário no **Guarda-roupa** com prévia 3D e uma **Loja** com ofertas do dia (escolher um item
-  veste o boneco para ver antes, e a compra só acontece ao confirmar).
+  com física), inventário no **Guarda-roupa** com prévia 3D e uma **Loja** em três abas: Visual (ofertas do dia;
+  escolher um item veste o boneco para ver antes), Armas (de fogo e brancas) e Itens especiais (o item de reviver
+  de cada personagem). A compra só acontece ao confirmar.
 - **Oficina**: escolha o personagem e veja a árvore de melhorias dele, em quatro ramos. **Atributos** (vigor,
   força, agilidade, energia, pontaria ou magia) sobem em três níveis, ponderados pelos limites de cada um: a Maga
   ganha pouca vida e muita magia, o Militar muita vida e pouca agilidade. **Combos** novos saem do fim da sequência

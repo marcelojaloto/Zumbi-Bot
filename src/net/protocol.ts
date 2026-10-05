@@ -4,6 +4,7 @@ import type { GameEvent } from '../sim/events';
 import { emptyFrame, quantizeAxis, quantizeYaw, type InputFrame } from '../sim/InputFrame';
 import type { PlayerLoadout } from '../sim/World';
 import { sanitizeSave } from '../save/migrations';
+import { MELEE_WEAPONS } from '../data/melee';
 import type { SnapDelta } from './delta';
 
 /**
@@ -100,7 +101,7 @@ export interface StartMsg {
 export type GuestMsg =
   /** `rejoin`: voltando para o novo anfitrião (troca de anfitrião), com o mesmo número de jogador. */
   | { t: 'hello'; v: number; lo: PlayerLoadout; rejoin?: PlayerSlot }
-  /** `lo`: o equipamento do personagem novo (Oficina), quando ele trocou de personagem. */
+  /** `lo`: o equipamento do personagem novo (Oficina, item de reviver), quando ele trocou de personagem. */
   | { t: 'pick'; char: CharacterId; ready: boolean; lo?: PlayerLoadout }
   | { t: 'in'; f: PackedInput }
   /** Terminou de carregar a fase. */
@@ -190,6 +191,8 @@ export function sanitizeLoadout(raw: unknown, slot: PlayerSlot): PlayerLoadout {
     cosmetics: s.cosmetics.equipped,
     pity: s.cosmetics.pity,
     ownedCosmetics: s.cosmetics.owned,
+    melee: typeof lo.melee === 'string' && lo.melee in MELEE_WEAPONS ? lo.melee : null,
+    revive: lo.revive === true,
     perks: ws?.perks ?? [],
     ...(ws?.special ? { special: ws.special } : {}),
   };

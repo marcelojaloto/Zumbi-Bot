@@ -1,5 +1,6 @@
 import { MEDKITS, PLAYER } from '../data/balance';
 import { getCharacter } from '../data/characters';
+import { MELEE_WEAPONS } from '../data/melee';
 import { DEFENSE, perkEffects } from '../data/workshop';
 import { chosenSpecial, playerMaxHp, playerMaxMana } from './perks';
 import type { AmmoType } from '../data/types';
@@ -73,7 +74,11 @@ export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
     staffCd: {},
     castStaff: null,
     castFired: false,
-    melee: null,
+    // arma branca comprada na Loja: já começa a fase na mão, inteira
+    melee:
+      lo.melee && MELEE_WEAPONS[lo.melee]
+        ? { id: lo.melee, durability: MELEE_WEAPONS[lo.melee].durability }
+        : null,
     powers: { doubleDamage: 0, turbo: 0, invulnerable: 0, rage: 0 },
     aiming: false,
     respawn: 0,
@@ -86,6 +91,9 @@ export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
     lastFireTick: -999,
     perks,
     special: chosenSpecial(ch.id, perks, lo.special),
+    revive: !!lo.revive,
+    reviving: 0,
+    reviveUsed: false,
     dodge: 0,
     dodgeCd: 0,
     zTapDir: 0,

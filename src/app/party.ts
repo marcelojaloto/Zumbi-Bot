@@ -30,6 +30,8 @@ export interface PartyProgress {
   loot: string[];
   scrap: number;
   pity: number;
+  /** Personagens que gastaram o item de reviver na partida (sai do save). */
+  reviveUsed: CharacterId[];
 }
 
 export function aggregateParty(w: World): PartyProgress | null {
@@ -43,6 +45,7 @@ export function aggregateParty(w: World): PartyProgress | null {
     loot: [...new Set(ps.flatMap((p) => p.loot))],
     scrap: ps.reduce((a, p) => a + p.scrap, 0),
     pity: ps.find((p) => p.slot === 0)?.pity ?? ps[0]!.pity,
+    reviveUsed: [...new Set(ps.filter((p) => p.reviveUsed).map((p) => p.character))],
   };
 }
 
@@ -57,5 +60,6 @@ export function playerProgress(w: World, slot: PlayerSlot): PartyProgress | null
     loot: [...p.loot],
     scrap: p.scrap,
     pity: p.pity,
+    reviveUsed: p.reviveUsed ? [p.character] : [],
   };
 }

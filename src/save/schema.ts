@@ -5,6 +5,7 @@ import type {
   Difficulty,
   LevelId,
   MapId,
+  MeleeId,
   StaffId,
   WeaponId,
 } from '../data/types';
@@ -22,7 +23,7 @@ export interface LevelProgress {
 }
 
 /**
- * v2: Oficina de cada personagem (melhorias compradas e especial escolhido).
+ * v2: armas brancas da Loja, item de reviver de cada personagem e Oficina (melhorias e especial escolhido).
  */
 export interface SaveV2 {
   version: 2;
@@ -39,9 +40,12 @@ export interface SaveV2 {
     scrap: number;
     character: CharacterId;
     rankName?: string;
+    /** Arma branca que começa cada fase na mão (comprada na Loja). */
+    melee?: MeleeId;
   };
   progress: { unlockedLevels: LevelId[]; levels: Record<LevelId, LevelProgress> };
-  unlocks: { firearms: WeaponId[]; staffs: StaffId[] };
+  /** melee = armas brancas compradas na Loja. */
+  unlocks: { firearms: WeaponId[]; staffs: StaffId[]; melee: MeleeId[] };
   cosmetics: {
     owned: CosmeticId[];
     equipped: Partial<Record<CosmeticSlot, CosmeticId>>;
@@ -54,6 +58,8 @@ export interface SaveV2 {
    * vistos), que também libera o personagem secreto.
    */
   flags: { ngPlus: boolean; ngPlusOn: boolean; tutorialDone: boolean; credits: boolean };
+  /** Personagens que carregam o item especial de reviver (um cada). */
+  revive: CharacterId[];
   /** Oficina: melhorias compradas e especial em uso, por personagem. */
   workshop: Partial<Record<CharacterId, WorkshopState>>;
   /** Jornada em andamento: pontos somados mapa a mapa até perder todas as vidas ou terminar o jogo. */
@@ -163,10 +169,11 @@ export function defaultSave(now = 0): SaveV2 {
     updatedAt: now,
     profile: { name: 'Zumbi Bot', level: 1, xp: 0, scrap: 0, character: 'robot' },
     progress: { unlockedLevels: ['vila-1'], levels: {} },
-    unlocks: { firearms: ['pistol'], staffs: ['heal'] },
+    unlocks: { firearms: ['pistol'], staffs: ['heal'], melee: [] },
     cosmetics: { owned: [], equipped: {}, seen: [], pity: 0 },
     stats: { kills: 0, deaths: 0, bosses: 0, playTimeMs: 0, runs: 0 },
     flags: { ngPlus: false, ngPlusOn: false, tutorialDone: false, credits: false },
+    revive: [],
     workshop: {},
   };
 }

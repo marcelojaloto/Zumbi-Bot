@@ -758,3 +758,22 @@ body.touch .minimap.shown {
   pointer-events: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
+
+/* item de reviver que o jogador carrega */
+.revive-badge {
+  --rv: #5aff9a;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rv);
+  text-shadow: 0 1px 3px #000;
+}
+.revive-badge[hidden] {
+  display: none;
+}
+.revive-badge i {
+  font-style: normal;
+  font-size: 15px;
+}

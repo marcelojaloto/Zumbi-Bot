@@ -27,6 +27,7 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   ao mesmo tempo quando o anfitrião caía numa sala de 3.
 - Sair do jogo por um instante (mandar o convite, outro app) avisa os outros, que esperam até um minuto. Um
   aparelho que travou alguns segundos (fase carregando) não derruba mais ninguém.
+- Online, quem troca de personagem na sala leva a Oficina e o item de reviver do personagem novo.
 
 ### Chefes
 
@@ -60,6 +61,13 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   Chuva de Meteoros, Ataque Aéreo, Canhão de Plasma, Salto Sísmico e Palma do Dragão.
 - **Defesas**: esquiva (toque duplo para cima ou para baixo), guarda (bloqueia golpes e tiros de frente), couraça,
   escudo de energia que recarrega e contra-golpe.
+
+### Item de reviver, loja e baú
+
+- Cada personagem tem o seu item de reviver, com uma história ligada a ele (está na ficha do personagem), e
+  carrega no máximo um. Caindo com ele, levanta ali mesmo com metade da vida, sem gastar vida.
+- A **Loja** ganhou abas: Visual, Armas (armas de fogo para o arsenal e armas brancas, que começam cada fase na
+  mão) e Itens especiais (o item de reviver de cada personagem).
 
 ## 1.6, atualização de 01/10/2026
 

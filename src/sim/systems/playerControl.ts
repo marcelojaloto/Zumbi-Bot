@@ -12,7 +12,7 @@ import { bufferComboInput, playerMeleeInput } from '../combat/fighter';
 import { playerWeaponsInput } from './weapons';
 import { playerStaffInput } from './staffs';
 import { borrowLife, playerRespawnTick } from './lives';
-import { counterReady } from './defense';
+import { counterReady, reviveTick } from './defense';
 import { playerPerks } from '../perks';
 import { DEFENSE } from '../../data/workshop';
 
@@ -46,7 +46,9 @@ export function playerControl(w: World, inputs: ReadonlyMap<PlayerSlot, InputFra
       continue;
     }
     if (fi.state === 'dead') {
-      if (p.lives <= 0 && pressed(p.buttons, p.prevButtons, Btn.Jump)) borrowLife(w, e);
+      // caído com o item de reviver: levanta ali mesmo daqui a pouco
+      if (p.reviving > 0) reviveTick(w, e);
+      else if (p.lives <= 0 && pressed(p.buttons, p.prevButtons, Btn.Jump)) borrowLife(w, e);
       continue;
     }
 
