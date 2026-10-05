@@ -15,6 +15,12 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - Nova política de privacidade, com a Jaloto Software como responsável, o e-mail de contato, os dados guardados
   fora do Brasil e os direitos de quem joga.
 
+### Jogo online com 3 ou mais
+
+- O estado completo do jogo, que com 3 jogadores e uma onda de inimigos passava de 16 KB, era recusado em silêncio
+  pelo PeerJS, e a conexão morria sem aviso. Agora ele vai em pedaços e é montado de novo do outro lado, e o
+  estado igual para todos vira texto uma vez só.
+
 ## 1.6, atualização de 01/10/2026
 
 - No celular deitado, a dica "Chefe à frente!" não fica mais embaixo do nome do chefe: a dica sobe e o nome

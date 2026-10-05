@@ -1,7 +1,7 @@
 /**
- * Como os aparelhos se conectam. O jogo só vê "links" (conexões que levam mensagens JSON, confiáveis e em ordem);
- * a implementação real usa WebRTC via PeerJS (serviço grátis, sem cadastro), e os testes usam um canal local
- * entre abas do mesmo navegador.
+ * Como os aparelhos se conectam. O jogo só vê "links" (conexões que levam mensagens JSON de qualquer tamanho,
+ * confiáveis e em ordem); a implementação real usa WebRTC via PeerJS (serviço grátis, sem cadastro), e os testes
+ * usam um canal local entre abas do mesmo navegador. As duas cortam as mensagens grandes em pedaços (`frame.ts`).
  */
 
 export type NetErrorKind =

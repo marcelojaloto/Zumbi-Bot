@@ -1,3 +1,4 @@
+import { Joiner, MAX_FRAME_BYTES, jsonOf, splitMessage, utf8Bytes } from './frame';
 import { randomCode } from './protocol';
 import { NetError, netRandom, type Endpoint, type Link, type Transport } from './transport';
 
@@ -17,6 +18,7 @@ class LocalLink implements Link {
   onMessage: ((msg: unknown) => void) | null = null;
   onClose: (() => void) | null = null;
   closed = false;
+  private joiner = new Joiner();
 
   constructor(
     private t: LocalTransport,
@@ -27,8 +29,16 @@ class LocalLink implements Link {
     return this.peer;
   }
 
+  /** Mensagens grandes vão em pedaços, como no PeerJS. */
   send(msg: unknown): void {
-    if (!this.closed) this.t.post({ k: 'msg', to: this.peer, data: msg });
+    if (this.closed) return;
+    for (const part of splitMessage(msg, MAX_FRAME_BYTES, jsonOf(msg)))
+      this.t.post({ k: 'msg', to: this.peer, data: part });
+  }
+
+  receive(data: unknown): void {
+    const m = this.joiner.take(data);
+    if (m !== undefined) this.onMessage?.(m);
   }
 
   close(): void {
@@ -83,7 +93,14 @@ export class LocalTransport implements Transport {
   private req = 0;
   private closed = false;
 
-  constructor(name = 'zumbibot-net') {
+  /**
+   * `maxBytes`: como o canal JSON do PeerJS, mensagens desse tamanho ou maiores não saem (testes de mensagens
+   * grandes).
+   */
+  private maxBytes: number;
+
+  constructor(name = 'zumbibot-net', opts: { maxBytes?: number } = {}) {
+    this.maxBytes = opts.maxBytes ?? Infinity;
     this.ch = new BroadcastChannel(name);
     this.ch.onmessage = (e: MessageEvent) => this.recv(e.data as Frame);
     // aba fechando: os outros ficam sabendo na hora (como a conexão de verdade caindo)
@@ -91,7 +108,10 @@ export class LocalTransport implements Transport {
   }
 
   post(f: Omit<Frame, 'from'>): void {
-    if (!this.closed) this.ch.postMessage({ ...f, from: this.id });
+    if (this.closed) return;
+    if (f.k === 'msg' && this.maxBytes < Infinity && utf8Bytes(JSON.stringify(f.data)) >= this.maxBytes)
+      return;
+    this.ch.postMessage({ ...f, from: this.id });
   }
 
   forget(l: LocalLink): void {
@@ -117,7 +137,7 @@ export class LocalTransport implements Transport {
     }
     const l = this.links.get(f.from);
     if (!l) return;
-    if (f.k === 'msg') l.onMessage?.(f.data);
+    if (f.k === 'msg') l.receive(f.data);
     else if (f.k === 'fin') l.end();
   }
 

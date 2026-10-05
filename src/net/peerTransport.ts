@@ -1,4 +1,5 @@
 import type { DataConnection, MediaConnection, Peer, PeerError, PeerOptions } from 'peerjs';
+import { Joiner, MAX_FRAME_BYTES, jsonOf, splitMessage } from './frame';
 import { randomCode } from './protocol';
 import {
   NetError,
@@ -41,13 +42,20 @@ function mapError(err: PeerError<string> | Error): NetError {
   return new NetError(kind, `${type} ${err.message}`);
 }
 
-class PeerLink implements Link {
+/**
+ * Conexão de dados com outro aparelho. Mensagens grandes vão em pedaços (o PeerJS recusa as de 16 KB ou mais).
+ */
+export class PeerLink implements Link {
   onMessage: ((msg: unknown) => void) | null = null;
   onClose: (() => void) | null = null;
   private closed = false;
+  private joiner = new Joiner();
 
   constructor(private c: DataConnection) {
-    c.on('data', (d) => this.onMessage?.(d));
+    c.on('data', (d) => {
+      const m = this.joiner.take(d);
+      if (m !== undefined) this.onMessage?.(m);
+    });
     c.on('close', () => this.end());
     c.on('error', () => this.end());
     // WebRTC: rede caiu de vez
@@ -63,7 +71,7 @@ class PeerLink implements Link {
   send(msg: unknown): void {
     if (this.closed || !this.c.open) return;
     try {
-      void this.c.send(msg);
+      for (const part of splitMessage(msg, MAX_FRAME_BYTES, jsonOf(msg))) void this.c.send(part);
     } catch {
       this.end();
     }

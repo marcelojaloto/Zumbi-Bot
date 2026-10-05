@@ -285,16 +285,18 @@ export class HostRoom {
    * pediu. Depois dele, as próximas diferenças valem também para essa pessoa.
    */
   sendSnap(w: World, s: SnapDelta, ev: GameEvent[]): void {
-    let full: SnapDelta | null = null;
+    // a mesma mensagem para todos (vira texto uma vez só, mesmo quando vai em pedaços)
+    const delta: HostMsg = { t: 'snap', s, ev };
+    let key: HostMsg | null = null;
     for (const g of this.guests.values()) {
       if (!g.inGame) continue;
       if (g.needKey && !s.f) {
         g.needKey = false;
-        full ??= new SnapshotEncoder().encode(w);
-        g.link.send({ t: 'snap', s: full, ev } satisfies HostMsg);
+        key ??= { t: 'snap', s: new SnapshotEncoder().encode(w), ev };
+        g.link.send(key);
       } else {
         g.needKey = false;
-        g.link.send({ t: 'snap', s, ev } satisfies HostMsg);
+        g.link.send(delta);
       }
     }
   }

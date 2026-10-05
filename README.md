@@ -152,10 +152,12 @@ Configurações > Áudio. A voz vai direto entre os aparelhos (criptografada) e 
 
 Cada um guarda o próprio progresso (nível, armas, itens) no seu aparelho, e navegador e app jogam juntos. Quem
 criou a sala é o anfitrião (👑): o aparelho dele roda a partida e manda o estado para os outros ~20 vezes por
-segundo. No fim da fase o anfitrião escolhe a próxima (ou volta todos para a sala). **Se o anfitrião sair** (ou o
-aparelho dele cair), o jogador de menor número assume na hora: a sala, o código e a partida continuam para quem
-ficou, todos são avisados e o boneco de quem saiu some. Quando qualquer outro jogador sai ou cai, todos veem o
-aviso ("P3 saiu da partida") e o boneco dele sai do jogo. A tela de quem entrou mostra o jogo um pouquinho
+segundo; o estado completo, que com 3 ou mais jogadores e muitos inimigos passa do tamanho que o PeerJS aceita
+numa mensagem, vai em pedaços. No fim da fase o anfitrião escolhe a próxima (ou volta todos para a sala). **Se o
+anfitrião sair** (ou o aparelho dele cair), o jogador de menor número assume na hora: a sala, o código e a
+partida continuam para quem ficou, todos são avisados e o boneco de quem saiu some. Quando qualquer outro jogador
+sai ou cai, todos veem o aviso ("P3 saiu da partida") e o boneco dele sai do jogo. A tela de quem entrou mostra o
+jogo um pouquinho
 atrasado (~0,1 s) para andar liso mesmo com a rede oscilando, e com o chat de voz ligado o áudio usa pouca banda e
 não envia nada com o microfone desligado. A conexão usa WebRTC com o serviço gratuito do
 PeerJS para achar a sala pelo código, sem cadastro e sem servidor próprio. Algumas redes (de empresas e escolas)

@@ -10,7 +10,7 @@ import type { SnapDelta } from './delta';
  * Conversa entre o anfitrião (quem roda a partida) e os outros jogadores. Cada aparelho é um jogador. Quem cria a
  * sala é o anfitrião (P1); se ele sair, o jogador de menor número assume e os outros se reconectam nele.
  */
-export const NET_VERSION = 2;
+export const NET_VERSION = 3;
 
 /** Letras do código da sala (sem I e O, que confundem com 1 e 0). */
 export const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
