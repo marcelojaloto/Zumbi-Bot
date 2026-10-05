@@ -354,9 +354,10 @@ test('jogo online com PeerJS de verdade (WebRTC): cada um no seu navegador; aba 
   const t0 = (await game(guest)).tick;
   await expect.poll(async () => (await game(guest)).tick, { timeout: 20_000 }).toBeGreaterThan(t0 + 30);
 
-  // a aba do convidado fecha de repente: o anfitrião percebe e o P2 sai da partida
+  // a aba do convidado fecha de repente, sem avisar (como uma queda de rede): o anfitrião guarda o lugar dele por
+  // 30 s, para ele poder voltar, e depois o P2 sai da partida
   await guestCtx.close();
-  await expect.poll(() => slotsIn(host), { timeout: 30_000 }).toEqual([0]);
+  await expect.poll(() => slotsIn(host), { timeout: 60_000 }).toEqual([0]);
   expect((await game(host)).screen).toBe('playing');
   expect(errors).toEqual([]);
   await hostCtx.close();
