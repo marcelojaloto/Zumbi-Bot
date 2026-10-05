@@ -961,6 +961,21 @@ export const EN: Record<string, string> = {
   'Vida cheia': 'Health is full',
   'Usar caixa de cura': 'Use health kit',
   // ------------------------------------------------------------------ Oficina, loja, baú e continuação
+  // acessórios novos
+  'Coroa de Engrenagens': 'Gear Crown',
+  'Elmo Viking': 'Viking Helmet',
+  'Antenas de ET': 'Alien Antennae',
+  'Auréola Arcana': 'Arcane Halo',
+  'Faixa de Ninja': 'Ninja Headband',
+  'Visor de Neon': 'Neon Visor',
+  'Óculos de Aviador': 'Aviator Goggles',
+  'Máscara de Samurai': 'Samurai Mask',
+  'Bigode Elegante': 'Fancy Mustache',
+  'Armadura de Cavaleiro': 'Knight Armor',
+  'Quimono do Dojo': 'Dojo Gi',
+  'Mochila a Jato': 'Jetpack',
+  'Asas de Anjo': 'Angel Wings',
+  'Capa de Fênix': 'Phoenix Cape',
   // Oficina: atributos
   Oficina: 'Workshop',
   OFICINA: 'WORKSHOP',

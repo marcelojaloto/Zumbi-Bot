@@ -71,6 +71,9 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - Vencendo um mapa, aparece o **baú da fase**: três bolinhas mostram que ele abre com três toques, e os prêmios
   saem voando para os lados, cada um com o objeto em 3D e o nome. Ele mostra o que a fase deu e um bônus de sucata,
   às vezes com uma peça nova, o item de reviver, uma arma branca ou uma arma de fogo.
+- 14 acessórios novos: coroa de engrenagens, elmo viking, antenas de ET, auréola arcana, faixa de ninja, visor de
+  neon, óculos de aviador, máscara de samurai, bigode elegante, armadura de cavaleiro, quimono do dojo, mochila a
+  jato, asas de anjo e capa de fênix.
 
 ### Novo jogo e continuação
 

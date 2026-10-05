@@ -29,7 +29,7 @@ ruas, pule, soque, chute e atire para limpar 10 mapas cheios de mortos-vivos e r
 - 7 armas de fogo: pistola, escopeta, submetralhadora, fuzil, sniper, metralhadora e lança-granadas
 - 10 cajados mágicos com elementos: fogo, gelo, água, raio, veneno, vento, terra e mais
 - Poderes, itens e armas brancas espalhados pelas fases
-- Guarda-roupa com mais de 40 peças para deixar o seu robô com a sua cara
+- Guarda-roupa com mais de 50 peças para deixar o seu robô com a sua cara
 - Oficina com uma árvore de melhorias para cada personagem: atributos, combos, especiais e defesas novas
 - Suba de nível, abra o baú de cada fase, compre armas e itens de reviver na loja e bata seu recorde no ranking pessoal e no ranking global
 - Quatro dificuldades, de Fácil a Insano, e Novo Jogo+ depois do chefe final
@@ -67,7 +67,7 @@ streets, jump, punch, kick and shoot your way through 10 maps packed with the un
 - 7 firearms: pistol, shotgun, SMG, assault rifle, sniper, machine gun and grenade launcher
 - 10 magic staffs with elements: fire, ice, water, lightning, poison, wind, earth and more
 - Powers, items and melee weapons scattered across the levels
-- A wardrobe with more than 40 pieces to make your robot your own
+- A wardrobe with more than 50 pieces to make your robot your own
 - A workshop with an upgrade tree for each character: attributes, combos, specials and new defenses
 - Level up, open the chest of each level, buy weapons and revive items in the shop and beat your high score on the personal and global leaderboards
 - Four difficulties, from Easy to Insane, plus New Game+ after the final boss
