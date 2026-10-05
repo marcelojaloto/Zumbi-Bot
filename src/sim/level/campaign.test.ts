@@ -18,6 +18,7 @@ describe('campanha (piloto automático)', () => {
   for (const m of MAPS) {
     if (only && only !== m.id) continue;
     m.levels.forEach((lv, idx) => {
+      // a fase inteira, até o chefe cair: passa dos 5 s padrão numa máquina lenta
       it(`${m.id} / ${lv.id} é concluível`, () => {
         const w = makeWorld({
           map: m,
@@ -35,7 +36,7 @@ describe('campanha (piloto automático)', () => {
         }
         expect(w.levelState.bossSpawned || !lv.boss).toBe(true);
         expect(w.finished).toBe('victory');
-      });
+      }, 30_000);
     });
   }
 });
