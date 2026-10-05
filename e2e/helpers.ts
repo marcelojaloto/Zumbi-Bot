@@ -33,3 +33,17 @@ export async function createRoom(
   if (opts.voice) await box.getByRole('button', { name: new RegExp(opts.voice) }).click();
   await box.getByRole('button', { name: /Criar sala/ }).click();
 }
+
+/**
+ * Venceu a fase: o baú aparece antes do resultado. Abre com três toques e segue (`cont` = o botão "Pegar prêmios" no
+ * idioma do teste). O baú balança o tempo todo, então os cliques são forçados (o Playwright esperaria ele parar).
+ */
+export async function openChest(page: Page, cont = 'Pegar prêmios'): Promise<void> {
+  const chest = page.locator('.chest');
+  await chest.waitFor({ state: 'visible', timeout: 30_000 });
+  for (let i = 0; i < 3; i++) await chest.click({ force: true });
+  await page.locator('.prize').first().waitFor({ state: 'visible' });
+  const go = page.getByRole('button', { name: cont, exact: true });
+  await go.waitFor({ state: 'visible', timeout: 30_000 });
+  await go.click({ force: true });
+}

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Profile } from './Profile';
+import { CHEST_ODDS, chestScrap, openChest } from './chest';
 import { MemoryKV, Storage } from '../save/storage';
 import { KEYS } from '../save/storage';
 import { defaultSave } from '../save/schema';
@@ -119,5 +120,55 @@ describe('Oficina no perfil', () => {
     expect(r.data.revive).toEqual([]);
     expect(r.data.workshop).toEqual({});
     expect(r.data.unlocks.melee).toEqual([]);
+  });
+});
+
+describe('baú do fim de fase', () => {
+  it('mostra o que a fase deu e soma o bônus de sucata ao perfil', () => {
+    const p = fresh(0);
+    // sem item extra (sorteio no fim da tabela): sucata a mais
+    const prizes = openChest(
+      p,
+      stats({ unlockedStaff: 'earth', unlockedGuns: ['shotgun'], stars: 3 }),
+      { character: 'robot', loot: ['cap_torn'], scrap: 40 },
+      () => 0.99,
+    );
+    const bonus = chestScrap(0, 3, false) + 50;
+    expect(prizes[0]).toEqual({ k: 'scrap', n: 40 + bonus });
+    expect(prizes.map((x) => x.k)).toEqual(['scrap', 'staff', 'gun', 'cosmetic']);
+    expect(p.save.profile.scrap).toBe(bonus);
+  });
+
+  it('às vezes dá o item de reviver do personagem (se ele ainda não tem)', () => {
+    const p = fresh(0);
+    const prizes = openChest(p, stats(), { character: 'military', loot: [], scrap: 0 }, () => 0);
+    expect(prizes.at(-1)).toEqual({ k: 'revive', c: 'military' });
+    expect(p.hasRevive('military')).toBe(true);
+    // já tem: vira sucata a mais
+    const again = openChest(p, stats(), { character: 'military', loot: [], scrap: 0 }, () => 0);
+    expect(again.map((x) => x.k)).toEqual(['scrap']);
+    expect(CHEST_ODDS.revive).toBeGreaterThan(0);
+  });
+
+  it('peça nova, arma branca ou arma de fogo que ainda não tinha', () => {
+    const p = fresh(0);
+    const o = CHEST_ODDS;
+    const cos = openChest(p, stats(), { character: 'robot', loot: [], scrap: 0 }, () => o.revive + 0.01);
+    expect(cos.at(-1)!.k).toBe('cosmetic');
+    const mel = openChest(
+      p,
+      stats(),
+      { character: 'robot', loot: [], scrap: 0 },
+      () => o.revive + o.cosmetic + 0.01,
+    );
+    expect(mel.at(-1)!.k).toBe('melee');
+    expect(p.save.unlocks.melee.length).toBe(1);
+    const gun = openChest(
+      p,
+      stats(),
+      { character: 'robot', loot: [], scrap: 0 },
+      () => o.revive + o.cosmetic + o.melee + 0.01,
+    );
+    expect(gun.at(-1)!.k).toBe('gun');
   });
 });

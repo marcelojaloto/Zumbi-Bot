@@ -380,6 +380,13 @@ export class Profile {
     return true;
   }
 
+  /** Ganha o item de reviver (baú do fim de fase); false se ele já tinha. */
+  giveRevive(c: CharacterId): boolean {
+    if (this.hasRevive(c)) return false;
+    this.save.revive.push(c);
+    return true;
+  }
+
   /** Itens de reviver gastos na partida saem do save. */
   consumeRevive(chars: readonly CharacterId[]): void {
     if (chars.length) this.save.revive = this.save.revive.filter((c) => !chars.includes(c));

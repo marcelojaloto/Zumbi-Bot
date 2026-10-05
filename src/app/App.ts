@@ -59,6 +59,13 @@ import { mapSelectScreen } from '../ui/screens/MapSelectScreen';
 import { creditsScreen } from '../ui/screens/CreditsScreen';
 import { rankingScreen } from '../ui/screens/RankingScreen';
 import { workshopScreen } from '../ui/screens/WorkshopScreen';
+import { chestScreen } from '../ui/screens/ChestScreen';
+import { openChest, type ChestPrize } from './chest';
+import { renderThumb } from '../render/Thumbnails';
+import { staffRecipe } from '../render/views/staffRecipe';
+import { COSMETICS } from '../data/cosmetics';
+import { FIREARMS } from '../data/weapons';
+import { MELEE_WEAPONS } from '../data/melee';
 import type { RunStats } from '../sim/events';
 import { MAPS, getMap } from '../data/maps';
 import { xpToNext } from '../data/balance';
@@ -995,13 +1002,48 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       }),
     );
     // primeira vitória sobre o chefe final: o final lendário e os créditos por cima do resultado
-    if (secretNew) {
+    const ending = () => {
+      if (!secretNew) return;
       // terminou o jogo: libera o personagem secreto (revelado no fim do final lendário)
       this.profile.unlockSecret();
       this.playEnding(() =>
         this.screens.replace(creditsScreen(this, { final: true, ngPlusUnlocked: res.ngPlusUnlocked })),
       );
-    }
+    };
+    // venceu a fase: o baú (os prêmios da fase e um bônus) por cima do resultado; abrindo, segue
+    if (victory && !sandbox) {
+      const me = s.world.get((room ? room.mySlot : 0) + 1)?.player;
+      const prizes = openChest(this.profile, stats, {
+        character: me?.character ?? this.profile.save.profile.character,
+        loot: p.loot,
+        scrap: p.scrap,
+      });
+      this.screens.push(
+        chestScreen(this, prizes, () => {
+          if (this.screens.top?.id === 'chest') this.screens.pop();
+          ending();
+        }),
+      );
+    } else ending();
+  }
+
+  /** Foto 3D de um prêmio do baú (null: a tela usa o ícone). */
+  prizeThumb(p: ChestPrize): string | null {
+    const recipe =
+      p.k === 'cosmetic'
+        ? COSMETICS[p.id]?.mesh
+        : p.k === 'gun'
+          ? FIREARMS[p.id].mesh
+          : p.k === 'melee'
+            ? MELEE_WEAPONS[p.id].mesh
+            : p.k === 'staff'
+              ? staffRecipe(p.id)
+              : undefined;
+    if (!recipe?.parts.length) return null;
+    const key =
+      p.k === 'cosmetic' || p.k === 'gun' || p.k === 'melee' || p.k === 'staff' ? `${p.k}:${p.id}` : '';
+    // armas e cajados ficam de pé na foto; cosméticos de frente, um pouco de lado
+    return renderThumb(this.renderer, key, recipe, p.k === 'cosmetic' ? {} : { pitch: 0.2, yaw: 1.2 });
   }
 
   /** Sair no meio da fase preserva XP, sucata e loot obtidos. */

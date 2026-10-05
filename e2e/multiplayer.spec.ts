@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors } from './helpers';
+import { DEBUG_QUERY, collectErrors, openChest } from './helpers';
 
 type P = { slot: number; character: string; x: number; lives: number };
 type G = {
@@ -139,6 +139,7 @@ test('multijogador local: controles e teclado dividido entram, jogam e veem o re
     null,
     { timeout: 150_000, polling: 200 },
   );
+  await openChest(page);
   await expect(page.locator('.party-table tr')).toHaveCount(5, { timeout: 30_000 });
   expect(errors).toEqual([]);
 });

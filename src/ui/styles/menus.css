@@ -2342,3 +2342,277 @@ a.btn {
     font-size: 12px;
   }
 }
+
+/* ------------------------------------------------------------------ baú do fim de fase */
+.chest-screen {
+  justify-content: center;
+  gap: 6px;
+  background: radial-gradient(ellipse at 50% 55%, rgba(60, 40, 10, 0.55), rgba(4, 5, 10, 0.88) 70%);
+}
+.chest-title {
+  margin: 0;
+  color: #ffd24a;
+  text-shadow:
+    0 0 22px rgba(255, 190, 60, 0.6),
+    0 4px 0 #4a2a00;
+}
+.chest-stage {
+  position: relative;
+  width: min(760px, 92vw);
+  height: min(430px, 64vh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chest {
+  --glow: 0;
+  position: relative;
+  width: 150px;
+  height: 120px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  animation: chest-idle 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 calc(8px + 22px * var(--glow)) rgba(255, 200, 70, calc(0.35 + 0.5 * var(--glow))));
+}
+.chest:focus {
+  outline: none;
+}
+.chest:focus-visible .chest-body {
+  box-shadow: 0 0 0 3px var(--cyan);
+}
+.chest > i,
+.chest i {
+  display: block;
+  font-style: normal;
+}
+.chest-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 70px;
+  border-radius: 6px 6px 10px 10px;
+  background: repeating-linear-gradient(90deg, #8a5426 0 26px, #7a4a20 26px 30px), #8a5426;
+  border: 3px solid #4a2a10;
+  box-sizing: border-box;
+}
+.chest-lid {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 8px;
+  height: 46px;
+  border-radius: 60px 60px 6px 6px / 34px 34px 6px 6px;
+  background: linear-gradient(180deg, #a2662e, #7a4a20);
+  border: 3px solid #4a2a10;
+  box-sizing: border-box;
+  transform-origin: 50% 100%;
+  transition: transform 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+  z-index: 2;
+}
+.chest-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 18px;
+  margin-left: -9px;
+  background: linear-gradient(90deg, #c8901a, #ffd24a 50%, #c8901a);
+}
+.chest-lock {
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  width: 26px;
+  height: 30px;
+  margin-left: -13px;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #ffe07a, #c8901a);
+  border: 2px solid #6a4a0a;
+  box-sizing: border-box;
+}
+.chest-rays {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: 380px;
+  height: 380px;
+  margin: -190px 0 0 -190px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255, 230, 140, 0.55) 0 8deg, transparent 8deg 22deg);
+  -webkit-mask-image: radial-gradient(circle, #000 18%, transparent 68%);
+  mask-image: radial-gradient(circle, #000 18%, transparent 68%);
+  opacity: 0;
+  transform: scale(0.2);
+  pointer-events: none;
+}
+.chest.hit {
+  animation: chest-hit 0.32s ease-out;
+}
+.chest.open {
+  animation: none;
+  cursor: default;
+}
+.chest.open .chest-lid {
+  transform: translateY(-30px) rotate(-24deg) translateX(-26px);
+}
+.chest.open .chest-rays {
+  animation: chest-rays 3s linear infinite;
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.4s,
+    transform 0.5s;
+}
+.chest-dots {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 78px);
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+.chest-dots span {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #ffd24a;
+  box-sizing: border-box;
+  animation: chest-dot 1.2s ease-in-out infinite;
+}
+.chest-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.chest-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.chest-dots span.on {
+  background: #ffd24a;
+  box-shadow: 0 0 10px rgba(255, 210, 74, 0.8);
+  animation: none;
+}
+.chest-dots.full {
+  opacity: 0;
+  transition: opacity 0.4s 0.3s;
+}
+.chest-hint {
+  margin: 0;
+  color: #ffe9b0;
+  font-weight: 700;
+  min-height: 1.3em;
+}
+.chest-prizes {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+}
+.prize {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 128px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+  transform: translate(-50%, -50%) scale(0.2);
+  opacity: 0;
+  animation: prize-out 0.7s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+}
+.prize-obj {
+  width: 74px;
+  height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--pc) 35%, transparent), transparent 70%);
+}
+.prize-obj img {
+  width: 74px;
+  height: 74px;
+  object-fit: contain;
+}
+.prize-icon {
+  font-size: 40px;
+  line-height: 1;
+}
+.prize b {
+  color: var(--pc);
+  font-size: 13px;
+  line-height: 1.15;
+  text-shadow: 0 2px 4px #000;
+}
+.prize span {
+  color: var(--muted);
+  font-size: 11px;
+}
+@keyframes chest-idle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-1.5deg);
+  }
+}
+@keyframes chest-hit {
+  0% {
+    transform: scale(1);
+  }
+  20% {
+    transform: scale(1.1, 0.9) rotate(-6deg);
+  }
+  45% {
+    transform: scale(0.95, 1.06) rotate(5deg);
+  }
+  70% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+@keyframes chest-dot {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 1;
+  }
+}
+@keyframes chest-rays {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes prize-out {
+  to {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--px)), calc(-50% + var(--py))) scale(1);
+  }
+}
+@media (max-height: 480px) {
+  .chest-title {
+    font-size: 24px;
+  }
+  .chest {
+    zoom: 0.8;
+  }
+  .prize {
+    width: 104px;
+  }
+  .prize-obj,
+  .prize-obj img {
+    width: 56px;
+    height: 56px;
+  }
+}

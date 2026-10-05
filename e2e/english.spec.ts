@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors } from './helpers';
+import { DEBUG_QUERY, collectErrors, openChest } from './helpers';
 
 type G = {
   isReady(): boolean;
@@ -45,6 +45,7 @@ test('navegador em inglês: menus, partida e vitória em inglês', async ({ page
     null,
     { timeout: 120_000, polling: 200 },
   );
+  await openChest(page, 'Collect prizes');
   await expect(page.getByText('MAP CLEARED!')).toBeVisible({ timeout: 20_000 });
   expect(errors).toEqual([]);
 });

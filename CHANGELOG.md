@@ -68,6 +68,9 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   carrega no máximo um. Caindo com ele, levanta ali mesmo com metade da vida, sem gastar vida.
 - A **Loja** ganhou abas: Visual, Armas (armas de fogo para o arsenal e armas brancas, que começam cada fase na
   mão) e Itens especiais (o item de reviver de cada personagem).
+- Vencendo um mapa, aparece o **baú da fase**: três bolinhas mostram que ele abre com três toques, e os prêmios
+  saem voando para os lados, cada um com o objeto em 3D e o nome. Ele mostra o que a fase deu e um bônus de sucata,
+  às vezes com uma peça nova, o item de reviver, uma arma branca ou uma arma de fogo.
 
 ## 1.6, atualização de 01/10/2026
 

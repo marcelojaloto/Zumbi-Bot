@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors } from './helpers';
+import { DEBUG_QUERY, collectErrors, openChest } from './helpers';
 
 type G = {
   isReady(): boolean;
@@ -115,7 +115,9 @@ test('chefe final: vitória mostra o final lendário, os créditos e libera o No
       g.step(5);
     }
   });
-  // final lendário: um capítulo por personagem (com o mini cenário) e o epílogo; "Próximo" avança
+  // primeiro o baú da fase; depois o final lendário: um capítulo por personagem (com o mini cenário), o epílogo
+  // e o secreto; "Próximo" avança
+  await openChest(page);
   await page.waitForFunction(() => document.querySelector('.screen.ending') !== null, null, {
     timeout: 120_000,
   });

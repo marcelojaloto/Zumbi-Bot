@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors } from './helpers';
+import { DEBUG_QUERY, collectErrors, openChest } from './helpers';
 
 type G = {
   isReady(): boolean;
@@ -106,6 +106,8 @@ test('mapa 1: anda, luta, renderiza e conclui com piloto automático', async ({ 
   expect(final.finished).toBe('victory');
   await page.evaluate(() => (window as unknown as { __game: G }).__game.step(120));
   await page.waitForTimeout(300);
+  // o baú da fase vem antes do resultado
+  await openChest(page);
   await expect(page.getByText('MAPA CONCLUÍDO!')).toBeVisible({ timeout: 10_000 });
   await page.screenshot({ path: 'test-results/vitoria-1.png' });
 

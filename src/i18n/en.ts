@@ -1085,6 +1085,7 @@ export const EN: Record<string, string> = {
   BLOQUEIO: 'BLOCKED',
   // itens de reviver
   'Item de reviver': 'Revive item',
+  'Item de reviver de {name}': "{name}'s revive item",
   'Bateria de Reserva': 'Spare Battery',
   'A primeira bateria que Zeca Engrenagem tirou da sucata da fábrica, na noite em que ganhou vontade própria. Ele a guarda no peito, ligada a um fio solto: quando o corpo dele apaga, ela dá a partida de novo.':
     'The first battery Zeca Engrenagem pulled from the factory scrap, on the night he gained a will of his own. He keeps it in his chest, wired to a loose cable: when his body shuts down, it jump-starts him again.',
@@ -1123,6 +1124,15 @@ export const EN: Record<string, string> = {
   'Já carrega': 'Already carrying',
   'Cada personagem carrega um só. Se ele cair, o item o levanta ali mesmo, sem gastar vida, e se gasta.':
     'Each character carries only one. If they fall, the item gets them back up on the spot, without using a life, and is used up.',
+  // baú do fim de fase
+  'BAÚ DA FASE': 'STAGE CHEST',
+  'Toque três vezes para abrir': 'Tap three times to open',
+  'Toque três vezes no baú para abrir': 'Tap the chest three times to open it',
+  'Pegar prêmios': 'Collect prizes',
+  'Você ganhou!': 'You won!',
+  'Você ganhou {n} prêmios!': 'You won {n} prizes!',
+  '{n} de sucata': '{n} scrap',
+  'Arma branca': 'Melee weapon',
   'Esquiva (defesa da Oficina)': 'Dodge (Workshop defense)',
   'Direcional: 2× ↑ ou ↓': 'D-pad: 2× ↑ or ↓',
   'Esquiva em profundidade (com a defesa da Oficina)': 'Dodge in depth (with the Workshop defense)',

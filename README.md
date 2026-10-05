@@ -49,7 +49,8 @@ Web Audio.
   **Item de reviver:** cada personagem tem o seu, ligado à história dele (a Bateria de Reserva do Zumbi Bot, a Pena
   de Fênix da Maga, a Plaqueta do Batalhão do Militar, o Chip de Backup do Ciborgue, o Soro do Lago do Mutante e a
   Faixa do Mestre do Prodígio), e carrega no máximo um. Se ele cai com o item, levanta ali mesmo com metade da
-  vida, sem gastar vida, e o item se gasta. Compra-se na Loja; a história de cada um está na ficha do personagem.
+  vida, sem gastar vida, e o item se gasta. Compra-se na Loja ou sai no baú do fim de fase; a história de cada um
+  está na ficha do personagem.
 
   **Personagem secreto:** terminando o jogo pela primeira vez, o último capítulo do final lendário revela o
   **Prodígio** (Jacobb Amici), um adolescente loiro de olhos azuis que luta caratê com magia arcana. O disfarce dele vai para o guarda-roupa e veste quem quiser:
@@ -74,6 +75,9 @@ Web Audio.
   só um fica em uso, escolhido ali. **Defesas**: esquiva (toque duplo para cima ou para baixo), guarda (bloqueia
   golpes de frente), couraça, escudo de energia que recarrega e contra-golpe. Cada melhoria libera com XP (a soma
   de tudo o que já ganhou) e se compra com sucata.
+- **Baú da fase**: vencendo um mapa, aparece um baú balançando; três bolinhas mostram que ele abre com três toques.
+  Aberto, os prêmios saem voando para os lados, cada um com o objeto e o nome: o que a fase deu e um bônus de
+  sucata, às vezes com uma peça nova, o item de reviver, uma arma branca ou uma arma de fogo.
 - **Progressão**: XP e níveis, pontuação com combos, estrelas por nível, recordes e **Novo Jogo+** depois de
   derrotar o OMEGA-Z. O progresso fica salvo no navegador (`localStorage`).
 - **Ranking por jornada**: os pontos de cada mapa se somam até você **perder todas as vidas** ou **terminar o

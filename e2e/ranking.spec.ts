@@ -1,5 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors } from './helpers';
+import { DEBUG_QUERY, collectErrors, openChest } from './helpers';
 
 type G = {
   isReady(): boolean;
@@ -83,6 +83,7 @@ test('ranking: nome só no fim da jornada, salvo sozinho, e o ranking global', a
   await screenIs(page, 'playing');
   await finish(page, true, 3000);
   await screenIs(page, 'victory');
+  await openChest(page);
   await expect(page.locator('.rank-run')).toContainText('Jornada');
   await expect(page.locator('.rank-name')).toHaveCount(0);
   await page.getByRole('button', { name: 'Próximo mapa' }).click();

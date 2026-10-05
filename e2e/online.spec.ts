@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { collectErrors, createRoom } from './helpers';
+import { collectErrors, createRoom, openChest } from './helpers';
 
 // Jogo online com duas abas do mesmo navegador: o canal local (?net=local) faz o papel do PeerJS.
 const Q = '?debug=1&quality=low&mute=1&nopointerlock=1&net=local';
@@ -139,6 +139,9 @@ test('jogo online: criar sala, entrar pelo link, jogar, resultado, jogar de novo
     { timeout: 120_000, polling: 500 },
   );
   await screenOf(guest, 'victory');
+  // cada um abre o próprio baú da fase (os prêmios vão para o perfil de cada aparelho)
+  await openChest(guest);
+  await openChest(host);
   await expect(guest.locator('.online-wait')).toBeVisible();
   await expect(guest.getByRole('button', { name: 'Próximo mapa' })).toHaveCount(0);
   // o progresso do convidado foi guardado no aparelho dele
