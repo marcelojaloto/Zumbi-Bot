@@ -115,8 +115,8 @@ test('chefe final: vitória mostra o final lendário, os créditos e libera o No
       g.step(5);
     }
   });
-  // primeiro o baú da fase; depois o final lendário: um capítulo por personagem (com o mini cenário), o epílogo
-  // e o secreto; "Próximo" avança
+  // primeiro o baú da fase; depois o final lendário: um capítulo por personagem (com o mini cenário), o epílogo,
+  // o secreto e a continuação; "Próximo" avança
   await openChest(page);
   await page.waitForFunction(() => document.querySelector('.screen.ending') !== null, null, {
     timeout: 120_000,
@@ -125,8 +125,8 @@ test('chefe final: vitória mostra o final lendário, os créditos e libera o No
   await expect(page.locator('.end-name')).toHaveText('Zeca Engrenagem');
   await page.getByRole('button', { name: /Próximo/ }).click();
   await expect(page.locator('.end-head')).toContainText('A mestra da Academia');
-  // cinco heróis, o epílogo e, por último, a revelação do personagem secreto
-  await expect(page.locator('.end-dots span')).toHaveCount(7);
+  // cinco heróis, o epílogo, a revelação do personagem secreto e, por último, a continuação
+  await expect(page.locator('.end-dots span')).toHaveCount(8);
   for (let i = 0; i < 5; i++) await page.keyboard.press('ArrowRight');
   // título só com o nome, sem cadeado e sem subtítulo
   await expect(page.locator('.end-head')).toHaveText('Prodígio');

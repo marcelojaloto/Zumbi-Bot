@@ -79,7 +79,9 @@ Web Audio.
   Aberto, os prêmios saem voando para os lados, cada um com o objeto e o nome: o que a fase deu e um bônus de
   sucata, às vezes com uma peça nova, o item de reviver, uma arma branca ou uma arma de fogo.
 - **Progressão**: XP e níveis, pontuação com combos, estrelas por nível, recordes e **Novo Jogo+** depois de
-  derrotar o OMEGA-Z. O progresso fica salvo no navegador (`localStorage`).
+  derrotar o OMEGA-Z. Terminando o jogo, o "Continuar" do menu vira **Novo jogo**: a segunda jornada começa de novo
+  na Vila Assombrada com todas as armas, cajados, melhorias e itens conquistados, e o último capítulo do final
+  lendário conta o que vem por aí. O progresso fica salvo no navegador (`localStorage`).
 - **Ranking por jornada**: os pontos de cada mapa se somam até você **perder todas as vidas** ou **terminar o
   jogo**; só aí o jogo mostra a posição e o nome, já salvo com o último nome usado (ou o apelido do personagem).
   Tocar no nome abre o teclado, com a caixa no alto da tela. O **Ranking Pessoal** fica no aparelho, com o nome; o

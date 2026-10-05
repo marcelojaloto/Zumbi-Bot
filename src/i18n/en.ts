@@ -1133,6 +1133,14 @@ export const EN: Record<string, string> = {
   'Você ganhou {n} prêmios!': 'You won {n} prizes!',
   '{n} de sucata': '{n} scrap',
   'Arma branca': 'Melee weapon',
+  // novo jogo e continuação
+  'Novo jogo: {map}': 'New game: {map}',
+  'Ainda não acabou...': "It's not over yet...",
+  'Continua na segunda jornada': 'To be continued in the second journey',
+  'Semanas depois, os instrumentos da Academia Arcana captaram um sinal vindo do fundo do mar: o mesmo pulso vermelho do núcleo do OMEGA-Z, só que mais forte. Antes de cair, o Ciborgue Primordial tinha mandado uma cópia de si mesmo para longe, e os mortos voltaram a se levantar da Vila Assombrada à Arena Final. Os heróis não começam do zero: guardaram as armas, os cajados, as melhorias da Oficina e tudo o que conquistaram. A segunda jornada começa de novo na vila, e desta vez eles sabem com quem estão lidando.':
+    "Weeks later, the Arcane Academy's instruments picked up a signal from the bottom of the sea: the same red pulse as OMEGA-Z's core, only stronger. Before falling, the Primordial Cyborg had sent a copy of itself far away, and the dead rose again from the Haunted Village to the Final Arena. The heroes don't start from scratch: they kept their weapons, their staffs, their Workshop upgrades and everything they earned. The second journey starts back in the village, and this time they know who they are dealing with.",
+  'Mas, no fundo do mar, um pulso vermelho voltou a bater. A segunda jornada começa no novo jogo, da Vila Assombrada, com tudo o que você conquistou.':
+    'But at the bottom of the sea, a red pulse started beating again. The second journey begins in the new game, from the Haunted Village, with everything you earned.',
   'Esquiva (defesa da Oficina)': 'Dodge (Workshop defense)',
   'Direcional: 2× ↑ ou ↓': 'D-pad: 2× ↑ or ↓',
   'Esquiva em profundidade (com a defesa da Oficina)': 'Dodge in depth (with the Workshop defense)',

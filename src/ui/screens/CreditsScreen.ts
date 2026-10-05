@@ -31,6 +31,16 @@ export function creditsScreen(
           ),
         )
       : null,
+    // o gancho da continuação: o novo jogo
+    opts.final
+      ? el(
+          'p',
+          { class: 'cr-story' },
+          t(
+            'Mas, no fundo do mar, um pulso vermelho voltou a bater. A segunda jornada começa no novo jogo, da Vila Assombrada, com tudo o que você conquistou.',
+          ),
+        )
+      : null,
     block(
       t('Ideia e direção'),
       'Marcelo Jaloto',

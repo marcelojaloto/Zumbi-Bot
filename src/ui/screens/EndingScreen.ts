@@ -14,10 +14,21 @@ export interface EndingHost extends UiHost {
 const EPILOGUE =
   'Cinco heróis que ninguém imaginava juntos (um robô, uma maga, um soldado, um ciborgue e um mutante) provaram que máquinas, magia e gente podem viver em paz. A revolução acabou. O que começa agora é um mundo novo.';
 
+/** O gancho da continuação: o novo jogo (do mapa 1, com tudo o que foi conquistado) é a segunda jornada. */
+const SEQUEL =
+  'Semanas depois, os instrumentos da Academia Arcana captaram um sinal vindo do fundo do mar: o mesmo pulso vermelho do núcleo do OMEGA-Z, só que mais forte. Antes de cair, o Ciborgue Primordial tinha mandado uma cópia de si mesmo para longe, e os mortos voltaram a se levantar da Vila Assombrada à Arena Final. Os heróis não começam do zero: guardaram as armas, os cajados, as melhorias da Oficina e tudo o que conquistaram. A segunda jornada começa de novo na vila, e desta vez eles sabem com quem estão lidando.';
+
 /** Texto de um capítulo: título, nome e o final feliz. */
 function chapterText(c: EndingChapter): { color: string; title: string; name: string; text: string } {
   if (c === 'all')
     return { color: '#ffd23a', title: t('Juntos'), name: t('Um mundo novo'), text: t(EPILOGUE) };
+  if (c === 'sequel')
+    return {
+      color: '#ff3a4a',
+      title: t('Ainda não acabou...'),
+      name: t('Continua na segunda jornada'),
+      text: t(SEQUEL),
+    };
   const d = CHARACTERS[c];
   return {
     color: hexColor(d.color),

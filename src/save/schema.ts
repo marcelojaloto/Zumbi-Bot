@@ -23,7 +23,8 @@ export interface LevelProgress {
 }
 
 /**
- * v2: armas brancas da Loja, item de reviver de cada personagem e Oficina (melhorias e especial escolhido).
+ * v2: armas brancas da Loja, item de reviver de cada personagem, Oficina (melhorias e especial escolhido) e o novo
+ * jogo depois de terminar (rodada e mapas vencidos nela).
  */
 export interface SaveV2 {
   version: 2;
@@ -43,7 +44,16 @@ export interface SaveV2 {
     /** Arma branca que começa cada fase na mão (comprada na Loja). */
     melee?: MeleeId;
   };
-  progress: { unlockedLevels: LevelId[]; levels: Record<LevelId, LevelProgress> };
+  /**
+   * round = quantas vezes o jogo foi terminado (0 = primeira jornada); roundCleared = níveis vencidos no novo jogo
+   * em andamento (o "Continuar" segue por eles, do mapa 1 ao último).
+   */
+  progress: {
+    unlockedLevels: LevelId[];
+    levels: Record<LevelId, LevelProgress>;
+    round: number;
+    roundCleared: LevelId[];
+  };
   /** melee = armas brancas compradas na Loja. */
   unlocks: { firearms: WeaponId[]; staffs: StaffId[]; melee: MeleeId[] };
   cosmetics: {
@@ -168,7 +178,7 @@ export function defaultSave(now = 0): SaveV2 {
     createdAt: now,
     updatedAt: now,
     profile: { name: 'Zumbi Bot', level: 1, xp: 0, scrap: 0, character: 'robot' },
-    progress: { unlockedLevels: ['vila-1'], levels: {} },
+    progress: { unlockedLevels: ['vila-1'], levels: {}, round: 0, roundCleared: [] },
     unlocks: { firearms: ['pistol'], staffs: ['heal'], melee: [] },
     cosmetics: { owned: [], equipped: {}, seen: [], pity: 0 },
     stats: { kills: 0, deaths: 0, bosses: 0, playTimeMs: 0, runs: 0 },

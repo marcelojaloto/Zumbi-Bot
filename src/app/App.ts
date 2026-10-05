@@ -657,7 +657,12 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
         'div',
         { class: 'menu' },
         b(
-          s.stats.runs > 0 ? t('Continuar: {map}', { map: t(contMap.name) }) : t('Jogar'),
+          // terminou o jogo: o próximo é um jogo novo, com tudo o que foi conquistado
+          s.progress.round > 0 && s.progress.roundCleared.length === 0
+            ? t('Novo jogo: {map}', { map: t(contMap.name) })
+            : s.stats.runs > 0
+              ? t('Continuar: {map}', { map: t(contMap.name) })
+              : t('Jogar'),
           () => this.openLobby(cont.mapId, cont.levelIdx),
           'btn primary',
         ),
@@ -701,6 +706,11 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
   /** Primeiro nível desbloqueado e não concluído (ou o último desbloqueado). */
   continueTarget(): { mapId: string; levelIdx: number } {
     const prog = this.profile.save.progress;
+    // novo jogo (depois de terminar): do mapa 1 em diante, pelos níveis ainda não vencidos nesta rodada
+    if (prog.round > 0)
+      for (const m of MAPS)
+        for (let i = 0; i < m.levels.length; i++)
+          if (!prog.roundCleared.includes(m.levels[i]!.id)) return { mapId: m.id, levelIdx: i };
     let last = { mapId: MAPS[0]!.id, levelIdx: 0 };
     for (const m of MAPS) {
       for (let i = 0; i < m.levels.length; i++) {

@@ -7,6 +7,7 @@ import { defaultSave } from '../save/schema';
 import { FIREARM_PRICES, MELEE_PRICES, REVIVE_PRICE } from '../data/shop';
 import { xpForLevel } from '../data/balance';
 import { PERK_BY_ID } from '../data/workshop';
+import { MAPS } from '../data/maps';
 import type { RunStats } from '../sim/events';
 
 const fresh = (scrap = 0) => {
@@ -120,6 +121,26 @@ describe('Oficina no perfil', () => {
     expect(r.data.revive).toEqual([]);
     expect(r.data.workshop).toEqual({});
     expect(r.data.unlocks.melee).toEqual([]);
+    expect(r.data.progress.round).toBe(0);
+  });
+});
+
+describe('novo jogo depois de terminar', () => {
+  it('vencer o último nível abre uma nova rodada, do mapa 1, com tudo o que foi conquistado', () => {
+    const p = fresh(1234);
+    const last = MAPS[MAPS.length - 1]!;
+    const lastLevel = last.levels[last.levels.length - 1]!;
+    p.save.unlocks.firearms.push('mg');
+    const r = p.applyRun(stats({ mapId: last.id, levelId: lastLevel.id }), final);
+    expect(r.finalBoss).toBe(true);
+    expect(p.save.progress.round).toBe(1);
+    expect(p.save.progress.roundCleared).toEqual([]);
+    // nada foi perdido
+    expect(p.save.unlocks.firearms).toContain('mg');
+    expect(p.save.profile.scrap).toBe(1234);
+    // na nova rodada, cada nível vencido fica marcado
+    p.applyRun(stats(), final);
+    expect(p.save.progress.roundCleared).toEqual(['vila-1']);
   });
 });
 

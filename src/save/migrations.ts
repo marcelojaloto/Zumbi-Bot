@@ -33,7 +33,7 @@ export const SAVE_MIGRATIONS: Record<number, Migration> = {
     (s.profile as Any).level = Number.isFinite(lvl) ? lvl : 1;
     return s;
   },
-  // v1 → v2: os campos novos (Loja, item de reviver, Oficina) começam vazios na validação
+  // v1 → v2: os campos novos (Loja, item de reviver, Oficina, novo jogo) começam vazios na validação
   1: (d) => ({ ...d, version: 2 }),
 };
 
@@ -124,6 +124,10 @@ export function sanitizeSave(raw: unknown): SaveV2 {
   const melee = [
     ...new Set(arr(unlocks.melee).filter((x): x is MeleeId => typeof x === 'string' && x in MELEE_WEAPONS)),
   ];
+  const round = Math.round(num(progress.round, 0, 0, 1000));
+  const roundCleared = round
+    ? [...new Set(arr(progress.roundCleared).filter((x): x is string => typeof x === 'string'))]
+    : [];
   const revive = [...new Set(arr(d.revive).filter(isCharacterId))];
   return {
     version: 2,
@@ -141,7 +145,7 @@ export function sanitizeSave(raw: unknown): SaveV2 {
       // só uma arma branca que foi comprada
       ...(melee.includes(profile.melee as MeleeId) ? { melee: profile.melee as MeleeId } : {}),
     },
-    progress: { unlockedLevels: [...new Set(unlockedLevels)], levels },
+    progress: { unlockedLevels: [...new Set(unlockedLevels)], levels, round, roundCleared },
     unlocks: { firearms: [...new Set(firearms)], staffs: [...new Set(staffs)], melee },
     cosmetics: {
       owned,

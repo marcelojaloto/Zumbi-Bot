@@ -32,15 +32,17 @@ import { recipeMesh } from './meshCache';
 import { BlobShadows } from './fx/BlobShadows';
 
 /**
- * Capítulo do final lendário: um por personagem, o epílogo com todos juntos e, por último, a revelação do
- * personagem secreto (liberado bem nessa hora).
+ * Capítulo do final lendário: um por personagem, o epílogo com todos juntos, a revelação do personagem secreto
+ * (liberado bem nessa hora) e, por último, o sinal que abre a continuação.
  */
-export type EndingChapter = CharacterId | 'all';
+export type EndingChapter = CharacterId | 'all' | 'sequel';
 
 export const ENDING_CHAPTERS: EndingChapter[] = [
   ...HERO_ORDER,
   'all',
   ...(Object.keys(CHARACTERS) as CharacterId[]).filter((c) => CHARACTERS[c].secret),
+  // por último, o gancho da continuação (o novo jogo)
+  'sequel',
 ];
 
 /** Onde cada final acontece (cenário de um mapa do jogo). */
@@ -52,6 +54,7 @@ const CHAPTER_MAP: Record<EndingChapter, string> = {
   mutant: 'floresta',
   all: 'vila',
   prodigy: 'vila',
+  sequel: 'arena',
 };
 
 const X0 = 20;
@@ -144,6 +147,9 @@ export class EndingScene {
         break;
       case 'prodigy':
         this.reveal();
+        break;
+      case 'sequel':
+        this.sequel();
         break;
       default:
         this.epilogue();
@@ -686,6 +692,71 @@ export class EndingScene {
     });
     this.lights.push({ x: X0, y: 2.5, z: 2.5, color: 0xffd8a8, intensity: 14 });
     this.cam = { x: X0, y: -0.9, z: 0.2, zoom: 0.9, push: 0.05 };
+  }
+
+  /**
+   * A continuação: na Arena Final, os heróis olham o núcleo partido do OMEGA-Z. Ele volta a pulsar, solta faíscas
+   * vermelhas e dispara um raio para o céu, rumo ao mar; os heróis se preparam para a segunda jornada.
+   */
+  private sequel(): void {
+    const cx = X0 + 3.1;
+    const cz = -1.2;
+    // cratera de entulho em volta do núcleo
+    for (let i = 0; i < 14; i++) {
+      const a = (i / 14) * Math.PI * 2;
+      const m = this.mesh(this.box, i % 2 ? 0x3a3236 : 0x2a2428);
+      const s = 0.25 + this.rand() * 0.35;
+      m.scale.set(s, s * 0.6, s);
+      m.position.set(cx + Math.cos(a) * 1.25, s * 0.25, cz + Math.sin(a) * 0.8);
+      m.rotation.set(this.rand(), this.rand() * 3, this.rand());
+    }
+    const shell = this.mesh(this.sphere, 0x2a1c22);
+    shell.scale.set(0.85, 0.6, 0.85);
+    shell.position.set(cx, 0.35, cz);
+    const core = this.mesh(this.sphere, 0xff2a3a, 4);
+    core.position.set(cx, 0.75, cz);
+    // raio vermelho que sobe para o céu
+    const beam = this.mesh(this.geo(new CylinderGeometry(0.12, 0.2, 1, 10, 1, true)), 0xff3a4a, 5);
+    beam.position.set(cx, 0.75, cz);
+    beam.visible = false;
+    const ids = [
+      ...HERO_ORDER,
+      ...(Object.keys(CHARACTERS) as CharacterId[]).filter((c) => CHARACTERS[c].secret),
+    ];
+    const heroes = ids.map((id, i) => this.hero(id, X0 - 3.4 + i * 0.95, 0.5 - (i % 2) * 0.4, 0.9));
+    this.updaters.push((t) => {
+      // pulsa devagar e cada vez mais rápido até disparar
+      const fast = t > 3;
+      const p = Math.sin(t * (fast ? 14 : 3 + t)) * 0.5 + 0.5;
+      core.scale.setScalar(0.22 + p * (fast ? 0.14 : 0.06));
+      this.lightsTick(cx, 1.2, cz, 0xff2a3a, 6 + p * (fast ? 14 : 5));
+      if (fast) {
+        beam.visible = true;
+        const h = Math.min(14, (t - 3) * 18);
+        beam.scale.set(1 + p * 0.3, h, 1 + p * 0.3);
+        beam.position.y = 0.75 + h / 2;
+      }
+    });
+    let nextSpark = 0.4;
+    this.updaters.push((t) => {
+      if (t < nextSpark) return;
+      nextSpark = t + (t > 3 ? 0.05 : 0.35);
+      const a = this.rand() * Math.PI * 2;
+      this.spark(cx, 0.8, cz, Math.cos(a) * 1.5, 2.5 + this.rand() * 3, Math.sin(a), 0xff3a4a, {
+        size: 0.05,
+        life: 1,
+        g: 5,
+      });
+    });
+    // no disparo, todos se viram para o raio e entram em guarda com o especial
+    this.later(3.3, () => {
+      heroes.forEach((a, i) => {
+        a.yaw = 0.15;
+        this.later(3.6 + i * 0.25, () => this.play(a, getCharacter(ids[i]!).special));
+      });
+    });
+    this.lights.push({ x: X0, y: 3, z: 2.5, color: 0xffb8c8, intensity: 8 });
+    this.cam = { x: X0 + 0.2, y: -0.8, z: 0.2, zoom: 0.95, push: 0.04 };
   }
 
   private fireflies(cx: number, n: number, color: number): void {

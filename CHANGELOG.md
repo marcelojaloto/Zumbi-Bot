@@ -72,6 +72,13 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   saem voando para os lados, cada um com o objeto em 3D e o nome. Ele mostra o que a fase deu e um bônus de sucata,
   às vezes com uma peça nova, o item de reviver, uma arma branca ou uma arma de fogo.
 
+### Novo jogo e continuação
+
+- Terminando o jogo, o "Continuar" do menu vira **Novo jogo**: a segunda jornada recomeça na Vila Assombrada com
+  todas as armas, cajados, melhorias e itens conquistados.
+- O final lendário ganhou um último capítulo: o núcleo do OMEGA-Z volta a pulsar e dispara um sinal para o fundo
+  do mar, a história que abre a continuação. Os créditos finais também falam dela.
+
 ## 1.6, atualização de 01/10/2026
 
 - No celular deitado, a dica "Chefe à frente!" não fica mais embaixo do nome do chefe: a dica sobe e o nome

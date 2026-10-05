@@ -180,6 +180,9 @@ export class Profile {
       const map = getMap(stats.mapId);
       const idx = map.levels.findIndex((l) => l.id === stats.levelId);
       const nx = this.nextLevel(stats.mapId, idx);
+      // novo jogo: o "Continuar" segue pelos mapas vencidos nesta rodada
+      const pr = s.progress;
+      if (pr.round > 0 && !pr.roundCleared.includes(stats.levelId)) pr.roundCleared.push(stats.levelId);
       if (nx) {
         const id = getMap(nx.mapId).levels[nx.levelIdx]!.id;
         if (!s.progress.unlockedLevels.includes(id)) {
@@ -190,6 +193,9 @@ export class Profile {
         finalBoss = true;
         ngPlusUnlocked = !s.flags.ngPlus;
         s.flags.ngPlus = true;
+        // terminou: o próximo "Continuar" é um jogo novo, do mapa 1, com tudo o que foi conquistado
+        pr.round++;
+        pr.roundCleared = [];
       }
     }
     this.persist();
