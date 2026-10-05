@@ -16,7 +16,7 @@ const punch: MeleeMoveDef = {
   startup: 20,
   active: 6,
   recovery: 28,
-  hitbox: { x0: 0, x1: 1.7, y0: 0, y1: 2, zTol: 0.5 },
+  hitbox: { x0: 0, x1: 1.3, y0: 0, y1: 2, zTol: 0.3 },
   hit: {
     damage: 24,
     dtype: 'blunt',
@@ -37,7 +37,7 @@ const claw: MeleeMoveDef = {
   startup: 14,
   active: 6,
   recovery: 22,
-  hitbox: { x0: -0.2, x1: 1.6, y0: 0, y1: 1.8, zTol: 0.55 },
+  hitbox: { x0: -0.2, x1: 1.25, y0: 0, y1: 1.8, zTol: 0.3 },
   hit: { damage: 18, dtype: 'blade', knockback: 5, launch: 2, hitstun: 22, hitstop: 6, heavy: true },
   superArmor: true,
 };
@@ -49,7 +49,7 @@ const slam: MeleeMoveDef = {
   startup: 26,
   active: 6,
   recovery: 34,
-  hitbox: { x0: -0.6, x1: 2.2, y0: 0, y1: 1.2, zTol: 0.9 },
+  hitbox: { x0: -0.3, x1: 1.35, y0: 0, y1: 1.2, zTol: 0.3 },
   hit: {
     damage: 30,
     dtype: 'blunt',
@@ -295,7 +295,7 @@ export const omega = registerBoss({
           cooldownS: 9,
           minRange: 4,
           steps: [
-            { t: 'leap', to: 'player', airS: 1.2, landing: stompBlast(3.2, 26) },
+            { t: 'leap', to: 'player', airS: 1.2, landing: stompBlast(2.4, 26) },
             { t: 'shake', trauma: 0.7 },
             { t: 'wait', s: 0.7 },
           ],
@@ -418,7 +418,7 @@ export const omega = registerBoss({
         { t: 'pose', pose: 'roar', s: 1.2 },
         { t: 'setElement', element: 'earth' },
         { t: 'scale', mult: 1.3 },
-        { t: 'arena', zBand: [-2, 1.2] },
+        { t: 'arena', zBand: [-2.6, 1.6] },
         { t: 'shake', trauma: 1 },
         { t: 'summon', enemy: 'brute', count: 1, from: 'right' },
         { t: 'wait', s: 0.5 },
@@ -468,7 +468,7 @@ export const omega = registerBoss({
           steps: [
             { t: 'face', target: 'player' },
             { t: 'pose', pose: 'cast', s: 0.8 },
-            { t: 'beam', mode: 'sweepZ', durationS: 1.6, width: 0.9, hit: laser },
+            { t: 'beam', mode: 'sweepZ', durationS: 2, width: 0.9, hit: laser },
             { t: 'wait', s: 0.6 },
           ],
         },
@@ -479,7 +479,7 @@ export const omega = registerBoss({
           cooldownS: 9,
           minRange: 3.5,
           steps: [
-            { t: 'leap', to: 'player', airS: 1.3, landing: stompBlast(4, 30) },
+            { t: 'leap', to: 'player', airS: 1.3, landing: stompBlast(2.8, 30) },
             { t: 'shake', trauma: 0.9 },
             { t: 'wait', s: 0.8 },
           ],
@@ -495,7 +495,7 @@ export const omega = registerBoss({
       idleBetweenS: [0.5, 1],
       resist: { bullet: 1, blade: 1.1, blunt: 1.1, holy: 1.8 },
       aura: {
-        radius: 3,
+        radius: 2.4,
         hit: {
           damage: 3,
           dtype: 'necro',

@@ -380,7 +380,8 @@ function runStep(w: World, e: Entity, def: BossDef, s: BossStep): boolean {
             tickEvery: 12,
             vz: (z1 - z0) / s.durationS,
             fx: 'beam',
-            height: 3,
+            // a varredura passa pela rua inteira: rente ao chão, dá para pular por cima dela
+            height: 1.1,
             element: b.element,
           });
         } else {

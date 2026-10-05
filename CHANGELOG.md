@@ -28,6 +28,14 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - Sair do jogo por um instante (mandar o convite, outro app) avisa os outros, que esperam até um minuto. Um
   aparelho que travou alguns segundos (fase carregando) não derruba mais ninguém.
 
+### Chefes
+
+- **Coveiro Colossal** e **OMEGA-Z** deixam espaço para fugir: os golpes de perto pegam só a faixa de
+  profundidade do chefe, o alcance para a frente diminuiu e os círculos dos saltos ficaram menores que a rua.
+- O Coveiro ergue a pá um pouco antes de bater e, na fase 2, anda no máximo como o jogador andando.
+- Na fase 3 do OMEGA-Z a arena encolhe menos, a pancada no chão alcança menos, a varredura de plasma passa rente
+  ao chão (dá para pular) e é mais lenta, e a aura da fase 4 é menor.
+
 ## 1.6, atualização de 01/10/2026
 
 - No celular deitado, a dica "Chefe à frente!" não fica mais embaixo do nome do chefe: a dica sobe e o nome

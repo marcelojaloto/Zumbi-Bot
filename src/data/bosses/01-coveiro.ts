@@ -2,13 +2,17 @@ import { MOVES } from '../melee';
 import type { BossDef, MeleeMoveDef, ProjectileSpec } from '../types';
 import { registerBoss } from './index';
 
+/**
+ * Pazada: a pá vai até onde o desenho alcança (pouco mais de 2 m), mas pega só a faixa de profundidade do chefe.
+ * Dá tempo de ver o chefe erguer a pá e sair da linha dele (para cima ou para baixo).
+ */
 const swing: MeleeMoveDef = {
   id: 'coveiro_swing',
   pose: 'swing1',
-  startup: 20,
+  startup: 24,
   active: 6,
   recovery: 30,
-  hitbox: { x0: 0, x1: 1.25, y0: 0, y1: 1.6, zTol: 0.45 },
+  hitbox: { x0: 0, x1: 1, y0: 0, y1: 1.6, zTol: 0.28 },
   hit: {
     damage: 20,
     dtype: 'blunt',
@@ -182,7 +186,8 @@ export const coveiro = registerBoss({
           weight: 3,
           cooldownS: 2,
           steps: [
-            { t: 'move', to: 'player', speed: 3.8, maxS: 2 },
+            // na fase 2 ele anda no máximo como o jogador andando (correndo, dá para fugir)
+            { t: 'move', to: 'player', speed: 3.2, maxS: 2 },
             { t: 'melee', move: swing },
             { t: 'melee', move: swing },
           ],
@@ -221,8 +226,9 @@ export const coveiro = registerBoss({
               t: 'leap',
               to: 'player',
               airS: 1.1,
+              // o círculo do pouso é menor que a rua: dá para sair dele para os lados ou em profundidade
               landing: {
-                radius: 3,
+                radius: 2.2,
                 damage: 25,
                 minMult: 0.5,
                 dtype: 'earth',

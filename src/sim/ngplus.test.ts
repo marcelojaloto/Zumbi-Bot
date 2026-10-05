@@ -62,7 +62,7 @@ describe('OMEGA-Z', () => {
     run(w, 400);
     expect(boss.boss!.phase).toBe(2);
     expect(boss.scale).toBeCloseTo(2.5 * 1.3);
-    expect(w.zBand).toEqual([-2, 1.2]);
+    expect(w.zBand).toEqual([-2.6, 1.6]);
   });
 });
 
