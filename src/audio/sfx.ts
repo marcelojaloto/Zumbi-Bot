@@ -740,4 +740,41 @@ export const SFX: Record<string, Recipe> = {
   },
   hz_gust: (c, o, t) => SFX.cast_wind!(c, o, t, 0),
   hz_laserTrip: (c, o, t) => SFX.alarm!(c, o, t, 0),
+  // teto rachando: estalos de pedra e um ronco grave enquanto as pedras se soltam
+  hz_debris: (c, o, t) => {
+    for (let i = 0; i < 5; i++) click(c, o, t + i * 0.07 + (i % 2) * 0.03, 500 + i * 170, 0.3);
+    noise(c, o, t, {
+      kind: 'brown',
+      dur: 0.9,
+      filter: 'lowpass',
+      freq: 260,
+      env: { a: 0.15, d: 0.75 },
+      gain: 0.9,
+    });
+    noise(c, o, t + 0.1, {
+      kind: 'pink',
+      dur: 0.6,
+      filter: 'bandpass',
+      freq: 1400,
+      q: 1.2,
+      env: { a: 0.05, d: 0.55 },
+      gain: 0.18,
+    });
+    return 1;
+  },
+  // pedras batendo no chão: estrondo seco e cascalho rolando
+  hz_debrisLand: (c, o, t, v) => {
+    thump(c, o, t, r(v, 90, 110), 35, 0.45, 1.3);
+    noise(c, o, t, {
+      kind: 'brown',
+      dur: 0.6,
+      filter: 'lowpass',
+      freq: 900,
+      freqEnd: 120,
+      env: { a: 0.002, d: 0.6 },
+      gain: 1.5,
+    });
+    for (let i = 0; i < 4; i++) click(c, o, t + 0.08 + i * 0.06, 800 + i * 260, 0.22);
+    return 0.7;
+  },
 };

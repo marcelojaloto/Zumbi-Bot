@@ -234,7 +234,8 @@ export function tickEnvHazard(w: World, h: Entity): void {
         height: 3,
         telegraph: { k: 'circle', r: art ? 2 : 1.3 },
       });
-      if (art) w.emit({ t: 'sfx', id: 'hz_artillery', x });
+      // artilharia assobia; o teto da torre racha e as pedras começam a cair
+      w.emit({ t: 'sfx', id: art ? 'hz_artillery' : 'hz_debris', x });
       return;
     }
     default:

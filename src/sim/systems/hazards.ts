@@ -29,6 +29,19 @@ export function hazardOverlaps(h: Entity, e: Entity): boolean {
   }
 }
 
+/** As pedras do teto chegam ao chão: estrondo, tremor e cascalho voando onde cada uma cai. */
+function debrisLands(w: World, h: Entity): void {
+  const r = h.hazard!.shape.k === 'circle' ? h.hazard!.shape.r : 1;
+  for (const [fx, fz] of [
+    [0, 0],
+    [0.45, 0.3],
+    [-0.4, -0.25],
+  ] as const)
+    w.emit({ t: 'impact', x: h.t.x + fx * r, y: 0.25, z: h.t.z + fz * r, visual: 'rock' });
+  w.emit({ t: 'sfx', id: 'hz_debrisLand', x: h.t.x });
+  w.emit({ t: 'shake', trauma: 0.3 });
+}
+
 export function hazardSystem(w: World): void {
   for (const h of [...w.entities]) {
     const hz = h.hazard;
@@ -39,6 +52,7 @@ export function hazardSystem(w: World): void {
     }
     if (hz.delay > 0) {
       hz.delay--;
+      if (hz.delay === 0 && hz.fx === 'debris' && !hz.env) debrisLands(w, h);
       continue;
     }
     h.t.x += h.t.vx / 60;

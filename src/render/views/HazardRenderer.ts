@@ -3,6 +3,7 @@ import {
   CircleGeometry,
   Color,
   CylinderGeometry,
+  DodecahedronGeometry,
   MeshStandardMaterial,
   DoubleSide,
   Group,
@@ -88,7 +89,22 @@ interface HzView {
   funnel: Group | null;
   /** Duração (quadros) quando apareceu: o funil cresce ao nascer e encolhe no fim. */
   maxActive: number;
+  /** Pedras caindo do teto durante o aviso (destroços da torre). */
+  rocks: Group | null;
+  /** Quando a vista nasceu e quanto falta para a queda (s): a pedra cai lisa mesmo com o estado a 20 Hz. */
+  born: number;
+  fall: number;
 }
+
+/** Altura de onde as pedras caem (acima do alto da tela). */
+const ROCK_TOP = 7.5;
+/** Pedras de cada queda: posição em relação ao centro (fração do raio), tamanho e atraso relativo. */
+const ROCKS: [number, number, number, number][] = [
+  [0, 0, 0.42, 0],
+  [0.45, 0.3, 0.3, 0.06],
+  [-0.4, -0.25, 0.26, 0.1],
+  [0.15, -0.5, 0.2, 0.14],
+];
 
 interface CycloneKit {
   outer: CylinderGeometry;
@@ -135,6 +151,30 @@ export class HazardRenderer {
     blade.castShadow = true;
     pivot.add(blade);
     return pivot;
+  }
+
+  private rockKit: { geo: DodecahedronGeometry; mats: MeshStandardMaterial[] } | null = null;
+
+  /** Pedras de entulho que caem juntas do teto rachado (cada uma de um tom de pedra). */
+  private makeRocks(id: number, r: number): Group {
+    this.rockKit ??= {
+      geo: new DodecahedronGeometry(1, 0),
+      mats: [0x6b6052, 0x5a5046, 0x7a6e5e].map(
+        (color) => new MeshStandardMaterial({ color, roughness: 0.95, flatShading: true }),
+      ),
+    };
+    const k = this.rockKit;
+    const g = new Group();
+    ROCKS.forEach(([fx, fz, size], i) => {
+      const m = new Mesh(k.geo, k.mats[(id + i) % k.mats.length]!);
+      // pedra achatada e torta, diferente em cada queda
+      m.scale.set(size, size * (0.7 + ((id * 7 + i * 3) % 5) * 0.08), size * 0.9);
+      m.position.set(fx * r, 0, fz * r);
+      m.rotation.set(id + i, id * 0.5 + i * 2, i);
+      m.castShadow = true;
+      g.add(m);
+    });
+    return g;
   }
 
   private cycloneKit: CycloneKit | null = null;
@@ -241,6 +281,13 @@ export class HazardRenderer {
       funnel = this.makeFunnel();
       this.scene.add(funnel);
     }
+    // destroços: as pedras aparecem lá no alto e caem bem quando o aviso acaba
+    let rocks: Group | null = null;
+    if (hz.fx === 'debris' && !hz.env && hz.delay > 0) {
+      rocks = this.makeRocks(e.id, hz.shape.k === 'circle' ? hz.shape.r : 1);
+      rocks.position.set(e.t.x, ROCK_TOP, e.t.z);
+      this.scene.add(rocks);
+    }
     this.scene.add(group);
     return {
       group,
@@ -253,6 +300,9 @@ export class HazardRenderer {
       blade,
       funnel,
       maxActive: Math.max(1, hz.active),
+      rocks,
+      born: this.t,
+      fall: Math.max(1, hz.delay) / 60,
     };
   }
 
@@ -304,6 +354,21 @@ export class HazardRenderer {
         );
         spin.children[1]!.rotation.y = this.t * 22;
       }
+      if (v.rocks) {
+        // queda acelerada; cada pedra sai um pouco depois da outra e todas chegam juntas ao chão. Anda no
+        // relógio da tela (lisa mesmo com o estado chegando a 20 Hz no online), mas nunca na frente do aviso do sim
+        // (câmera lenta)
+        const sim = 1 - hz.delay / v.maxDelay;
+        const p = Math.min(1, (this.t - v.born) / v.fall, sim + 3 / v.maxDelay);
+        v.rocks.visible = hz.delay > 0 && p < 1;
+        v.rocks.children.forEach((m, i) => {
+          const [, , size, lag] = ROCKS[i]!;
+          const q = Math.max(0, Math.min(1, (p - lag) / (1 - lag)));
+          m.position.y = -(ROCK_TOP - size) * q * q;
+          m.rotation.x += dt * (3 + i);
+          m.rotation.z += dt * (2 + i * 0.5);
+        });
+      }
       const telegraph = hz.delay > 0;
       const envInactive = !!hz.env && hz.phase === 0;
       if (telegraph) {
@@ -329,6 +394,7 @@ export class HazardRenderer {
     this.scene.remove(v.group);
     if (v.blade) this.scene.remove(v.blade);
     if (v.funnel) this.scene.remove(v.funnel);
+    if (v.rocks) this.scene.remove(v.rocks);
     v.base.geometry.dispose();
     v.fill?.geometry.dispose();
     v.mat.dispose();
@@ -348,6 +414,11 @@ export class HazardRenderer {
       const k = this.cycloneKit;
       for (const d of [k.outer, k.inner, k.ring, k.outerMat, k.innerMat, k.ringMat]) d.dispose();
       this.cycloneKit = null;
+    }
+    if (this.rockKit) {
+      this.rockKit.geo.dispose();
+      for (const m of this.rockKit.mats) m.dispose();
+      this.rockKit = null;
     }
   }
 }

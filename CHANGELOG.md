@@ -36,6 +36,11 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - Na fase 3 do OMEGA-Z a arena encolhe menos, a pancada no chão alcança menos, a varredura de plasma passa rente
   ao chão (dá para pular) e é mais lenta, e a aura da fase 4 é menor.
 
+### Torre e Área em Chamas
+
+- Os destroços agora caem do teto de verdade: as pedras aparecem lá no alto durante o aviso e chegam ao chão bem
+  quando ele acaba, com o teto estalando antes, estrondo, tremor e cascalho voando no impacto.
+
 ## 1.6, atualização de 01/10/2026
 
 - No celular deitado, a dica "Chefe à frente!" não fica mais embaixo do nome do chefe: a dica sobe e o nome
