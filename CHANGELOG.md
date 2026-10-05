@@ -3,6 +3,16 @@
 O que mudou em cada versão do Zumbi Bot, da mais nova para a mais antiga. No app Android, o último número da
 versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter várias builds.
 
+## 1.6, atualização de 04/10/2026
+
+### Ranking global e privacidade
+
+- O **Ranking Global** passa a ser opcional e começa desligado: o jogador entra tocando em **Participar** e sai
+  quando quiser em **Sair do ranking global**, que apaga o registro e a conta anônima do aparelho.
+- O nome escrito no ranking não sai mais do aparelho. No Ranking Global, os outros jogadores aparecem pelos
+  apelidos dos personagens, e só a sua própria linha mostra o seu nome.
+- As regras do banco não aceitam mais nenhum texto livre: só números, datas e os códigos de mapas e personagens.
+
 ## 1.6, atualização de 01/10/2026
 
 - No celular deitado, a dica "Chefe à frente!" não fica mais embaixo do nome do chefe: a dica sobe e o nome

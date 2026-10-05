@@ -64,9 +64,10 @@ Web Audio.
   derrotar o OMEGA-Z. O progresso fica salvo no navegador (`localStorage`).
 - **Ranking por jornada**: os pontos de cada mapa se somam até você **perder todas as vidas** ou **terminar o
   jogo**; só aí o jogo mostra a posição e o nome, já salvo com o último nome usado (ou o apelido do personagem).
-  Tocar no nome abre o teclado, com a caixa no alto da tela. O **Ranking Pessoal** fica no aparelho; o botão
-  **Ranking Global** mostra o melhor de cada jogador do mundo (Firebase, veja
-  [docs/RANKING_GLOBAL.md](docs/RANKING_GLOBAL.md)) e só aparece quando o ranking global está no ar.
+  Tocar no nome abre o teclado, com a caixa no alto da tela. O **Ranking Pessoal** fica no aparelho, com o nome; o
+  botão **Ranking Global** mostra o melhor de cada jogador que tocou em **Participar**, pelos apelidos dos
+  personagens (o nome não sai do aparelho; Firebase, veja [docs/RANKING_GLOBAL.md](docs/RANKING_GLOBAL.md)), e só
+  aparece quando o ranking global está no ar.
 - **Música procedural** por mapa, que ganha camadas durante as lutas e acelera contra os chefes.
 
 ## Controles

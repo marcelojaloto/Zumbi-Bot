@@ -17,25 +17,33 @@ const finish = (page: Page, victory: boolean, score: number) =>
     [victory, score],
   );
 
+type FakeState = { online: boolean; puts: string[]; accountDeleted: boolean };
+
 /** Firebase de mentira: conta anônima e o banco do ranking em memória (ou fora do ar). */
-function fakeFirebase(page: Page, db: Record<string, unknown>, state: { online: boolean; puts: string[] }) {
+function fakeFirebase(page: Page, db: Record<string, unknown>, state: FakeState) {
   const deny = (r: Route) => r.abort('internetdisconnected');
-  void page.route('https://identitytoolkit.googleapis.com/**', (r) =>
-    state.online
-      ? r.fulfill({
-          json: { idToken: 'tok', refreshToken: 'ref', expiresIn: '3600', localId: 'aparelho1' },
-        })
-      : deny(r),
-  );
+  void page.route('https://identitytoolkit.googleapis.com/**', (r) => {
+    if (!state.online) return deny(r);
+    if (r.request().url().includes('accounts:delete')) {
+      state.accountDeleted = true;
+      return r.fulfill({ json: {} });
+    }
+    return r.fulfill({
+      json: { idToken: 'tok', refreshToken: 'ref', expiresIn: '3600', localId: 'aparelho1' },
+    });
+  });
   void page.route(`${DB}/**`, async (r) => {
     if (!state.online) return deny(r);
     const req = r.request();
-    const url = new URL(req.url());
-    if (req.method() === 'PUT') {
-      const uid = url.pathname.match(/ranking\/(.+)\.json/)![1]!;
+    const uid = new URL(req.url()).pathname.match(/ranking\/(.+)\.json/)?.[1];
+    if (req.method() === 'PUT' && uid) {
       db[uid] = req.postDataJSON();
       state.puts.push(uid);
       return r.fulfill({ json: db[uid] });
+    }
+    if (req.method() === 'DELETE' && uid) {
+      delete db[uid];
+      return r.fulfill({ contentType: 'application/json', body: 'null' });
     }
     return r.fulfill({ json: db });
   });
@@ -44,10 +52,11 @@ function fakeFirebase(page: Page, db: Record<string, unknown>, state: { online: 
 test('ranking: nome só no fim da jornada, salvo sozinho, e o ranking global', async ({ page }) => {
   test.setTimeout(240_000);
   const errors = collectErrors(page);
+  // um registro com nome (de um cliente adulterado): o nome nunca aparece, só o apelido do personagem
   const db: Record<string, unknown> = {
     outro: { name: 'Bia', score: 99999, maps: 7, mapId: 'centro', chars: ['cyborg'], date: 1, level: 12 },
   };
-  const state = { online: true, puts: [] as string[] };
+  const state: FakeState = { online: true, puts: [], accountDeleted: false };
   fakeFirebase(page, db, state);
   await page.goto(`./${DEBUG_QUERY}&rankdb=${encodeURIComponent(DB)}`);
   await page.waitForFunction(() => (window as unknown as { __game?: G }).__game?.isReady());
@@ -85,7 +94,6 @@ test('ranking: nome só no fim da jornada, salvo sozinho, e o ranking global', a
   await expect(page.locator('.rank-pos')).toContainText('1º lugar');
   await expect(page.locator('.rank-name')).toContainText('Maga');
   await expect(page.locator('input[type="text"]')).toHaveCount(0);
-  await expect.poll(() => state.puts.length).toBe(1);
   await page.locator('.rank-name').click();
   const input = page.locator('.name-editor input');
   await expect(input).toBeFocused();
@@ -95,8 +103,9 @@ test('ranking: nome só no fim da jornada, salvo sozinho, e o ranking global', a
   await page.keyboard.press('Enter');
   await expect(page.locator('.name-editor')).toHaveCount(0);
   await expect(page.locator('.rank-name')).toContainText('Marcelo');
-  await expect.poll(() => (db.aparelho1 as { name?: string } | undefined)?.name).toBe('Marcelo');
   await page.getByRole('button', { name: 'Menu principal' }).click();
+  // fora do ranking global até o jogador escolher: nada foi enviado
+  expect(state.puts).toEqual([]);
 
   // ranking abre no pessoal; o botão alterna para o global (o melhor de cada aparelho)
   await page.getByRole('button', { name: 'Ranking' }).click();
@@ -105,10 +114,25 @@ test('ranking: nome só no fim da jornada, salvo sozinho, e o ranking global', a
   await page.getByRole('button', { name: /Ranking Global/ }).click();
   await expect(page.getByRole('heading', { name: 'RANKING GLOBAL' })).toBeVisible();
   const rows = page.locator('.rk-table tbody tr');
+  await expect(rows).toHaveCount(1);
+  await expect(rows.nth(0)).toContainText('Ciborgue');
+  await expect(rows.nth(0)).not.toContainText('Bia');
+
+  // participar: o melhor resultado vai sem o nome; só neste aparelho a linha mostra o nome escrito
+  await page.getByRole('button', { name: 'Participar' }).click();
+  await expect.poll(() => state.puts).toEqual(['aparelho1']);
+  expect(db.aparelho1).not.toHaveProperty('name');
   await expect(rows).toHaveCount(2);
-  await expect(rows.nth(0)).toContainText('Bia');
   await expect(rows.nth(1)).toContainText('Marcelo');
   await expect(rows.nth(1)).toContainText('você');
+
+  // sair: apaga o registro e a conta anônima
+  await page.getByRole('button', { name: 'Sair do ranking global' }).click();
+  await page.getByRole('button', { name: 'Sim, sair' }).click();
+  await expect.poll(() => 'aparelho1' in db).toBe(false);
+  await expect.poll(() => state.accountDeleted).toBe(true);
+  await expect(rows).toHaveCount(1);
+  await expect(page.getByRole('button', { name: 'Participar' })).toBeVisible();
   await page.getByRole('button', { name: /Ranking Pessoal/ }).click();
   await expect(page.getByRole('heading', { name: 'RANKING PESSOAL' })).toBeVisible();
   await page.getByRole('button', { name: 'Voltar' }).click();

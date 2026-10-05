@@ -5,22 +5,26 @@
       ".indexOn": ["score"],
       "$uid": {
         ".write": "auth != null && auth.uid === $uid",
-        ".validate": "newData.hasChildren(['name', 'score', 'date'])",
-        "name": {
-          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 16"
-        },
+        ".validate": "newData.hasChildren(['score', 'date'])",
         "score": {
           ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100000000"
         },
         "maps": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000" },
-        "mapId": { ".validate": "newData.isString() && newData.val().length <= 32" },
+        "mapId": {
+          ".validate": "newData.isString() && newData.val().length <= 32 && newData.val().matches(/^[a-z0-9]*$/)"
+        },
         "chars": {
-          "$i": { ".validate": "newData.isString() && newData.val().length <= 16" }
+          ".validate": "newData.numChildren() <= 5",
+          "$i": {
+            ".validate": "newData.isString() && newData.val().length <= 16 && newData.val().matches(/^[a-z]+$/)"
+          }
         },
         "victory": { ".validate": "newData.isBoolean()" },
         "ngPlus": { ".validate": "newData.isBoolean()" },
         "level": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 99" },
-        "date": { ".validate": "newData.isNumber() && newData.val() <= now + 86400000" },
+        "date": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= now + 86400000"
+        },
         "$other": { ".validate": false }
       }
     },

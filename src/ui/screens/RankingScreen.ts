@@ -13,6 +13,9 @@ export interface RankingHost extends UiHost {
   readonly global: GlobalRanking;
 }
 
+/** Política de privacidade publicada (a mesma das lojas). */
+const PRIVACY_URL = 'https://marcelojaloto.github.io/Zumbi-Bot/privacy/';
+
 function fmtTime(ms: number): string {
   const s = Math.floor(ms / 1000);
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
@@ -56,6 +59,8 @@ function endTag(victory: boolean, run: boolean): HTMLElement | null {
 /**
  * Ranking: abre no Ranking Pessoal (top 20 deste aparelho, com filtro por mapa e a carreira). O botão Ranking Global
  * (o melhor resultado de cada jogador/aparelho) só aparece quando o ranking global responde. Fora do ar, some.
+ * No global só entra quem toca em Participar, e cada um aparece para os outros pelos apelidos dos personagens: o
+ * nome escrito no ranking pessoal não sai do aparelho.
  */
 export function rankingScreen(host: RankingHost): Screen {
   const prof = host.profile;
@@ -64,6 +69,8 @@ export function rankingScreen(host: RankingHost): Screen {
   let filter: string | null = null;
   let globalList: GlobalEntry[] | null = global.cached;
   let alive = true;
+  /** Pedindo confirmação para sair do ranking global. */
+  let leaving = false;
 
   const title = el('h2', {});
   const tabs = el('div', { class: 'tabs rk-tabs' });
@@ -75,6 +82,54 @@ export function rankingScreen(host: RankingHost): Screen {
     data: { nav: '' },
     onclick: () => setMode(mode === 'personal' ? 'global' : 'personal'),
   });
+  // entrar e sair do ranking global (sair apaga o registro e a conta anônima do aparelho)
+  const busy = (p: Promise<boolean>) => {
+    join.disabled = true;
+    void p.then(() => {
+      join.disabled = false;
+      refreshGlobal(true);
+    });
+  };
+  const join = el('button', {
+    class: 'btn rk-join',
+    hidden: true,
+    data: { nav: '' },
+    onclick: () => {
+      if (global.joined) leaving = true;
+      else busy(global.join(prof.ranking.entries[0]));
+      render();
+    },
+  });
+  const confirmLeave = el(
+    'div',
+    { class: 'row-btns rk-confirm', hidden: true },
+    el('span', {}, t('Sair do ranking global? O seu resultado é apagado de lá.')),
+    el(
+      'button',
+      {
+        class: 'btn small danger',
+        data: { nav: '' },
+        onclick: () => {
+          leaving = false;
+          busy(global.leave());
+          render();
+        },
+      },
+      t('Sim, sair'),
+    ),
+    el(
+      'button',
+      {
+        class: 'btn small',
+        data: { nav: '' },
+        onclick: () => {
+          leaving = false;
+          render();
+        },
+      },
+      t('Cancelar'),
+    ),
+  );
 
   const table = (heads: string[], rows: HTMLElement[]) =>
     el(
@@ -155,39 +210,47 @@ export function rankingScreen(host: RankingHost): Screen {
     const list = globalList ?? [];
     const me = global.myUid;
     const mine = me ? list.findIndex((g) => g.uid === me) : -1;
-    note.textContent =
-      mine >= 0
-        ? t('O melhor resultado de cada jogador. Você está em {pos}º lugar!', { pos: mine + 1 })
-        : t('O melhor resultado de cada jogador (o seu melhor do Ranking Pessoal entra sozinho).');
+    const status = !global.joined
+      ? t('Toque em Participar para entrar com o seu melhor resultado.')
+      : mine >= 0
+        ? t('Você está em {pos}º lugar!', { pos: mine + 1 })
+        : t('Você participa com o seu melhor resultado do Ranking Pessoal.');
+    note.replaceChildren(
+      `${status} ${t('Os outros jogadores não veem o seu nome, só os apelidos dos personagens.')} `,
+      el('a', { href: PRIVACY_URL, target: '_blank', rel: 'noopener', data: { nav: '' } }, t('Privacidade')),
+    );
     if (list.length === 0) {
       body.replaceChildren(
         el('p', { class: 'muted rk-empty' }, t('Ninguém entrou no ranking global ainda.')),
       );
       return;
     }
+    const myName = prof.ranking.entries[0]?.name;
     body.replaceChildren(
       table(
-        ['#', t('Nome'), t('Pontos'), t('Mapas'), t('Onde parou'), t('Personagens'), t('Nível'), t('Data')],
-        list.map((g, i) =>
-          el(
+        ['#', t('Jogador'), t('Pontos'), t('Mapas'), t('Onde parou'), t('Nível'), t('Data')],
+        list.map((g, i) => {
+          const own = g.uid === me;
+          return el(
             'tr',
-            { class: `${i < 3 ? `top${i + 1}` : ''}${g.uid === me ? ' me' : ''}` },
+            { class: `${i < 3 ? `top${i + 1}` : ''}${own ? ' me' : ''}` },
             el('td', {}, String(i + 1)),
             el(
               'td',
-              {},
-              g.name,
-              g.uid === me ? el('i', { class: 'rk-tag you' }, t('você')) : null,
+              { class: 'rk-player' },
+              // o nome escrito só aparece neste aparelho; os outros aparecem pelos personagens
+              (own && myName) || charsLabel(g.chars),
+              own ? el('i', { class: 'rk-tag you' }, t('você')) : null,
               g.ngPlus ? el('i', { class: 'rk-tag' }, 'NG+') : null,
+              own && g.chars.length > 1 ? el('i', { class: 'rk-tag team' }, `👥${g.chars.length}`) : null,
             ),
             el('td', { class: 'num' }, fmtInt(g.score)),
             el('td', { class: 'num' }, String(g.maps)),
             el('td', {}, mapName(g.mapId), endTag(g.victory, true)),
-            el('td', { class: 'rk-chars' }, charsLabel(g.chars)),
             el('td', { class: 'num' }, String(g.level)),
             el('td', { class: 'muted' }, fmtDate(g.date)),
-          ),
-        ),
+          );
+        }),
       ),
     );
   };
@@ -198,6 +261,10 @@ export function rankingScreen(host: RankingHost): Screen {
     toggle.textContent = personal ? `🌎 ${t('Ranking Global')}` : `👤 ${t('Ranking Pessoal')}`;
     career.hidden = !personal;
     tabs.hidden = !personal;
+    join.hidden = personal || !globalList;
+    join.textContent = global.joined ? t('Sair do ranking global') : t('Participar');
+    join.classList.toggle('primary', !global.joined);
+    confirmLeave.hidden = personal || !leaving;
     for (const b of tabs.children)
       b.classList.toggle('on', ((b as HTMLElement).dataset.k || null) === (filter ?? null));
     if (personal) renderPersonal();
@@ -216,6 +283,7 @@ export function rankingScreen(host: RankingHost): Screen {
 
   const setMode = (m: typeof mode) => {
     mode = m;
+    leaving = false;
     render();
     if (m === 'global') refreshGlobal(true);
   };
@@ -264,11 +332,13 @@ export function rankingScreen(host: RankingHost): Screen {
     tabs,
     body,
     note,
+    confirmLeave,
     el(
       'div',
       { class: 'row-btns' },
       el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
       toggle,
+      join,
     ),
   );
   if (globalList) toggle.hidden = false;

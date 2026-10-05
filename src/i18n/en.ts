@@ -899,10 +899,19 @@ export const EN: Record<string, string> = {
   'O ranking está vazio. Jogue até o fim da jornada para entrar nele!':
     'The leaderboard is empty. Play until the end of a run to get on it!',
   'Onde parou': 'Ended at',
-  'O melhor resultado de cada jogador. Você está em {pos}º lugar!':
-    "Each player's best result. You are #{pos}!",
-  'O melhor resultado de cada jogador (o seu melhor do Ranking Pessoal entra sozinho).':
-    "Each player's best result (your Personal Leaderboard best is sent automatically).",
+  'Toque em Participar para entrar com o seu melhor resultado.': 'Tap Join to enter with your best result.',
+  'Você está em {pos}º lugar!': 'You are #{pos}!',
+  'Você participa com o seu melhor resultado do Ranking Pessoal.':
+    'You are in with your best Personal Leaderboard result.',
+  'Os outros jogadores não veem o seu nome, só os apelidos dos personagens.':
+    'Other players never see your name, only the character nicknames.',
+  Privacidade: 'Privacy',
+  Jogador: 'Player',
+  Participar: 'Join',
+  'Sair do ranking global': 'Leave the global leaderboard',
+  'Sair do ranking global? O seu resultado é apagado de lá.':
+    'Leave the global leaderboard? Your result is deleted from it.',
+  'Sim, sair': 'Yes, leave',
   'Ninguém entrou no ranking global ainda.': 'Nobody is on the global leaderboard yet.',
   'RANKING PESSOAL': 'PERSONAL LEADERBOARD',
   'RANKING GLOBAL': 'GLOBAL LEADERBOARD',

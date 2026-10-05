@@ -920,7 +920,7 @@
 .rk-table tr.me td {
   background: rgba(57, 230, 255, 0.1);
 }
-.rk-chars {
+.rk-player {
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -931,8 +931,18 @@
   text-align: center;
   font-size: 13px;
 }
+.rk-note a {
+  color: #39e6ff;
+}
 .rk-toggle {
   border-color: rgba(57, 230, 255, 0.7);
+}
+.rk-confirm {
+  align-items: center;
+  font-size: 14px;
+}
+.rk-confirm[hidden] {
+  display: none;
 }
 .rk-empty {
   text-align: center;
