@@ -34,6 +34,7 @@ import { ClientAdapter, GuestRoom, HostRoom, type RoomNotice } from '../net/room
 import type { RoomOptions, RoomPlayer, StartMsg } from '../net/protocol';
 import { createTransport, type Transport } from '../net/transport';
 import { VoiceChat } from '../net/voice';
+import { VoiceGate, storeAgeRange } from '../net/voiceGate';
 import type { NetAdapter } from '../net/types';
 import { removePlayer } from '../sim/systems/lives';
 import { takeOverWorld } from '../sim/takeover';
@@ -294,6 +295,11 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
   /** Chat de voz da sala (null: sem sala, voz desligada pelo anfitrião ou indisponível aqui). */
   voice: VoiceChat | null = null;
   readonly voiceSupported = VoiceChat.supported();
+  /** Trava da voz por idade (loja ou um adulto liberando); quando muda, a voz liga ou desliga na hora. */
+  readonly voiceGate = new VoiceGate(storeAgeRange, () => {
+    this.syncVoice();
+    this.voiceChanged();
+  });
   private transport: Transport | null = null;
   /** Anfitrião: tempo máximo esperando os outros carregarem a fase. */
   private holdTimer = 0;
@@ -1310,10 +1316,14 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     return r ? (r.role === 'host' ? r.players() : r.players) : [];
   }
 
-  /** Chat de voz acompanha a sala: existe enquanto o anfitrião permite e sabe quem está nela. */
+  /**
+   * Chat de voz acompanha a sala: existe enquanto o anfitrião permite, a trava por idade deixa e sabe quem está nela.
+   * Sem ele, o aparelho nem ouve nem fala (as chamadas dos outros ficam sem resposta).
+   */
   private syncVoice(): void {
     const room = this.online;
-    const peer = room?.voice && this.voiceSupported ? room.voicePeer : undefined;
+    if (room?.voice) void this.voiceGate.check();
+    const peer = room?.voice && this.voiceSupported && this.voiceGate.allowed ? room.voicePeer : undefined;
     if (!room || !peer) {
       this.stopVoice();
       return;
@@ -1352,10 +1362,15 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     if (!room) return false;
     const v = this.voice;
     if (!v) {
+      const gate = this.voiceGate.state;
       this.hud?.toast(
-        room.voice
-          ? t('Chat de voz indisponível neste aparelho.')
-          : t('Chat de voz desligado pelo anfitrião.'),
+        !room.voice
+          ? t('Chat de voz desligado pelo anfitrião.')
+          : !this.voiceSupported
+            ? t('Chat de voz indisponível neste aparelho.')
+            : gate === 'blocked'
+              ? t('Chat de voz bloqueado pelo controle dos pais neste aparelho.')
+              : t('Chat de voz desligado neste aparelho: um adulto responsável libera na sala.'),
         '#ffb02a',
       );
       return false;

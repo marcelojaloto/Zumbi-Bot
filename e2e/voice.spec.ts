@@ -1,5 +1,5 @@
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
-import { collectErrors, createRoom } from './helpers';
+import { collectErrors, createRoom, releaseVoice } from './helpers';
 
 // Chat de voz com o PeerJS de verdade (servidor local) e o microfone falso do Chromium (um bipe).
 test.use({
@@ -75,11 +75,20 @@ test('chat de voz: opções da sala, todos ouvem todos (3 aparelhos), microfone,
   const code = (await host.locator('.room-code').textContent())!.trim();
   await expect(host.locator('.room-diff')).toContainText('Difícil');
   await expect(host.locator('.room-voice-opt')).toContainText('Permitido');
+  // no site a idade é desconhecida: a voz começa desligada neste aparelho, até um adulto liberar (cancelar não libera)
+  await expect(host.locator('.room-voice')).toContainText('um adulto responsável precisa liberar');
+  await expect(host.getByRole('button', { name: /Ligar microfone/ })).toBeHidden();
+  expect((await voice(host)).available).toBe(false);
+  await host.getByRole('button', { name: /Liberar a voz/ }).click();
+  await host.getByRole('button', { name: 'Cancelar', exact: true }).click();
+  expect((await voice(host)).available).toBe(false);
+  await releaseVoice(host);
   await expect(host.locator('.room-voice')).toContainText('Todos da sala se ouvem');
   expect((await voice(host)).permission).toBe('granted');
 
   // convidado entra: vê as opções e a voz conecta (todos ouvem todos, microfone começa desligado)
   await join(guest, code);
+  await releaseVoice(guest);
   await expect(guest.locator('.room-diff')).toContainText('Difícil');
   await expect(guest.locator('.room-voice-opt')).toContainText('Permitido');
   await expect.poll(async () => (await voice(host)).peers, { timeout: 30_000 }).toBe(1);
@@ -100,6 +109,7 @@ test('chat de voz: opções da sala, todos ouvem todos (3 aparelhos), microfone,
   const [thirdCtx, third] = await device(browser);
   errors.push(...collectErrors(third));
   await join(third, code);
+  await releaseVoice(third);
   for (const p of [host, guest, third])
     await expect.poll(async () => (await voice(p)).peers, { timeout: 30_000 }).toBe(2);
   await expect
@@ -172,6 +182,7 @@ test('chat de voz: sala sem voz não liga nada; microfone bloqueado explica como
   expect((await voice(host)).available).toBe(false);
 
   await host.getByRole('button', { name: /Desligado/ }).click();
+  await releaseVoice(host);
   await host.getByRole('button', { name: /Ligar microfone/ }).click();
   await expect(host.locator('.room-voice')).toContainText('O microfone está bloqueado');
   await expect(host.locator('.room-voice')).toContainText('Microfone > Permitir');

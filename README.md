@@ -174,6 +174,13 @@ primeira vez (se estiver bloqueado, o jogo explica onde liberar). A lista da sal
 🎤/🔇 de cada um e acendem em quem está falando, e a música abaixa enquanto alguém fala. O volume das vozes fica em
 Configurações > Áudio. A voz vai direto entre os aparelhos (criptografada) e não é gravada.
 
+**Voz e idade:** a voz respeita a idade e o controle dos pais, como pede o ECA Digital (Lei 15.211/2025, art. 21).
+No app, o jogo pergunta à loja (Play Age Signals no Android, Declared Age Range no iOS 26) só se quem joga tem 18
+anos ou mais e se os pais limitam a comunicação; a resposta não é guardada. Adulto confirmado pela loja usa a voz
+normalmente; com a comunicação limitada pelos pais, a voz fica bloqueada. Nos outros casos, inclusive no site, a voz
+começa desligada no aparelho até um adulto responsável tocar em **🔓 Liberar a voz (adulto)** na sala e confirmar;
+dá para bloquear de novo em Configurações > Áudio (`src/net/voiceGate.ts`).
+
 Cada um guarda o próprio progresso (nível, armas, itens) no seu aparelho, e navegador e app jogam juntos. Quem
 criou a sala é o anfitrião (👑): o aparelho dele roda a partida e manda o estado para os outros ~20 vezes por
 segundo; o estado completo, que com 3 ou mais jogadores e muitos inimigos passa do tamanho que o PeerJS aceita

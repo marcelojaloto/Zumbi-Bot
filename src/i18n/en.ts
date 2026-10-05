@@ -887,6 +887,24 @@ export const EN: Record<string, string> = {
     "This device doesn't support voice chat, but the other players can still talk to each other.",
   'Toque para ouvir a conversa': 'Tap to hear the conversation',
   'Vozes (chat de voz online)': 'Voices (online voice chat)',
+  // trava do chat de voz por idade
+  'Quem tem menos de 18 anos só entra na conversa com a liberação de um adulto responsável.':
+    'Players under 18 only join the conversation if a responsible adult allows it.',
+  'O controle dos pais deste aparelho não deixa usar o chat de voz. Você joga normalmente.':
+    "This device's parental controls don't allow voice chat. You can still play normally.",
+  'O chat de voz começa desligado neste aparelho. Para ouvir e falar com a sala, um adulto responsável precisa liberar.':
+    'Voice chat starts off on this device. To hear and talk with the room, a responsible adult has to turn it on.',
+  'Liberar a voz (adulto)': 'Turn voice on (adult)',
+  'Você é o adulto responsável por quem joga neste aparelho e libera a conversa por voz com a sala?':
+    'Are you the adult responsible for whoever plays on this device, and do you allow voice chat with the room?',
+  'Sim, liberar': 'Yes, turn it on',
+  'Chat de voz bloqueado pelo controle dos pais neste aparelho.':
+    'Voice chat is blocked by parental controls on this device.',
+  'Chat de voz desligado neste aparelho: um adulto responsável libera na sala.':
+    'Voice chat is off on this device: a responsible adult can turn it on in the room.',
+  'Chat de voz liberado por um adulto neste aparelho': 'Voice chat allowed by an adult on this device',
+  'Bloquear de novo': 'Block again',
+  'Bloqueado de novo.': 'Blocked again.',
   // iPhone
   'Tela cheia no iPhone': 'Full screen on iPhone',
   'Para jogar em tela cheia: toque em Compartilhar (□↑), depois em "Adicionar à Tela de Início", e abra o Zumbi Bot por lá.':

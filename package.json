@@ -23,6 +23,7 @@
     "check": "npm run typecheck && npm run test && vite build"
   },
   "dependencies": {
+    "@capawesome/capacitor-age-signals": "0.5.1",
     "n8ao": "2.0.1",
     "peerjs": "1.5.5",
     "postprocessing": "6.39.5",

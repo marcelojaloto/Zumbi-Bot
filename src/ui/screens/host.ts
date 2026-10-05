@@ -1,4 +1,5 @@
 import type { Profile } from '../../app/Profile';
+import type { VoiceGate } from '../../net/voiceGate';
 import type { ScreenManager } from '../ScreenManager';
 
 /** O que as telas precisam do aplicativo (evita dependência circular com App). */
@@ -28,4 +29,6 @@ export interface UiHost {
   installApp(): void;
   /** Um registro do ranking foi salvo ou renomeado (o melhor do aparelho vai para o ranking global). */
   rankSaved(): void;
+  /** Trava do chat de voz por idade (a sala libera, as Configurações bloqueiam de novo). */
+  readonly voiceGate: VoiceGate;
 }

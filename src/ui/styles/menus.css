@@ -2046,6 +2046,18 @@ a.btn {
 .room-voice-text:empty {
   display: none;
 }
+/* trava por idade: o adulto confirma antes de liberar a voz neste aparelho */
+.voice-release-ask {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--fg, #e8ecf4);
+}
+.voice-release-ask[hidden] {
+  display: none;
+}
 .mic-btn.on {
   border-color: #5aff9a;
   box-shadow: 0 0 12px rgba(90, 255, 154, 0.45);

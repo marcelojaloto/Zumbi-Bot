@@ -35,6 +35,15 @@ export async function createRoom(
 }
 
 /**
+ * Chat de voz na sala: no site a idade de quem joga é desconhecida, então a voz começa desligada e um adulto
+ * responsável libera neste aparelho (com confirmação). A liberação fica guardada no aparelho.
+ */
+export async function releaseVoice(page: Page): Promise<void> {
+  await page.getByRole('button', { name: /Liberar a voz/ }).click();
+  await page.getByRole('button', { name: 'Sim, liberar', exact: true }).click();
+}
+
+/**
  * Venceu a fase: o baú aparece antes do resultado. Abre com três toques e segue (`cont` = o botão "Pegar prêmios" no
  * idioma do teste). O baú balança o tempo todo, então os cliques são forçados (o Playwright esperaria ele parar).
  */

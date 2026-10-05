@@ -1,5 +1,5 @@
 import { devices, expect, test, type Page } from '@playwright/test';
-import { collectErrors, createRoom } from './helpers';
+import { collectErrors, createRoom, releaseVoice } from './helpers';
 
 // iPhone deitado (tela, toque, user agent) no Chromium; sem a API de tela cheia, como no Safari do iPhone.
 // O Safari de verdade (WebKit) não roda aqui: ver a lista de testes em aparelho no PR.
@@ -78,6 +78,9 @@ test('iPhone: dica da Tela de Início, sala online com voz e controles de toque 
   await desk.waitForFunction(() => (window as unknown as { __game?: G }).__game?.isReady());
   await desk.getByRole('button', { name: 'Jogar', exact: true }).first().click();
   await expect(desk.locator('.room-ok')).toBeVisible({ timeout: 30_000 });
+  // no site a idade é desconhecida: um adulto libera a voz em cada aparelho
+  await releaseVoice(phone);
+  await releaseVoice(desk);
   await expect.poll(async () => (await voice(phone)).peers, { timeout: 30_000 }).toBe(1);
 
   // voz do iPhone chega no computador

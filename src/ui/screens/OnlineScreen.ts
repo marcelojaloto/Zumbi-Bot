@@ -131,7 +131,16 @@ function voiceStatus(host: OnlineHost): string {
       ? t('Chat de voz desligado nesta sala.')
       : t('Chat de voz desligado pelo anfitrião.');
   const v = host.voice;
-  if (!v) return t('Chat de voz indisponível neste aparelho ou navegador. Você joga normalmente.');
+  if (!v) {
+    const gate = host.voiceSupported ? host.voiceGate.state : 'allowed';
+    if (gate === 'blocked')
+      return t('O controle dos pais deste aparelho não deixa usar o chat de voz. Você joga normalmente.');
+    if (gate === 'ask')
+      return t(
+        'O chat de voz começa desligado neste aparelho. Para ouvir e falar com a sala, um adulto responsável precisa liberar.',
+      );
+    return t('Chat de voz indisponível neste aparelho ou navegador. Você joga normalmente.');
+  }
   if (v.starting) return t('Toque em "Permitir" quando o aparelho pedir o microfone.');
   if (v.micOn) return t('Microfone ligado: todos da sala ouvem você.');
   if (v.problem) return micProblemText(v.problem);
@@ -273,6 +282,8 @@ export function createRoomScreen(host: OnlineHost): Screen {
         'p',
         { class: 'muted opt-note' },
         t('Com o chat de voz, todos da sala conversam juntos. Cada um liga ou desliga o próprio microfone.'),
+        ' ',
+        t('Quem tem menos de 18 anos só entra na conversa com a liberação de um adulto responsável.'),
         host.voiceSupported ? null : el('br'),
         host.voiceSupported
           ? null
@@ -458,7 +469,55 @@ export function roomScreen(host: OnlineHost): Screen {
     { class: 'btn small hear-btn', hidden: true, data: { nav: '' }, onclick: () => host.voice?.unlock() },
     `🔈 ${t('Toque para ouvir a conversa')}`,
   );
-  const voiceBar = el('div', { class: 'room-voice' }, voiceText, hearBtn);
+  // trava por idade: só um adulto responsável libera a voz neste aparelho, com confirmação
+  let confirming = false;
+  const releaseBtn = el(
+    'button',
+    {
+      class: 'btn small voice-release',
+      hidden: true,
+      data: { nav: '' },
+      onclick: () => {
+        confirming = true;
+        renderVoice();
+      },
+    },
+    `🔓 ${t('Liberar a voz (adulto)')}`,
+  );
+  const releaseAsk = el(
+    'div',
+    { class: 'voice-release-ask', hidden: true },
+    el(
+      'span',
+      {},
+      t('Você é o adulto responsável por quem joga neste aparelho e libera a conversa por voz com a sala?'),
+    ),
+    el(
+      'button',
+      {
+        class: 'btn small primary',
+        data: { nav: '' },
+        onclick: () => {
+          confirming = false;
+          host.voiceGate.release();
+        },
+      },
+      t('Sim, liberar'),
+    ),
+    el(
+      'button',
+      {
+        class: 'btn small',
+        data: { nav: '' },
+        onclick: () => {
+          confirming = false;
+          renderVoice();
+        },
+      },
+      t('Cancelar'),
+    ),
+  );
+  const voiceBar = el('div', { class: 'room-voice' }, voiceText, hearBtn, releaseBtn, releaseAsk);
 
   const players = (): RoomPlayer[] => {
     const r = host.online;
@@ -559,6 +618,9 @@ export function roomScreen(host: OnlineHost): Screen {
     if (voiceText.textContent !== text) voiceText.textContent = text;
     voiceBar.classList.toggle('error', !!v && !v.micOn && (!!v.problem || v.permission === 'denied'));
     hearBtn.hidden = !(r.voice && v?.blocked);
+    const ask = r.voice && !v && host.voiceSupported && host.voiceGate.state === 'ask';
+    releaseBtn.hidden = !ask || confirming;
+    releaseAsk.hidden = !ask || !confirming;
   }
 
   function render(): void {

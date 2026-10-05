@@ -99,6 +99,28 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
       () => st().audio.muted,
       (v) => ((st().audio.muted = v), apply()),
     ),
+    // a voz liberada por um adulto na sala do jogo online volta a ficar bloqueada aqui
+    ...(host.voiceGate.released
+      ? [
+          [
+            el('label', {}, t('Chat de voz liberado por um adulto neste aparelho')),
+            el(
+              'button',
+              {
+                class: 'btn small',
+                data: { nav: '' },
+                onclick: (ev: MouseEvent) => {
+                  host.voiceGate.revoke();
+                  (ev.currentTarget as HTMLElement).replaceWith(
+                    el('span', { class: 'muted' }, t('Bloqueado de novo.')),
+                  );
+                },
+              },
+              t('Bloquear de novo'),
+            ),
+          ] as const,
+        ]
+      : []),
   ]);
   sections.controls = mk([
     slider(

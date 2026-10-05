@@ -3,6 +3,16 @@
 O que mudou em cada versão do Zumbi Bot, da mais nova para a mais antiga. No app Android, o último número da
 versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter várias builds.
 
+## 1.6, atualização de 05/10/2026
+
+### Chat de voz e idade
+
+- O chat de voz respeita a idade e o controle dos pais. No app, o jogo pergunta à loja (Google Play ou App Store)
+  só se quem joga tem 18 anos ou mais e se os pais limitam a comunicação; a resposta não é guardada.
+- Adulto confirmado pela loja usa a voz como antes. Com a comunicação limitada pelos pais, a voz fica bloqueada.
+- Nos outros casos, inclusive no site, a voz começa desligada no aparelho: um adulto responsável libera na sala, em
+  **🔓 Liberar a voz (adulto)**, e pode bloquear de novo em **Configurações > Áudio**.
+
 ## 1.6, atualização de 04/10/2026
 
 ### Ranking global e privacidade
