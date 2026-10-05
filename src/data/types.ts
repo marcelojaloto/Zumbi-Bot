@@ -837,6 +837,11 @@ export interface CosmeticDef {
   hides?: CosmeticSlot[];
   /** Capa: número de segmentos com física de mola. */
   cape?: { segments: number; width: number; length: number; color: number; color2?: number };
+  /**
+   * Peça de cabeça que vem com sobrancelhas desta cor (a peruca do disfarce): quem tem sobrancelhas desenhadas
+   * (`RigSpec.brows`) fica com elas dessa cor enquanto veste a peça.
+   */
+  brows?: number;
   desc?: string;
 }
 

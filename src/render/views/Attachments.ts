@@ -84,6 +84,40 @@ export class CosmeticRig {
       }
     }
     this.syncOwnHead(!equipped.head);
+    this.syncBrows(equipped.head ? (COSMETICS[equipped.head]?.brows ?? null) : null);
+  }
+
+  private brows: Mesh[] = [];
+  private browColor: number | null = null;
+  private browKit: { geo: BoxGeometry; mat: MeshStandardMaterial } | null = null;
+
+  /** Peça de cabeça com sobrancelhas (a peruca do disfarce): cobre as do personagem com a cor dela. */
+  private syncBrows(color: number | null): void {
+    if (color === this.browColor) return;
+    this.clearBrows();
+    this.browColor = color;
+    const spots = this.view.rig.built.spec.brows;
+    if (color === null || !spots?.length) return;
+    this.browKit = {
+      geo: new BoxGeometry(1, 1, 1),
+      mat: new MeshStandardMaterial({ color, roughness: 0.9, flatShading: true }),
+    };
+    for (const s of spots) {
+      const m = new Mesh(this.browKit.geo, this.browKit.mat);
+      m.scale.set(...s.size);
+      m.position.set(...s.at);
+      this.view.rig.bones[s.j]?.add(m);
+      this.brows.push(m);
+    }
+  }
+
+  private clearBrows(): void {
+    for (const m of this.brows) m.parent?.remove(m);
+    this.brows = [];
+    this.browKit?.geo.dispose();
+    this.browKit?.mat.dispose();
+    this.browKit = null;
+    this.browColor = null;
   }
 
   private syncOwnHead(show: boolean): void {
@@ -135,5 +169,6 @@ export class CosmeticRig {
   dispose(): void {
     for (const s of Object.keys(this.objs) as CosmeticSlot[]) this.clearSlot(s);
     this.syncOwnHead(false);
+    this.clearBrows();
   }
 }

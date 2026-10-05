@@ -54,7 +54,8 @@ Web Audio.
 
   **Personagem secreto:** terminando o jogo pela primeira vez, o último capítulo do final lendário revela o
   **Prodígio** (Jacobb Amici), um adolescente loiro de olhos azuis que luta caratê com magia arcana. O disfarce dele vai para o guarda-roupa e veste quem quiser:
-  **peruca castanho-escura** (o mesmo penteado dele) e **lentes verdes ou castanhas**.
+  **peruca castanho-escura** (o mesmo penteado dele, com sobrancelhas pretas para os fios loiros não entregarem o
+  disfarce) e **lentes verdes ou castanhas**.
 
 - **7 armas de fogo** (pistola, escopeta, submetralhadora, fuzil de assalto, rifle de precisão, metralhadora e
   lança-granadas), com dano, cadência, recuo, munição e recarga próprios. As armas novas aparecem em caixas

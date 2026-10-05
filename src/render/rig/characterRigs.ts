@@ -541,12 +541,16 @@ export function prodigyRig(): RigSpec {
     upperArm: 0.25,
     foreArm: 0.23,
   };
+  // sobrancelhas loiras (a peruca do disfarce cobre com as pretas dela)
+  const BROW: [number, number, number] = [0.062, 0.014, 0.01];
+  const BROW_Y = 0.178;
+  const BROW_Z = 0.123;
   const eye = (x: number): PartSpec[] => [
     { j: J.head, shape: 'box', size: [0.056, 0.04, 0.01], at: [x, 0.1375, 0.121], color: 0xf6f6f6 },
     // olhos azuis (as lentes do disfarce ficam por cima)
     { j: J.head, shape: 'box', size: [0.028, 0.034, 0.008], at: [x, 0.136, 0.126], color: 0x2f86ff },
     { j: J.head, shape: 'box', size: [0.012, 0.016, 0.006], at: [x, 0.136, 0.13], color: 0x0a1020 },
-    { j: J.head, shape: 'box', size: [0.062, 0.014, 0.01], at: [x, 0.178, 0.123], color: 0xc8a040 },
+    { j: J.head, shape: 'box', size: BROW, at: [x, BROW_Y, BROW_Z], color: 0xc8a040 },
   ];
   const parts: PartSpec[] = [
     // quimono: calça, casaco com lapelas e faixa preta
@@ -642,6 +646,11 @@ export function prodigyRig(): RigSpec {
     key: 'char-prodigy',
     joints: humanoidJoints(pr),
     parts,
+    brows: [0.052, -0.052].map((x) => ({
+      j: J.head,
+      at: [x, BROW_Y, BROW_Z + 0.002] as [number, number, number],
+      size: [BROW[0] + 0.006, BROW[1] + 0.004, BROW[2]] as [number, number, number],
+    })),
     sockets: fitSockets(humanSockets(0.25, 0.22, 0.21), 0.78, 0.82),
     height: 1.62,
     metal: 0.03,

@@ -49,6 +49,11 @@ export interface RigSpec {
    * jogador equipa um item de cabeça do guarda-roupa.
    */
   defaultHead?: MeshRecipe;
+  /**
+   * Sobrancelhas desenhadas no rosto (em relação à junta): uma peça de cabeça com `brows` (a peruca do disfarce) cobre
+   * elas com a cor dela.
+   */
+  brows?: { j: number; at: [number, number, number]; size: [number, number, number] }[];
   metal: number;
   rough: number;
 }

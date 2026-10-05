@@ -588,8 +588,10 @@ export const COSMETIC_LIST: CosmeticDef[] = [
 
   // ---------------------------------------------------------------- disfarce do Prodígio (vem com ele)
   // (o id continua "wig_black" para não sumir dos saves de quem já tem)
+  // vem com sobrancelhas pretas: as loiras entregariam o disfarce
   c('wig_black', 'Peruca Castanho-Escura', 'head', 'secret', 'epic', hairWig(0x3b2415, 0x5a3a22), {
     desc: 'Disfarce do Prodígio.',
+    brows: 0x16110d,
   }),
   c('lens_green', 'Lentes Verdes', 'eyes', 'secret', 'rare', lenses(0x3aa84a), {
     desc: 'Disfarce do Prodígio.',
