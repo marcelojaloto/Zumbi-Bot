@@ -133,12 +133,13 @@ Em **App Store Connect > o app > versão iOS**:
   voz lê da App Store (Declared Age Range) só é usada no aparelho e não sai dele: não entra como coletada.
 - **Classificação etária:** violência de desenho/fantasia **frequente** (lutas contra zumbis e robôs, sem sangue
   realista); **comunicação entre usuários: sim** (chat de voz opcional numa sala com código, que respeita o controle
-  dos pais e, para menores ou idade desconhecida, só liga com a liberação de um adulto); sem compras, sem navegação
-  livre na internet. A Apple calcula a idade a partir das respostas.
+  dos pais, fica desligado para menores e, com a idade desconhecida, só liga com a liberação de um adulto); sem
+  compras, sem navegação livre na internet. A Apple calcula a idade a partir das respostas.
 - **Notas para a revisão:** "O jogo funciona offline (um jogador). O jogo online precisa de dois aparelhos: em um,
-  Jogar online > Criar sala; no outro, Entrar numa sala com o código de 4 letras. O chat de voz é opcional: quando a
-  App Store não confirma que quem joga é adulto, ele começa desligado e um adulto libera em Liberar a voz (adulto),
-  na sala. Depois, o microfone só é pedido ao tocar em Ligar microfone."
+  Jogar online > Criar sala; no outro, Entrar numa sala com o código de 4 letras. O chat de voz é opcional. Quando a
+  App Store informa que quem joga é adulto, ele funciona direto; quando não informa a idade, começa desligado e um
+  adulto libera em Liberar a voz (adulto), na sala, respondendo a uma multiplicação. Depois, o microfone só é pedido
+  ao tocar em Ligar microfone."
 
 Envie para a revisão. A primeira costuma levar de um a três dias.
 

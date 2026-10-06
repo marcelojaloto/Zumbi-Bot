@@ -12,6 +12,7 @@ import type { MicProblem, VoiceChat } from '../../net/voice';
 import { MAX_PLAYERS } from '../../sim/Entity';
 import { difficultyName } from '../difficulty';
 import { el, hexColor } from '../dom';
+import { parentGate } from '../parentGate';
 import { t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
 import type { LobbyHost } from './LobbyScreen';
@@ -134,7 +135,11 @@ function voiceStatus(host: OnlineHost): string {
   if (!v) {
     const gate = host.voiceSupported ? host.voiceGate.state : 'allowed';
     if (gate === 'blocked')
-      return t('O controle dos pais deste aparelho não deixa usar o chat de voz. Você joga normalmente.');
+      return host.voiceGate.blockedBy === 'age'
+        ? t(
+            'A loja informa que quem joga aqui tem menos de 18 anos, então o chat de voz fica desligado neste aparelho. Você joga normalmente.',
+          )
+        : t('O controle dos pais deste aparelho não deixa usar o chat de voz. Você joga normalmente.');
     if (gate === 'ask')
       return t(
         'O chat de voz começa desligado neste aparelho. Para ouvir e falar com a sala, um adulto responsável precisa liberar.',
@@ -469,8 +474,10 @@ export function roomScreen(host: OnlineHost): Screen {
     { class: 'btn small hear-btn', hidden: true, data: { nav: '' }, onclick: () => host.voice?.unlock() },
     `🔈 ${t('Toque para ouvir a conversa')}`,
   );
-  // trava por idade: só um adulto responsável libera a voz neste aparelho, com confirmação
+  // trava por idade, quando a loja não informa a idade: só um adulto responsável libera a voz neste aparelho,
+  // passando pela trava para pais (uma conta nova a cada vez)
   let confirming = false;
+  const releaseAsk = el('div', { class: 'voice-release-ask', hidden: true });
   const releaseBtn = el(
     'button',
     {
@@ -479,43 +486,26 @@ export function roomScreen(host: OnlineHost): Screen {
       data: { nav: '' },
       onclick: () => {
         confirming = true;
+        releaseAsk.replaceChildren(
+          parentGate(
+            t(
+              'Você é o adulto responsável por quem joga neste aparelho e libera a conversa por voz com a sala?',
+            ),
+            () => {
+              confirming = false;
+              host.voiceGate.release();
+            },
+            () => {
+              confirming = false;
+              renderVoice();
+            },
+          ),
+        );
         renderVoice();
+        releaseAsk.querySelector('input')?.focus();
       },
     },
     `🔓 ${t('Liberar a voz (adulto)')}`,
-  );
-  const releaseAsk = el(
-    'div',
-    { class: 'voice-release-ask', hidden: true },
-    el(
-      'span',
-      {},
-      t('Você é o adulto responsável por quem joga neste aparelho e libera a conversa por voz com a sala?'),
-    ),
-    el(
-      'button',
-      {
-        class: 'btn small primary',
-        data: { nav: '' },
-        onclick: () => {
-          confirming = false;
-          host.voiceGate.release();
-        },
-      },
-      t('Sim, liberar'),
-    ),
-    el(
-      'button',
-      {
-        class: 'btn small',
-        data: { nav: '' },
-        onclick: () => {
-          confirming = false;
-          renderVoice();
-        },
-      },
-      t('Cancelar'),
-    ),
   );
   const voiceBar = el('div', { class: 'room-voice' }, voiceText, hearBtn, releaseBtn, releaseAsk);
 

@@ -1369,7 +1369,9 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
           : !this.voiceSupported
             ? t('Chat de voz indisponível neste aparelho.')
             : gate === 'blocked'
-              ? t('Chat de voz bloqueado pelo controle dos pais neste aparelho.')
+              ? this.voiceGate.blockedBy === 'age'
+                ? t('Chat de voz desligado: a loja informa que quem joga aqui tem menos de 18 anos.')
+                : t('Chat de voz bloqueado pelo controle dos pais neste aparelho.')
               : t('Chat de voz desligado neste aparelho: um adulto responsável libera na sala.'),
         '#ffb02a',
       );

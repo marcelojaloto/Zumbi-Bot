@@ -82,12 +82,16 @@ No repositório: **Settings > Secrets and variables > Actions > New repository s
      **chat de voz** entre os jogadores da sala: responda que os usuários **podem interagir e se comunicar (voz)**
      e que não há compartilhamento de localização nem compras. O chat de voz é opcional: quem cria a sala pode
      desligá-lo, cada jogador liga o próprio microfone e a voz não é gravada. Ele também respeita a idade: o app
-     pergunta à Play (Age Signals API) se quem joga tem 18 anos ou mais e, para menores ou idade desconhecida, a
-     voz só liga com a liberação de um adulto; com a mudança recusada pelo responsável no Family Link, fica
-     bloqueada.
+     pergunta à Play (Age Signals API) se quem joga tem 18 anos ou mais. Para menores, a voz fica desligada, a não
+     ser que o responsável a aprove no Family Link (veja "mudança significativa" abaixo); com a idade desconhecida,
+     só um adulto libera na sala, passando por uma trava para pais.
    - **Público-alvo:** escolha faixas de **13 anos ou mais** (marcar menores de 13 exige cumprir a política de
      Famílias). No Brasil, a Play pede que apps com acesso provável de menores usem a faixa de idade que ela
      fornece: o chat de voz já usa, pela Age Signals API (só funciona no app instalado pela Play).
+   - **Mudança significativa (opcional):** para que pais de contas supervisionadas possam aprovar o chat de voz no
+     Family Link, declare-o no Play Console como "mudança significativa" do app, na área de sinais de idade. Quando
+     o responsável aprova, o jogo libera a voz para aquele menor; sem a declaração, a voz fica desligada para
+     menores. A Play só pede essa aprovação onde a lei exige.
    - **Segurança dos dados:** o progresso fica salvo só no aparelho. No jogo online (iniciado pelo usuário), o
      nome no jogo, o personagem e os comandos vão para os outros jogadores da sala, e o serviço de conexão do
      PeerJS recebe o código da sala e o IP, só enquanto a sala está aberta (processamento temporário, nada é

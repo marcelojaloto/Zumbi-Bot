@@ -897,7 +897,13 @@ export const EN: Record<string, string> = {
   'Liberar a voz (adulto)': 'Turn voice on (adult)',
   'Você é o adulto responsável por quem joga neste aparelho e libera a conversa por voz com a sala?':
     'Are you the adult responsible for whoever plays on this device, and do you allow voice chat with the room?',
-  'Sim, liberar': 'Yes, turn it on',
+  'Para confirmar, responda: quanto é {a} × {b}?': 'To confirm, answer: what is {a} × {b}?',
+  'Resposta errada. Tente esta outra conta.': 'Wrong answer. Try this other one.',
+  Confirmar: 'Confirm',
+  'A loja informa que quem joga aqui tem menos de 18 anos, então o chat de voz fica desligado neste aparelho. Você joga normalmente.':
+    'The store says the player here is under 18, so voice chat stays off on this device. You can still play normally.',
+  'Chat de voz desligado: a loja informa que quem joga aqui tem menos de 18 anos.':
+    'Voice chat is off: the store says the player here is under 18.',
   'Chat de voz bloqueado pelo controle dos pais neste aparelho.':
     'Voice chat is blocked by parental controls on this device.',
   'Chat de voz desligado neste aparelho: um adulto responsável libera na sala.':

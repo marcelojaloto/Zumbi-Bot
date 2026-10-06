@@ -34,13 +34,22 @@ export async function createRoom(
   await box.getByRole('button', { name: /Criar sala/ }).click();
 }
 
+/** Trava para pais: lê a conta na tela, responde e confirma. */
+export async function solveParentGate(page: Page): Promise<void> {
+  const ask = page.locator('.parent-gate .gate-q');
+  await ask.waitFor({ state: 'visible' });
+  const [, a, b] = (await ask.textContent())?.match(/(\d+)\s*×\s*(\d+)/) ?? [];
+  await page.locator('.parent-gate .gate-input').fill(String(Number(a) * Number(b)));
+  await page.getByRole('button', { name: 'Confirmar', exact: true }).click();
+}
+
 /**
  * Chat de voz na sala: no site a idade de quem joga é desconhecida, então a voz começa desligada e um adulto
- * responsável libera neste aparelho (com confirmação). A liberação fica guardada no aparelho.
+ * responsável libera neste aparelho, passando pela trava para pais. A liberação fica guardada no aparelho.
  */
 export async function releaseVoice(page: Page): Promise<void> {
   await page.getByRole('button', { name: /Liberar a voz/ }).click();
-  await page.getByRole('button', { name: 'Sim, liberar', exact: true }).click();
+  await solveParentGate(page);
 }
 
 /**

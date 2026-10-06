@@ -2058,6 +2058,37 @@ a.btn {
 .voice-release-ask[hidden] {
   display: none;
 }
+/* trava para pais: pergunta, conta e resposta numa linha que quebra no celular */
+.parent-gate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  max-width: min(900px, 96vw);
+  text-align: center;
+}
+.parent-gate .gate-q {
+  color: var(--accent);
+  font-weight: 600;
+}
+.parent-gate .gate-input {
+  width: 4.5em;
+  padding: 6px 8px;
+  font-size: 18px;
+  text-align: center;
+  color: var(--fg);
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+}
+.parent-gate .gate-msg {
+  flex-basis: 100%;
+  color: #ffb02a;
+}
+.parent-gate .gate-msg:empty {
+  display: none;
+}
 .mic-btn.on {
   border-color: #5aff9a;
   box-shadow: 0 0 12px rgba(90, 255, 154, 0.45);

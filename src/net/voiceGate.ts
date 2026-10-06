@@ -4,10 +4,11 @@
  * Signals no Android, Declared Age Range no iOS 26 ou mais novo), só como "18 ou mais" ou "menos de 18", e não é
  * guardada nem enviada:
  *
- * - adulto confirmado pela loja: voz liberada;
- * - controle dos pais limitando a comunicação: voz bloqueada, sem como liberar no jogo;
- * - idade desconhecida (site, iOS antigo, não compartilhou) ou menor sem esse controle: voz desligada até um adulto
- *   responsável liberar neste aparelho.
+ * - adulto confirmado pela loja, ou menor com a voz aprovada pelo responsável na loja: voz liberada;
+ * - controle dos pais limitando a comunicação, ou menor sem essa aprovação: voz bloqueada, sem como liberar no jogo
+ *   (quando a loja informa a idade, vale a opção mais protetiva; Decreto 12.880/2026, art. 25, § 4º);
+ * - idade desconhecida (site, iOS antigo, não compartilhou): voz desligada até um adulto responsável liberar neste
+ *   aparelho, passando pela trava para pais.
  */
 
 /** O que a loja disse (só os campos usados; a resposta do plugin @capawesome/capacitor-age-signals). */
@@ -17,10 +18,13 @@ export interface StoreAgeRange {
   significantChange?: { status?: string };
 }
 
-/** Leitura da loja: adulto, comunicação limitada pelos pais, ou nada que decida (fica com um adulto liberar). */
-export type AgeSignal = 'adult' | 'limited' | 'unknown';
+/**
+ * Leitura da loja: adulto, menor com a voz aprovada pelo responsável, comunicação limitada pelos pais, menor, ou
+ * nada que decida (fica com um adulto liberar).
+ */
+export type AgeSignal = 'adult' | 'approved' | 'limited' | 'minor' | 'unknown';
 
-/** A voz neste aparelho: liberada, bloqueada pelos pais, ou esperando um adulto liberar. */
+/** A voz neste aparelho: liberada, bloqueada (pelos pais ou pela idade), ou esperando um adulto liberar. */
 export type VoiceGateState = 'allowed' | 'blocked' | 'ask';
 
 const STORE = 'zumbibot.voicegate.v1';
@@ -36,6 +40,9 @@ export function readAgeSignal(r: StoreAgeRange | null | undefined): AgeSignal {
     r?.significantChange?.status === 'DECLINED'
   )
     return 'limited';
+  // Android: o responsável aprovou no Family Link a mudança declarada no Play Console (o chat de voz)
+  if (r?.significantChange?.status === 'APPROVED') return 'approved';
+  if (a.upperBound !== undefined && a.upperBound < 18) return 'minor';
   return 'unknown';
 }
 
@@ -76,9 +83,15 @@ export class VoiceGate {
   }
 
   get state(): VoiceGateState {
-    if (this.signal === 'adult') return 'allowed';
-    if (this.signal === 'limited') return 'blocked';
+    if (this.signal === 'adult' || this.signal === 'approved') return 'allowed';
+    if (this.signal === 'limited' || this.signal === 'minor') return 'blocked';
     return this.released ? 'allowed' : 'ask';
+  }
+
+  /** Por que a voz está bloqueada: o controle dos pais ou a idade informada pela loja. */
+  get blockedBy(): 'parents' | 'age' | null {
+    if (this.signal === 'limited') return 'parents';
+    return this.signal === 'minor' ? 'age' : null;
   }
 
   get allowed(): boolean {

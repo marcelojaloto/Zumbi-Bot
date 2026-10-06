@@ -23,8 +23,16 @@ describe('trava do chat de voz por idade', () => {
     expect(readAgeSignal(shared({ upperBound: 15 }, { significantChange: { status: 'DECLINED' } }))).toBe(
       'limited',
     );
-    // menor sem controle dos pais, idade não compartilhada, sem resposta: fica com um adulto liberar
-    expect(readAgeSignal(shared({ upperBound: 17 }))).toBe('unknown');
+    // menor com a voz aprovada pelo responsável no Family Link
+    expect(readAgeSignal(shared({ upperBound: 15 }, { significantChange: { status: 'APPROVED' } }))).toBe(
+      'approved',
+    );
+    // menor sem nada disso
+    expect(readAgeSignal(shared({ upperBound: 17 }))).toBe('minor');
+    expect(readAgeSignal(shared({ upperBound: 15 }, { significantChange: { status: 'PENDING' } }))).toBe(
+      'minor',
+    );
+    // idade não compartilhada ou sem resposta: fica com um adulto liberar
     expect(readAgeSignal({ status: 'NOT_SHARED' })).toBe('unknown');
     expect(readAgeSignal({ status: 'VERIFICATION_REQUIRED' })).toBe('unknown');
     expect(readAgeSignal(null)).toBe('unknown');
@@ -63,6 +71,31 @@ describe('trava do chat de voz por idade', () => {
     expect(g.allowed).toBe(true);
   });
 
+  it('menor informado pela loja: bloqueada, e a liberação de um adulto no jogo não vale', async () => {
+    const store = memStore();
+    const g = new VoiceGate(
+      async () => shared({ upperBound: 17 }),
+      () => {},
+      store,
+    );
+    g.release();
+    expect(g.allowed).toBe(true);
+    await g.check();
+    expect(g.state).toBe('blocked');
+    expect(g.blockedBy).toBe('age');
+  });
+
+  it('menor com a voz aprovada pelo responsável na loja: liberada', async () => {
+    const g = new VoiceGate(
+      async () => shared({ upperBound: 15 }, { significantChange: { status: 'APPROVED' } }),
+      () => {},
+      memStore(),
+    );
+    await g.check();
+    expect(g.allowed).toBe(true);
+    expect(g.blockedBy).toBeNull();
+  });
+
   it('com os pais limitando a comunicação, nem um adulto libera pelo jogo', async () => {
     const g = new VoiceGate(
       async () => shared({ upperBound: 12, activeParentalControls: ['COMMUNICATION_LIMITS'] }),
@@ -72,6 +105,7 @@ describe('trava do chat de voz por idade', () => {
     await g.check();
     g.release();
     expect(g.state).toBe('blocked');
+    expect(g.blockedBy).toBe('parents');
   });
 
   it('pergunta à loja uma vez só, e erro vale idade desconhecida', async () => {
