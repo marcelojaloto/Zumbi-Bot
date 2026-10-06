@@ -18,7 +18,8 @@ import type { Screen } from '../ScreenManager';
 import type { LobbyHost } from './LobbyScreen';
 import { characterScreen, nextCharacter } from './CharacterPicker';
 
-const DEFAULT_NAME = defaultSave().profile.name;
+/** Nome que vai para a sala no lugar do nome escrito no ranking, que não sai do aparelho. */
+export const ROOM_NAME = defaultSave().profile.name;
 
 /** O que as telas do jogo online precisam do aplicativo. */
 export interface OnlineHost extends LobbyHost {
@@ -74,9 +75,12 @@ export function netErrorText(e: unknown): string {
   }
 }
 
-/** Nome na sala: o nome padrão do perfil vira "Jogador N" (senão todos seriam "Zumbi Bot"). */
-export function roomName(name: string, slot: number): string {
-  return name === DEFAULT_NAME ? t('Jogador {n}', { n: slot + 1 }) : name;
+/**
+ * Nome na sala: sempre "Jogador N", ao lado do personagem. Nenhum texto escrito por outro jogador aparece na tela, e
+ * o nome escrito no ranking não sai do aparelho (sem troca de conteúdo entre usuários; ECA Digital, art. 21).
+ */
+export function roomName(slot: number): string {
+  return t('Jogador {n}', { n: slot + 1 });
 }
 
 /** Como liberar o microfone neste aparelho (app Android, iPhone, Android no navegador, computador). */
@@ -569,7 +573,7 @@ export function roomScreen(host: OnlineHost): Screen {
       el(
         'span',
         { class: 'rp-name' },
-        roomName(p.name, p.slot) + (you ? ` (${t('você')})` : ''),
+        roomName(p.slot) + (you ? ` (${t('você')})` : ''),
         el('small', { class: 'muted' }, ` · ${t('Nv {n}', { n: p.level })}`),
       ),
       mic,

@@ -44,6 +44,7 @@ import {
   joinScreen,
   micProblemText,
   onlineScreen,
+  ROOM_NAME,
   roomName,
   roomScreen,
   type OnlineHost,
@@ -838,7 +839,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     if (room) {
       // quem assumiu a sala depois de uma troca de anfitrião continua com o próprio número
       const slot = room.mySlot;
-      room.me = { ...this.profile.loadout(), slot };
+      room.me = { ...this.roomLoadout(), slot };
       room.setTarget(mapId, levelIdx);
       // online: a dificuldade é a da sala (escolhida pelo anfitrião)
       const msg = room.start({ seed, ngPlus, enemyCap: this.renderer.quality.enemyCap });
@@ -1126,6 +1127,14 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     this.screens.push(joinScreen(this, code));
   }
 
+  /**
+   * Equipamento que vai para a sala online, sem o nome escrito no ranking: ele não sai do aparelho. Na sala, cada
+   * um aparece como "Jogador N" com o seu personagem.
+   */
+  private roomLoadout(character?: CharacterId): PlayerLoadout {
+    return { ...this.profile.loadout(character), name: ROOM_NAME };
+  }
+
   private async getTransport(): Promise<Transport> {
     this.transport ??= await createTransport(this.flags.net, this.flags.peer);
     return this.transport;
@@ -1135,7 +1144,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     this.leaveRoomQuiet();
     const room = await HostRoom.open(
       await this.getTransport(),
-      this.profile.loadout(),
+      this.roomLoadout(),
       this.continueTarget(),
       opts,
     );
@@ -1162,7 +1171,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
 
   /** Aviso de quem entrou ou saiu (para todos da sala). */
   private roomNotice(n: RoomNotice): void {
-    const who = `${playerTag(n.slot)} (${roomName(n.name, n.slot)})`;
+    const who = `${playerTag(n.slot)} (${roomName(n.slot)})`;
     const inGame = !!this.session && this.midLevel;
     this.playUi(n.kind === 'joined' ? 'ui_click' : 'ui_back');
     this.notify(
@@ -1234,9 +1243,9 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
 
   async joinRoom(code: string): Promise<GuestRoom> {
     this.leaveRoomQuiet();
-    const room = await GuestRoom.join(await this.getTransport(), code, this.profile.loadout());
+    const room = await GuestRoom.join(await this.getTransport(), code, this.roomLoadout());
     this.online = room;
-    room.loadoutFor = (c) => this.profile.loadout(c);
+    room.loadoutFor = (c) => this.roomLoadout(c);
     room.onChange = () => this.roomChanged();
     room.onStart = (m) => void this.startGuest(room, m);
     room.onNotice = (n) => this.roomNotice(n);

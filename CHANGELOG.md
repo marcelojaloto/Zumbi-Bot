@@ -10,6 +10,9 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - Quando a loja informa que quem joga tem menos de 18 anos, o chat de voz fica desligado, a não ser que o
   responsável o aprove na própria loja (Family Link). O botão **🔓 Liberar a voz (adulto)** só aparece quando não
   há como saber a idade, como no site, e agora pede uma conta que uma criança pequena não resolve sozinha.
+- No jogo online, cada um aparece para a sala como **Jogador 1**, **Jogador 2** e assim por diante, ao lado do
+  personagem. O nome escrito no ranking não vai mais para a sala, e nenhum texto escrito por outro jogador aparece
+  na tela.
 
 ## 1.6, atualização de 05/10/2026
 
