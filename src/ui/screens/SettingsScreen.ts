@@ -1,4 +1,5 @@
 import { el } from '../dom';
+import { SAFETY_URL } from '../links';
 import { parentGate } from '../parentGate';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
@@ -351,6 +352,17 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
       [el('label', {}, t('Jogo online neste aparelho')), onlineCtl] as const,
     ]),
     onlineGate,
+    el(
+      'p',
+      { class: 'muted settings-safety' },
+      t('Para pais e responsáveis: o que o jogo online tem, as proteções e como denunciar.'),
+      ' ',
+      el(
+        'a',
+        { href: SAFETY_URL, target: '_blank', rel: 'noopener', data: { nav: '' } },
+        t('Regras e segurança'),
+      ),
+    ),
     el(
       'div',
       { style: 'margin-top:16px' },

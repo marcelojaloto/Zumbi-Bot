@@ -12,6 +12,7 @@ import type { MicProblem, VoiceChat } from '../../net/voice';
 import { MAX_PLAYERS } from '../../sim/Entity';
 import { difficultyName } from '../difficulty';
 import { el, hexColor } from '../dom';
+import { SAFETY_URL, reportMailto } from '../links';
 import { parentGate } from '../parentGate';
 import { t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
@@ -81,6 +82,15 @@ export function netErrorText(e: unknown): string {
  */
 export function roomName(slot: number): string {
   return t('Jogador {n}', { n: slot + 1 });
+}
+
+/** Link para as regras de convivência, o guia para pais e as denúncias (abre fora do jogo). */
+function safetyLink(): HTMLElement {
+  return el(
+    'a',
+    { href: SAFETY_URL, target: '_blank', rel: 'noopener', data: { nav: '' } },
+    t('Regras e segurança'),
+  );
 }
 
 /** Como liberar o microfone neste aparelho (app Android, iPhone, Android no navegador, computador). */
@@ -223,6 +233,14 @@ export function onlineScreen(host: OnlineHost, notice?: string): Screen {
       'p',
       { class: 'muted online-note' },
       t('Precisa de internet. Cada um guarda o próprio progresso (nível, armas e itens) no seu aparelho.'),
+    ),
+    // os termos de uso do jogo online (Lei 14.852/2024, art. 16, V): aceitos ao criar ou entrar numa sala
+    el(
+      'p',
+      { class: 'muted online-note' },
+      t('Ao criar ou entrar numa sala, você aceita as regras de convivência do jogo online.'),
+      ' ',
+      safetyLink(),
     ),
     el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
   );
@@ -902,6 +920,25 @@ export function roomScreen(host: OnlineHost): Screen {
             'Deixe o jogo aberto durante a partida: é o seu aparelho que conduz o jogo de todos. Se você sair, outro jogador assume.',
           )
         : t('Seu progresso (nível, armas e itens) fica salvo neste aparelho.'),
+    ),
+    el(
+      'p',
+      { class: 'muted online-note' },
+      safetyLink(),
+      ' · ',
+      // denúncia: um e-mail já com o código da sala e a hora (o href é montado no toque)
+      el(
+        'a',
+        {
+          href: '#',
+          class: 'room-report',
+          data: { nav: '' },
+          onclick: (ev: MouseEvent) => {
+            (ev.currentTarget as HTMLAnchorElement).href = reportMailto(host.online?.code ?? '');
+          },
+        },
+        `⚑ ${t('Denunciar')}`,
+      ),
     ),
   );
   return {

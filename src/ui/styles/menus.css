@@ -1749,6 +1749,14 @@ a.btn {
   text-align: center;
   font-size: 13px;
 }
+.online-note a,
+.settings-safety a {
+  color: #39e6ff;
+}
+.settings-safety {
+  margin: 14px 0 0;
+  font-size: 13px;
+}
 .online-wait {
   margin: 0;
   color: var(--cyan);

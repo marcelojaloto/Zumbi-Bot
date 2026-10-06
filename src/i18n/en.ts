@@ -897,6 +897,18 @@ export const EN: Record<string, string> = {
   'Liberar a voz (adulto)': 'Turn voice on (adult)',
   'Você é o adulto responsável por quem joga neste aparelho e libera a conversa por voz com a sala?':
     'Are you the adult responsible for whoever plays on this device, and do you allow voice chat with the room?',
+  // regras de convivência e denúncias
+  'Ao criar ou entrar numa sala, você aceita as regras de convivência do jogo online.':
+    'By creating or joining a room, you accept the online play rules.',
+  'Regras e segurança': 'Rules and safety',
+  Denunciar: 'Report',
+  'Para pais e responsáveis: o que o jogo online tem, as proteções e como denunciar.':
+    'For parents and guardians: what online play includes, the protections and how to report.',
+  'Sala: {code}': 'Room: {code}',
+  'Data e hora: {when}': 'Date and time: {when}',
+  'Quem (P1 a P5 e personagem, se souber):': 'Who (P1 to P5 and character, if you know):',
+  'O que aconteceu:': 'What happened:',
+  'Denúncia no jogo online do Zumbi Bot': 'Report from Zumbi Bot online play',
   // bloqueio do jogo online pelos pais
   'Jogo online neste aparelho': 'Online play on this device',
   Liberado: 'Allowed',

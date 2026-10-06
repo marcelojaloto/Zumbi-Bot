@@ -118,8 +118,8 @@ Em **App Store Connect > o app > versão iOS**:
   - Subtítulo (30): `Robôs contra o apocalipse zumbi` / `Robots vs. the zombie apocalypse`
   - Palavras-chave (100): `zumbi,robô,beat em up,ação,arcade,multijogador,online,chefe,luta,magia` /
     `zombie,robot,beat em up,action,arcade,multiplayer,online,boss,fighting,magic`
-  - URL de suporte: `https://github.com/marcelojaloto/Zumbi-Bot` · Política de privacidade:
-    `https://marcelojaloto.github.io/Zumbi-Bot/privacy/`
+  - URL de suporte: `https://marcelojaloto.github.io/Zumbi-Bot/seguranca/` (regras, guia para pais, denúncias e
+    contato) · Política de privacidade: `https://marcelojaloto.github.io/Zumbi-Bot/privacy/`
 - **Privacidade do app:** o jogo não coleta dados (o progresso fica no aparelho; no jogo online, nome, comandos e voz
   vão direto para os outros jogadores da sala, criptografados, e nada é guardado). Dá para declarar **"Dados não
   coletados"**. Se preferir declarar de forma conservadora: **Áudio (voz)**: não vinculado à identidade, sem

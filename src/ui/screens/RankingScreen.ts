@@ -4,6 +4,7 @@ import type { CharacterId } from '../../data/types';
 import { filterByMap } from '../../save/ranking';
 import type { GlobalEntry, GlobalRanking } from '../../net/globalRanking';
 import { el, fmtInt } from '../dom';
+import { PRIVACY_URL } from '../links';
 import { locale, t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
@@ -12,9 +13,6 @@ import type { UiHost } from './host';
 export interface RankingHost extends UiHost {
   readonly global: GlobalRanking;
 }
-
-/** Política de privacidade publicada (a mesma das lojas). */
-const PRIVACY_URL = 'https://marcelojaloto.github.io/Zumbi-Bot/privacy/';
 
 function fmtTime(ms: number): string {
   const s = Math.floor(ms / 1000);

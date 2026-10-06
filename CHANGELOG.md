@@ -16,6 +16,10 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - Os pais podem bloquear todo o jogo online no aparelho em **Configurações > Jogo**. Bloquear é na hora; liberar de
   novo pede a mesma conta da voz. Bloqueado, "Jogar online" só explica onde liberar, e o link de convite não abre a
   sala.
+- Nova página **Segurança e regras** no site, com as regras de convivência do jogo online, o guia para pais e
+  responsáveis, o canal de denúncias e o relatório de transparência. A tela do jogo online avisa que, ao criar ou
+  entrar numa sala, a pessoa aceita as regras; na sala, **⚑ Denunciar** abre um e-mail já com o código da sala e a
+  hora; as Configurações > Jogo também levam à página.
 
 ## 1.6, atualização de 05/10/2026
 

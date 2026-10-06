@@ -174,12 +174,23 @@ primeira vez (se estiver bloqueado, o jogo explica onde liberar). A lista da sal
 🎤/🔇 de cada um e acendem em quem está falando, e a música abaixa enquanto alguém fala. O volume das vozes fica em
 Configurações > Áudio. A voz vai direto entre os aparelhos (criptografada) e não é gravada.
 
-**Voz e idade:** a voz respeita a idade e o controle dos pais, como pede o ECA Digital (Lei 15.211/2025, art. 21).
-No app, o jogo pergunta à loja (Play Age Signals no Android, Declared Age Range no iOS 26) só se quem joga tem 18
-anos ou mais e se os pais limitam a comunicação; a resposta não é guardada. Adulto confirmado pela loja usa a voz
-normalmente; com a comunicação limitada pelos pais, a voz fica bloqueada. Nos outros casos, inclusive no site, a voz
-começa desligada no aparelho até um adulto responsável tocar em **🔓 Liberar a voz (adulto)** na sala e confirmar;
-dá para bloquear de novo em Configurações > Áudio (`src/net/voiceGate.ts`).
+**Segurança no jogo online** (ECA Digital, Lei 15.211/2025, art. 21, e Lei 14.852/2024, art. 16):
+
+- **Voz e idade:** no app, o jogo pergunta à loja (Play Age Signals no Android, Declared Age Range no iOS 26) só se
+  quem joga tem 18 anos ou mais e se os pais limitam a comunicação; a resposta não é guardada. Adulto confirmado
+  pela loja usa a voz normalmente. Para menores informados pela loja, a voz fica desligada, a não ser que o
+  responsável a aprove no Family Link; com a comunicação limitada pelos pais, fica bloqueada. Sem como saber a
+  idade, como no site, a voz começa desligada até um adulto tocar em **🔓 Liberar a voz (adulto)** na sala e
+  responder a uma conta (a trava para pais); dá para bloquear de novo em Configurações > Áudio
+  (`src/net/voiceGate.ts`, `src/ui/parentGate.ts`).
+- **Nomes:** na sala, cada um aparece como **Jogador N** e pelo personagem; o nome escrito no ranking não sai do
+  aparelho, e nenhum texto escrito por outro jogador aparece na tela.
+- **Bloqueio pelos pais:** Configurações > Jogo bloqueia todo o jogo online no aparelho; liberar de novo pede a
+  trava para pais (`src/app/onlineLock.ts`).
+- **Regras e denúncias:** a página [Segurança e regras](https://marcelojaloto.github.io/Zumbi-Bot/seguranca/)
+  (`public/seguranca/`) traz as regras de convivência, aceitas ao criar ou entrar numa sala, o guia para pais, o
+  canal de denúncias e o relatório de transparência. Na sala, **⚑ Denunciar** abre um e-mail já com o código da sala
+  e a hora.
 
 Cada um guarda o próprio progresso (nível, armas, itens) no seu aparelho, e navegador e app jogam juntos. Quem
 criou a sala é o anfitrião (👑): o aparelho dele roda a partida e manda o estado para os outros ~20 vezes por

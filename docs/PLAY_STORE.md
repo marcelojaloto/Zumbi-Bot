@@ -73,7 +73,9 @@ No repositório: **Settings > Secrets and variables > Actions > New repository s
 1. **Criar app**: nome `Zumbi Bot`, idioma padrão Português (Brasil), tipo **Jogo**, **Gratuito**. Aceite as
    declarações.
 2. **Painel > Configurar o app**: preencha cada item:
-   - **Política de privacidade:** `https://marcelojaloto.github.io/Zumbi-Bot/privacy/`
+   - **Política de privacidade:** `https://marcelojaloto.github.io/Zumbi-Bot/privacy/`. As regras do jogo online, o
+     guia para pais e o canal de denúncias ficam em `https://marcelojaloto.github.io/Zumbi-Bot/seguranca/`; use esse
+     endereço como site do app na página da loja.
    - **Acesso ao app:** todas as funcionalidades disponíveis sem acesso especial.
    - **Anúncios:** o app não contém anúncios.
    - **Classificação do conteúdo:** responda o questionário (categoria Jogo). O jogo tem violência de fantasia/desenho
