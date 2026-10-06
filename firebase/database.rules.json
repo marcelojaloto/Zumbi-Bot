@@ -14,7 +14,7 @@
           ".validate": "newData.isString() && newData.val().length <= 32 && newData.val().matches(/^[a-z0-9]*$/)"
         },
         "chars": {
-          ".validate": "newData.numChildren() <= 5",
+          ".validate": "!newData.hasChild('5')",
           "$i": {
             ".validate": "newData.isString() && newData.val().length <= 16 && newData.val().matches(/^[a-z]+$/)"
           }
