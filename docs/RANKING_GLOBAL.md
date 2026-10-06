@@ -53,17 +53,35 @@ Os nomes dos menus do console mudam de vez em quando. Se algum não bater, procu
 3. Aba **Regras**: apague o que estiver lá, cole todo o conteúdo do arquivo
    [`firebase/database.rules.json`](../firebase/database.rules.json) e toque em **Publicar**.
 4. Aba **Dados**: copie o endereço que aparece no alto, parecido com
-   `https://zumbi-bot-default-rtdb.firebaseio.com`: é a **URL do banco**.
+   `https://zumbi-bot-default-rtdb.firebaseio.com`: é a **URL do banco**. Ela usa o **ID do projeto**, que pode
+   ser diferente do nome escolhido no passo 1 (o projeto atual é `zombi-bot-database`). Se o banco foi criado
+   fora de us-central1, a URL termina em `firebasedatabase.app`.
 
 ### 4. Pegar a chave da API
 
 1. Engrenagem ao lado de "Visão geral do projeto" > **Configurações do projeto** > aba **Geral**.
-2. Copie a **Chave de API da Web** (começa com `AIza...`). Se ela não aparecer, registre um app Web no projeto
-   (ícone `</>`, sem Hosting) e copie o `apiKey` do trecho de configuração.
+2. Copie a **Chave de API da Web** (começa com `AIza...`).
 
-   > Essa chave não é secreta: ela vai dentro do jogo, como em qualquer site com Firebase. Quem protege os dados são
-   > as regras do passo 3. Não restrinja a chave por domínio (HTTP referrer) no Google Cloud: os apps Android e iOS
-   > chamam o Firebase a partir de `https://localhost` e `capacitor://localhost`, e o ranking sumiria neles.
+Se a chave não aparecer (projeto sem nenhum app), registre um app Web, que só serve para gerar a configuração:
+
+1. Na **Visão geral do projeto**, clique no ícone **`</>`** (Web), ao lado dos de iOS e Android. Ou, em
+   **Configurações do projeto > Geral > Seus apps**, clique em **Adicionar app > Web**.
+2. **Registrar app**: apelido `Zumbi Bot Web` (só aparece no console). **Não** marque "Também configurar o Firebase
+   Hosting para este app": o site fica no GitHub Pages. Clique em **Registrar app**.
+3. **Adicionar o SDK do Firebase**: tanto faz "Usar o npm" ou "Usar a tag `<script>`", porque só muda o
+   exemplo da tela. O jogo não usa a biblioteca do Firebase (fala com ele pela API REST), então não instale nada. Do bloco
+   `firebaseConfig`, copie o valor de **`apiKey`** e, se aparecer, o de **`databaseURL`**, que é a mesma URL do
+   banco do passo 3. Clique em **Continuar no console**.
+4. Daí em diante a configuração fica em **Configurações do projeto > Geral > Seus apps > Zumbi Bot Web >
+   Configuração do SDK**, e a Chave de API da Web aparece na mesma aba.
+
+> Essa chave não é secreta: ela vai dentro do jogo, como em qualquer site com Firebase. Quem protege os dados são as
+> regras do passo 3. Não restrinja a chave por domínio (HTTP referrer) no Google Cloud: os apps Android e iOS chamam
+> o Firebase a partir de `https://localhost` e `capacitor://localhost`, e o ranking sumiria neles.
+
+Para conferir antes de seguir, abra no navegador a URL do banco seguida de
+`/ranking.json?orderBy=%22score%22&limitToLast=100`. A resposta tem que ser `null` (ranking vazio). Se vier
+`404 Not Found`, a URL está errada; se vier `Permission denied`, as regras do passo 3 não foram publicadas.
 
 ### 5. Colocar os dois valores no GitHub
 
