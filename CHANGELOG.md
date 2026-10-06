@@ -13,6 +13,9 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - No jogo online, cada um aparece para a sala como **Jogador 1**, **Jogador 2** e assim por diante, ao lado do
   personagem. O nome escrito no ranking não vai mais para a sala, e nenhum texto escrito por outro jogador aparece
   na tela.
+- Os pais podem bloquear todo o jogo online no aparelho em **Configurações > Jogo**. Bloquear é na hora; liberar de
+  novo pede a mesma conta da voz. Bloqueado, "Jogar online" só explica onde liberar, e o link de convite não abre a
+  sala.
 
 ## 1.6, atualização de 05/10/2026
 

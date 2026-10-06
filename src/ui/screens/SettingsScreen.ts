@@ -1,4 +1,5 @@
 import { el } from '../dom';
+import { parentGate } from '../parentGate';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
 import type { LanguageChoice, SettingsV2 } from '../../save/schema';
@@ -273,6 +274,51 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
     },
     t('Apagar progresso'),
   );
+  // jogo online: os pais bloqueiam aqui na hora; liberar pede a trava para pais
+  const onlineCtl = el('div', { class: 'online-lock' });
+  const onlineGate = el('div', { class: 'online-lock-gate' });
+  const renderOnlineLock = () => {
+    const lock = host.onlineLock;
+    onlineGate.replaceChildren();
+    onlineCtl.replaceChildren(
+      el('span', { class: 'muted' }, lock.blocked ? t('Bloqueado') : t('Liberado')),
+      lock.blocked
+        ? el(
+            'button',
+            {
+              class: 'btn small',
+              data: { nav: '' },
+              onclick: () => {
+                onlineGate.replaceChildren(
+                  parentGate(
+                    t('Você é o adulto responsável por quem joga neste aparelho e libera o jogo online?'),
+                    () => {
+                      lock.unblock();
+                      renderOnlineLock();
+                    },
+                    () => onlineGate.replaceChildren(),
+                  ),
+                );
+                onlineGate.querySelector('input')?.focus();
+              },
+            },
+            `🔓 ${t('Liberar o jogo online (adulto)')}`,
+          )
+        : el(
+            'button',
+            {
+              class: 'btn small',
+              data: { nav: '' },
+              onclick: () => {
+                lock.block();
+                renderOnlineLock();
+              },
+            },
+            `🔒 ${t('Bloquear o jogo online')}`,
+          ),
+    );
+  };
+  renderOnlineLock();
   sections.game = el(
     'div',
     {},
@@ -302,7 +348,9 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
           ['insane', t('Insano')],
         ],
       ),
+      [el('label', {}, t('Jogo online neste aparelho')), onlineCtl] as const,
     ]),
+    onlineGate,
     el(
       'div',
       { style: 'margin-top:16px' },

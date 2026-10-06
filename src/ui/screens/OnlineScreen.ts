@@ -170,6 +170,24 @@ function levelLabel(mapId: string, levelIdx: number): string {
 
 /** Tela "Jogar online": criar uma sala ou entrar na sala de um amigo. */
 export function onlineScreen(host: OnlineHost, notice?: string): Screen {
+  // bloqueado pelos pais: só o aviso de onde liberar
+  if (host.onlineLock.blocked)
+    return {
+      el: el(
+        'div',
+        { class: 'screen dim online' },
+        el('h2', {}, t('JOGAR ONLINE')),
+        el(
+          'p',
+          { class: 'online-status error' },
+          t(
+            'O jogo online está bloqueado neste aparelho. Um adulto responsável libera em Configurações > Jogo.',
+          ),
+        ),
+        el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
+      ),
+      id: 'online',
+    };
   const choice = (icon: string, title: string, desc: string, fn: () => void, cls = '') =>
     el(
       'button',

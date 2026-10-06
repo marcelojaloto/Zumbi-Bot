@@ -1,3 +1,4 @@
+import type { OnlineLock } from '../../app/onlineLock';
 import type { Profile } from '../../app/Profile';
 import type { VoiceGate } from '../../net/voiceGate';
 import type { ScreenManager } from '../ScreenManager';
@@ -31,4 +32,6 @@ export interface UiHost {
   rankSaved(): void;
   /** Trava do chat de voz por idade (a sala libera, as Configurações bloqueiam de novo). */
   readonly voiceGate: VoiceGate;
+  /** Bloqueio do jogo online neste aparelho, pelos pais (Configurações > Jogo). */
+  readonly onlineLock: OnlineLock;
 }

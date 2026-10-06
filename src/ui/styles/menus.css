@@ -2089,6 +2089,16 @@ a.btn {
 .parent-gate .gate-msg:empty {
   display: none;
 }
+/* Configurações > Jogo: bloqueio do jogo online pelos pais */
+.online-lock {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.online-lock-gate:not(:empty) {
+  margin-top: 12px;
+}
 .mic-btn.on {
   border-color: #5aff9a;
   box-shadow: 0 0 12px rgba(90, 255, 154, 0.45);

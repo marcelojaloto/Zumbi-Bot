@@ -897,6 +897,15 @@ export const EN: Record<string, string> = {
   'Liberar a voz (adulto)': 'Turn voice on (adult)',
   'Você é o adulto responsável por quem joga neste aparelho e libera a conversa por voz com a sala?':
     'Are you the adult responsible for whoever plays on this device, and do you allow voice chat with the room?',
+  // bloqueio do jogo online pelos pais
+  'Jogo online neste aparelho': 'Online play on this device',
+  Liberado: 'Allowed',
+  'Bloquear o jogo online': 'Block online play',
+  'Liberar o jogo online (adulto)': 'Allow online play (adult)',
+  'Você é o adulto responsável por quem joga neste aparelho e libera o jogo online?':
+    'Are you the adult responsible for whoever plays on this device, and do you allow online play?',
+  'O jogo online está bloqueado neste aparelho. Um adulto responsável libera em Configurações > Jogo.':
+    'Online play is blocked on this device. A responsible adult can allow it in Settings > Game.',
   'Para confirmar, responda: quanto é {a} × {b}?': 'To confirm, answer: what is {a} × {b}?',
   'Resposta errada. Tente esta outra conta.': 'Wrong answer. Try this other one.',
   Confirmar: 'Confirm',

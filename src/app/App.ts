@@ -35,6 +35,7 @@ import type { RoomOptions, RoomPlayer, StartMsg } from '../net/protocol';
 import { createTransport, type Transport } from '../net/transport';
 import { VoiceChat } from '../net/voice';
 import { VoiceGate, storeAgeRange } from '../net/voiceGate';
+import { OnlineLock } from './onlineLock';
 import type { NetAdapter } from '../net/types';
 import { removePlayer } from '../sim/systems/lives';
 import { takeOverWorld } from '../sim/takeover';
@@ -301,6 +302,8 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     this.syncVoice();
     this.voiceChanged();
   });
+  /** Jogo online bloqueado pelos pais neste aparelho (vale para as próximas salas). */
+  readonly onlineLock = new OnlineLock();
   private transport: Transport | null = null;
   /** Anfitrião: tempo máximo esperando os outros carregarem a fase. */
   private holdTimer = 0;
@@ -497,7 +500,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       this.audio.unlock();
       if (this.device !== 'desktop') this.toggleFullscreen(true);
       this.showMainMenu();
-      // link de sala (?sala=ABCD): já abre a tela de entrar com o código
+      // link de sala (?sala=ABCD): já abre a tela de entrar com o código (com o online bloqueado, só o aviso)
       const code = this.flags.sala;
       if (code) {
         this.flags.sala = null;
@@ -1122,8 +1125,9 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     this.screens.push(onlineScreen(this, notice));
   }
 
-  /** Tela para digitar o código (com o código já preenchido quando veio de um link). */
+  /** Tela para digitar o código (com o código já preenchido quando veio de um link). Bloqueado pelos pais, nada. */
   openJoin(code?: string): void {
+    if (this.onlineLock.blocked) return;
     this.screens.push(joinScreen(this, code));
   }
 
