@@ -35,6 +35,7 @@ const MAP_IDS = [
   'arena',
   // 2ª temporada
   'fabrica',
+  'praca',
 ];
 
 async function ready(page: Page) {

@@ -10,6 +10,7 @@ import { incandescenteExtra } from './incandescente';
 import { criotanqueExtra } from './criotanque';
 import { omegaExtra } from './omega';
 import { ursaoExtra } from './ursao';
+import { halfpipeExtra } from './halfpipe';
 
 /** Acessórios exclusivos por chefe (chave = def.rig.boss). */
 export const BOSS_EXTRAS: Record<string, BossExtra> = {
@@ -24,4 +25,5 @@ export const BOSS_EXTRAS: Record<string, BossExtra> = {
   criotanque: criotanqueExtra,
   omega: omegaExtra,
   ursao: ursaoExtra,
+  halfpipe: halfpipeExtra,
 };

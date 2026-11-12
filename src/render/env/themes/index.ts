@@ -12,6 +12,7 @@ import { chamasTheme } from './chamas';
 import { guerraTheme } from './guerra';
 import { arenaTheme } from './arena';
 import { fabricaTheme } from './fabrica';
+import { pracaTheme } from './praca';
 
 export const THEMES: Partial<Record<ThemeId, (ctx: EnvCtx) => void>> = {
   sandbox: sandboxTheme,
@@ -26,4 +27,5 @@ export const THEMES: Partial<Record<ThemeId, (ctx: EnvCtx) => void>> = {
   guerra: guerraTheme,
   arena: arenaTheme,
   fabrica: fabricaTheme,
+  praca: pracaTheme,
 };
