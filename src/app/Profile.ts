@@ -64,7 +64,10 @@ export class Profile {
 
   /** Personagens que dá para escolher agora. */
   get roster(): CharacterId[] {
-    return playableCharacters(this.secretUnlocked);
+    return playableCharacters(this.secretUnlocked, (mapId) => {
+      const m = getMap(mapId);
+      return !!this.save.progress.levels[m.levels[m.levels.length - 1]!.id]?.completed;
+    });
   }
 
   /** Terminou o jogo pela primeira vez: libera o personagem secreto e o disfarce dele. */

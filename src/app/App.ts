@@ -996,6 +996,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     const room = this.online;
     if (!p || !stats) return;
     const beforeLevel = this.profile.save.profile.level;
+    const rosterBefore = this.profile.roster;
     const sandbox = s.world.map.id === 'sandbox';
     const res = sandbox
       ? { newRecord: false, unlockedNext: null, ngPlusUnlocked: false, finalBoss: false }
@@ -1023,7 +1024,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
         ngPlusUnlocked: res.ngPlusUnlocked,
         run: run ? { score: run.score, maps: run.maps } : undefined,
         rank: closed ? { entry: closed.entry, pos: closed.pos, team: closed.run.team > 1 } : undefined,
-        secretUnlocked: secretNew ? 'prodigy' : undefined,
+        secretUnlocked: secretNew ? 'prodigy' : this.profile.roster.find((c) => !rosterBefore.includes(c)),
       }),
     );
     // primeira vitória sobre o chefe final: o final lendário e os créditos por cima do resultado

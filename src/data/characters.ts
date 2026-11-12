@@ -223,18 +223,151 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     metal: false,
     secret: true,
   },
+  // 2ª temporada: liberados ao vencer um mapa dela
+  ninja: {
+    id: 'ninja',
+    name: 'Ninja',
+    fullName: 'Ravi Kuroda',
+    title: 'Lâmina de gelo e fogo',
+    desc: 'Rápido e letal com lâminas: a katana dele nunca quebra, e o traje conjura gelo e fogo (troque de elemento no botão de trocar cajado). Aguenta pouco e não usa armas de fogo.',
+    story:
+      'Ravi Kuroda era o vigia noturno do laboratório submarino onde a cópia do OMEGA-Z foi montada. Na noite em que ela acordou, ele vestiu o protótipo que guardava: um traje de infiltração com dois núcleos, um criogênico e um térmico. Escapou pelo duto de ventilação com a máscara no rosto e a katana do avô nas costas. Desde então segue o rastro das máquinas da cópia, sempre um passo à frente e sem fazer barulho.',
+    ending: {
+      title: 'O silêncio depois',
+      text: 'Com a cópia desligada, Ravi Kuroda tirou a máscara pela primeira vez diante dos outros heróis. Abriu uma escola na praça onde tudo recomeçou e ensina às crianças que a força do gelo e a do fogo só servem juntas, e com calma. A katana do avô fica na parede, e ele torce para nunca mais precisar dela.',
+    },
+    specialName: 'Cortes Gêmeos',
+    specialDesc:
+      'Avança girando em vários cortes de uma vez e solta uma lasca de gelo e uma bola de fogo para a frente.',
+    color: 0x5ad8ff,
+    stats: {
+      hp: 90,
+      mana: 110,
+      manaRegen: 1.2,
+      speed: 1.25,
+      jump: 1.25,
+      dmg: DMG(1.15, 1, 1.15, 1.45),
+      reload: 1,
+      hpRegen: 0,
+      hpRegenDelayS: 0,
+      mass: 1,
+      hitstun: 1,
+    },
+    resist: { fire: 0.8, ice: 0.8 },
+    special: 'cortesGemeos',
+    startMode: 'staff',
+    arms: { guns: false, staff: true },
+    metal: false,
+    unlockMap: 'praca',
+    innateStaffs: ['ice', 'fire'],
+    startMelee: 'katana',
+    keepsBlade: true,
+  },
+  elf: {
+    id: 'elf',
+    name: 'Elfa',
+    fullName: 'Elowen Folhaprata',
+    title: 'Maga espadachim',
+    desc: 'Conjura como a Maga e luta com espadas como ninguém: a lâmina dela nunca quebra. Aguenta pouco e não usa armas de fogo.',
+    story:
+      'Elowen Folhaprata veio da floresta além do pântano, onde os elfos guardam as árvores mais antigas. Quando o sinal do fundo do mar começou a secar as raízes, ela pegou as duas espadas da mãe e desceu para a cidade atrás da origem dele. Aprendeu a Nova Arcana com Lívia Vesper numa única tarde e ainda acha graça de quem precisa de chapéu para fazer magia.',
+    ending: {
+      title: 'As raízes de volta',
+      text: 'Elowen Folhaprata voltou para a floresta com as espadas limpas e uma muda de cada lugar por onde passou. As raízes antigas voltaram a beber, e todo ano, no primeiro dia de chuva, ela desce à cidade para treinar esgrima com quem quiser aprender. Dizem que ninguém ainda conseguiu encostar nela.',
+    },
+    specialName: 'Nova Arcana',
+    specialDesc: 'Explosão de energia em volta que derruba todos, e uma bola de fogo roxa para a frente.',
+    color: 0x7aff9a,
+    stats: {
+      hp: 90,
+      mana: 130,
+      manaRegen: 1.4,
+      speed: 1.1,
+      jump: 1.15,
+      dmg: DMG(1, 0.9, 1.25, 1.4),
+      reload: 1,
+      hpRegen: 0,
+      hpRegenDelayS: 0,
+      mass: 0.95,
+      hitstun: 1.05,
+    },
+    resist: { necro: 0.85, toxic: 0.9, wind: 0.85 },
+    special: 'novaArcana',
+    startMode: 'staff',
+    arms: { guns: false, staff: true },
+    metal: false,
+    unlockMap: 'shopping',
+    startMelee: 'katana',
+    keepsBlade: true,
+  },
+  spark: {
+    id: 'spark',
+    name: 'Faísca',
+    fullName: 'Faísca',
+    title: 'Voltim da tempestade',
+    desc: 'Pequeno, muito rápido e cheio de energia: solta raios e cura sem precisar de cajado. Frágil, fraco de briga e não usa armas de fogo.',
+    story:
+      'Faísca é um voltim, um bichinho que nasce quando um raio cai numa torre de sinos. Ícaro Neon o encontrou dormindo dentro de um transformador e fez para ele um cinto de cápsulas de energia, que prendem um inimigo e o soltam confuso, lutando do lado errado. Faísca não fala, mas entende tudo, e adora morder cabo de carregador.',
+    ending: {
+      title: 'A tempestade mansa',
+      text: 'Com o mar em silêncio, Faísca foi morar no alto da Torre dos Sinos, de onde acende as luzes da vila toda noite. Nas tempestades, outros voltins aparecem em volta dele, e as crianças sobem a escadaria só para ver a dança dos raios que não machucam ninguém.',
+    },
+    specialName: 'Cápsula de Raio',
+    specialDesc:
+      'Joga uma cápsula de energia: o inimigo comum que ela pega luta do seu lado por 10 segundos, e quem está perto leva choque.',
+    color: 0x2ad8e8,
+    stats: {
+      hp: 75,
+      mana: 130,
+      manaRegen: 1.5,
+      speed: 1.3,
+      jump: 1.3,
+      dmg: DMG(0.9, 0.9, 1.3, 0.5),
+      reload: 1,
+      hpRegen: 0,
+      hpRegenDelayS: 0,
+      mass: 0.7,
+      hitstun: 1.1,
+    },
+    resist: { electric: 0.3, water: 1.3 },
+    special: 'capsulaRaio',
+    startMode: 'staff',
+    arms: { guns: false, staff: true },
+    metal: false,
+    unlockMap: 'campo',
+    innateStaffs: ['electric', 'heal'],
+  },
 };
 
 /** Ordem nas telas (o secreto por último; só aparece depois de liberado). */
-export const CHARACTER_ORDER: CharacterId[] = ['robot', 'mage', 'military', 'cyborg', 'mutant', 'prodigy'];
+export const CHARACTER_ORDER: CharacterId[] = [
+  'robot',
+  'mage',
+  'military',
+  'cyborg',
+  'mutant',
+  'ninja',
+  'elf',
+  'spark',
+  'prodigy',
+];
 
 /** Personagens que dá para escolher: o secreto só depois de terminar o jogo (`secret` = liberado). */
-export function playableCharacters(secret: boolean): CharacterId[] {
-  return CHARACTER_ORDER.filter((c) => secret || !CHARACTERS[c].secret);
+/** `cleared` diz se um mapa já foi vencido (libera os personagens da 2ª temporada). */
+export function playableCharacters(
+  secret: boolean,
+  cleared: (mapId: string) => boolean = () => false,
+): CharacterId[] {
+  return CHARACTER_ORDER.filter((c) => {
+    const d = CHARACTERS[c];
+    return (secret || !d.secret) && (!d.unlockMap || cleared(d.unlockMap));
+  });
 }
 
 /** Os personagens de sempre (sem os secretos): o final lendário e o epílogo são deles. */
-export const HERO_ORDER: CharacterId[] = CHARACTER_ORDER.filter((c) => !CHARACTERS[c].secret);
+export const HERO_ORDER: CharacterId[] = CHARACTER_ORDER.filter(
+  (c) => !CHARACTERS[c].secret && !CHARACTERS[c].unlockMap,
+);
 
 export function isCharacterId(v: unknown): v is CharacterId {
   return typeof v === 'string' && v in CHARACTERS;

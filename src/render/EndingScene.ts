@@ -54,6 +54,9 @@ const CHAPTER_MAP: Record<EndingChapter, string> = {
   mutant: 'floresta',
   all: 'vila',
   prodigy: 'vila',
+  ninja: 'praca',
+  elf: 'floresta',
+  spark: 'torre',
   sequel: 'arena',
 };
 

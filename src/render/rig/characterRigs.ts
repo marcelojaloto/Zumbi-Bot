@@ -3,6 +3,7 @@ import type { CharacterId, MeshRecipe } from '../../data/types';
 import type { PartSpec, RigSpec, SocketSpec } from './RigBuilder';
 import { humanSockets, limbs, robotPlayerRig } from './rigs';
 import { HUMAN, J, humanoidJoints, type Proportions } from './skeleton';
+import { elfRig, ninjaRig, sparkRig } from './season2Rigs';
 
 /**
  * Personagens jogáveis além do robô. Mesma linguagem visual (peças low-poly presas às juntas) com proporções,
@@ -671,6 +672,12 @@ export function characterRig(id: CharacterId): RigSpec {
       return mutantRig();
     case 'prodigy':
       return prodigyRig();
+    case 'ninja':
+      return ninjaRig();
+    case 'elf':
+      return elfRig();
+    case 'spark':
+      return sparkRig();
     default:
       return robotPlayerRig();
   }
@@ -683,5 +690,6 @@ export function characterStyle(id: CharacterId): { hunch: number; scale: number 
   if (id === 'mage') return { hunch: 0, scale: 0.97 };
   // baixinho: ainda é um garoto
   if (id === 'prodigy') return { hunch: 0, scale: 0.94 };
+  if (id === 'elf') return { hunch: 0, scale: 0.98 };
   return { hunch: 0, scale: 1 };
 }

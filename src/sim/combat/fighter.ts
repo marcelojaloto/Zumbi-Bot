@@ -343,7 +343,7 @@ function onPlayerMeleeConnect(w: World, e: Entity, _m: MeleeMoveDef, dmg: number
   if (p.powers.rage > 0 && e.health && e.health.hp > 0)
     e.health.hp = Math.min(e.health.max, e.health.hp + dmg * RAGE.lifesteal);
   // durabilidade da arma branca
-  if (p.melee && _m.id.startsWith(p.melee.id)) {
+  if (p.melee && _m.id.startsWith(p.melee.id) && !characterDef(e)?.keepsBlade) {
     p.melee.durability--;
     if (p.melee.durability <= 0) {
       w.emit({ t: 'meleeBreak', id: e.id, melee: p.melee.id });

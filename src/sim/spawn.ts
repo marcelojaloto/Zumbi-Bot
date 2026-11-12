@@ -67,7 +67,7 @@ export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
       triggerWasDown: false,
       needsRelease: false,
     },
-    staffs: [...lo.staffs],
+    staffs: [...(ch.innateStaffs ?? lo.staffs)],
     // quem não usa cajado começa o mapa com as caixas de cura guardadas (usadas no botão do cajado)
     medkits: ch.arms.staff ? [] : Array.from({ length: MEDKITS.start }, () => MEDKITS.heal),
     staffIdx: 0,
@@ -78,7 +78,9 @@ export function makePlayerComp(lo: PlayerLoadout): PlayerComp {
     melee:
       lo.melee && MELEE_WEAPONS[lo.melee]
         ? { id: lo.melee, durability: MELEE_WEAPONS[lo.melee].durability }
-        : null,
+        : ch.startMelee
+          ? { id: ch.startMelee, durability: MELEE_WEAPONS[ch.startMelee].durability }
+          : null,
     powers: { doubleDamage: 0, turbo: 0, invulnerable: 0, rage: 0 },
     aiming: false,
     respawn: 0,

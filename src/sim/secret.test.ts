@@ -14,7 +14,7 @@ describe('personagem secreto (Prodígio)', () => {
   it('só entra na escolha depois de terminar o jogo', () => {
     expect(CHARACTERS.prodigy.secret).toBe(true);
     expect(playableCharacters(false)).toEqual(HERO_ORDER);
-    expect(playableCharacters(true)).toEqual(CHARACTER_ORDER);
+    expect(playableCharacters(true, () => true)).toEqual(CHARACTER_ORDER);
     const p = new Profile(new Storage(new MemoryKV()));
     expect(p.roster).not.toContain('prodigy');
     // mesmo com o save apontando para ele, joga com o robô enquanto não liberou

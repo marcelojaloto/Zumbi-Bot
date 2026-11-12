@@ -64,6 +64,30 @@ export const REVIVE_ITEMS: Record<CharacterId, ReviveItemDef> = {
     icon: '🥋',
     color: 0x4ad8ff,
   },
+  ninja: {
+    character: 'ninja',
+    name: 'Selo do Clã',
+    story:
+      'O selo de papel que o avô de Ravi Kuroda colou por dentro da máscara, com uma única palavra: levante. O traje lê o selo quando o dono cai e religa os dois núcleos de uma vez.',
+    icon: '📜',
+    color: 0x5ad8ff,
+  },
+  elf: {
+    character: 'elf',
+    name: 'Folha de Prata',
+    story:
+      'Uma folha da árvore mais antiga da floresta de Elowen Folhaprata, que nunca seca. Encostada no peito de quem caiu, ela devolve o fôlego e fica cinza.',
+    icon: '🍃',
+    color: 0x7aff9a,
+  },
+  spark: {
+    character: 'spark',
+    name: 'Pilha de Trovão',
+    story:
+      'Uma pilha que Ícaro Neon carregou num relâmpago de verdade e prendeu no cinto do Faísca. Se ele apaga, a pilha dá a partida de novo, com um estalo que arrepia quem estiver perto.',
+    icon: '⚡',
+    color: 0xfff15a,
+  },
 };
 
 /** Vida com que o item levanta o dono (fração da vida máxima) e a invencibilidade logo depois (ticks). */

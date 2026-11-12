@@ -3,6 +3,7 @@ import { CHARACTERS } from './characters';
 import { MOVES } from './melee';
 import type { CharacterId, HitSource } from './types';
 import './workshopMoves';
+import './season2Moves';
 
 /**
  * Oficina: a árvore de melhorias de cada personagem, em quatro ramos. Cada melhoria pede um mínimo de XP (a soma de
@@ -84,6 +85,9 @@ const WEIGHTS: Record<CharacterId, Partial<Record<AttrId, number>>> = {
   cyborg: { vigor: 1, forca: 0.9, agilidade: 1, energia: 0.9, pontaria: 1.4 },
   mutant: { vigor: 1.2, forca: 1.2, agilidade: 1.3, energia: 0.8, pontaria: 0.7 },
   prodigy: { vigor: 0.6, forca: 1.4, agilidade: 1.3, energia: 1.1, magia: 1.1 },
+  ninja: { vigor: 0.7, forca: 1.3, agilidade: 1.4, energia: 1.1, magia: 1 },
+  elf: { vigor: 0.7, forca: 1.1, agilidade: 1.1, energia: 1.3, magia: 1.2 },
+  spark: { vigor: 0.5, forca: 0.6, agilidade: 1.4, energia: 1.4, magia: 1.4 },
 };
 
 export const ATTR_ORDER: AttrId[] = ['vigor', 'forca', 'agilidade', 'energia', 'pontaria', 'magia'];
@@ -209,6 +213,51 @@ const CONTENT: Record<
     ],
     defenses: ['dodge', 'Esquiva do Dojo', 'counter', 'Contra-golpe'],
   },
+  ninja: {
+    combos: [
+      'Corte Glacial',
+      'J no fim do combo: um corte de gelo que deixa o inimigo lento.',
+      'Chute Brasa',
+      'K, K: um chute giratório em chamas.',
+    ],
+    specials: [
+      'Estrelas de Gelo',
+      'Shurikens de gelo voam para todos os lados e deixam os inimigos lentos.',
+      'Dragão de Fogo',
+      'Uma bola de fogo enorme que atravessa inimigos e explode.',
+    ],
+    defenses: ['dodge', 'Passo de Sombra', 'counter', 'Golpe da Sombra'],
+  },
+  elf: {
+    combos: [
+      'Estocada Élfica',
+      'J no fim do combo: uma estocada longa que arremessa o inimigo.',
+      'Giro de Lâminas',
+      'K, K: gira com as duas espadas e acerta todos em volta.',
+    ],
+    specials: [
+      'Lança de Luz',
+      'Um raio de luz que atravessa vários inimigos.',
+      'Dança das Lâminas',
+      'Avança girando com as espadas e fica mais rápida por 6 segundos.',
+    ],
+    defenses: ['dodge', 'Passo de Folha', 'guard', 'Aparar com a Lâmina'],
+  },
+  spark: {
+    combos: [
+      'Cauda Relâmpago',
+      'J no fim do combo: uma rabada elétrica que joga o inimigo para cima e pode atordoar.',
+      'Rolamento Elétrico',
+      'K, K: rola para a frente como uma bola de raios.',
+    ],
+    specials: [
+      'Chuva de Raios',
+      'Raios caem à frente, cada um avisado por um círculo no chão.',
+      'Bobina Viva',
+      'Dá um choque em volta e fica invencível por 4 segundos.',
+    ],
+    defenses: ['dodge', 'Salto Faísca', 'shield', 'Campo Estático'],
+  },
 };
 
 /** Golpes liberados por personagem: [combo do fim da sequência, combo do chute, especial 1, especial 2]. */
@@ -219,6 +268,9 @@ const MOVE_IDS: Record<CharacterId, [string, string, string, string]> = {
   cyborg: ['socoPlasma', 'chuteServo', 'sobrecarga', 'canhaoPlasma'],
   mutant: ['garraDupla', 'investidaMutante', 'saltoSismico', 'nuvemToxica'],
   prodigy: ['punhoDoDragao', 'chuteMeiaLua', 'palmaDoDragao', 'chuteLunar'],
+  ninja: ['corteGlacial', 'chuteBrasa', 'estrelasDeGelo', 'dragaoDeFogo'],
+  elf: ['estocadaElfica', 'giroDeLaminas', 'lancaDeLuz', 'dancaDasLaminas'],
+  spark: ['caudaRelampago', 'rolamentoEletrico', 'chuvaDeRaios', 'bobinaViva'],
 };
 
 /** Defesas: o que fazem (texto da Oficina). */

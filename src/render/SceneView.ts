@@ -17,6 +17,7 @@ import { staffRecipe } from './views/staffRecipe';
 import { Btn } from '../sim/InputFrame';
 import { bossRig } from './rig/bossRigs';
 import { BOSSES } from '../data/bosses';
+import { getCharacter } from '../data/characters';
 import type { PropKind } from '../data/types';
 import { PickupView } from './views/PickupView';
 import { CosmeticRig } from './views/Attachments';
@@ -196,6 +197,10 @@ export class SceneView {
     if (p.melee && !(p.mode === 'gun' && (firing || aiming))) {
       key = `melee:${p.melee.id}`;
       if (v.heldKey !== key) obj = recipeMesh(key, MELEE_WEAPONS[p.melee.id].mesh);
+    } else if (p.mode === 'staff' && getCharacter(p.character).innateStaffs) {
+      // conjura sem cajado: mão vazia
+      key = 'none';
+      if (v.heldKey !== key) obj = new Group();
     } else if (p.mode === 'staff') {
       const st = p.staffs[p.staffIdx] ?? 'heal';
       // batendo com o cajado: segura pela ponta de baixo e bate como um taco (parado, pelo meio)

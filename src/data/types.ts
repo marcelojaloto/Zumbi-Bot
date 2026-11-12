@@ -189,7 +189,8 @@ export type MoveEffect =
 // ---------------------------------------------------------------------------
 // Personagens jogáveis
 // ---------------------------------------------------------------------------
-export type CharacterId = 'robot' | 'mage' | 'military' | 'cyborg' | 'mutant' | 'prodigy';
+export type CharacterId =
+  'robot' | 'mage' | 'military' | 'cyborg' | 'mutant' | 'prodigy' | 'ninja' | 'elf' | 'spark';
 /** Origem do dano causado por um jogador (para os multiplicadores do personagem). */
 export type HitSource = 'melee' | 'weapon' | 'gun' | 'staff' | 'special';
 
@@ -248,6 +249,14 @@ export interface CharacterDef {
   metal: boolean;
   /** Personagem secreto: só aparece para escolher depois de terminar o jogo. */
   secret?: boolean;
+  /** Liberado ao vencer este mapa (2ª temporada). */
+  unlockMap?: MapId;
+  /** Elementos que conjura sem cajado (no lugar dos cajados do perfil). */
+  innateStaffs?: StaffId[];
+  /** Arma branca com que começa cada fase (sem uma da Loja). */
+  startMelee?: MeleeId;
+  /** A arma branca não se desgasta na mão dele. */
+  keepsBlade?: boolean;
 }
 
 export interface ExplosionSpec {

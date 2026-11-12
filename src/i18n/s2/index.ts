@@ -5,6 +5,7 @@ import { shoppingEn } from './shopping';
 import { bunkerEn } from './bunker';
 import { lojaEn } from './loja';
 import { campoEn } from './campo';
+import { personagensEn } from './personagens';
 
 /** Textos dos mundos da 2ª temporada, um arquivo por mundo. */
 export const SEASON2_EN: Record<string, string> = {
@@ -15,4 +16,5 @@ export const SEASON2_EN: Record<string, string> = {
   ...bunkerEn,
   ...lojaEn,
   ...campoEn,
+  ...personagensEn,
 };

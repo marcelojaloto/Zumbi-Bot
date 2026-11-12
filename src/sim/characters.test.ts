@@ -42,7 +42,8 @@ describe('personagens', () => {
       expect(m?.manaCost, id).toBeGreaterThan(0);
       specials.add(c.special);
     }
-    expect(specials.size).toBe(CHARACTER_ORDER.length);
+    // a Elfa usa a Nova Arcana da Maga
+    expect(specials.size).toBe(CHARACTER_ORDER.length - 1);
   });
 
   it('o robô continua com os números de antes (base 100/100, sem multiplicadores)', () => {

@@ -163,7 +163,11 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
       el(
         'div',
         { class: 'reward', style: `border-color:${hexColor(sc.color)}` },
-        el('b', { style: `color:${hexColor(sc.color)}` }, t('Personagem secreto liberado!')),
+        el(
+          'b',
+          { style: `color:${hexColor(sc.color)}` },
+          sc.secret ? t('Personagem secreto liberado!') : t('Personagem liberado!'),
+        ),
         el('span', {}, `${t(sc.name)} (${sc.fullName})`),
       ),
     );
