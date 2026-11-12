@@ -3,10 +3,12 @@ import { pracaExtras } from './praca';
 import { estudioExtras } from './estudio';
 import { pistaExtras } from './pista';
 import { shoppingExtras } from './shopping';
+import { bunkerExtras } from './bunker';
 
 export const ENEMY_EXTRAS: Record<string, EnemyExtra> = {
   ...pracaExtras,
   ...estudioExtras,
   ...pistaExtras,
   ...shoppingExtras,
+  ...bunkerExtras,
 };
