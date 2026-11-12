@@ -335,6 +335,8 @@ export interface HazardComp {
   element?: Element;
   pushX: number;
   pushZ: number;
+  /** Esteira: leva junto quem está pisando nela, a esta velocidade (m/s) no eixo X. */
+  carryX?: number;
   /** Origem do dano quando o dono é um jogador. */
   source?: HitSource;
   /** Quica nas bordas da faixa de profundidade em vez de sair da rua (ciclones do Prodígio). */

@@ -45,8 +45,8 @@ export interface SaveV2 {
     melee?: MeleeId;
   };
   /**
-   * round = quantas vezes o jogo foi terminado (0 = primeira jornada); roundCleared = níveis vencidos no novo jogo
-   * em andamento (o "Continuar" segue por eles, do mapa 1 ao último).
+   * round = quantas vezes o último mapa foi vencido (0 = primeira jornada); roundCleared = níveis vencidos no novo
+   * jogo em andamento (o "Continuar" segue por eles, do mapa 1 ao último).
    */
   progress: {
     unlockedLevels: LevelId[];

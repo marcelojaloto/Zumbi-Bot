@@ -1,5 +1,6 @@
 import { BOSSES } from '../../data/bosses';
-import { MAPS } from '../../data/maps';
+import { SEASONS, seasonComplete, seasonMaps } from '../../data/maps';
+import type { MapDef } from '../../data/types';
 import { el, fmtInt, hexColor } from '../dom';
 import { t } from '../../i18n';
 import { DIFFICULTY_ORDER } from '../../data/balance';
@@ -7,11 +8,10 @@ import { difficultyName } from '../difficulty';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
 
-/** Seleção de mapas e níveis: cadeado, estrelas, recorde e chefe de cada mapa. */
+/** Seleção de mapas e níveis, uma grade por temporada: cadeado, estrelas, recorde e chefe de cada mapa. */
 export function mapSelectScreen(host: UiHost): Screen {
-  const grid = el('div', { class: 'map-grid' });
   const prof = host.profile;
-  for (const m of MAPS) {
+  const card = (m: MapDef): HTMLElement => {
     const unlocked = prof.isMapUnlocked(m.id);
     const levels = m.levels.map((l, i) => {
       const lp = prof.save.progress.levels[l.id];
@@ -33,7 +33,7 @@ export function mapSelectScreen(host: UiHost): Screen {
     const best = m.levels.reduce((a, l) => Math.max(a, prof.save.progress.levels[l.id]?.bestScore ?? 0), 0);
     const bossId = m.levels[m.levels.length - 1]?.boss?.id;
     const boss = bossId ? BOSSES[bossId] : undefined;
-    const card = el(
+    return el(
       'div',
       { class: `map-card ${unlocked ? '' : 'locked'}`, style: `--mc:${hexColor(m.color)}` },
       el('div', { class: 'mc-num' }, String(m.index + 1)),
@@ -43,7 +43,22 @@ export function mapSelectScreen(host: UiHost): Screen {
       el('div', { class: 'mc-best' }, best > 0 ? t('Recorde: {n}', { n: fmtInt(best) }) : ''),
       el('div', { class: 'mc-levels' }, ...levels),
     );
-    grid.appendChild(card);
+  };
+  const seasons: HTMLElement[] = [];
+  for (const season of SEASONS) {
+    const maps = seasonMaps(season);
+    if (!maps.length) continue;
+    seasons.push(
+      el(
+        'h3',
+        { class: 'season-title' },
+        t('{n}ª temporada', { n: season }),
+        seasonComplete(season)
+          ? null
+          : el('span', { class: 'muted' }, t('Mais mundos desta temporada estão a caminho')),
+      ),
+      el('div', { class: 'map-grid' }, ...maps.map(card)),
+    );
   }
   let ng: HTMLElement | null = null;
   if (prof.save.flags.ngPlus) {
@@ -94,7 +109,7 @@ export function mapSelectScreen(host: UiHost): Screen {
     el('h2', {}, t('ESCOLHA O MAPA')),
     diffRow,
     ng,
-    grid,
+    ...seasons,
     el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, t('Voltar')),
   );
   return {

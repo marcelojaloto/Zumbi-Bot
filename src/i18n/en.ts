@@ -1,3 +1,5 @@
+import { SEASON2_EN } from './s2';
+
 /**
  * Dicionário português → inglês. A chave é o texto original em pt-BR (como aparece no código ou nos dados);
  * `{nome}` marca parâmetros. O teste `i18n.test.ts` garante que todo texto exibido tem tradução.
@@ -1196,12 +1198,35 @@ export const EN: Record<string, string> = {
   // novo jogo e continuação
   'Novo jogo: {map}': 'New game: {map}',
   'Ainda não acabou...': "It's not over yet...",
-  'Continua na segunda jornada': 'To be continued in the second journey',
-  'Semanas depois, os instrumentos da Academia Arcana captaram um sinal vindo do fundo do mar: o mesmo pulso vermelho do núcleo do OMEGA-Z, só que mais forte. Antes de cair, o Ciborgue Primordial tinha mandado uma cópia de si mesmo para longe, e os mortos voltaram a se levantar da Vila Assombrada à Arena Final. Os heróis não começam do zero: guardaram as armas, os cajados, as melhorias da Oficina e tudo o que conquistaram. A segunda jornada começa de novo na vila, e desta vez eles sabem com quem estão lidando.':
-    "Weeks later, the Arcane Academy's instruments picked up a signal from the bottom of the sea: the same red pulse as OMEGA-Z's core, only stronger. Before falling, the Primordial Cyborg had sent a copy of itself far away, and the dead rose again from the Haunted Village to the Final Arena. The heroes don't start from scratch: they kept their weapons, their staffs, their Workshop upgrades and everything they earned. The second journey starts back in the village, and this time they know who they are dealing with.",
-  'Mas, no fundo do mar, um pulso vermelho voltou a bater. A segunda jornada começa no novo jogo, da Vila Assombrada, com tudo o que você conquistou.':
-    'But at the bottom of the sea, a red pulse started beating again. The second journey begins in the new game, from the Haunted Village, with everything you earned.',
+  'Continua na 2ª temporada': 'To be continued in season 2',
+  'Semanas depois, os instrumentos da Academia Arcana captaram um sinal vindo do fundo do mar: o mesmo pulso vermelho do núcleo do OMEGA-Z, só que mais forte. Antes de cair, o Ciborgue Primordial tinha mandado uma cópia de si mesmo para longe, e as máquinas dela voltaram a trabalhar: a primeira a religar foi uma velha fábrica de brinquedos. Os heróis não começam do zero: guardaram as armas, os cajados, as melhorias da Oficina e tudo o que conquistaram. A 2ª temporada começa na Fábrica de Brinquedos, e desta vez eles sabem com quem estão lidando.':
+    "Weeks later, the Arcane Academy's instruments picked up a signal from the bottom of the sea: the same red pulse as OMEGA-Z's core, only stronger. Before falling, the Primordial Cyborg had sent a copy of itself far away, and its machines went back to work: the first one to switch on again was an old toy factory. The heroes don't start from scratch: they kept their weapons, their staffs, their Workshop upgrades and everything they earned. Season 2 starts at the Toy Factory, and this time they know who they are dealing with.",
+  'Mas, no fundo do mar, um pulso vermelho voltou a bater. A 2ª temporada começa na Fábrica de Brinquedos, com tudo o que você conquistou.':
+    'But at the bottom of the sea, a red pulse started beating again. Season 2 begins at the Toy Factory, with everything you earned.',
+  // temporadas
+  '{n}ª temporada': 'Season {n}',
+  '{n}ª temporada: {map}': 'Season {n}: {map}',
+  '{n}ª temporada liberada!': 'Season {n} unlocked!',
+  'Mais mundos desta temporada estão a caminho': 'More worlds for this season are on the way',
+  'Continua...': 'To be continued...',
+  'Os próximos mundos da {n}ª temporada estão a caminho': 'The next worlds of season {n} are on the way',
+  // 2ª temporada: Fábrica de Brinquedos
+  'Fábrica de Brinquedos': 'Toy Factory',
+  'A linha de montagem religou sozinha, e os brinquedos saem dela com fome':
+    'The assembly line switched itself back on, and the toys come off it hungry',
+  'Linha de Montagem': 'Assembly Line',
+  'Esteiras carregam quem pisa nelas: pule para sair ou ande contra a corrente':
+    'Conveyor belts carry whoever steps on them: jump to get off or walk against the flow',
+  'As prensas descem em ciclos: passe quando subirem, ou deixe os brinquedos embaixo delas':
+    'The presses come down in cycles: go through when they rise, or leave the toys under them',
+  'O Ursão de Corda acordou! Quando a corda acaba ele para: é a hora de bater':
+    'The Wind-up Bear is awake! When its spring runs down it stops: that is the time to strike',
+  'Ursão de Corda': 'Wind-up Bear',
+  'O Rei da Vitrine': 'King of the Shop Window',
+  'Corda Cheia': 'Fully Wound',
+  'Mola Solta': 'Loose Spring',
   'Esquiva (defesa da Oficina)': 'Dodge (Workshop defense)',
   'Direcional: 2× ↑ ou ↓': 'D-pad: 2× ↑ or ↓',
   'Esquiva em profundidade (com a defesa da Oficina)': 'Dodge in depth (with the Workshop defense)',
+  ...SEASON2_EN,
 };

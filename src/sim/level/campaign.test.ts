@@ -24,7 +24,7 @@ describe('campanha (piloto automático)', () => {
           map: m,
           noLevel: false,
           seed: 3,
-          loadout: { level: 1 + m.index * 3, guns: ['pistol', 'shotgun'], staffs: ['heal'] },
+          loadout: { level: Math.min(50, 1 + m.index * 3), guns: ['pistol', 'shotgun'], staffs: ['heal'] },
         });
         void idx;
         w.get(1)!.player!.god = true;

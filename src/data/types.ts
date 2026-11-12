@@ -480,7 +480,24 @@ export interface RigParams {
   /** Membros faltando / rasgos (variações). */
   variants?: number;
   bulk?: number;
-  accessory?: 'none' | 'helmet' | 'tie' | 'axe' | 'barrel' | 'gasmask' | 'flames' | 'bank' | 'hood' | 'cap';
+  accessory?:
+    | 'none'
+    | 'helmet'
+    | 'tie'
+    | 'axe'
+    | 'barrel'
+    | 'gasmask'
+    | 'flames'
+    | 'bank'
+    | 'hood'
+    | 'cap'
+    // brinquedos da fábrica: chave de corda nas costas, barretina de soldadinho, caixa-surpresa e ursinho
+    | 'windup'
+    | 'shako'
+    | 'jackbox'
+    | 'bear';
+  /** Peças extras do mundo do inimigo (chave em `ENEMY_EXTRAS`). */
+  extra?: string;
 }
 
 export type EnemyAttackKind =
@@ -659,7 +676,16 @@ export type ThemeId =
   | 'centro'
   | 'chamas'
   | 'guerra'
-  | 'arena';
+  | 'arena'
+  | 'fabrica'
+  | 'praca'
+  | 'estudio'
+  | 'pista'
+  | 'shopping'
+  | 'bunker'
+  | 'loja'
+  | 'campo'
+  | 'mar';
 
 export type EnvParticles =
   'ash' | 'embers' | 'spores' | 'rain' | 'fireflies' | 'dust' | 'sparks' | 'snow' | 'none';
@@ -714,7 +740,7 @@ export interface WaveDef {
 }
 
 export type PropKind =
-  'crate' | 'barrel' | 'explosiveBarrel' | 'bin' | 'tombstone' | 'atm' | 'car' | 'weaponCrate';
+  'crate' | 'barrel' | 'explosiveBarrel' | 'bin' | 'tombstone' | 'atm' | 'car' | 'weaponCrate' | 'gift';
 
 export interface PropPlacement {
   kind: PropKind;
@@ -741,7 +767,10 @@ export type HazardKind =
   | 'artillery'
   | 'mine'
   | 'debris'
-  | 'fire';
+  | 'fire'
+  | 'conveyor'
+  | 'press'
+  | 'hurdle';
 
 export interface HazardPlacement {
   kind: HazardKind;
@@ -751,6 +780,8 @@ export interface HazardPlacement {
   d?: number;
   periodS?: number;
   offsetS?: number;
+  /** Sentido da esteira no eixo X (1 = para a direita, o padrão). */
+  dir?: 1 | -1;
 }
 
 export interface SegmentDef {
@@ -782,6 +813,8 @@ export interface LevelDef {
 export interface MapDef {
   id: MapId;
   index: number;
+  /** Temporada do mapa (sem valor = 1ª). */
+  season?: number;
   name: string;
   subtitle: string;
   env: EnvironmentDef;

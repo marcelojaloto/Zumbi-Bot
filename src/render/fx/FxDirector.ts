@@ -443,7 +443,11 @@ export class FxDirector {
             0.5,
             ev.z,
             10,
-            ev.kind.includes('arrel') || ev.kind === 'bin' ? 0x3a4a5a : 0x7a5a32,
+            ev.kind.includes('arrel') || ev.kind === 'bin'
+              ? 0x3a4a5a
+              : ev.kind === 'gift'
+                ? 0xe0469a
+                : 0x7a5a32,
             3,
             0.14,
             this.rnd,

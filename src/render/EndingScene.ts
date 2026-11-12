@@ -696,7 +696,7 @@ export class EndingScene {
 
   /**
    * A continuação: na Arena Final, os heróis olham o núcleo partido do OMEGA-Z. Ele volta a pulsar, solta faíscas
-   * vermelhas e dispara um raio para o céu, rumo ao mar; os heróis se preparam para a segunda jornada.
+   * vermelhas e dispara um raio para o céu, rumo ao mar; os heróis se preparam para a 2ª temporada.
    */
   private sequel(): void {
     const cx = X0 + 3.1;

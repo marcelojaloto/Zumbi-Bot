@@ -33,6 +33,8 @@ const MAP_IDS = [
   'chamas',
   'guerra',
   'arena',
+  // 2ª temporada
+  'fabrica',
 ];
 
 async function ready(page: Page) {

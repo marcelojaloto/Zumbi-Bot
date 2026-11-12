@@ -31,13 +31,13 @@ export function creditsScreen(
           ),
         )
       : null,
-    // o gancho da continuação: o novo jogo
+    // o gancho da continuação: a 2ª temporada
     opts.final
       ? el(
           'p',
           { class: 'cr-story' },
           t(
-            'Mas, no fundo do mar, um pulso vermelho voltou a bater. A segunda jornada começa no novo jogo, da Vila Assombrada, com tudo o que você conquistou.',
+            'Mas, no fundo do mar, um pulso vermelho voltou a bater. A 2ª temporada começa na Fábrica de Brinquedos, com tudo o que você conquistou.',
           ),
         )
       : null,

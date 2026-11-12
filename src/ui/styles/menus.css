@@ -204,6 +204,25 @@
   gap: 12px;
   width: min(1180px, 96vw);
 }
+.season-title {
+  width: min(1180px, 96vw);
+  margin: 6px 0 -4px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-family: var(--title-font);
+  font-size: 18px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ffd23a;
+}
+.season-title .muted {
+  font-family: inherit;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #fff;
+}
 .map-card {
   --mc: #8fa6ff;
   position: relative;

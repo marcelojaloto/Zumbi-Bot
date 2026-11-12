@@ -1,8 +1,14 @@
 import type { RigParams } from '../../data/types';
 import type { PartSpec, RigSpec, SocketSpec } from './RigBuilder';
 import { HUMAN, J, humanoidJoints, type Proportions } from './skeleton';
+import { ENEMY_EXTRAS } from './enemies';
 
 const H = Math.PI / 2;
+
+/** Peças extras do inimigo (rig.extra), definidas no arquivo do mundo dele. */
+function extraParts(rp: RigParams, cd: number): PartSpec[] {
+  return (rp.extra && ENEMY_EXTRAS[rp.extra]?.(rp, cd)) || [];
+}
 
 /** Encaixes padrão do humanoide (armas, chapéus, óculos, máscaras, capas). */
 export function humanSockets(headH: number, headD: number, chestD: number): Record<string, SocketSpec> {
@@ -182,6 +188,25 @@ function vary(c: number, v: number, amt: number): number {
   return shade(c, k);
 }
 
+const KEY_GOLD = 0xd8b040;
+
+/** Chave de corda nas costas, de pé para aparecer de lado. `back` = do centro do peito até as costas. */
+function windupKey(back: number): PartSpec[] {
+  const z = -back - 0.2;
+  return [
+    {
+      j: J.chest,
+      shape: 'cyl',
+      size: [0.022, 0.022, 0.2, 6],
+      at: [0, 0.08, -back - 0.1],
+      rot: [H, 0, 0],
+      color: KEY_GOLD,
+    },
+    { j: J.chest, shape: 'torus', size: [0.065, 0.02], at: [0, 0.15, z], rot: [0, H, 0], color: KEY_GOLD },
+    { j: J.chest, shape: 'torus', size: [0.065, 0.02], at: [0, 0.01, z], rot: [0, H, 0], color: KEY_GOLD },
+  ];
+}
+
 export function zombieRig(key: string, rp: RigParams, variant: number): RigSpec {
   const bulk = rp.bulk ?? 1;
   const pr: Proportions = {
@@ -195,6 +220,11 @@ export function zombieRig(key: string, rp: RigParams, variant: number): RigSpec 
   const pants = vary(rp.cloth2, variant + 5, 0.4);
   const dark = shade(skin, 0.6);
   const blood = 0x4a0a0a;
+  // brinquedos: remendo claro no lugar do sangue
+  const toy = rp.accessory === 'windup' || rp.accessory === 'jackbox' || rp.accessory === 'bear';
+  const stain = toy ? shade(shirt, 1.4) : blood;
+  const hair =
+    rp.accessory === 'bear' ? skin : rp.accessory === 'jackbox' ? 0xff6a1a : vary(0x2a2018, variant, 0.6);
   const tornArm = variant % 4 === 3;
   const tornLeg = variant % 3 === 2;
   const cw = 0.42 * bulk;
@@ -208,7 +238,7 @@ export function zombieRig(key: string, rp: RigParams, variant: number): RigSpec 
       shape: 'box',
       size: [cw * 0.4, 0.14, 0.02],
       at: [0.06, 0.02, cd / 2 + 0.005],
-      color: blood,
+      color: stain,
     },
     { j: J.neck, shape: 'cyl', size: [0.055, 0.065, 0.12, 5], at: [0, 0, 0.01], color: skin },
     { j: J.head, shape: 'box', size: [0.25, 0.27, 0.26], at: [0, 0.14, 0.01], color: skin },
@@ -236,7 +266,7 @@ export function zombieRig(key: string, rp: RigParams, variant: number): RigSpec 
       shape: 'box',
       size: [0.26, 0.06, 0.27],
       at: [0, 0.28, -0.005],
-      color: vary(0x2a2018, variant, 0.6),
+      color: hair,
     },
     ...limbs({
       upper: variant % 2 ? shirt : skin,
@@ -349,9 +379,81 @@ export function zombieRig(key: string, rp: RigParams, variant: number): RigSpec 
       parts.push({ j: J.head, shape: 'box', size: [0.27, 0.07, 0.28], at: [0, 0.3, 0], color: 0x8a2a2a });
       parts.push({ j: J.head, shape: 'box', size: [0.24, 0.02, 0.14], at: [0, 0.28, 0.18], color: 0x8a2a2a });
       break;
+    case 'windup':
+      parts.push(...windupKey(cd / 2));
+      for (const sx of [0.085, -0.085])
+        parts.push({
+          j: J.head,
+          shape: 'box',
+          size: [0.05, 0.04, 0.02],
+          at: [sx, 0.09, 0.142],
+          color: 0xe86a7a,
+        });
+      break;
+    case 'bear':
+      for (const sx of [0.115, -0.115]) {
+        parts.push({ j: J.head, shape: 'sphere', size: [0.075, 7, 5], at: [sx, 0.3, 0], color: skin });
+        parts.push({
+          j: J.head,
+          shape: 'sphere',
+          size: [0.04, 6, 4],
+          at: [sx, 0.3, 0.045],
+          color: shade(skin, 1.45),
+        });
+      }
+      parts.push({
+        j: J.head,
+        shape: 'sphere',
+        size: [0.085, 7, 5],
+        at: [0, 0.09, 0.14],
+        color: shade(skin, 1.45),
+      });
+      parts.push({
+        j: J.head,
+        shape: 'box',
+        size: [0.05, 0.035, 0.03],
+        at: [0, 0.12, 0.215],
+        color: 0x1a120c,
+      });
+      parts.push(...windupKey(cd / 2));
+      break;
+    case 'jackbox':
+      parts.push({ j: J.head, shape: 'cone', size: [0.13, 0.32, 6], at: [0, 0.44, 0], color: pants });
+      parts.push({ j: J.head, shape: 'sphere', size: [0.045, 6, 4], at: [0, 0.61, 0], color: 0xffe03a });
+      parts.push({
+        j: J.head,
+        shape: 'sphere',
+        size: [0.04, 6, 4],
+        at: [0, 0.13, 0.15],
+        color: 0xff2a2a,
+        glow: true,
+        glowI: 1.6,
+      });
+      parts.push({
+        j: J.neck,
+        shape: 'torus',
+        size: [0.12, 0.04],
+        at: [0, 0.02, 0],
+        rot: [H, 0, 0],
+        color: 0xf4f0e8,
+      });
+      parts.push({ j: J.chest, shape: 'box', size: [0.36, 0.34, 0.26], at: [0, 0, 0.21], color: 0x3a8ad8 });
+      parts.push({ j: J.chest, shape: 'box', size: [0.08, 0.35, 0.27], at: [0, 0, 0.21], color: 0xffd23a });
+      parts.push({ j: J.chest, shape: 'box', size: [0.37, 0.07, 0.27], at: [0, 0, 0.21], color: 0xffd23a });
+      parts.push({
+        j: J.chest,
+        shape: 'box',
+        size: [0.1, 0.06, 0.02],
+        at: [0, 0.1, 0.35],
+        color: 0xff5a10,
+        glow: true,
+        glowI: 3,
+      });
+      break;
     default:
       break;
   }
+  parts.push(...extraParts(rp, cd));
   return {
     key,
     joints: humanoidJoints(pr),
@@ -410,6 +512,16 @@ export function soldierRig(key: string, rp: RigParams): RigSpec {
       props: pr,
     }),
   ];
+  if (rp.accessory === 'shako') {
+    parts.push(
+      { j: J.head, shape: 'cyl', size: [0.13, 0.15, 0.26, 8], at: [0, 0.45, 0], color: 0x14161c },
+      { j: J.head, shape: 'box', size: [0.3, 0.03, 0.16], at: [0, 0.33, 0.14], color: 0x14161c },
+      { j: J.head, shape: 'box', size: [0.09, 0.09, 0.02], at: [0, 0.44, 0.15], color: rp.cloth2 },
+      { j: J.head, shape: 'cone', size: [0.05, 0.2, 5], at: [0, 0.68, 0], color: 0xfff0e0 },
+      ...windupKey(0.17),
+    );
+  }
+  parts.push(...extraParts(rp, 0.34));
   return {
     key,
     joints: humanoidJoints(pr),
@@ -479,6 +591,7 @@ export function mechRig(key: string, rp: RigParams): RigSpec {
     { j: J.footL, shape: 'box', size: [0.34, 0.12, 0.5], at: [0, 0.04, 0.06], color: 0x22262e },
     { j: J.footR, shape: 'box', size: [0.34, 0.12, 0.5], at: [0, 0.04, 0.06], color: 0x22262e },
   ];
+  parts.push(...extraParts(rp, 0.6));
   const sockets = humanSockets(0.16, 0.28, 0.6);
   sockets.muzzle = { j: J.foreArmR, at: [0, -0.52, 0] };
   sockets.flame = { j: J.foreArmL, at: [0, -0.36, 0.1] };
@@ -517,6 +630,7 @@ export function droneRig(key: string, rp: RigParams): RigSpec {
       glowI: 3,
     },
   ];
+  parts.push(...extraParts(rp, 0));
   return {
     key,
     joints: joints as never,

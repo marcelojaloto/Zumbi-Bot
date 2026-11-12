@@ -16,6 +16,9 @@ const H = (damage: number, dtype: HitSpec['dtype'], extra: Partial<HitSpec> = {}
   ...extra,
 });
 
+/** m/s: menos que andar (4), para dar para ir contra. */
+export const CONVEYOR_SPEED = 2;
+
 /** Cria um perigo ambiental do nível/segmento. */
 export function spawnEnvHazard(w: World, h: HazardPlacement): Entity {
   const period = h.periodS ? secToTicks(h.periodS) : 0;
@@ -136,6 +139,46 @@ export function spawnEnvHazard(w: World, h: HazardPlacement): Entity {
         hit: H(0, 'blunt'),
         fx: 'debris',
         height: -1,
+      });
+      break;
+    case 'conveyor':
+      e = spawnHazard(w, {
+        ...base,
+        shape: { k: 'rect', w: h.w ?? 6, d: h.d ?? 1.6 },
+        hit: H(0, 'blunt'),
+        fx: 'conveyor',
+        height: 0.3,
+        carryX: (h.dir ?? 1) * CONVEYOR_SPEED,
+      });
+      break;
+    case 'press':
+      // um golpe por descida
+      e = spawnHazard(w, {
+        ...base,
+        shape: { k: 'rect', w: h.w ?? 1.8, d: h.d ?? 1.8 },
+        hit: H(18, 'blunt', {
+          knockback: 4,
+          launch: 2,
+          knockdown: true,
+          hitstun: 24,
+          hitstop: 5,
+          heavy: true,
+        }),
+        tickEvery: 600,
+        fx: 'press',
+        height: 2.4,
+      });
+      break;
+    case 'hurdle':
+      // barreira: derruba cada jogador uma vez; pulando, passa (inimigos não tropeçam)
+      e = spawnHazard(w, {
+        ...base,
+        team: 'enemies',
+        hitsAll: false,
+        shape: { k: 'rect', w: h.w ?? 0.4, d: h.d ?? 1.6 },
+        hit: H(6, 'blunt', { knockback: 3, knockdown: true, hitstun: 20, hitstop: 3 }),
+        fx: 'hurdle',
+        height: 0.7,
       });
       break;
   }

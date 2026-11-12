@@ -11,6 +11,7 @@ const PROP_HP: Record<PropPlacement['kind'], number> = {
   atm: 40,
   car: 80,
   weaponCrate: 30,
+  gift: 16,
 };
 
 const PROP_SIZE: Record<PropPlacement['kind'], [number, number]> = {
@@ -22,6 +23,7 @@ const PROP_SIZE: Record<PropPlacement['kind'], [number, number]> = {
   atm: [0.5, 1.8],
   car: [1.1, 1.4],
   weaponCrate: [0.55, 0.8],
+  gift: [0.42, 0.8],
 };
 
 /** Objetos quebráveis do cenário. */

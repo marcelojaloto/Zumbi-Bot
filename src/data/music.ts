@@ -190,6 +190,23 @@ export const MUSIC: Record<MusicId, MusicDef> = {
     },
     bossBpm: 150,
   },
+  // 2ª temporada (os outros mundos definem a música no arquivo do mapa)
+  fabrica: {
+    id: 'fabrica',
+    bpm: 116,
+    root: 48, // Dó
+    scale: [...SCALES.harmonic],
+    progression: [0, 3, 4, 0],
+    bass: [0, R, 1, R, 0, R, 1, R, 0, R, 1, R, 2, R, 1, R],
+    lead: { wave: 'sine', density: 0.42, octave: 3, seed: 113 },
+    pad: { wave: 'triangle', detune: 5 },
+    drums: {
+      kick: [2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0],
+      snare: [0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1],
+      hat: [1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1],
+    },
+    bossBpm: 140,
+  },
 };
 
 export function getMusic(id: MusicId): MusicDef {

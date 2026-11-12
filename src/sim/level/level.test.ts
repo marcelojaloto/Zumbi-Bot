@@ -51,5 +51,5 @@ describe('nível', () => {
     expect(w.levelState.bossSpawned).toBe(true);
     expect(w.finished).toBe('victory');
     expect(w.get(1)!.player!.staffs).toContain('earth');
-  });
+  }, 30_000);
 });

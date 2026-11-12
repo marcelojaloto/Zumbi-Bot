@@ -1,5 +1,5 @@
 import { COSMETICS, RARITY_COLORS, RARITY_NAMES } from '../../data/cosmetics';
-import { getMap } from '../../data/maps';
+import { getMap, seasonComplete, seasonOf } from '../../data/maps';
 import { STAFFS } from '../../data/staffs';
 import { FIREARMS } from '../../data/weapons';
 import type { RankEntry } from '../../save/schema';
@@ -44,6 +44,10 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
   const s = r.stats;
   const win = s.victory;
   const map = getMap(s.mapId);
+  const season = seasonOf(map);
+  const nextMap = r.next ? getMap(r.next.mapId) : null;
+  const seasonEnd = win && (!nextMap || seasonOf(nextMap) !== season);
+  const moreSoon = win && !nextMap && !seasonComplete(season);
   const stars = el('div', { class: 'stars' });
   for (let i = 0; i < 3; i++) stars.appendChild(el('span', { class: i < s.stars ? '' : 'off' }, '★'));
   const stats = el(
@@ -133,16 +137,25 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     );
   }
   if (r.unlockedNext) {
-    const nm = r.next ? getMap(r.next.mapId) : null;
+    const newSeason = nextMap && seasonOf(nextMap) !== season ? seasonOf(nextMap) : 0;
     rewards.appendChild(
       el(
         'div',
         { class: 'reward', style: 'border-color:#5aff9a' },
-        el('b', {}, t('Mapa desbloqueado!')),
-        el('span', {}, nm ? t(nm.name) : r.unlockedNext),
+        el('b', {}, newSeason ? t('{n}ª temporada liberada!', { n: newSeason }) : t('Mapa desbloqueado!')),
+        el('span', {}, nextMap ? t(nextMap.name) : r.unlockedNext),
       ),
     );
   }
+  if (moreSoon)
+    rewards.appendChild(
+      el(
+        'div',
+        { class: 'reward', style: 'border-color:#ffd23a' },
+        el('b', { style: 'color:#ffd23a' }, t('Continua...')),
+        el('span', {}, t('Os próximos mundos da {n}ª temporada estão a caminho', { n: season })),
+      ),
+    );
 
   if (r.secretUnlocked) {
     const sc = getCharacter(r.secretUnlocked);
@@ -314,7 +327,7 @@ export function resultScreen(host: UiHost, r: ResultInfo): Screen {
     el(
       'div',
       { class: 'subtitle' },
-      `${map.index + 1}. ${t(map.name)}${s.ngPlus ? ' (NG+)' : ''}${r.newRecord ? ` | ${t('NOVO RECORDE!')}` : ''}${win && !r.next ? ` | ${t('CAMPANHA CONCLUÍDA!')}` : ''}`,
+      `${map.index + 1}. ${t(map.name)}${s.ngPlus ? ' (NG+)' : ''}${r.newRecord ? ` | ${t('NOVO RECORDE!')}` : ''}${seasonEnd && !moreSoon ? ` | ${t('CAMPANHA CONCLUÍDA!')}` : ''}`,
     ),
     win ? stars : null,
     el('div', { class: 'panel', style: 'max-width:520px' }, stats),

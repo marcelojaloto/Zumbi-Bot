@@ -7,7 +7,7 @@ import { defaultSave } from '../save/schema';
 import { FIREARM_PRICES, MELEE_PRICES, REVIVE_PRICE } from '../data/shop';
 import { xpForLevel } from '../data/balance';
 import { PERK_BY_ID } from '../data/workshop';
-import { MAPS } from '../data/maps';
+import { MAPS, seasonMaps } from '../data/maps';
 import type { RunStats } from '../sim/events';
 
 const fresh = (scrap = 0) => {
@@ -141,6 +141,41 @@ describe('novo jogo depois de terminar', () => {
     // na nova rodada, cada nível vencido fica marcado
     p.applyRun(stats(), final);
     expect(p.save.progress.roundCleared).toEqual(['vila-1']);
+  });
+});
+
+describe('temporadas', () => {
+  const first = seasonMaps(1);
+  const second = seasonMaps(2);
+  const finale = (() => {
+    const m = first[first.length - 1]!;
+    return { mapId: m.id, levelId: m.levels[m.levels.length - 1]!.id };
+  })();
+  const opening = second[0]!.levels[0]!.id;
+
+  it('vencer o chefe final da 1ª temporada libera a 2ª, sem começar o novo jogo', () => {
+    const p = fresh();
+    const r = p.applyRun(stats(finale), final);
+    // a jornada termina no fim da temporada, e o Novo Jogo+ vem junto
+    expect(r.finalBoss).toBe(true);
+    expect(r.ngPlusUnlocked).toBe(true);
+    expect(r.unlockedNext).toBe(opening);
+    expect(p.isMapUnlocked(second[0]!.id)).toBe(true);
+    // o novo jogo (do mapa 1) só começa quando não houver mais mapas
+    expect(p.save.progress.round).toBe(0);
+  });
+
+  it('quem já tinha terminado o jogo encontra a 2ª temporada liberada ao abrir', () => {
+    const kv = new MemoryKV();
+    const save = defaultSave(1);
+    save.progress.unlockedLevels.push(finale.levelId);
+    save.progress.levels[finale.levelId] = { completed: true, bestScore: 10, bestTimeMs: 10, stars: 1 };
+    save.progress.round = 1;
+    kv.setItem(KEYS.save, JSON.stringify(save));
+    const p = new Profile(new Storage(kv));
+    expect(p.isLevelUnlocked(opening)).toBe(true);
+    // e já fica gravado
+    expect(new Storage(kv).loadSave().data.progress.unlockedLevels).toContain(opening);
   });
 });
 

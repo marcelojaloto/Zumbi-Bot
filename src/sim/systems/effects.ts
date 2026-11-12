@@ -104,6 +104,8 @@ export interface HazardOpts {
   element?: Element;
   pushX?: number;
   pushZ?: number;
+  /** Esteira: velocidade (m/s) com que leva quem está no chão. */
+  carryX?: number;
   defId?: string;
   /** Origem do dano quando o dono é um jogador. */
   source?: HitSource;
@@ -133,6 +135,7 @@ export function spawnHazard(w: World, o: HazardOpts): Entity {
     element: o.element,
     pushX: o.pushX ?? 0,
     pushZ: o.pushZ ?? 0,
+    ...(o.carryX ? { carryX: o.carryX } : {}),
     ...(o.source ? { source: o.source } : {}),
     ...(o.bounceZ ? { bounceZ: true } : {}),
   };

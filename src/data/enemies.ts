@@ -1,7 +1,7 @@
 import { MOVES } from './melee';
 import type { EnemyDef, EnemyId, MeleeMoveDef, ProjectileSpec } from './types';
 
-function move(m: MeleeMoveDef): MeleeMoveDef {
+export function move(m: MeleeMoveDef): MeleeMoveDef {
   MOVES[m.id] = m;
   return m;
 }
@@ -177,7 +177,7 @@ const mechBullet: ProjectileSpec = {
   hit: { damage: 7, dtype: 'bullet', knockback: 0.8, hitstun: 8, hitstop: 1 },
 };
 
-const walker: EnemyDef = {
+export const walker: EnemyDef = {
   id: 'walker',
   name: 'Zumbi Andarilho',
   family: 'zombie',
@@ -215,7 +215,7 @@ const walker: EnemyDef = {
   groan: true,
 };
 
-const runner: EnemyDef = {
+export const runner: EnemyDef = {
   ...walker,
   id: 'runner',
   name: 'Zumbi Corredor',
@@ -249,7 +249,7 @@ const runner: EnemyDef = {
   },
 };
 
-const brute: EnemyDef = {
+export const brute: EnemyDef = {
   id: 'brute',
   name: 'Zumbi Brutamontes',
   family: 'zombie',
@@ -299,7 +299,7 @@ const brute: EnemyDef = {
   groan: true,
 };
 
-const spitter: EnemyDef = {
+export const spitter: EnemyDef = {
   ...walker,
   id: 'spitter',
   name: 'Zumbi Cuspidor',
@@ -337,7 +337,7 @@ const spitter: EnemyDef = {
   },
 };
 
-const exploder: EnemyDef = {
+export const exploder: EnemyDef = {
   ...walker,
   id: 'exploder',
   name: 'Zumbi Bomba',
@@ -374,7 +374,7 @@ const exploder: EnemyDef = {
   },
 };
 
-const drone: EnemyDef = {
+export const drone: EnemyDef = {
   id: 'drone',
   name: 'Drone Sentinela',
   family: 'robot',
@@ -405,7 +405,7 @@ const drone: EnemyDef = {
   rig: { kind: 'drone', scale: 1, skin: 0x4a5260, cloth: 0x2a2e36, cloth2: 0xff3a3a, eye: 0xff2a2a },
 };
 
-const soldier: EnemyDef = {
+export const soldier: EnemyDef = {
   id: 'soldier',
   name: 'Robô Soldado',
   family: 'robot',
@@ -456,7 +456,7 @@ const soldier: EnemyDef = {
   rig: { kind: 'robot', scale: 1, skin: 0x5a6270, cloth: 0x3a4250, cloth2: 0xff5a2a, eye: 0xff3a3a },
 };
 
-const mech: EnemyDef = {
+export const mech: EnemyDef = {
   id: 'mech',
   name: 'Mech Pesado',
   family: 'robot',
@@ -518,7 +518,7 @@ const mech: EnemyDef = {
 };
 
 /** Variante temática: mescla sobre uma definição base. */
-function variant(base: EnemyDef, over: Partial<EnemyDef> & Pick<EnemyDef, 'id' | 'name'>): EnemyDef {
+export function variant(base: EnemyDef, over: Partial<EnemyDef> & Pick<EnemyDef, 'id' | 'name'>): EnemyDef {
   return {
     ...base,
     ...over,
@@ -625,6 +625,82 @@ const lumberjack = variant(brute, {
   rig: { ...brute.rig, cloth: 0x8a2a2a, cloth2: 0x3a2a1a, accessory: 'axe' },
 });
 
+// ---------------------------------------------------------------------------
+// Brinquedos da Fábrica (2ª temporada)
+// ---------------------------------------------------------------------------
+
+const windupWalker = variant(walker, {
+  id: 'windupWalker',
+  name: 'Zumbi de Corda',
+  hp: 60,
+  speed: 1.7,
+  rewards: { xp: 16, score: 180, scrap: [2, 5], drops: 'kill', cosmeticChance: 0.015 },
+  rig: {
+    ...walker.rig,
+    skin: 0xd8cfc0,
+    cloth: 0xb03040,
+    cloth2: 0x2a3c7a,
+    eye: 0xff4a4a,
+    hunch: 0.25,
+    variants: 1,
+    accessory: 'windup',
+  },
+});
+
+const teddy = variant(runner, {
+  id: 'teddy',
+  name: 'Ursinho de Corda',
+  hp: 32,
+  speed: 4.4,
+  groan: false,
+  resist: { fire: 1.5 },
+  rig: {
+    ...runner.rig,
+    scale: 0.8,
+    skin: 0xa8733c,
+    cloth: 0xa8733c,
+    cloth2: 0x8a5a2c,
+    eye: 0xff3a3a,
+    hunch: 0.3,
+    bulk: 1.25,
+    variants: 1,
+    accessory: 'bear',
+  },
+});
+
+const jackBox = variant(exploder, {
+  id: 'jackBox',
+  name: 'Caixa-Surpresa',
+  hp: 34,
+  speed: 2.8,
+  groan: false,
+  rig: {
+    ...exploder.rig,
+    skin: 0xf0e8e0,
+    cloth: 0xd83a8a,
+    cloth2: 0x3a8ad8,
+    eye: 0xffe03a,
+    hunch: 0.1,
+    bulk: 1.1,
+    variants: 1,
+    accessory: 'jackbox',
+  },
+});
+
+const tinSoldier = variant(soldier, {
+  id: 'tinSoldier',
+  name: 'Soldadinho de Chumbo',
+  hp: 70,
+  rig: {
+    ...soldier.rig,
+    skin: 0xc02a2a,
+    cloth: 0x1c2a5a,
+    cloth2: 0xffd23a,
+    eye: 0xfff4d0,
+    accessory: 'shako',
+  },
+});
+
 export const ENEMIES: Record<EnemyId, EnemyDef> = Object.fromEntries(
   [
     walker,
@@ -641,8 +717,17 @@ export const ENEMIES: Record<EnemyId, EnemyDef> = Object.fromEntries(
     soldierZombie,
     bankWalker,
     lumberjack,
+    windupWalker,
+    teddy,
+    jackBox,
+    tinSoldier,
   ].map((e) => [e.id, e]),
 );
+
+/** Inimigos próprios de um mapa, definidos no arquivo dele. */
+export function registerEnemies(...defs: EnemyDef[]): void {
+  for (const d of defs) ENEMIES[d.id] = d;
+}
 
 export function getEnemy(id: EnemyId): EnemyDef {
   const e = ENEMIES[id];

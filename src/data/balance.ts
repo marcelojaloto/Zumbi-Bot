@@ -143,3 +143,8 @@ export function coopEnemyCap(base: number, n: number): number {
 export function mapScaling(index: number): { hp: number; dmg: number } {
   return { hp: 1 + 0.12 * index, dmg: 1 + 0.08 * index };
 }
+
+/** 2ª temporada (n = 0 no primeiro mundo): parte da força do mapa 11 e sobe mais devagar. */
+export function season2Scaling(n: number): { hp: number; dmg: number } {
+  return { hp: 2.2 + 0.06 * n, dmg: 1.8 + 0.04 * n };
+}

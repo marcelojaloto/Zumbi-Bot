@@ -70,7 +70,7 @@ import { COSMETICS } from '../data/cosmetics';
 import { FIREARMS } from '../data/weapons';
 import { MELEE_WEAPONS } from '../data/melee';
 import type { RunStats } from '../sim/events';
-import { MAPS, getMap } from '../data/maps';
+import { MAPS, getMap, seasonMaps, seasonOf } from '../data/maps';
 import { xpToNext } from '../data/balance';
 import { detectLang, setLang, t, type Lang } from '../i18n';
 
@@ -649,7 +649,6 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       el('button', { class: cls, onclick: fn, data: { nav: '' } }, label);
     const s = this.profile.save;
     const cont = this.continueTarget();
-    const contMap = getMap(cont.mapId);
     const e = el(
       'div',
       { class: 'screen menu-screen' },
@@ -666,16 +665,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       el(
         'div',
         { class: 'menu' },
-        b(
-          // terminou o jogo: o próximo é um jogo novo, com tudo o que foi conquistado
-          s.progress.round > 0 && s.progress.roundCleared.length === 0
-            ? t('Novo jogo: {map}', { map: t(contMap.name) })
-            : s.stats.runs > 0
-              ? t('Continuar: {map}', { map: t(contMap.name) })
-              : t('Jogar'),
-          () => this.openLobby(cont.mapId, cont.levelIdx),
-          'btn primary',
-        ),
+        b(this.continueLabel(cont), () => this.openLobby(cont.mapId, cont.levelIdx), 'btn primary'),
         b(`🌐 ${t('Jogar online')}`, () => this.openOnline()),
         b(t('Mapas'), () => this.screens.push(mapSelectScreen(this))),
         b(t('Personagens'), () => this.screens.push(charactersScreen(this))),
@@ -713,14 +703,9 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     );
   }
 
-  /** Primeiro nível desbloqueado e não concluído (ou o último desbloqueado). */
+  /** Primeiro nível liberado e não vencido; com tudo vencido, o novo jogo. */
   continueTarget(): { mapId: string; levelIdx: number } {
     const prog = this.profile.save.progress;
-    // novo jogo (depois de terminar): do mapa 1 em diante, pelos níveis ainda não vencidos nesta rodada
-    if (prog.round > 0)
-      for (const m of MAPS)
-        for (let i = 0; i < m.levels.length; i++)
-          if (!prog.roundCleared.includes(m.levels[i]!.id)) return { mapId: m.id, levelIdx: i };
     let last = { mapId: MAPS[0]!.id, levelIdx: 0 };
     for (const m of MAPS) {
       for (let i = 0; i < m.levels.length; i++) {
@@ -730,7 +715,27 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
         if (!prog.levels[id]?.completed) return last;
       }
     }
+    // novo jogo: do mapa 1, pelos níveis ainda não vencidos na rodada
+    if (prog.round > 0)
+      for (const m of MAPS)
+        for (let i = 0; i < m.levels.length; i++)
+          if (!prog.roundCleared.includes(m.levels[i]!.id)) return { mapId: m.id, levelIdx: i };
     return last;
+  }
+
+  /** Texto do botão principal do menu. */
+  private continueLabel(cont: { mapId: string; levelIdx: number }): string {
+    const s = this.profile.save;
+    const m = getMap(cont.mapId);
+    const map = t(m.name);
+    if (s.progress.levels[m.levels[cont.levelIdx]!.id]?.completed)
+      return s.progress.round > 0 && s.progress.roundCleared.length === 0
+        ? t('Novo jogo: {map}', { map })
+        : t('Continuar: {map}', { map });
+    const season = seasonOf(m);
+    if (season > 1 && cont.levelIdx === 0 && seasonMaps(season)[0] === m)
+      return t('{n}ª temporada: {map}', { n: season, map });
+    return s.stats.runs > 0 ? t('Continuar: {map}', { map }) : t('Jogar');
   }
 
   openSettings(tab?: string): void {

@@ -1,3 +1,4 @@
+import { ENEMIES } from '../../data/enemies';
 import { isCharacter, isHostile, type Entity } from '../Entity';
 import type { World } from '../World';
 import { applyHit } from '../combat/applyHit';
@@ -29,7 +30,7 @@ export function hazardOverlaps(h: Entity, e: Entity): boolean {
   }
 }
 
-/** As pedras do teto chegam ao chão: estrondo, tremor e cascalho voando onde cada uma cai. */
+/** As pedras do teto (ou os blocos do chefe da fábrica) chegam ao chão: estrondo, tremor e cascalho. */
 function debrisLands(w: World, h: Entity): void {
   const r = h.hazard!.shape.k === 'circle' ? h.hazard!.shape.r : 1;
   for (const [fx, fz] of [
@@ -42,6 +43,14 @@ function debrisLands(w: World, h: Entity): void {
   w.emit({ t: 'shake', trauma: 0.3 });
 }
 
+/** Inimigo vai a no máximo 60% do passo dele: mais lento que a esteira, ficaria preso fora do alcance e travaria a fase. */
+function carrySpeed(e: Entity, carryX: number): number {
+  if (e.kind !== 'enemy') return carryX;
+  if (e.ai && !e.ai.entered) return 0;
+  const step = ENEMIES[e.defId ?? '']?.speed ?? 1;
+  return Math.sign(carryX) * Math.min(Math.abs(carryX), step * 0.6);
+}
+
 export function hazardSystem(w: World): void {
   for (const h of [...w.entities]) {
     const hz = h.hazard;
@@ -52,7 +61,7 @@ export function hazardSystem(w: World): void {
     }
     if (hz.delay > 0) {
       hz.delay--;
-      if (hz.delay === 0 && hz.fx === 'debris' && !hz.env) debrisLands(w, h);
+      if (hz.delay === 0 && (hz.fx === 'debris' || hz.fx === 'blocks') && !hz.env) debrisLands(w, h);
       continue;
     }
     h.t.x += h.t.vx / 60;
@@ -85,6 +94,8 @@ export function hazardSystem(w: World): void {
           e.t.vx += hz.pushX / 60;
           e.t.vz += hz.pushZ / 60;
         }
+        // esteira: só quem está no chão
+        if (hz.carryX && e.body?.grounded && e.kind !== 'boss') e.t.x += carrySpeed(e, hz.carryX) / 60;
         if (hz.hit.damage <= 0 && !hz.hit.status) continue;
         if (hz.tickEvery > 0) {
           if (!doTick) continue;

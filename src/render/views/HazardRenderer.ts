@@ -1,5 +1,6 @@
 import {
   AdditiveBlending,
+  BoxGeometry,
   CircleGeometry,
   Color,
   CylinderGeometry,
@@ -14,10 +15,11 @@ import {
   TorusGeometry,
   type BufferGeometry,
   type Scene,
+  type Texture,
 } from 'three';
 import type { Entity, EntityId, HazardShape } from '../../sim/Entity';
 import type { World } from '../../sim/World';
-import { radialTexture, swirlTexture } from '../env/textures';
+import { chevronTexture, radialTexture, swirlTexture } from '../env/textures';
 
 const FX_COLORS: Record<string, number> = {
   acidPool: 0x7aff2a,
@@ -54,6 +56,10 @@ const FX_COLORS: Record<string, number> = {
   heal: 0x5aff9a,
   pendulum: 0xc8c8d0,
   debris: 0xa89878,
+  blocks: 0xffb02a,
+  conveyor: 0xffd23a,
+  press: 0xff7a2a,
+  hurdle: 0xffc21a,
 };
 
 export function fxColor(fx: string): number {
@@ -94,7 +100,21 @@ interface HzView {
   /** Quando a vista nasceu e quanto falta para a queda (s): a pedra cai lisa mesmo com o estado a 20 Hz. */
   born: number;
   fall: number;
+  /** Setas da esteira e a velocidade dela (m/s). */
+  belt: Texture | null;
+  beltSpeed: number;
+  /** Pistão da prensa. */
+  press: Group | null;
 }
+
+/** Largura (m) de cada par de setas da esteira. */
+const BELT_TILE = 1.2;
+/** Centro do pistão em cima e a altura dele. */
+const PRESS_TOP = 3;
+const PRESS_H = 0.5;
+/** Quadros para descer (chega ao chão no quadro do golpe) e para subir. */
+const PRESS_DROP = 6;
+const PRESS_RISE = 24;
 
 /** Altura de onde as pedras caem (acima do alto da tela). */
 const ROCK_TOP = 7.5;
@@ -154,26 +174,66 @@ export class HazardRenderer {
   }
 
   private rockKit: { geo: DodecahedronGeometry; mats: MeshStandardMaterial[] } | null = null;
+  private blockKit: { geo: BoxGeometry; mats: MeshStandardMaterial[] } | null = null;
 
-  /** Pedras de entulho que caem juntas do teto rachado (cada uma de um tom de pedra). */
-  private makeRocks(id: number, r: number): Group {
+  /** Pedras do teto rachado ou, com `blocks`, os blocos de montar do chefe da fábrica. */
+  private makeRocks(id: number, r: number, blocks = false): Group {
     this.rockKit ??= {
       geo: new DodecahedronGeometry(1, 0),
       mats: [0x6b6052, 0x5a5046, 0x7a6e5e].map(
         (color) => new MeshStandardMaterial({ color, roughness: 0.95, flatShading: true }),
       ),
     };
-    const k = this.rockKit;
+    if (blocks)
+      this.blockKit ??= {
+        geo: new BoxGeometry(1.5, 1.5, 1.5),
+        mats: [0xe8402a, 0x2a7ae8, 0xffd23a, 0x3ac85a].map(
+          (color) => new MeshStandardMaterial({ color, roughness: 0.6, flatShading: true }),
+        ),
+      };
+    const k = blocks ? this.blockKit! : this.rockKit;
     const g = new Group();
     ROCKS.forEach(([fx, fz, size], i) => {
       const m = new Mesh(k.geo, k.mats[(id + i) % k.mats.length]!);
       // pedra achatada e torta, diferente em cada queda
-      m.scale.set(size, size * (0.7 + ((id * 7 + i * 3) % 5) * 0.08), size * 0.9);
+      if (blocks) m.scale.setScalar(size);
+      else m.scale.set(size, size * (0.7 + ((id * 7 + i * 3) % 5) * 0.08), size * 0.9);
       m.position.set(fx * r, 0, fz * r);
       m.rotation.set(id + i, id * 0.5 + i * 2, i);
       m.castShadow = true;
       g.add(m);
     });
+    return g;
+  }
+
+  private pressKit: {
+    head: BoxGeometry;
+    rod: CylinderGeometry;
+    steel: MeshStandardMaterial;
+    stripe: MeshStandardMaterial;
+  } | null = null;
+
+  private makePress(w: number, d: number): Group {
+    this.pressKit ??= {
+      head: new BoxGeometry(1, 1, 1),
+      rod: new CylinderGeometry(0.14, 0.14, 1, 8).translate(0, 0.5, 0),
+      steel: new MeshStandardMaterial({ color: 0x8a909a, metalness: 0.5, roughness: 0.4 }),
+      stripe: new MeshStandardMaterial({ color: 0xffc21a, roughness: 0.6 }),
+    };
+    const k = this.pressKit;
+    const g = new Group();
+    const head = new Mesh(k.head, k.steel);
+    head.scale.set(w * 0.94, PRESS_H, d * 0.94);
+    head.castShadow = true;
+    g.add(head);
+    const stripe = new Mesh(k.head, k.stripe);
+    stripe.scale.set(w * 0.96, 0.1, d * 0.96);
+    stripe.position.y = -PRESS_H / 2 + 0.05;
+    g.add(stripe);
+    const rod = new Mesh(k.rod, k.steel);
+    rod.scale.y = 6;
+    rod.position.y = PRESS_H / 2;
+    g.add(rod);
     return g;
   }
 
@@ -242,6 +302,13 @@ export class HazardRenderer {
     const hz = e.hazard!;
     const group = new Group();
     const color = new Color(hz.delay > 0 ? 0xff2a2a : fxColor(hz.fx));
+    // cópia por esteira, para repetir pela largura dela
+    let belt: Texture | null = null;
+    if (hz.fx === 'conveyor' && hz.shape.k === 'rect') {
+      belt = chevronTexture().clone();
+      belt.needsUpdate = true;
+      belt.repeat.set(hz.shape.w / BELT_TILE, 1);
+    }
     const mat = new MeshBasicMaterial({
       color,
       transparent: true,
@@ -249,12 +316,19 @@ export class HazardRenderer {
       depthWrite: false,
       side: DoubleSide,
       blending: AdditiveBlending,
-      map: hz.shape.k === 'circle' ? this.glowTex : null,
+      map: belt ?? (hz.shape.k === 'circle' ? this.glowTex : null),
       toneMapped: false,
     });
     const base = new Mesh(shapeGeo(hz.shape), mat);
     base.rotation.x = -Math.PI / 2;
+    if (belt && (hz.carryX ?? 0) < 0) base.scale.x = -1;
     group.add(base);
+    let press: Group | null = null;
+    if (hz.fx === 'press' && hz.shape.k === 'rect') {
+      press = this.makePress(hz.shape.w, hz.shape.d);
+      press.position.set(e.t.x, PRESS_TOP, e.t.z);
+      this.scene.add(press);
+    }
     let fill: Mesh | null = null;
     let fillMat: MeshBasicMaterial | null = null;
     if (hz.delay > 0) {
@@ -281,10 +355,10 @@ export class HazardRenderer {
       funnel = this.makeFunnel();
       this.scene.add(funnel);
     }
-    // destroços: as pedras aparecem lá no alto e caem bem quando o aviso acaba
+    // destroços e blocos de montar: aparecem lá no alto e caem bem quando o aviso acaba
     let rocks: Group | null = null;
-    if (hz.fx === 'debris' && !hz.env && hz.delay > 0) {
-      rocks = this.makeRocks(e.id, hz.shape.k === 'circle' ? hz.shape.r : 1);
+    if ((hz.fx === 'debris' || hz.fx === 'blocks') && !hz.env && hz.delay > 0) {
+      rocks = this.makeRocks(e.id, hz.shape.k === 'circle' ? hz.shape.r : 1, hz.fx === 'blocks');
       rocks.position.set(e.t.x, ROCK_TOP, e.t.z);
       this.scene.add(rocks);
     }
@@ -303,6 +377,9 @@ export class HazardRenderer {
       rocks,
       born: this.t,
       fall: Math.max(1, hz.delay) / 60,
+      belt,
+      beltSpeed: Math.abs(hz.carryX ?? 0),
+      press,
     };
   }
 
@@ -369,6 +446,19 @@ export class HazardRenderer {
           m.rotation.z += dt * (2 + i * 0.5);
         });
       }
+      if (v.belt) v.belt.offset.x = 1 - (((this.t * v.beltSpeed) / BELT_TILE) % 1);
+      if (v.press) {
+        // mesmo ciclo da simulação: sobe no começo, treme e desce para chegar ao chão no quadro do golpe
+        const period = Math.max(1, hz.period);
+        const tc = (w.tick + hz.offset) % period;
+        const hitAt = period - Math.floor(period * 0.35);
+        const down =
+          tc >= hitAt - PRESS_DROP
+            ? Math.min(1, (tc - (hitAt - PRESS_DROP)) / PRESS_DROP)
+            : Math.max(0, 1 - tc / PRESS_RISE);
+        const shake = tc < hitAt - PRESS_DROP && hitAt - tc < 36 ? Math.sin(this.t * 70) * 0.03 : 0;
+        v.press.position.set(e.t.x + shake, PRESS_TOP - (PRESS_TOP - PRESS_H / 2) * down * down, e.t.z);
+      }
       const telegraph = hz.delay > 0;
       const envInactive = !!hz.env && hz.phase === 0;
       if (telegraph) {
@@ -395,6 +485,8 @@ export class HazardRenderer {
     if (v.blade) this.scene.remove(v.blade);
     if (v.funnel) this.scene.remove(v.funnel);
     if (v.rocks) this.scene.remove(v.rocks);
+    if (v.press) this.scene.remove(v.press);
+    v.belt?.dispose();
     v.base.geometry.dispose();
     v.fill?.geometry.dispose();
     v.mat.dispose();
@@ -419,6 +511,16 @@ export class HazardRenderer {
       this.rockKit.geo.dispose();
       for (const m of this.rockKit.mats) m.dispose();
       this.rockKit = null;
+    }
+    if (this.blockKit) {
+      this.blockKit.geo.dispose();
+      for (const m of this.blockKit.mats) m.dispose();
+      this.blockKit = null;
+    }
+    if (this.pressKit) {
+      const k = this.pressKit;
+      for (const d of [k.head, k.rod, k.steel, k.stripe]) d.dispose();
+      this.pressKit = null;
     }
   }
 }

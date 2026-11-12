@@ -740,6 +740,12 @@ export const SFX: Record<string, Recipe> = {
   },
   hz_gust: (c, o, t) => SFX.cast_wind!(c, o, t, 0),
   hz_laserTrip: (c, o, t) => SFX.alarm!(c, o, t, 0),
+  hz_press: (c, o, t, v) => {
+    thump(c, o, t, r(v, 70, 85), 30, 0.35, 1.2);
+    click(c, o, t + 0.02, 1400, 0.25);
+    click(c, o, t + 0.09, 900, 0.18);
+    return 0.45;
+  },
   // teto rachando: estalos de pedra e um ronco grave enquanto as pedras se soltam
   hz_debris: (c, o, t) => {
     for (let i = 0; i < 5; i++) click(c, o, t + i * 0.07 + (i % 2) * 0.03, 500 + i * 170, 0.3);

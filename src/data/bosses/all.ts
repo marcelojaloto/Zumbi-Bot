@@ -9,3 +9,4 @@ import './07-mecha';
 import './08-incandescente';
 import './09-criotanque';
 import './10-omega';
+import './11-ursao';

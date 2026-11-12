@@ -3,7 +3,7 @@ import { PLAYER, totalXp, xpForLevel, xpToNext } from '../data/balance';
 import { FIREARM_PRICES, MELEE_PRICES, REVIVE_PRICE } from '../data/shop';
 import { WEAPON_ORDER } from '../data/weapons';
 import { PERK_BY_ID, specialsOf } from '../data/workshop';
-import { getMap, MAPS } from '../data/maps';
+import { getMap, MAPS, seasonOf } from '../data/maps';
 import { STAFFS } from '../data/staffs';
 import { getCharacter, playableCharacters } from '../data/characters';
 import type { CharacterId, CosmeticId, CosmeticSlot, MeleeId, StaffId, WeaponId } from '../data/types';
@@ -37,6 +37,24 @@ export class Profile {
     if (s.migratedFrom !== null) this.persist();
     // quem já terminou o jogo antes desta versão também ganha o disfarce do personagem secreto
     if (this.secretUnlocked && this.grantSecretGifts()) this.persist();
+    // mapa lançado depois: quem venceu o anterior já o encontra liberado
+    if (this.unlockNewLevels()) this.persist();
+  }
+
+  private unlockNewLevels(): boolean {
+    const pr = this.save.progress;
+    let changed = false;
+    for (const m of MAPS)
+      m.levels.forEach((l, i) => {
+        if (!pr.levels[l.id]?.completed) return;
+        const nx = this.nextLevel(m.id, i);
+        const id = nx ? getMap(nx.mapId).levels[nx.levelIdx]!.id : null;
+        if (id && !pr.unlockedLevels.includes(id)) {
+          pr.unlockedLevels.push(id);
+          changed = true;
+        }
+      });
+    return changed;
   }
 
   /** Personagem secreto liberado (o jogo já foi terminado uma vez). */
@@ -141,7 +159,7 @@ export class Profile {
     unlockedNext: string | null;
     /** Novo Jogo+ acabou de ser desbloqueado. */
     ngPlusUnlocked: boolean;
-    /** Venceu o último nível da campanha. */
+    /** Venceu o último nível de uma temporada: a jornada termina. */
     finalBoss: boolean;
   } {
     const s = this.save;
@@ -189,11 +207,15 @@ export class Profile {
           s.progress.unlockedLevels.push(id);
           unlockedNext = id;
         }
-      } else {
+      }
+      // fim de temporada
+      if (!nx || seasonOf(getMap(nx.mapId)) !== seasonOf(map)) {
         finalBoss = true;
         ngPlusUnlocked = !s.flags.ngPlus;
         s.flags.ngPlus = true;
-        // terminou: o próximo "Continuar" é um jogo novo, do mapa 1, com tudo o que foi conquistado
+      }
+      if (!nx) {
+        // acabou: o próximo "Continuar" é um jogo novo
         pr.round++;
         pr.roundCleared = [];
       }

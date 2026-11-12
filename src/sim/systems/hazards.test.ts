@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { spawnEnemy } from '../ai/spawnEnemy';
 import { makeWorld, run } from '../test/helpers';
 import { spawnHazard } from './effects';
+import { CONVEYOR_SPEED, spawnEnvHazard } from './envHazards';
+import { getEnemy } from '../../data/enemies';
 
 describe('perigos', () => {
   it('zona com tickEvery acerta no início e depois a cada intervalo (sem acerto duplo)', () => {
@@ -43,6 +45,41 @@ describe('perigos', () => {
     run(w, 2);
     expect(e.statuses?.some((s) => s.id === 'wet')).toBe(true);
     expect(e.health!.hp).toBe(e.health!.max);
+  });
+});
+
+describe('esteira e prensa da fábrica', () => {
+  it('a esteira leva o jogador parado na velocidade dela', () => {
+    const w = makeWorld();
+    const p = w.get(1)!;
+    spawnEnvHazard(w, { kind: 'conveyor', x: p.t.x + 4, z: p.t.z, w: 20, d: 2, dir: 1 });
+    const x0 = p.t.x;
+    run(w, 60);
+    expect(p.t.x - x0).toBeCloseTo(CONVEYOR_SPEED, 1);
+  });
+
+  it('o inimigo é levado mais devagar que o passo dele, para sempre conseguir vencer a corrente', () => {
+    const w = makeWorld();
+    const e = spawnEnemy(w, 'brute', 8, 0, 'right');
+    e.ai = undefined;
+    spawnEnvHazard(w, { kind: 'conveyor', x: 8, z: 0, w: 10, d: 2, dir: -1 });
+    run(w, 60);
+    const carried = 8 - e.t.x;
+    expect(carried).toBeCloseTo(getEnemy('brute').speed * 0.6, 1);
+    expect(carried).toBeLessThan(getEnemy('brute').speed);
+  });
+
+  it('a prensa acerta quem está embaixo uma vez por descida', () => {
+    const w = makeWorld();
+    const e = spawnEnemy(w, 'brute', 8, 0, 'right');
+    e.ai = undefined;
+    spawnEnvHazard(w, { kind: 'press', x: 8, z: 0, periodS: 2 });
+    let hits = 0;
+    for (let i = 0; i < 240; i++) {
+      run(w, 1);
+      hits += w.drainEvents().filter((ev) => ev.t === 'hit' && ev.dst === e.id && ev.amount > 0).length;
+    }
+    expect(hits).toBe(2);
   });
 });
 

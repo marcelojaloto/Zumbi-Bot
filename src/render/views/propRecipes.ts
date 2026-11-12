@@ -72,6 +72,16 @@ export const PROP_RECIPES: Record<PropKind, MeshRecipe> = {
       { shape: 'box', size: [0.5, 0.1, 0.1], pos: [0, 0.9, 0.36], color: 0x2a2e36 },
     ],
   },
+  gift: {
+    parts: [
+      { shape: 'box', size: [0.78, 0.7, 0.78], pos: [0, 0.35, 0], color: 0xe0469a },
+      { shape: 'box', size: [0.8, 0.12, 0.8], pos: [0, 0.72, 0], color: 0xc02a7e },
+      { shape: 'box', size: [0.14, 0.8, 0.82], pos: [0, 0.4, 0], color: 0xffd23a },
+      { shape: 'box', size: [0.82, 0.8, 0.14], pos: [0, 0.4, 0], color: 0xffd23a },
+      { shape: 'torus', size: [0.11, 0.035], pos: [0.11, 0.86, 0], rot: [0, 0, 0.5], color: 0xffd23a },
+      { shape: 'torus', size: [0.11, 0.035], pos: [-0.11, 0.86, 0], rot: [0, 0, -0.5], color: 0xffd23a },
+    ],
+  },
   car: {
     parts: [
       { shape: 'box', size: [3.8, 0.7, 1.7], pos: [0, 0.6, 0], color: 0x2a4a7a },

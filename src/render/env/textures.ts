@@ -340,6 +340,28 @@ export function swirlTexture(size = 64): Texture {
   return tex;
 }
 
+/** Setas brancas apontando para +X, emendando ao repetir (esteiras). */
+export function chevronTexture(size = 64): Texture {
+  const key = `v:${size}`;
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const [cv, ctx] = canvas(size);
+  ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+  ctx.lineWidth = size * 0.11;
+  ctx.lineJoin = 'miter';
+  for (const x of [size * 0.12, size * 0.62]) {
+    ctx.beginPath();
+    ctx.moveTo(x, size * 0.16);
+    ctx.lineTo(x + size * 0.26, size * 0.5);
+    ctx.lineTo(x, size * 0.84);
+    ctx.stroke();
+  }
+  const tex = new CanvasTexture(cv);
+  tex.wrapS = RepeatWrapping;
+  cache.set(key, tex);
+  return tex;
+}
+
 export function disposeTextures(): void {
   for (const t of cache.values()) t.dispose();
   cache.clear();
