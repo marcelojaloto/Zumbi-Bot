@@ -26,7 +26,8 @@ jobs:
 
   e2e:
     needs: check
-    runs-on: ubuntu-latest
+    # o Playwright 1.56 não tem Chromium para o Ubuntu 26
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
