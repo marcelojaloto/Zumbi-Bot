@@ -37,6 +37,7 @@ const MAP_IDS = [
   'fabrica',
   'praca',
   'estudio',
+  'pista',
 ];
 
 async function ready(page: Page) {

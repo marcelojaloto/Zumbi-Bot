@@ -14,6 +14,7 @@ import { arenaTheme } from './arena';
 import { fabricaTheme } from './fabrica';
 import { pracaTheme } from './praca';
 import { estudioTheme } from './estudio';
+import { pistaTheme } from './pista';
 
 export const THEMES: Partial<Record<ThemeId, (ctx: EnvCtx) => void>> = {
   sandbox: sandboxTheme,
@@ -30,4 +31,5 @@ export const THEMES: Partial<Record<ThemeId, (ctx: EnvCtx) => void>> = {
   fabrica: fabricaTheme,
   praca: pracaTheme,
   estudio: estudioTheme,
+  pista: pistaTheme,
 };
