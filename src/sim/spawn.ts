@@ -1,4 +1,4 @@
-import { MEDKITS, PLAYER } from '../data/balance';
+import { MEDKITS, PLAYER, UNDERWATER_GRAVITY } from '../data/balance';
 import { getCharacter } from '../data/characters';
 import { MELEE_WEAPONS } from '../data/melee';
 import { DEFENSE, perkEffects } from '../data/workshop';
@@ -125,7 +125,7 @@ export function spawnPlayer(w: World, lo: PlayerLoadout): Entity {
       height: PLAYER.height,
       mass: ch.stats.mass,
       grounded: true,
-      gravityScale: 1,
+      gravityScale: w.map.underwater ? UNDERWATER_GRAVITY : 1,
     },
     health: makeHealth(playerMaxHp(ch.id, lo.level, lo.perks), 0),
     fighter: makeFighter('idle'),

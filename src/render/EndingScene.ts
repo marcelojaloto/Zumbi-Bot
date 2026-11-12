@@ -35,7 +35,7 @@ import { BlobShadows } from './fx/BlobShadows';
  * Capítulo do final lendário: um por personagem, o epílogo com todos juntos, a revelação do personagem secreto
  * (liberado bem nessa hora) e, por último, o sinal que abre a continuação.
  */
-export type EndingChapter = CharacterId | 'all' | 'sequel';
+export type EndingChapter = CharacterId | 'all' | 'sequel' | 'season2';
 
 export const ENDING_CHAPTERS: EndingChapter[] = [
   ...HERO_ORDER,
@@ -44,6 +44,9 @@ export const ENDING_CHAPTERS: EndingChapter[] = [
   // por último, o gancho da continuação (o novo jogo)
   'sequel',
 ];
+
+/** Final da 2ª temporada: os três personagens dela e o epílogo. */
+export const SEASON2_CHAPTERS: EndingChapter[] = ['ninja', 'elf', 'spark', 'season2'];
 
 /** Onde cada final acontece (cenário de um mapa do jogo). */
 const CHAPTER_MAP: Record<EndingChapter, string> = {
@@ -58,6 +61,7 @@ const CHAPTER_MAP: Record<EndingChapter, string> = {
   elf: 'floresta',
   spark: 'torre',
   sequel: 'arena',
+  season2: 'vila',
 };
 
 const X0 = 20;
@@ -153,6 +157,14 @@ export class EndingScene {
         break;
       case 'sequel':
         this.sequel();
+        break;
+      case 'ninja':
+      case 'elf':
+      case 'spark':
+        this.solo(chapter);
+        break;
+      case 'season2':
+        this.epilogue([...HERO_ORDER, 'ninja', 'elf', 'spark']);
         break;
       default:
         this.epilogue();
@@ -675,9 +687,10 @@ export class EndingScene {
   }
 
   /** Epílogo: os cinco juntos na vila, cada um soltando o seu especial, com fogos no céu. */
-  private epilogue(): void {
-    HERO_ORDER.forEach((id, i) => {
-      const a = this.hero(id, X0 - 2.3 + i * 1.15, 0.4 - (i % 2) * 0.35, 0.15);
+  private epilogue(heroes: CharacterId[] = HERO_ORDER): void {
+    const step = 4.6 / (heroes.length - 1);
+    heroes.forEach((id, i) => {
+      const a = this.hero(id, X0 - 2.3 + i * step, 0.4 - (i % 2) * 0.35, 0.15);
       let next = 1 + i * 1.2;
       this.updaters.push((t) => {
         if (t < next) return;
@@ -760,6 +773,21 @@ export class EndingScene {
     });
     this.lights.push({ x: X0, y: 3, z: 2.5, color: 0xffb8c8, intensity: 8 });
     this.cam = { x: X0 + 0.2, y: -0.8, z: 0.2, zoom: 0.95, push: 0.04 };
+  }
+
+  /** Final de um personagem da 2ª temporada: ele sozinho, soltando o especial, com luzes da cor dele. */
+  private solo(id: CharacterId): void {
+    const a = this.hero(id, X0, 0.2, 0.2, 1.15);
+    let next = 1.2;
+    this.updaters.push((t) => {
+      if (t < next) return;
+      next = t + 5;
+      this.play(a, getCharacter(id).special);
+    });
+    const color = getCharacter(id).color;
+    this.fireflies(X0, 30, color);
+    this.lights.push({ x: X0, y: 2.4, z: 2.2, color, intensity: 12 });
+    this.cam = { x: X0, y: -0.8, z: 0.2, zoom: 0.75, push: 0.05 };
   }
 
   private fireflies(cx: number, n: number, color: number): void {

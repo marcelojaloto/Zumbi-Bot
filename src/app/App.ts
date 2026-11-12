@@ -26,7 +26,7 @@ import type { CharacterId, CosmeticId, CosmeticSlot } from '../data/types';
 import { lobbyScreen, type LobbyHost } from '../ui/screens/LobbyScreen';
 import { charactersScreen, type CharactersHost } from '../ui/screens/CharacterPicker';
 import { renderPortrait } from '../render/Portraits';
-import { EndingScene, type EndingChapter } from '../render/EndingScene';
+import { EndingScene, SEASON2_CHAPTERS, type EndingChapter } from '../render/EndingScene';
 import { endingScreen, type EndingHost } from '../ui/screens/EndingScreen';
 import { getCharacter, isCharacterId } from '../data/characters';
 import { SLOT_COLORS, aggregateParty, playerProgress, playerTag, type PartyMember } from './party';
@@ -70,7 +70,7 @@ import { COSMETICS } from '../data/cosmetics';
 import { FIREARMS } from '../data/weapons';
 import { MELEE_WEAPONS } from '../data/melee';
 import type { RunStats } from '../sim/events';
-import { MAPS, getMap, seasonMaps, seasonOf } from '../data/maps';
+import { MAPS, getMap, seasonComplete, seasonMaps, seasonOf } from '../data/maps';
 import { xpToNext } from '../data/balance';
 import { detectLang, setLang, t, type Lang } from '../i18n';
 
@@ -598,7 +598,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
    * Final lendário (depois do OMEGA-Z, ou pelos Créditos): a partida e o cenário do menu saem de cena e cada
    * capítulo monta o seu mini cenário. `then` roda no fim (os créditos, ou voltar).
    */
-  playEnding(then: () => void): void {
+  playEnding(then: () => void, season2 = false): void {
     this.input.exitPointerLock();
     this.endSession();
     this.menuScene?.dispose();
@@ -606,6 +606,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     this.music.play('menu');
     this.screens.push(
       endingScreen(this, {
+        ...(season2 ? { chapters: SEASON2_CHAPTERS, title: t('FINAL DA 2ª TEMPORADA') } : {}),
         onDone: () => {
           this.ending?.dispose();
           this.ending = null;
@@ -996,6 +997,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     const room = this.online;
     if (!p || !stats) return;
     const beforeLevel = this.profile.save.profile.level;
+    const firstClear = !this.profile.save.progress.levels[stats.levelId]?.completed;
     const rosterBefore = this.profile.roster;
     const sandbox = s.world.map.id === 'sandbox';
     const res = sandbox
@@ -1028,7 +1030,10 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       }),
     );
     // primeira vitória sobre o chefe final: o final lendário e os créditos por cima do resultado
+    const season2End =
+      victory && firstClear && res.finalBoss && seasonOf(s.world.map) === 2 && seasonComplete(2);
     const ending = () => {
+      if (season2End) this.playEnding(() => this.screens.pop(), true);
       if (!secretNew) return;
       // terminou o jogo: libera o personagem secreto (revelado no fim do final lendário)
       this.profile.unlockSecret();

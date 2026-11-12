@@ -18,10 +18,15 @@ const EPILOGUE =
 const SEQUEL =
   'Semanas depois, os instrumentos da Academia Arcana captaram um sinal vindo do fundo do mar: o mesmo pulso vermelho do núcleo do OMEGA-Z, só que mais forte. Antes de cair, o Ciborgue Primordial tinha mandado uma cópia de si mesmo para longe, e as máquinas dela voltaram a trabalhar: a primeira a religar foi uma velha fábrica de brinquedos. Os heróis não começam do zero: guardaram as armas, os cajados, as melhorias da Oficina e tudo o que conquistaram. A 2ª temporada começa na Fábrica de Brinquedos, e desta vez eles sabem com quem estão lidando.';
 
+const SEASON2 =
+  'A cópia do OMEGA-Z apagou no fundo do mar, e desta vez não sobrou sinal nenhum. Oito heróis e um bichinho elétrico voltaram à superfície no submarino do bunker, apertados e rindo. A fábrica voltou a fazer brinquedos, a praça encheu de skates e o estádio marcou o primeiro jogo sem zumbis na arquibancada. O que vier depois, eles enfrentam juntos.';
+
 /** Texto de um capítulo: título, nome e o final feliz. */
 function chapterText(c: EndingChapter): { color: string; title: string; name: string; text: string } {
   if (c === 'all')
     return { color: '#ffd23a', title: t('Juntos'), name: t('Um mundo novo'), text: t(EPILOGUE) };
+  if (c === 'season2')
+    return { color: '#39c8ff', title: t('Juntos de novo'), name: t('O mar em silêncio'), text: t(SEASON2) };
   if (c === 'sequel')
     return {
       color: '#ff3a4a',
@@ -44,7 +49,11 @@ function chapterText(c: EndingChapter): { color: string; title: string; name: st
  * cenário animado, e o epílogo com todos juntos. Passa sozinho (dá tempo de ler) ou em "Próximo"; "Pular" vai
  * direto para o fim.
  */
-export function endingScreen(host: EndingHost, opts: { onDone: () => void }): Screen {
+export function endingScreen(
+  host: EndingHost,
+  opts: { onDone: () => void; chapters?: EndingChapter[]; title?: string },
+): Screen {
+  const chapters = opts.chapters ?? ENDING_CHAPTERS;
   let idx = -1;
   let timer = 0;
   let wait = 12;
@@ -61,9 +70,9 @@ export function endingScreen(host: EndingHost, opts: { onDone: () => void }): Sc
     opts.onDone();
   };
   const show = (i: number) => {
-    if (i >= ENDING_CHAPTERS.length) return finish();
+    if (i >= chapters.length) return finish();
     idx = i;
-    const c = ENDING_CHAPTERS[i]!;
+    const c = chapters[i]!;
     host.endingChapter(c);
     const x = chapterText(c);
     box.style.setProperty('--cc', x.color);
@@ -77,9 +86,9 @@ export function endingScreen(host: EndingHost, opts: { onDone: () => void }): Sc
     void box.offsetWidth;
     box.classList.add('in');
     dots.replaceChildren(
-      ...ENDING_CHAPTERS.map((_, k) => el('span', { class: k === i ? 'on' : k < i ? 'seen' : '' })),
+      ...chapters.map((_, k) => el('span', { class: k === i ? 'on' : k < i ? 'seen' : '' })),
     );
-    next.textContent = i === ENDING_CHAPTERS.length - 1 ? `${t('Fim')} ▶` : `${t('Próximo')} ▶`;
+    next.textContent = i === chapters.length - 1 ? `${t('Fim')} ▶` : `${t('Próximo')} ▶`;
   };
   next.addEventListener('click', () => {
     host.playUi('ui_click');
@@ -107,7 +116,7 @@ export function endingScreen(host: EndingHost, opts: { onDone: () => void }): Sc
   const e = el(
     'div',
     { class: 'screen ending' },
-    el('div', { class: 'end-top' }, el('h2', {}, t('FINAL LENDÁRIO'))),
+    el('div', { class: 'end-top' }, el('h2', {}, opts.title ?? t('FINAL LENDÁRIO'))),
     box,
   );
   return {

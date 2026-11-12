@@ -42,6 +42,7 @@ const MAP_IDS = [
   'bunker',
   'loja',
   'campo',
+  'mar',
 ];
 
 async function ready(page: Page) {

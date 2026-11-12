@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Profile } from '../app/Profile';
+import { UNDERWATER_GRAVITY } from '../data/balance';
 import { CHARACTERS } from '../data/characters';
 import { getMap } from '../data/maps';
 import { MELEE_WEAPONS, MOVES } from '../data/melee';
@@ -77,5 +78,14 @@ describe('personagens da 2ª temporada', () => {
     const q = new Profile(new Storage(new MemoryKV()));
     q.save.profile.character = 'spark';
     expect(q.loadout().character).toBe('robot');
+  });
+});
+
+describe('fundo do mar', () => {
+  it("debaixo d'água o jogador e os inimigos caem mais devagar", () => {
+    const w = makeWorld({ map: getMap('mar') });
+    expect(player(w).body!.gravityScale).toBe(UNDERWATER_GRAVITY);
+    expect(spawnEnemy(w, 'mar_swimmer', 8, 0, 'right').body!.gravityScale).toBe(UNDERWATER_GRAVITY);
+    expect(player(makeWorld()).body!.gravityScale).toBe(1);
   });
 });

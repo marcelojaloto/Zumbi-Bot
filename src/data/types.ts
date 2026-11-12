@@ -824,6 +824,8 @@ export interface MapDef {
   index: number;
   /** Temporada do mapa (sem valor = 1ª). */
   season?: number;
+  /** Debaixo d'água: pulos altos e quedas lentas. */
+  underwater?: boolean;
   name: string;
   subtitle: string;
   env: EnvironmentDef;

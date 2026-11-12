@@ -84,6 +84,9 @@ export const DIFFICULTY_ORDER: Difficulty[] = ['easy', 'normal', 'hard', 'insane
 export const NG_PLUS = { enemyHp: 1.5, enemyDmg: 1.3, score: 1.5, scrap: 1.5 };
 
 /** Largura visível (m) aproximada no plano do jogador; o sim usa metade dela para limitar a câmera. */
+/** Gravidade dos mapas debaixo d'água (fração da normal). */
+export const UNDERWATER_GRAVITY = 0.5;
+
 export const VIEW_HALF_WIDTH = 6.8;
 export const GRAVITY = 26;
 

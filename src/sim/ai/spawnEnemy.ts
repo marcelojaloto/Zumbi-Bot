@@ -1,4 +1,4 @@
-import { coopScaling } from '../../data/balance';
+import { coopScaling, UNDERWATER_GRAVITY } from '../../data/balance';
 import { getEnemy } from '../../data/enemies';
 import type { SpawnFrom } from '../../data/types';
 import { makeFighter, makeHealth, makeTransform, type AiComp, type Entity } from '../Entity';
@@ -46,7 +46,7 @@ export function spawnEnemy(w: World, id: string, x: number, z: number, from: Spa
       height: def.height,
       mass: def.mass,
       grounded: !def.fly,
-      gravityScale: 1,
+      gravityScale: w.map.underwater ? UNDERWATER_GRAVITY : 1,
       fly: def.fly,
     },
     health: makeHealth(hp, def.poise),

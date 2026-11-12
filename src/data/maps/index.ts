@@ -19,6 +19,7 @@ import { shopping } from './15-shopping';
 import { bunker } from './16-bunker';
 import { loja } from './17-loja';
 import { campo } from './18-campo';
+import { mar } from './19-mar';
 
 /** Mapas jogáveis em ordem, uma temporada depois da outra (o sandbox fica fora da campanha). */
 export const MAPS: MapDef[] = [
@@ -41,6 +42,7 @@ export const MAPS: MapDef[] = [
   bunker,
   loja,
   campo,
+  mar,
 ];
 
 export const ALL_MAPS: MapDef[] = [sandbox, ...MAPS];
