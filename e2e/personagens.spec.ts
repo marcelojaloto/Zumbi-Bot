@@ -28,17 +28,21 @@ test('menu Personagens: rostos, apelido, nome e título; a ficha abre com Voltar
   await page.getByRole('button', { name: 'Personagens', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'PERSONAGENS' })).toBeVisible();
   const cards = page.locator('.char-card');
-  await expect(cards).toHaveCount(6);
+  await expect(cards).toHaveCount(9);
   await expect(cards.nth(1)).toContainText('Maga');
   await expect(cards.nth(1)).toContainText('Lívia Vesper');
   await expect(cards.nth(1)).toContainText('Feiticeira arcana');
-  // o personagem secreto fica trancado até terminar o jogo
+  // os da 2ª temporada ficam trancados até vencer o mapa de cada um
   await expect(cards.nth(5)).toHaveClass(/locked/);
-  await expect(cards.nth(5)).toContainText('???');
-  await expect(cards.nth(5)).not.toContainText('Prodígio');
+  await expect(cards.nth(5)).not.toContainText('Ninja');
+  await expect(cards.nth(5)).toContainText('Praça do Skate');
+  // o secreto, até terminar o jogo
+  await expect(cards.nth(8)).toHaveClass(/locked/);
+  await expect(cards.nth(8)).toContainText('???');
+  await expect(cards.nth(8)).not.toContainText('Prodígio');
   // os rostos são fotografados em 3D, um por quadro
   await expect(page.locator('.char-face img')).toHaveCount(5, { timeout: 60_000 });
-  // no computador cabem todos numa linha: sem as setas do carrossel
+  // no computador cabem todos na tela: sem as setas do carrossel
   await expect(page.locator('.chars-arrow:visible')).toHaveCount(0);
 
   await cards.nth(1).click();

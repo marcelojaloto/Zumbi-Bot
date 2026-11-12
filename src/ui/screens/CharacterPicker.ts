@@ -1,4 +1,5 @@
 import { CHARACTERS, CHARACTER_ORDER } from '../../data/characters';
+import { getMap } from '../../data/maps';
 import { REVIVE_ITEMS } from '../../data/revive';
 import type { CharacterDef, CharacterId } from '../../data/types';
 import { connectedPads, padDir } from '../../input/pads';
@@ -449,20 +450,24 @@ export function charactersScreen(host: CharactersHost): Screen {
   };
   const card = (id: CharacterId) => {
     const c = CHARACTERS[id];
-    if (!unlocked.has(id))
+    if (!unlocked.has(id)) {
+      const how = c.unlockMap
+        ? t('Vença {map} para liberar', { map: t(getMap(c.unlockMap).name) })
+        : t('Termine o jogo para liberar');
       return el(
         'button',
         {
           class: 'char-card locked',
           data: { nav: '', char: id },
-          title: t('Termine o jogo para liberar'),
+          title: how,
           onclick: () => host.playUi('ui_back'),
         },
         el('div', { class: 'char-face' }, el('span', { class: 'char-lock' }, '?')),
         el('b', { class: 'char-nick' }, '???'),
-        el('span', { class: 'char-name' }, t('Personagem secreto')),
-        el('span', { class: 'char-title' }, `🔒 ${t('Termine o jogo para liberar')}`),
+        el('span', { class: 'char-name' }, c.secret ? t('Personagem secreto') : t('Novo personagem')),
+        el('span', { class: 'char-title' }, `🔒 ${how}`),
       );
+    }
     const face = el('div', { class: 'char-face' });
     faces.set(id, face);
     return el(

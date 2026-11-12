@@ -1,5 +1,7 @@
 export const personagensEn: Record<string, string> = {
   'Personagem liberado!': 'Character unlocked!',
+  'Novo personagem': 'New character',
+  'Vença {map} para liberar': 'Beat {map} to unlock',
   Ninja: 'Ninja',
   'Lâmina de gelo e fogo': 'Blade of ice and fire',
   'Rápido e letal com lâminas: a katana dele nunca quebra, e o traje conjura gelo e fogo (troque de elemento no botão de trocar cajado). Aguenta pouco e não usa armas de fogo.':
