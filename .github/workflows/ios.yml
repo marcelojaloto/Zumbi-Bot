@@ -42,7 +42,7 @@ jobs:
           xcode-version: latest-stable
       - run: npm ci
       - name: Versão
-        # 1.6.<build>, a partir da versão do package.json; a build também é o número da compilação
+        # 1.7.<build>, a partir da versão do package.json; a build também é o número da compilação
         run: |
           BUILD=$((GITHUB_RUN_NUMBER + BUILD_OFFSET))
           echo "VERSION_NAME=$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')").$BUILD" >> "$GITHUB_ENV"

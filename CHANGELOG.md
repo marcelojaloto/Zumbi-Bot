@@ -3,6 +3,56 @@
 O que mudou em cada versão do Zumbi Bot, da mais nova para a mais antiga. No app Android, o último número da
 versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter várias builds.
 
+## 1.7 (12/11/2026)
+
+### 2ª temporada
+
+- O jogo passa a ter **temporadas**. A 1ª são os dez mapas até o OMEGA-Z; a 2ª segue o sinal que ele deixou no fundo
+  do mar, com **9 mundos novos**. A tela de mapas mostra uma grade por temporada.
+- Vencer o OMEGA-Z libera a 2ª temporada, e o botão principal do menu passa a levar a ela. Quem já tinha terminado o
+  jogo encontra o mundo novo liberado ao abrir, com tudo o que conquistou. O **Novo jogo** (da Vila Assombrada) fica
+  para depois do último mapa.
+- A jornada do ranking termina no fim de cada temporada, como já terminava no OMEGA-Z.
+- O final lendário e os créditos contam que a história continua na Fábrica de Brinquedos, e vencer o último mapa
+  mostra o **final da 2ª temporada**.
+
+### Os nove mundos
+
+- **Fábrica de Brinquedos** (Ursão de Corda): esteiras que carregam jogadores e inimigos, prensas que descem em
+  ciclos, caixas de presente quebráveis e brinquedos infectados (Zumbi de Corda, Ursinho de Corda, Caixa-Surpresa e
+  Soldadinho de Chumbo). O chefe para quando a corda acaba e leva mais dano.
+- **Praça do Skate** (Rei do Half-Pipe): cones, corrimãos e bancos para pular, zumbis skatistas, e a luta do chefe
+  numa ponte, com skates soltos rolando.
+- **Estúdio de Gravação** (DJ Decibel): caixas de som que empurram, cabos soltos, pirotecnia do palco e ondas de som
+  para pular no ritmo.
+- **Pista de Corrida** (O Recordista): fileiras de barreiras, vento de través, velocistas e um chefe que dá tiros de
+  cem metros pelas raias.
+- **Shopping** (Manequim-Rei): esteiras rolantes, alarmes de loja e manequins que ganham vida; o chefe solta os
+  braços como bumerangue.
+- **Bunker** (Comandante Casamata): portas blindadas que fecham o corredor, minas, gás e mísseis teleguiados que dá
+  para abater; na segunda fase as portas fecham e a arena aperta.
+- **Loja de Automóveis** (Monstro V8): poças de óleo que deixam lento, elevadores hidráulicos, carros que explodem e
+  um carro possuído que investe pelas faixas.
+- **Campo de Futebol** (Artilheiro Infernal): o chefe chuta bolas em chamas, cobra pênalti, dá carrinho e cabeceia.
+- **Fundo do Mar** (OMEGA-Z Abissal, três fases): debaixo d'água o pulo vai mais alto e a queda é lenta; correntes,
+  minas, zumbis nadadores e cardumes de piranhas zumbis.
+- As barreiras são um perigo novo: derrubam quem passa sem pular.
+- Cada mundo tem cenário, inimigos, chefe e música próprios.
+
+### Três personagens novos
+
+- **Ninja** (Ravi Kuroda), liberado ao vencer a Praça do Skate: conjura gelo e fogo sem cajado (o botão de trocar
+  cajado troca o elemento), a katana dele nunca quebra e o especial **Cortes Gêmeos** dá vários cortes de uma vez.
+- **Elfa** (Elowen Folhaprata), liberada ao vencer o Shopping: maga de orelhas pontudas que luta com espadas, com a
+  mesma **Nova Arcana** da Maga.
+- **Faísca**, liberado ao vencer o Campo de Futebol: um bichinho elétrico que solta raios e cura sem cajado. A
+  **Cápsula de Raio** prende um inimigo comum, que luta do seu lado por 10 segundos.
+- Os três têm árvore na Oficina, item de reviver e história própria.
+
+### Jogo online
+
+- A versão do jogo online mudou: todos na sala precisam estar com o jogo atualizado.
+
 ## 1.6, atualização de 06/10/2026
 
 ### Segurança no jogo online

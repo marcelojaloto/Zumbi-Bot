@@ -18,10 +18,11 @@ Um robô contra o apocalipse zumbi: socos, armas, magias e chefes gigantes.
 
 ```
 Os zumbis tomaram a cidade e só um robô pode detê-los. Zumbi Bot é um beat 'em up 2.5D de ação rápida: ande pelas
-ruas, pule, soque, chute e atire para limpar 10 mapas cheios de mortos-vivos e robôs rebeldes.
+ruas, pule, soque, chute e atire para limpar 19 mapas cheios de mortos-vivos e robôs rebeldes.
 
-- 10 mapas, da Vila Assombrada à Arena Final, cada um com seu chefe gigante e seus próprios ataques
-- 5 personagens para escolher (robô, maga, militar, ciborgue e mutante), cada um com seu golpe especial, e um personagem secreto para quem terminar o jogo
+- 19 mapas em duas temporadas, da Vila Assombrada ao Fundo do Mar, cada um com seu chefe gigante e seus próprios ataques
+- 2ª temporada com 9 mundos novos: fábrica de brinquedos, praça do skate, estúdio, pista de corrida, shopping, bunker, loja de automóveis, campo de futebol e fundo do mar
+- 8 personagens para escolher (robô, maga, militar, ciborgue, mutante, ninja, elfa e um bichinho elétrico), cada um com seu golpe especial, e um personagem secreto para quem terminar a 1ª temporada
 - Jogue online com até 4 amigos: crie uma sala, mande o código de 4 letras e joguem juntos, cada um no seu celular
 - Chat de voz na sala: todos conversam com todos, e cada um liga ou desliga o próprio microfone
 - Ou até 5 jogadores no mesmo aparelho, com controles
@@ -56,10 +57,11 @@ One robot vs. the zombie apocalypse: punches, guns, magic and giant bosses.
 
 ```
 Zombies have taken over the city and only one robot can stop them. Zumbi Bot is a fast 2.5D beat 'em up: walk the
-streets, jump, punch, kick and shoot your way through 10 maps packed with the undead and rogue robots.
+streets, jump, punch, kick and shoot your way through 19 maps packed with the undead and rogue robots.
 
-- 10 maps, from the Haunted Village to the Final Arena, each with its own giant boss and attacks
-- 5 characters to pick (robot, mage, soldier, cyborg and mutant), each with a special move, plus a secret character for those who finish the game
+- 19 maps in two seasons, from the Haunted Village to the Bottom of the Sea, each with its own giant boss and attacks
+- Season 2 with 9 new worlds: toy factory, skate park, recording studio, running track, mall, bunker, car dealership, soccer field and the bottom of the sea
+- 8 characters to pick (robot, mage, soldier, cyborg, mutant, ninja, elf and a little electric creature), each with a special move, plus a secret character for those who finish season 1
 - Play online with up to 4 friends: create a room, share the 4-letter code and play together, each on their phone
 - Voice chat in the room: everyone talks with everyone, and each player turns their own mic on or off
 - Or up to 5 players on the same device with controllers

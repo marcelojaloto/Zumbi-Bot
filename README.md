@@ -11,7 +11,8 @@ Web Audio.
 
 ## O jogo
 
-- **10 mapas**, cada um com trechos travados, ondas de inimigos, perigos próprios e um **chefe gigante** no fim:
+- **Duas temporadas.** A 1ª tem **10 mapas**, cada um com trechos travados, ondas de inimigos, perigos próprios e um
+  **chefe gigante** no fim:
 
   | #   | Mapa               | Chefe                                  | Recompensa                            |
   | --- | ------------------ | -------------------------------------- | ------------------------------------- |
@@ -26,17 +27,40 @@ Web Audio.
   | 9   | Campo de Guerra    | General Criotanque                     | Cajado do Gelo                        |
   | 10  | Arena Final        | **OMEGA-Z**, ciborgue zumbi de 4 fases | Coroa do Ômega, créditos e Novo Jogo+ |
 
-- **5 personagens** (e um **secreto**), escolhidos antes de cada partida, cada um com atributos, armas e especial
-  próprios:
+  A **2ª temporada** abre para quem vence o OMEGA-Z e segue o sinal que ele deixou no fundo do mar: são mais **9
+  mundos**, e a tela de mapas mostra uma grade por temporada.
 
-  | Personagem | Ponto forte                                             | Usa                              | Especial                                                |
-  | ---------- | ------------------------------------------------------- | -------------------------------- | ------------------------------------------------------- |
-  | Zumbi Bot  | equilibrado                                             | armas de fogo e cajados          | **Giro Turbo**: gira acertando todos em volta           |
-  | Maga       | magias muito mais fortes e mana de sobra; aguenta pouco | cajados (fraca c/ brancas)       | **Nova Arcana**: explosão em volta + bola de fogo roxa  |
-  | Militar    | muita vida, socos fortes, quase não é empurrado; lento  | armas de fogo                    | **Chuva de Granadas**: granadas explodem em volta       |
-  | Ciborgue   | tiros mais fortes e recarga rápida                      | armas de fogo                    | **Raio Laser**: atravessa todos os inimigos à frente    |
-  | Mutante    | rápido, pula alto e se regenera; ruim de mira           | armas de fogo                    | **Fúria Mutante**: rugido + 6 s de fúria que rouba vida |
-  | Prodígio   | secreto: caratê arcano, rápido e ótimo de briga; frágil | cajados (muito fraco c/ brancas) | **Tornado Arcano**: chutes girando + ciclones em volta  |
+  | #   | Mapa                  | Chefe               | O que tem de novo                                           |
+  | --- | --------------------- | ------------------- | ----------------------------------------------------------- |
+  | 11  | Fábrica de Brinquedos | Ursão de Corda      | esteiras que carregam, prensas e brinquedos de corda        |
+  | 12  | Praça do Skate        | Rei do Half-Pipe    | cones e corrimãos para pular; a luta do chefe é numa ponte  |
+  | 13  | Estúdio de Gravação   | DJ Decibel          | caixas de som que empurram e ondas de som no ritmo          |
+  | 14  | Pista de Corrida      | O Recordista        | fileiras de barreiras, vento de través e um chefe velocista |
+  | 15  | Shopping              | Manequim-Rei        | esteiras rolantes, alarmes e manequins que ganham vida      |
+  | 16  | Bunker                | Comandante Casamata | portas blindadas, minas, gás e mísseis que dá para abater   |
+  | 17  | Loja de Automóveis    | Monstro V8          | poças de óleo, elevadores hidráulicos e carros que explodem |
+  | 18  | Campo de Futebol      | Artilheiro Infernal | o chefe chuta bolas em chamas; pênalti, carrinho e cabeçada |
+  | 19  | Fundo do Mar          | **OMEGA-Z Abissal** | pulo alto e queda lenta, correntes, minas e piranhas zumbis |
+
+  As **esteiras** levam quem pisa nelas (jogadores e inimigos; pulando, sai), as **prensas** descem em ciclos e
+  esmagam quem estiver embaixo, zumbi ou não, e as **barreiras** derrubam quem passa sem pular. No Fundo do Mar o
+  pulo vai mais alto e a queda é lenta. Vencer o OMEGA-Z Abissal mostra o **final da 2ª temporada**.
+
+- **8 personagens** (e um **secreto**), escolhidos antes de cada partida, cada um com atributos, armas e especial
+  próprios. Três deles são liberados na 2ª temporada: o Ninja ao vencer a Praça do Skate, a Elfa ao vencer o
+  Shopping e o Faísca ao vencer o Campo de Futebol:
+
+  | Personagem | Ponto forte                                               | Usa                              | Especial                                                      |
+  | ---------- | --------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------- |
+  | Zumbi Bot  | equilibrado                                               | armas de fogo e cajados          | **Giro Turbo**: gira acertando todos em volta                 |
+  | Maga       | magias muito mais fortes e mana de sobra; aguenta pouco   | cajados (fraca c/ brancas)       | **Nova Arcana**: explosão em volta + bola de fogo roxa        |
+  | Militar    | muita vida, socos fortes, quase não é empurrado; lento    | armas de fogo                    | **Chuva de Granadas**: granadas explodem em volta             |
+  | Ciborgue   | tiros mais fortes e recarga rápida                        | armas de fogo                    | **Raio Laser**: atravessa todos os inimigos à frente          |
+  | Mutante    | rápido, pula alto e se regenera; ruim de mira             | armas de fogo                    | **Fúria Mutante**: rugido + 6 s de fúria que rouba vida       |
+  | Ninja      | rápido e letal com lâminas; a katana nunca quebra; frágil | gelo e fogo, sem cajado          | **Cortes Gêmeos**: vários cortes de uma vez + gelo e fogo     |
+  | Elfa       | conjura como a Maga e é a melhor com espadas; frágil      | cajados e espadas                | **Nova Arcana**: a mesma da Maga                              |
+  | Faísca     | bichinho elétrico pequeno e muito rápido; fraco de briga  | raios e cura, sem cajado         | **Cápsula de Raio**: o inimigo pego luta do seu lado por 10 s |
+  | Prodígio   | secreto: caratê arcano, rápido e ótimo de briga; frágil   | cajados (muito fraco c/ brancas) | **Tornado Arcano**: chutes girando + ciclones em volta        |
 
   Todos usam socos, chutes e armas brancas. Quem não conjura (Militar, Ciborgue, Mutante) guarda os cajados ganhos
   para quando jogar com a Maga, o Zumbi Bot ou o Prodígio e, no lugar do cajado, tem **caixas de cura guardadas**:
@@ -81,11 +105,13 @@ Web Audio.
   Aberto, os prêmios saem voando para os lados, cada um com o objeto e o nome: o que a fase deu e um bônus de
   sucata, às vezes com uma peça nova, o item de reviver, uma arma branca ou uma arma de fogo.
 - **Progressão**: XP e níveis, pontuação com combos, estrelas por nível, recordes e **Novo Jogo+** depois de
-  derrotar o OMEGA-Z. Terminando o jogo, o "Continuar" do menu vira **Novo jogo**: a segunda jornada começa de novo
-  na Vila Assombrada com todas as armas, cajados, melhorias e itens conquistados, e o último capítulo do final
-  lendário conta o que vem por aí. O progresso fica salvo no navegador (`localStorage`).
-- **Ranking por jornada**: os pontos de cada mapa se somam até você **perder todas as vidas** ou **terminar o
-  jogo**; só aí o jogo mostra a posição e o nome, já salvo com o último nome usado (ou o apelido do personagem).
+  derrotar o OMEGA-Z. Vencido o OMEGA-Z, o "Continuar" do menu vira **2ª temporada**, que começa na Fábrica de
+  Brinquedos com todas as armas, cajados, melhorias e itens conquistados; o último capítulo do final lendário conta o
+  que vem por aí. Quando um mundo novo é lançado, quem já venceu o anterior o encontra liberado. Vencido o último
+  mapa lançado, o botão vira **Novo jogo**: a jornada recomeça na Vila Assombrada, também com tudo o que foi
+  conquistado. O progresso fica salvo no navegador (`localStorage`).
+- **Ranking por jornada**: os pontos de cada mapa se somam até você **perder todas as vidas** ou **terminar uma
+  temporada**; só aí o jogo mostra a posição e o nome, já salvo com o último nome usado (ou o apelido do personagem).
   Tocar no nome abre o teclado, com a caixa no alto da tela. O **Ranking Pessoal** fica no aparelho, com o nome; o
   botão **Ranking Global** mostra o melhor de cada jogador que tocou em **Participar**, pelos apelidos dos
   personagens (o nome não sai do aparelho; Firebase, veja [docs/RANKING_GLOBAL.md](docs/RANKING_GLOBAL.md)), e só

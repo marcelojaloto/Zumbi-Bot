@@ -41,7 +41,7 @@ jobs:
           cache: gradle
       - run: npm ci
       - name: Versão
-        # 1.6.<build>, a partir da versão do package.json; a build também é o versionCode
+        # 1.7.<build>, a partir da versão do package.json; a build também é o versionCode
         run: |
           BUILD=$((GITHUB_RUN_NUMBER + BUILD_OFFSET))
           echo "VERSION_CODE=$BUILD" >> "$GITHUB_ENV"
