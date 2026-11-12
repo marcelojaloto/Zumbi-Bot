@@ -38,6 +38,7 @@ const MAP_IDS = [
   'praca',
   'estudio',
   'pista',
+  'shopping',
 ];
 
 async function ready(page: Page) {
