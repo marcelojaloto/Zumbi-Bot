@@ -3,6 +3,7 @@ import { estudioEn } from './estudio';
 import { pistaEn } from './pista';
 import { shoppingEn } from './shopping';
 import { bunkerEn } from './bunker';
+import { lojaEn } from './loja';
 
 /** Textos dos mundos da 2ª temporada, um arquivo por mundo. */
 export const SEASON2_EN: Record<string, string> = {
@@ -11,4 +12,5 @@ export const SEASON2_EN: Record<string, string> = {
   ...pistaEn,
   ...shoppingEn,
   ...bunkerEn,
+  ...lojaEn,
 };

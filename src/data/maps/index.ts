@@ -17,6 +17,7 @@ import { estudio } from './13-estudio';
 import { pista } from './14-pista';
 import { shopping } from './15-shopping';
 import { bunker } from './16-bunker';
+import { loja } from './17-loja';
 
 /** Mapas jogáveis em ordem, uma temporada depois da outra (o sandbox fica fora da campanha). */
 export const MAPS: MapDef[] = [
@@ -37,6 +38,7 @@ export const MAPS: MapDef[] = [
   pista,
   shopping,
   bunker,
+  loja,
 ];
 
 export const ALL_MAPS: MapDef[] = [sandbox, ...MAPS];
