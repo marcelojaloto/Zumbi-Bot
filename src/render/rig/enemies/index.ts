@@ -5,6 +5,7 @@ import { pistaExtras } from './pista';
 import { shoppingExtras } from './shopping';
 import { bunkerExtras } from './bunker';
 import { lojaExtras } from './loja';
+import { campoExtras } from './campo';
 
 export const ENEMY_EXTRAS: Record<string, EnemyExtra> = {
   ...pracaExtras,
@@ -13,4 +14,5 @@ export const ENEMY_EXTRAS: Record<string, EnemyExtra> = {
   ...shoppingExtras,
   ...bunkerExtras,
   ...lojaExtras,
+  ...campoExtras,
 };

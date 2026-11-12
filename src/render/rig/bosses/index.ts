@@ -16,6 +16,7 @@ import { recordistaExtra } from './recordista';
 import { manequimExtra } from './manequim';
 import { casamataExtra } from './casamata';
 import { v8Extra } from './v8';
+import { artilheiroExtra } from './artilheiro';
 
 /** Acessórios exclusivos por chefe (chave = def.rig.boss). */
 export const BOSS_EXTRAS: Record<string, BossExtra> = {
@@ -36,4 +37,5 @@ export const BOSS_EXTRAS: Record<string, BossExtra> = {
   manequim: manequimExtra,
   casamata: casamataExtra,
   v8: v8Extra,
+  artilheiro: artilheiroExtra,
 };

@@ -18,6 +18,7 @@ import { pistaTheme } from './pista';
 import { shoppingTheme } from './shopping';
 import { bunkerTheme } from './bunker';
 import { lojaTheme } from './loja';
+import { campoTheme } from './campo';
 
 export const THEMES: Partial<Record<ThemeId, (ctx: EnvCtx) => void>> = {
   sandbox: sandboxTheme,
@@ -38,4 +39,5 @@ export const THEMES: Partial<Record<ThemeId, (ctx: EnvCtx) => void>> = {
   shopping: shoppingTheme,
   bunker: bunkerTheme,
   loja: lojaTheme,
+  campo: campoTheme,
 };
