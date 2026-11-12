@@ -13,6 +13,7 @@ import { guerra } from './09-guerra';
 import { arena } from './10-arena';
 import { fabrica } from './11-fabrica';
 import { praca } from './12-praca';
+import { estudio } from './13-estudio';
 
 /** Mapas jogáveis em ordem, uma temporada depois da outra (o sandbox fica fora da campanha). */
 export const MAPS: MapDef[] = [
@@ -29,6 +30,7 @@ export const MAPS: MapDef[] = [
   // 2ª temporada
   fabrica,
   praca,
+  estudio,
 ];
 
 export const ALL_MAPS: MapDef[] = [sandbox, ...MAPS];

@@ -36,6 +36,7 @@ const MAP_IDS = [
   // 2ª temporada
   'fabrica',
   'praca',
+  'estudio',
 ];
 
 async function ready(page: Page) {

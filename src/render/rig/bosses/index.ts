@@ -11,6 +11,7 @@ import { criotanqueExtra } from './criotanque';
 import { omegaExtra } from './omega';
 import { ursaoExtra } from './ursao';
 import { halfpipeExtra } from './halfpipe';
+import { decibelExtra } from './decibel';
 
 /** Acessórios exclusivos por chefe (chave = def.rig.boss). */
 export const BOSS_EXTRAS: Record<string, BossExtra> = {
@@ -26,4 +27,5 @@ export const BOSS_EXTRAS: Record<string, BossExtra> = {
   omega: omegaExtra,
   ursao: ursaoExtra,
   halfpipe: halfpipeExtra,
+  decibel: decibelExtra,
 };
