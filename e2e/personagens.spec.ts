@@ -42,7 +42,7 @@ test('menu Personagens: rostos, apelido, nome e título; a ficha abre com Voltar
   await expect(cards.nth(8)).not.toContainText('Prodígio');
   // os rostos são fotografados em 3D, um por quadro
   await expect(page.locator('.char-face img')).toHaveCount(5, { timeout: 60_000 });
-  // no computador cabem todos na tela: sem as setas do carrossel
+  // no computador cabem todos numa linha: sem as setas do carrossel
   await expect(page.locator('.chars-arrow:visible')).toHaveCount(0);
 
   await cards.nth(1).click();

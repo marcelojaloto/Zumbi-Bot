@@ -1475,7 +1475,7 @@ a.btn {
 }
 .chars-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 170px);
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   justify-content: center;
   gap: 12px;
   width: min(1240px, 100%);
