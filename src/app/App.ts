@@ -804,12 +804,12 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     this.screens.push(workshopScreen(this, c));
   }
 
-  openWardrobe(): void {
-    this.screens.push(wardrobeScreen(this));
+  openWardrobe(c?: CharacterId): void {
+    this.screens.push(wardrobeScreen(this, c));
   }
 
-  openShop(): void {
-    this.screens.push(shopScreen(this));
+  openShop(c?: CharacterId): void {
+    this.screens.push(shopScreen(this, c));
   }
 
   /** Resumo das teclas no rodapé do menu (com as teclas que o jogador escolheu). */

@@ -13,7 +13,7 @@ import type { CharacterId } from '../../data/types';
 import { el, fmtInt, hexColor } from '../dom';
 import { t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
-import { HeroSpin, nextCharacter, type PickerHost } from './CharacterPicker';
+import { HeroSpin, heroStage, nextCharacter, type PickerHost } from './CharacterPicker';
 
 const BRANCHES: [PerkBranch, string][] = [
   ['attr', 'Atributos'],
@@ -46,7 +46,7 @@ function perkName(p: PerkDef): string {
 }
 
 /**
- * Oficina: escolhe o personagem (◀ ▶) e vê a árvore de melhorias dele em quatro ramos (Atributos, Combos,
+ * Oficina: escolhe o personagem (◀ ▶ dos lados do boneco) e vê a árvore de melhorias dele em quatro ramos (Atributos, Combos,
  * Especiais e Defesas). Cada melhoria libera com XP (a soma de tudo o que o jogador já ganhou) e se compra com
  * sucata; algumas pedem a anterior do mesmo ramo. Nos especiais, escolhe-se qual fica em uso. `start`: personagem
  * aberto (o do jogador, se não vier).
@@ -60,8 +60,6 @@ export function workshopScreen(host: PickerHost, start?: CharacterId): Screen {
   /** Melhoria selecionada (detalhes e compra na barra de baixo); 'base' = especial original. */
   let sel: string | null = null;
 
-  const name = el('b', { class: 'cs-nav-name' });
-  const sub = el('div', { class: 'cs-sub' });
   const wallet = el('div', { class: 'ws-wallet' });
   const msg = el('div', { class: 'shop-msg' });
   const tabs = el('div', { class: 'tabs' });
@@ -83,12 +81,7 @@ export function workshopScreen(host: PickerHost, start?: CharacterId): Screen {
     host.previewLineup([c]);
     render();
   };
-  const arrow = (dir: number, text: string, title: string) =>
-    el(
-      'button',
-      { class: 'lc-arrow', title, data: { nav: '' }, onclick: () => choose(nextCharacter(cur, dir, roster)) },
-      text,
-    );
+  const stage = heroStage({ get: () => cur, pick: choose, roster });
 
   for (const [k, label] of BRANCHES)
     tabs.appendChild(
@@ -285,8 +278,7 @@ export function workshopScreen(host: PickerHost, start?: CharacterId): Screen {
   const render = () => {
     const c = CHARACTERS[cur];
     panel.style.setProperty('--cc', hexColor(c.color));
-    name.textContent = t(c.name);
-    sub.textContent = t(c.title);
+    stage.render();
     wallet.replaceChildren(
       el('span', { class: 'scrap' }, t('Sucata: {n}', { n: fmtInt(prof.save.profile.scrap) })),
       el('span', { class: 'ws-xp' }, t('XP total: {n}', { n: fmtInt(prof.totalXp) })),
@@ -300,12 +292,6 @@ export function workshopScreen(host: PickerHost, start?: CharacterId): Screen {
     'div',
     { class: 'wr-panel cs-sheet ws-panel' },
     el('h2', {}, t('OFICINA')),
-    el(
-      'div',
-      { class: 'cs-nav cs-head' },
-      el('div', { class: 'cs-nav-row' }, arrow(-1, '◀', t('Anterior')), name, arrow(1, '▶', t('Próximo'))),
-      sub,
-    ),
     el('div', { class: 'shop-head' }, wallet, msg),
     el(
       'p',
@@ -316,7 +302,7 @@ export function workshopScreen(host: PickerHost, start?: CharacterId): Screen {
     body,
     bar,
   );
-  const root = el('div', { class: 'screen wardrobe char-select' }, panel);
+  const root = el('div', { class: 'screen wardrobe char-select' }, stage.el, panel);
   // arrastar o boneco gira (as setas andam pela árvore)
   const spin = new HeroSpin(host, { left: [], right: [] });
   spin.bind(root, panel);

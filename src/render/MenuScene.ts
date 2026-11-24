@@ -272,8 +272,8 @@ export class MenuScene {
     cam.zoom = (1 - f * 0.45) * (1 - sv) + 0.8 * sv;
     // seleção: fila centralizada e mais alta na tela; senão robô à esquerda (menu) ou em close (vestiário)
     const menuX = n > 1 ? 21 : e.t.x + 2.5 - f * 2.4 + f * this.panelShift(e);
-    // close: o boneco inteiro, da cabeça (itens da cabeça) aos pés
-    cam.update(menuX * (1 - sv) + 21 * sv, f * 0.45 * (1 - sv) - 1.2 * sv, e.t.z * 0.3 + f * 0.2, dt);
+    // close: o boneco inteiro, um pouco acima do meio para o nome caber embaixo
+    cam.update(menuX * (1 - sv) + 21 * sv, f * 0.1 * (1 - sv) - 1.2 * sv, e.t.z * 0.3 + f * 0.2, dt);
     this.lighting.update(cam.x, 0, dt);
     this.lighting.request({
       x: e.t.x + 1,

@@ -11,6 +11,9 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   a lista não cabe, só ela rola, com uma barra de rolagem mais visível.
 - O **Novo Jogo+** sai da tela de Mapas e vai para o menu **Jogar**.
 - A seta de voltar fica sempre branca.
+- **Ficha de personagem, Vestiário, Loja e Oficina:** as setas para trocar de personagem ficam dos lados do boneco
+  3D, com o nome e o tipo embaixo dele, e o boneco sobe um pouco para o texto não ficar por cima. Na ficha, o rosto e
+  o nome ficam centralizados e os cinco botões (Vestiário, Loja, Oficina, Mapas e Jogar) ficam lado a lado.
 
 ## 1.7, atualização de 23/11/2026
 

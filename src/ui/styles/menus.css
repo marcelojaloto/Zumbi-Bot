@@ -1489,19 +1489,6 @@ a.btn {
   margin: 0;
   text-align: center;
 }
-.cs-nav {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-.cs-nav-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  width: 100%;
-}
 .cs-nav-name {
   flex: 0 1 auto;
   min-width: 8ch;
@@ -1519,33 +1506,17 @@ a.btn {
   letter-spacing: 0.08em;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
 }
-.cs-nav .lc-arrow {
-  width: 44px;
-  height: 44px;
-  font-size: 18px;
-}
 .cs-head {
   padding: 4px 0 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-.cs-title-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
-}
-.char-select .cs-title-row h2 {
-  flex: 1;
-  align-self: center;
-}
-.cs-title-row .lc-arrow {
-  width: 40px;
-  height: 40px;
-  font-size: 16px;
+.cs-sheet > h2 {
+  text-align: center;
 }
 .cs-id {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
 }
 .char-face.cs-avatar {
@@ -1636,21 +1607,11 @@ a.btn {
   .cs-head .cs-nav-name {
     font-size: 18px;
   }
-  .cs-nav .lc-arrow {
-    width: 34px;
-    height: 34px;
-    font-size: 14px;
-  }
   .cs-head {
     padding: 0 0 4px;
   }
   .char-face.cs-avatar {
     width: 42px;
-  }
-  .cs-title-row .lc-arrow {
-    width: 34px;
-    height: 34px;
-    font-size: 14px;
   }
   .cs-sub {
     font-size: 10px;
@@ -2900,5 +2861,123 @@ a.btn {
   .prize-obj img {
     width: 56px;
     height: 56px;
+  }
+}
+
+/* ---------------------------------------------------------------- personagem 3D: ◀ ▶ dos lados e o nome embaixo */
+.hero-stage {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  /* o espaço livre à esquerda do painel (o boneco fica no meio dele) */
+  right: calc(min(600px, 56vw) + 32px);
+  pointer-events: none;
+}
+.hs-arrow {
+  position: absolute;
+  top: 46%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  color: #fff;
+  background: rgba(10, 12, 20, 0.55);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+.hs-arrow.left {
+  left: max(16px, 8%);
+}
+.hs-arrow.right {
+  right: max(16px, 8%);
+}
+.hs-arrow:hover,
+.hs-arrow:focus-visible {
+  outline: none;
+  border-color: var(--cc, var(--accent));
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.3);
+}
+.hs-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: max(14px, env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+.hs-name {
+  font-family: var(--title-font);
+  font-size: clamp(22px, 3vw, 34px);
+  font-weight: normal;
+  letter-spacing: 2px;
+  color: var(--cc, #fff);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+.hs-sub {
+  font-size: 12px;
+  color: #dfe5f0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
+}
+/* ficha: os cinco botões lado a lado, ícone em cima do nome */
+.row-btns.cs-actions {
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+.cs-actions .btn {
+  flex: 1 1 0;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 4px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+.cs-actions .btn > span:not(.ico) {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 800px) {
+  /* painel embaixo: o espaço livre é a faixa de cima */
+  .hero-stage {
+    right: 0;
+    bottom: 62%;
+  }
+  .hs-arrow {
+    top: 50%;
+    width: 44px;
+    height: 44px;
+  }
+  .hs-label {
+    bottom: 4px;
+  }
+}
+@media (max-height: 500px) {
+  .hs-arrow {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+  .hs-name {
+    font-size: 20px;
+  }
+  .hs-sub {
+    font-size: 10px;
+  }
+  .cs-actions .btn {
+    font-size: 12px;
+    min-height: 40px;
   }
 }

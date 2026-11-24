@@ -12,7 +12,7 @@ import { el, fmtInt, hexColor } from '../dom';
 import { dec, locale, t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
-import { HeroSpin, SPIN_QE } from './CharacterPicker';
+import { HeroSpin, SPIN_QE, heroStage } from './CharacterPicker';
 
 const SET_NAMES: Record<CosmeticDef['set'], string> = {
   wizard: 'Mago',
@@ -37,6 +37,33 @@ export interface WardrobeHost extends UiHost {
   setMenuFocus(f: number): void;
   /** Gira o boneco em exibição (radianos). */
   turnMenuHero(delta: number): void;
+  /** Personagem em exibição no cenário 3D. */
+  previewLineup(chars: CharacterId[]): void;
+}
+
+/** Personagem em exibição (◀ ▶ trocam só a prévia; ao sair volta o do jogador). */
+function stageFor(host: WardrobeHost, start?: CharacterId) {
+  const roster = host.profile.roster;
+  const want = start ?? host.profile.save.profile.character;
+  let cur: CharacterId = roster.includes(want) ? want : host.profile.save.profile.character;
+  const stage = heroStage({
+    get: () => cur,
+    pick: (c) => {
+      cur = c;
+      host.playUi('ui_hover');
+      host.previewLineup([c]);
+      stage.render();
+    },
+    roster,
+  });
+  return {
+    el: stage.el,
+    show: () => {
+      host.previewLineup([cur]);
+      stage.render();
+    },
+    hide: () => host.previewLineup([host.profile.save.profile.character]),
+  };
 }
 
 /**
@@ -93,10 +120,11 @@ function card(
 }
 
 /** Vestiário: equipar cosméticos com prévia 3D, vender repetidos e ver o arsenal. */
-export function wardrobeScreen(host: WardrobeHost): Screen {
+export function wardrobeScreen(host: WardrobeHost, start?: CharacterId): Screen {
   const prof = host.profile;
   const body = el('div', { class: 'wr-body' });
   const tabs = el('div', { class: 'tabs' });
+  const stage = stageFor(host, start);
   const scrap = el('div', { class: 'scrap' });
   let tab: CosmeticSlot | 'arsenal' = 'head';
   const refreshScrap = () => (scrap.textContent = t('Sucata: {n}', { n: fmtInt(prof.save.profile.scrap) }));
@@ -251,7 +279,7 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
     tabs,
     body,
   );
-  const e = el('div', { class: 'screen wardrobe spin-area' }, panel);
+  const e = el('div', { class: 'screen wardrobe spin-area' }, stage.el, panel);
   const spin = spinner(host, e, panel);
   render();
   return {
@@ -260,12 +288,14 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
     backArrow: true,
     onShow: () => {
       host.setMenuFocus(1);
+      stage.show();
       spin.start();
       render();
     },
     onHide: () => {
       spin.end();
       host.previewCosmetics(prof.save.cosmetics.equipped);
+      stage.hide();
       host.setMenuFocus(0);
     },
     onKey: (code) => spin.key(code),
@@ -297,13 +327,14 @@ type ShopTab = 'visual' | 'weapons' | 'special';
  * fase na mão). Itens especiais: o item de reviver de cada personagem. Tudo com sucata, e nada é comprado sem
  * apertar "Comprar" na barra de confirmação.
  */
-export function shopScreen(host: WardrobeHost): Screen {
+export function shopScreen(host: WardrobeHost, start?: CharacterId): Screen {
   const prof = host.profile;
   const body = el('div', { class: 'wr-body' });
   const scrap = el('div', { class: 'scrap' });
   const msg = el('div', { class: 'shop-msg' });
   const bar = el('div', { class: 'buy-bar', hidden: true });
   const tabs = el('div', { class: 'tabs' });
+  const stage = stageFor(host, start);
   let tab: ShopTab = 'visual';
   /** Item em prévia ou esperando a confirmação. */
   let sel: ShopSel | null = null;
@@ -603,7 +634,7 @@ export function shopScreen(host: WardrobeHost): Screen {
     body,
     bar,
   );
-  const e = el('div', { class: 'screen wardrobe spin-area' }, panel);
+  const e = el('div', { class: 'screen wardrobe spin-area' }, stage.el, panel);
   const spin = spinner(host, e, panel);
   render();
   return {
@@ -613,6 +644,7 @@ export function shopScreen(host: WardrobeHost): Screen {
     backArrow: () => host.screens.pop(),
     onShow: () => {
       host.setMenuFocus(1);
+      stage.show();
       spin.start();
       render();
     },
@@ -621,6 +653,7 @@ export function shopScreen(host: WardrobeHost): Screen {
       sel = null;
       spin.end();
       host.previewCosmetics(prof.save.cosmetics.equipped);
+      stage.hide();
       host.setMenuFocus(0);
     },
     onKey: (code) => spin.key(code),

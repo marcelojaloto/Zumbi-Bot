@@ -165,9 +165,46 @@ export class HeroSpin {
   }
 }
 
+/** Setas ◀ ▶ dos lados do boneco 3D e, embaixo dele, o nome e o tipo do personagem. */
+export function heroStage(o: {
+  get: () => CharacterId;
+  pick: (c: CharacterId) => void;
+  roster: CharacterId[];
+}): { el: HTMLElement; render: () => void } {
+  const name = el('b', { class: 'hs-name' });
+  const sub = el('span', { class: 'hs-sub' });
+  const arrow = (dir: number) =>
+    el(
+      'button',
+      {
+        class: `hs-arrow ${dir < 0 ? 'left' : 'right'}`,
+        title: dir < 0 ? t('Anterior') : t('Próximo'),
+        data: { nav: '' },
+        onclick: () => o.pick(nextCharacter(o.get(), dir, o.roster)),
+      },
+      dir < 0 ? '◀' : '▶',
+    );
+  const e = el(
+    'div',
+    { class: 'hero-stage' },
+    arrow(-1),
+    arrow(1),
+    el('div', { class: 'hs-label' }, name, sub),
+  );
+  return {
+    el: e,
+    render: () => {
+      const c = CHARACTERS[o.get()];
+      e.style.setProperty('--cc', hexColor(c.color));
+      name.textContent = t(c.name);
+      sub.textContent = t(c.title);
+    },
+  };
+}
+
 /**
- * Ficha de personagem, no jeito da loja: o personagem em 3D no espaço livre e, à direita, a ficha com ◀ título ▶, o
- * rosto, o nome, os atributos, o especial e a história. A ficha rola quando não cabe na tela (qualquer aparelho).
+ * Ficha de personagem, no jeito da loja: o personagem em 3D no espaço livre, com ◀ ▶ dos lados e o nome embaixo, e,
+ * à direita, a ficha com o rosto, o nome, os atributos, o especial e a história. A ficha rola quando não cabe na tela.
  */
 export interface CharacterSheet {
   /** A tela inteira (espaço livre do boneco + ficha). */
@@ -198,40 +235,25 @@ export function characterSheet(o: {
     const url = o.portrait?.(id, () => o.get() === id && showFace(id));
     face.replaceChildren(...(url ? [el('img', { src: url, alt: '', draggable: false })] : []));
   };
-  const arrow = (dir: number, text: string, title: string) =>
-    el(
-      'button',
-      {
-        class: 'lc-arrow',
-        title,
-        data: { nav: '' },
-        onclick: () => o.pick(nextCharacter(o.get(), dir, o.roster)),
-      },
-      text,
-    );
+  const stage = heroStage(o);
   const head = el('div', { class: 'cs-head cs-id' }, face, el('div', { class: 'cs-id-text' }, name, sub));
   const body = el('div', { class: 'wr-body cs-body', tabIndex: -1 });
   const panel = el(
     'div',
     { class: 'wr-panel cs-sheet' },
-    el(
-      'div',
-      { class: 'cs-title-row' },
-      arrow(-1, '◀', t('Anterior')),
-      el('h2', {}, o.title),
-      arrow(1, '▶', t('Próximo')),
-    ),
+    el('h2', {}, o.title),
     head,
     body,
     el('p', { class: 'muted shop-tip' }, o.tip),
     ...(o.extra ?? []),
-    el('div', { class: 'row-btns' }, ...o.buttons),
+    el('div', { class: `row-btns ${o.buttons.length > 2 ? 'cs-actions' : ''}` }, ...o.buttons),
   );
-  const root = el('div', { class: 'screen wardrobe char-select' }, panel);
+  const root = el('div', { class: 'screen wardrobe char-select' }, stage.el, panel);
   let shown: CharacterId | null = null;
   const render = () => {
     const id = o.get();
     const c = CHARACTERS[id];
+    stage.render();
     panel.style.setProperty('--cc', hexColor(c.color));
     name.textContent = t(c.name);
     sub.textContent = t(c.title);
@@ -422,8 +444,8 @@ export interface CharactersHost extends PickerHost {
   playAs(c: CharacterId): void;
   /** Abre os mapas já com o personagem escolhido. */
   mapsAs(c: CharacterId): void;
-  openWardrobe(): void;
-  openShop(): void;
+  openWardrobe(c?: CharacterId): void;
+  openShop(c?: CharacterId): void;
   /** Oficina na árvore do personagem. */
   openWorkshop(c?: CharacterId): void;
 }
@@ -435,16 +457,10 @@ export function characterSheetScreen(host: CharactersHost, char: CharacterId): S
     title: t('FICHA DE PERSONAGEM'),
     char,
     main: (c) => host.playAs(c),
-    extra: (cur) => [
-      el(
-        'div',
-        { class: 'row-btns cs-more' },
-        iconBtn('👕', t('Vestiário'), () => host.openWardrobe(), 'btn small'),
-        iconBtn('🛒', t('Loja'), () => host.openShop(), 'btn small'),
-        iconBtn('🔧', t('Oficina'), () => host.openWorkshop(cur()), 'btn small'),
-      ),
-    ],
     buttons: (cur) => [
+      iconBtn('👕', t('Vestiário'), () => host.openWardrobe(cur())),
+      iconBtn('🛒', t('Loja'), () => host.openShop(cur())),
+      iconBtn('🔧', t('Oficina'), () => host.openWorkshop(cur())),
       iconBtn('🗺️', t('Mapas'), () => host.mapsAs(cur())),
       iconBtn('▶️', t('Jogar'), () => host.playAs(cur()), 'btn primary'),
     ],

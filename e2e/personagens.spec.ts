@@ -58,7 +58,7 @@ test('menu Personagens: rostos, apelido, nome e título; a ficha abre com o rost
     (await cards.nth(1).locator('img').getAttribute('src'))!,
   );
   // setas trocam; Mapas abre os mapas já com o personagem da ficha
-  await page.locator('.cs-title-row .lc-arrow').nth(1).click();
+  await page.locator('.hero-stage .hs-arrow').nth(1).click();
   await expect(page.locator('.cs-full')).toHaveText('Bruno Trovão');
   await page.getByRole('button', { name: 'Mapas', exact: true }).click();
   await expect(page.locator('.screen.maps, .map-select, .screen').last()).toBeVisible();
@@ -66,7 +66,7 @@ test('menu Personagens: rostos, apelido, nome e título; a ficha abre com o rost
   await page.keyboard.press('Escape');
 
   // Jogar: joga com o personagem da ficha
-  await page.locator('.cs-title-row .lc-arrow').nth(1).click();
+  await page.locator('.hero-stage .hs-arrow').nth(1).click();
   await expect(page.locator('.cs-full')).toHaveText('Ícaro Neon');
   await page.getByRole('button', { name: 'Jogar', exact: true }).click();
   await page.waitForFunction(() => (window as unknown as { __game: G }).__game.state().screen === 'playing');

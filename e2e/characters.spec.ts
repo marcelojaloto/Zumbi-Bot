@@ -62,11 +62,11 @@ test('seleção de personagem antes da partida e o especial de cada um', async (
   await expect(name).toHaveText('Maga');
   await expect(page.locator('.cs-body').getByText('Nova Arcana')).toBeVisible();
   await expect(page.locator('.cs-full')).toHaveText('Lívia Vesper');
-  await page.locator('.cs-title-row .lc-arrow').nth(1).click();
-  await page.locator('.cs-title-row .lc-arrow').nth(1).click();
+  await page.locator('.hero-stage .hs-arrow').nth(1).click();
+  await page.locator('.hero-stage .hs-arrow').nth(1).click();
   await expect(name).toHaveText('Ciborgue');
-  await page.locator('.cs-title-row .lc-arrow').first().click();
-  await page.locator('.cs-title-row .lc-arrow').first().click();
+  await page.locator('.hero-stage .hs-arrow').first().click();
+  await page.locator('.hero-stage .hs-arrow').first().click();
   await expect(name).toHaveText('Maga');
   // janela baixa: a ficha não cabe e rola até a história (Page Down)
   await page.setViewportSize({ width: 1280, height: 480 });
