@@ -17,7 +17,3 @@ export function insertRank(r: RankingV1, e: RankEntry): number {
   if (r.entries.length > RANK_SIZE) r.entries.length = RANK_SIZE;
   return pos;
 }
-
-export function filterByMap(r: RankingV1, mapId: string | null): RankEntry[] {
-  return mapId ? r.entries.filter((e) => e.mapId === mapId) : r.entries;
-}

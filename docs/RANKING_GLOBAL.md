@@ -5,9 +5,9 @@ jogador (cada aparelho) que escolheu participar, numa lista só, e precisa de um
 resultados. Esse lugar é um projeto **gratuito** no [Firebase](https://firebase.google.com/) (Google), na conta
 `jaloto.software@gmail.com`, a mesma das lojas.
 
-Enquanto o Firebase não estiver configurado (ou se ele estiver fora do ar, ou o aparelho estiver sem internet), o
-jogo **não mostra** o botão do Ranking Global e tudo continua igual. Os resultados feitos sem internet ficam
-guardados e são enviados depois.
+Enquanto o Firebase não estiver configurado, o menu **Ranking** abre direto o Ranking Pessoal. Se ele estiver fora
+do ar, ou o aparelho estiver sem internet, o Ranking Global só avisa que não respondeu, e o resto do jogo continua
+igual. Os resultados feitos sem internet ficam guardados e são enviados depois.
 
 ## Como funciona
 
@@ -93,7 +93,7 @@ Para conferir antes de seguir, abra no navegador a URL do banco seguida de
 3. Publique de novo: aba **Actions** > **Deploy GitHub Pages** > **Run workflow** (e o mesmo em **Android** para o
    APK, e em **iOS** para o app do iPhone). A próxima atualização da `main` também já usa os valores.
 
-Pronto: no jogo, **Ranking > 🌎 Ranking Global > Participar**.
+Pronto: no jogo, **Ranking > Ranking Global > Participar**.
 
 ## Moderação e pedidos
 

@@ -932,10 +932,6 @@
 .rk-career b {
   font-size: 17px;
 }
-.rk-tabs {
-  justify-content: center;
-  flex-wrap: wrap;
-}
 .rk-body {
   width: min(900px, 100%);
   min-height: 0;
@@ -944,7 +940,8 @@
   flex-direction: column;
 }
 .rk-scroll {
-  max-height: 52vh;
+  min-height: 0;
+  flex: 0 1 auto;
   overflow: auto;
   border-radius: 10px;
   background: rgba(12, 14, 22, 0.88);
@@ -1026,9 +1023,6 @@
 }
 .rk-note a {
   color: #39e6ff;
-}
-.rk-toggle {
-  border-color: rgba(57, 230, 255, 0.7);
 }
 .rk-confirm {
   align-items: center;
@@ -1121,9 +1115,6 @@ a.btn {
   }
   .wr-panel {
     max-height: 96vh;
-  }
-  .rk-scroll {
-    max-height: 48vh;
   }
   .cr-block {
     margin: 28px 0;

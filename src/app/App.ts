@@ -61,7 +61,7 @@ import { Autopilot } from '../sim/autopilot';
 import { resultScreen } from '../ui/screens/ResultScreen';
 import { mapSelectScreen } from '../ui/screens/MapSelectScreen';
 import { creditsScreen } from '../ui/screens/CreditsScreen';
-import { rankingScreen } from '../ui/screens/RankingScreen';
+import { rankingScreen, type RankingMode } from '../ui/screens/RankingScreen';
 import { workshopScreen } from '../ui/screens/WorkshopScreen';
 import { chestScreen } from '../ui/screens/ChestScreen';
 import { openChest, type ChestPrize } from './chest';
@@ -666,7 +666,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
         { class: 'menu' },
         iconBtn('🎮', t('Jogar'), () => this.openPlayMenu(), 'btn primary'),
         iconBtn('🎨', t('Customização'), () => this.openCustomMenu()),
-        iconBtn('🏆', t('Ranking'), () => this.screens.push(rankingScreen(this))),
+        iconBtn('🏆', t('Ranking'), () => this.openRankingMenu()),
         iconBtn('⚙️', t('Configurações'), () => this.openSettingsMenu()),
         iconBtn('🎬', t('Créditos'), () =>
           this.screens.push(
@@ -721,6 +721,16 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       iconBtn('🔧', t('Oficina'), () => this.openWorkshop()),
       iconBtn('🛒', t('Loja'), () => this.openShop()),
       iconBtn('👕', t('Guarda-roupa'), () => this.openWardrobe()),
+    ]);
+  }
+
+  /** Sem o ranking global configurado, vai direto para o pessoal. */
+  private openRankingMenu(): void {
+    const open = (mode: RankingMode) => this.screens.push(rankingScreen(this, mode));
+    if (!this.global.configured) return open('personal');
+    this.menuGroup('menu-ranking', t('RANKING'), [
+      iconBtn('👤', t('Ranking Pessoal'), () => open('personal')),
+      iconBtn('🌎', t('Ranking Global'), () => open('global')),
     ]);
   }
 

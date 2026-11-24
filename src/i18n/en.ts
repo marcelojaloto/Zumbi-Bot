@@ -169,7 +169,6 @@ export const EN: Record<string, string> = {
   'Sair para o menu': 'Quit to menu',
 
   // ------------------------------------------------------------------ ranking e resultado
-  'Ninguém registrou pontos neste mapa ainda.': 'Nobody has scored on this map yet.',
   Nome: 'Name',
   Pontos: 'Score',
   Mapa: 'Map',
@@ -966,7 +965,8 @@ export const EN: Record<string, string> = {
   'RANKING GLOBAL': 'GLOBAL LEADERBOARD',
   'Ranking Global': 'Global Leaderboard',
   'Ranking Pessoal': 'Personal Leaderboard',
-  Todos: 'All',
+  'O ranking global não respondeu. Confira a internet e tente de novo mais tarde.':
+    'The global leaderboard did not respond. Check your connection and try again later.',
   JOGAR: 'PLAY',
   Customização: 'Customize',
   CUSTOMIZAÇÃO: 'CUSTOMIZE',

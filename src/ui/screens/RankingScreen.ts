@@ -1,7 +1,6 @@
 import { MAPS, getMap } from '../../data/maps';
 import { getCharacter } from '../../data/characters';
 import type { CharacterId } from '../../data/types';
-import { filterByMap } from '../../save/ranking';
 import type { GlobalEntry, GlobalRanking } from '../../net/globalRanking';
 import { el, fmtInt } from '../dom';
 import { PRIVACY_URL } from '../links';
@@ -54,32 +53,26 @@ function endTag(victory: boolean, run: boolean): HTMLElement | null {
   return el('i', { class: 'rk-tag lose' }, t('derrota'));
 }
 
+export type RankingMode = 'personal' | 'global';
+
 /**
- * Ranking: abre no Ranking Pessoal (top 20 deste aparelho, com filtro por mapa e a carreira). O botão Ranking Global
- * (o melhor resultado de cada jogador/aparelho) só aparece quando o ranking global responde. Fora do ar, some.
- * No global só entra quem toca em Participar, e cada um aparece para os outros pelos apelidos dos personagens: o
- * nome escrito no ranking pessoal não sai do aparelho.
+ * Ranking Pessoal (top 20 deste aparelho e a carreira) ou Ranking Global (o melhor resultado de cada aparelho). No
+ * global só entra quem toca em Participar, e cada um aparece para os outros pelos apelidos dos personagens: o nome
+ * escrito no ranking pessoal não sai do aparelho.
  */
-export function rankingScreen(host: RankingHost): Screen {
+export function rankingScreen(host: RankingHost, mode: RankingMode = 'personal'): Screen {
   const prof = host.profile;
   const global = host.global;
-  let mode: 'personal' | 'global' = 'personal';
-  let filter: string | null = null;
   let globalList: GlobalEntry[] | null = global.cached;
+  /** O ranking global não respondeu. */
+  let failed = false;
   let alive = true;
   /** Pedindo confirmação para sair do ranking global. */
   let leaving = false;
 
   const title = el('h2', {});
-  const tabs = el('div', { class: 'tabs rk-tabs' });
   const body = el('div', { class: 'rk-body' });
   const note = el('p', { class: 'muted rk-note' });
-  const toggle = el('button', {
-    class: 'btn rk-toggle',
-    hidden: true,
-    data: { nav: '' },
-    onclick: () => setMode(mode === 'personal' ? 'global' : 'personal'),
-  });
   // entrar e sair do ranking global (sair apaga o registro e a conta anônima do aparelho)
   const busy = (p: Promise<boolean>) => {
     join.disabled = true;
@@ -142,7 +135,7 @@ export function rankingScreen(host: RankingHost): Screen {
     );
 
   const renderPersonal = () => {
-    const rows = filterByMap(prof.ranking, filter);
+    const rows = prof.ranking.entries;
     const run = prof.save.run;
     note.textContent =
       run && run.score > 0
@@ -159,9 +152,7 @@ export function rankingScreen(host: RankingHost): Screen {
         el(
           'p',
           { class: 'muted rk-empty' },
-          filter
-            ? t('Ninguém registrou pontos neste mapa ainda.')
-            : t('O ranking está vazio. Jogue até o fim da jornada para entrar nele!'),
+          t('O ranking está vazio. Jogue até o fim da jornada para entrar nele!'),
         ),
       );
       return;
@@ -205,7 +196,20 @@ export function rankingScreen(host: RankingHost): Screen {
   };
 
   const renderGlobal = () => {
-    const list = globalList ?? [];
+    if (!globalList) {
+      note.textContent = '';
+      body.replaceChildren(
+        el(
+          'p',
+          { class: 'muted rk-empty' },
+          failed
+            ? t('O ranking global não respondeu. Confira a internet e tente de novo mais tarde.')
+            : t('Carregando...'),
+        ),
+      );
+      return;
+    }
+    const list = globalList;
     const me = global.myUid;
     const mine = me ? list.findIndex((g) => g.uid === me) : -1;
     const status = !global.joined
@@ -256,51 +260,23 @@ export function rankingScreen(host: RankingHost): Screen {
   const render = () => {
     const personal = mode === 'personal';
     title.textContent = personal ? t('RANKING PESSOAL') : t('RANKING GLOBAL');
-    toggle.textContent = personal ? `🌎 ${t('Ranking Global')}` : `👤 ${t('Ranking Pessoal')}`;
     career.hidden = !personal;
-    tabs.hidden = !personal;
     join.hidden = personal || !globalList;
     join.textContent = global.joined ? t('Sair do ranking global') : t('Participar');
     join.classList.toggle('primary', !global.joined);
     confirmLeave.hidden = personal || !leaving;
-    for (const b of tabs.children)
-      b.classList.toggle('on', ((b as HTMLElement).dataset.k || null) === (filter ?? null));
     if (personal) renderPersonal();
     else renderGlobal();
   };
 
-  // ranking global: só aparece se responder; ficou fora do ar, volta para o pessoal sem aviso
   const refreshGlobal = (force: boolean) =>
     void global.fetchTop(force).then((list) => {
       if (!alive) return;
-      globalList = list;
-      toggle.hidden = !list;
-      if (!list && mode === 'global') mode = 'personal';
+      // falhou de novo: fica a última lista boa
+      if (list || !globalList) globalList = list;
+      failed = !list;
       render();
     });
-
-  const setMode = (m: typeof mode) => {
-    mode = m;
-    leaving = false;
-    render();
-    if (m === 'global') refreshGlobal(true);
-  };
-
-  const tab = (label: string, k: string | null) =>
-    el(
-      'button',
-      {
-        class: 'btn small',
-        data: { nav: '', k: k ?? '' },
-        onclick: () => {
-          filter = k;
-          render();
-        },
-      },
-      label,
-    );
-  tabs.appendChild(tab(t('Todos'), null));
-  for (const m of MAPS) if (prof.isMapUnlocked(m.id)) tabs.appendChild(tab(String(m.index + 1), m.id));
 
   const s = prof.save.stats;
   const done = Object.values(prof.save.progress.levels).filter((l) => l.completed).length;
@@ -327,15 +303,13 @@ export function rankingScreen(host: RankingHost): Screen {
     { class: 'screen dim ranking' },
     title,
     career,
-    tabs,
     body,
     note,
     confirmLeave,
-    el('div', { class: 'row-btns' }, toggle, join),
+    el('div', { class: 'row-btns' }, join),
   );
-  if (globalList) toggle.hidden = false;
   render();
-  if (global.configured) refreshGlobal(false);
+  if (mode === 'global') refreshGlobal(true);
   return {
     el: e,
     id: 'ranking',

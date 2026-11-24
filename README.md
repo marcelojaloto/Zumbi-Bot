@@ -113,9 +113,9 @@ Web Audio.
 - **Ranking por jornada**: os pontos de cada mapa se somam até você **perder todas as vidas** ou **terminar uma
   temporada**; só aí o jogo mostra a posição e o nome, já salvo com o último nome usado (ou o apelido do personagem).
   Tocar no nome abre o teclado, com a caixa no alto da tela. O **Ranking Pessoal** fica no aparelho, com o nome; o
-  botão **Ranking Global** mostra o melhor de cada jogador que tocou em **Participar**, pelos apelidos dos
-  personagens (o nome não sai do aparelho; Firebase, veja [docs/RANKING_GLOBAL.md](docs/RANKING_GLOBAL.md)), e só
-  aparece quando o ranking global está no ar.
+  **Ranking Global** mostra o melhor de cada jogador que tocou em **Participar**, pelos apelidos dos personagens (o
+  nome não sai do aparelho; Firebase, veja [docs/RANKING_GLOBAL.md](docs/RANKING_GLOBAL.md)). Os dois ficam no menu
+  **Ranking**; sem o Firebase configurado, ele abre direto o pessoal.
 - **Música procedural** por mapa, que ganha camadas durante as lutas e acelera contra os chefes.
 
 ## Controles
@@ -259,7 +259,7 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
   publicar na App Store é preciso uma conta de desenvolvedor Apple (passo a passo em
   [docs/APP_STORE.md](docs/APP_STORE.md)). Até lá, jogue no Safari (acima).
 - **Menu:** cinco grupos, cada botão com ícone: **Jogar** (Continuar, Jogar online, Mapas e Personagens),
-  **Customização** (Oficina, Loja e Guarda-roupa), **Ranking**, **Configurações** (Áudio,
+  **Customização** (Oficina, Loja e Guarda-roupa), **Ranking** (Pessoal e Global), **Configurações** (Áudio,
   Controles, com a Ajuda das teclas, Gráficos, Jogo, Manual e Instalar o jogo) e **Créditos**. A seta no canto
   superior esquerdo volta, como o Esc, o B do controle e o Voltar do Android.
 - **Idiomas:** português e inglês, escolhidos pelo idioma do navegador e trocáveis em Configurações > Jogo.

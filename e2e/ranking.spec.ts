@@ -1,5 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors, continueGame, openChest } from './helpers';
+import { DEBUG_QUERY, collectErrors, continueGame, openChest, openMenu } from './helpers';
 
 type G = {
   isReady(): boolean;
@@ -108,11 +108,13 @@ test('ranking: nome só no fim da jornada, salvo sozinho, e o ranking global', a
   // fora do ranking global até o jogador escolher: nada foi enviado
   expect(state.puts).toEqual([]);
 
-  // ranking abre no pessoal; o botão alterna para o global (o melhor de cada aparelho)
-  await page.getByRole('button', { name: 'Ranking' }).click();
+  // Ranking > Ranking Pessoal; o Ranking Global (o melhor de cada aparelho) fica no mesmo submenu
+  await openMenu(page, 'Ranking', 'Ranking Pessoal');
   await expect(page.getByRole('heading', { name: 'RANKING PESSOAL' })).toBeVisible();
   await expect(page.locator('.rk-table')).toContainText('Marcelo');
-  await page.getByRole('button', { name: /Ranking Global/ }).click();
+  await expect(page.getByRole('button', { name: /Ranking Global/ })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Voltar' }).click();
+  await page.getByRole('button', { name: 'Ranking Global', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'RANKING GLOBAL' })).toBeVisible();
   const rows = page.locator('.rk-table tbody tr');
   await expect(rows).toHaveCount(1);
@@ -134,18 +136,19 @@ test('ranking: nome só no fim da jornada, salvo sozinho, e o ranking global', a
   await expect.poll(() => state.accountDeleted).toBe(true);
   await expect(rows).toHaveCount(1);
   await expect(page.getByRole('button', { name: 'Participar' })).toBeVisible();
-  await page.getByRole('button', { name: /Ranking Pessoal/ }).click();
-  await expect(page.getByRole('heading', { name: 'RANKING PESSOAL' })).toBeVisible();
+  await page.getByRole('button', { name: 'Voltar' }).click();
   await page.getByRole('button', { name: 'Voltar' }).click();
 
-  // sem comunicação com o Firebase: o ranking global some (sem atrapalhar)
+  // sem comunicação com o Firebase: o pessoal continua e o global só avisa (sem atrapalhar)
   state.online = false;
   await page.reload();
   await page.waitForFunction(() => (window as unknown as { __game?: G }).__game?.isReady());
   await page.getByRole('button', { name: 'Jogar' }).click();
-  await page.getByRole('button', { name: 'Ranking' }).click();
+  await openMenu(page, 'Ranking', 'Ranking Pessoal');
   await expect(page.locator('.rk-table')).toContainText('Marcelo');
-  await page.waitForTimeout(1500);
-  await expect(page.getByRole('button', { name: /Ranking Global/ })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Voltar' }).click();
+  await page.getByRole('button', { name: 'Ranking Global', exact: true }).click();
+  await expect(page.locator('.rk-empty')).toContainText('não respondeu');
+  await expect(page.getByRole('button', { name: 'Participar' })).toHaveCount(0);
   expect(errors.filter((e) => !/internetdisconnected|Failed to load resource/.test(e))).toEqual([]);
 });

@@ -12,12 +12,13 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   para o novo.
 - O contato da política de privacidade e da página de segurança passa a ser **atendimento@jalotosoftware.com.br**.
 - O menu principal fica em cinco grupos, cada botão com ícone e fundo translúcido: **Jogar** (Continuar, Jogar
-  online, Mapas e Personagens), **Customização** (Oficina, Loja e Guarda-roupa), **Ranking**,
+  online, Mapas e Personagens), **Customização** (Oficina, Loja e Guarda-roupa), **Ranking** (Pessoal e Global),
   **Configurações** (Áudio, Controles, Gráficos, Jogo, Manual e Instalar o jogo) e **Créditos**. A tela de Controles
   virou a **Ajuda** de Configurações > Controles.
 - Todas as telas voltam pela mesma **seta no canto superior esquerdo**, no lugar do botão Voltar. O Esc e o Voltar
   do Android passam a funcionar também nas telas do jogo online.
-- **Ranking:** a data não passa mais por cima do título da coluna ao rolar.
+- **Ranking:** sem os filtros por mapa e sem o botão de troca, a lista ocupa mais da tela, e a data não passa mais
+  por cima do título da coluna ao rolar. Sem internet, o Ranking Global avisa que não respondeu.
 
 ## 1.7 (12/11/2026)
 
