@@ -55,7 +55,8 @@ import type { PlayerSlot } from '../sim/Entity';
 import { pauseScreen } from '../ui/screens/PauseScreen';
 import { settingsScreen } from '../ui/screens/SettingsScreen';
 import { controlsScreen } from '../ui/screens/ControlsScreen';
-import { el, fmtInt } from '../ui/dom';
+import { el, fmtInt, iconBtn } from '../ui/dom';
+import { manualScreen } from '../ui/screens/ManualScreen';
 import { Autopilot } from '../sim/autopilot';
 import { resultScreen } from '../ui/screens/ResultScreen';
 import { mapSelectScreen } from '../ui/screens/MapSelectScreen';
@@ -646,10 +647,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     this.screens.clear();
     this.ensureMenuScene();
     this.music.play('menu');
-    const b = (label: string, fn: () => void, cls = 'btn') =>
-      el('button', { class: cls, onclick: fn, data: { nav: '' } }, label);
     const s = this.profile.save;
-    const cont = this.continueTarget();
     const e = el(
       'div',
       { class: 'screen menu-screen' },
@@ -666,17 +664,11 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       el(
         'div',
         { class: 'menu' },
-        b(this.continueLabel(cont), () => this.openLobby(cont.mapId, cont.levelIdx), 'btn primary'),
-        b(`🌐 ${t('Jogar online')}`, () => this.openOnline()),
-        b(t('Mapas'), () => this.screens.push(mapSelectScreen(this))),
-        b(t('Personagens'), () => this.screens.push(charactersScreen(this))),
-        b(`🔧 ${t('Oficina')}`, () => this.screens.push(workshopScreen(this))),
-        b(t('Guarda-roupa'), () => this.screens.push(wardrobeScreen(this))),
-        b(t('Loja'), () => this.screens.push(shopScreen(this))),
-        b(t('Ranking'), () => this.screens.push(rankingScreen(this))),
-        b(t('Configurações'), () => this.openSettings()),
-        b(t('Controles'), () => this.openControls()),
-        b(t('Créditos'), () =>
+        iconBtn('🎮', t('Jogar'), () => this.openPlayMenu(), 'btn primary'),
+        iconBtn('🎨', t('Customização'), () => this.openCustomMenu()),
+        iconBtn('🏆', t('Ranking'), () => this.screens.push(rankingScreen(this))),
+        iconBtn('⚙️', t('Configurações'), () => this.openSettingsMenu()),
+        iconBtn('🎬', t('Créditos'), () =>
           this.screens.push(
             creditsScreen(this, {
               // quem já venceu o OMEGA-Z pode rever o final lendário
@@ -693,6 +685,77 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       ),
     );
     this.screens.push({ el: e, id: 'menu', onBack: () => false });
+  }
+
+  /** Submenu do menu principal (mesmo visual, com a seta de voltar). */
+  private menuGroup(id: string, title: string, items: HTMLElement[]): void {
+    const e = el(
+      'div',
+      { class: 'screen menu-group' },
+      el('h2', {}, title),
+      el('div', { class: 'menu' }, ...items),
+    );
+    this.screens.push({
+      el: e,
+      id,
+      backArrow: true,
+      onBack: () => {
+        this.screens.pop();
+        return true;
+      },
+    });
+  }
+
+  private openPlayMenu(): void {
+    const cont = this.continueTarget();
+    this.menuGroup('menu-play', t('JOGAR'), [
+      iconBtn('▶️', this.continueLabel(cont), () => this.openLobby(cont.mapId, cont.levelIdx), 'btn primary'),
+      iconBtn('🌐', t('Jogar online'), () => this.openOnline()),
+      iconBtn('🗺️', t('Mapas'), () => this.screens.push(mapSelectScreen(this))),
+      iconBtn('🦸', t('Personagens'), () => this.screens.push(charactersScreen(this))),
+    ]);
+  }
+
+  private openCustomMenu(): void {
+    this.menuGroup('menu-custom', t('CUSTOMIZAÇÃO'), [
+      iconBtn('🔧', t('Oficina'), () => this.openWorkshop()),
+      iconBtn('🛒', t('Loja'), () => this.openShop()),
+      iconBtn('👕', t('Guarda-roupa'), () => this.openWardrobe()),
+    ]);
+  }
+
+  openSettingsMenu(): void {
+    const tab = (icon: string, label: string, k: string) =>
+      iconBtn(icon, label, () => this.openSettings(k, true));
+    this.menuGroup('menu-settings', t('CONFIGURAÇÕES'), [
+      tab('🔊', t('Áudio'), 'audio'),
+      tab('🕹️', t('Controles'), 'controls'),
+      tab('🖥️', t('Gráficos'), 'graphics'),
+      tab('🧩', t('Jogo'), 'game'),
+      // manual dentro do jogo (não sai da tela cheia)
+      iconBtn('📖', t('Manual'), () => this.screens.push(manualScreen(this))),
+      // só quando o navegador oferece instalar: instalado, abre em tela cheia, sem a barra e sem o aviso
+      ...(this.canInstall
+        ? [
+            iconBtn('📲', t('Instalar o jogo'), () => {
+              this.installApp();
+              this.screens.pop();
+            }),
+          ]
+        : []),
+    ]);
+  }
+
+  openWorkshop(): void {
+    this.screens.push(workshopScreen(this));
+  }
+
+  openWardrobe(): void {
+    this.screens.push(wardrobeScreen(this));
+  }
+
+  openShop(): void {
+    this.screens.push(shopScreen(this));
   }
 
   /** Resumo das teclas no rodapé do menu (com as teclas que o jogador escolheu). */
@@ -736,11 +799,11 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     const season = seasonOf(m);
     if (season > 1 && cont.levelIdx === 0 && seasonMaps(season)[0] === m)
       return t('{n}ª temporada: {map}', { n: season, map });
-    return s.stats.runs > 0 ? t('Continuar: {map}', { map }) : t('Jogar');
+    return s.stats.runs > 0 ? t('Continuar: {map}', { map }) : t('Começar: {map}', { map });
   }
 
-  openSettings(tab?: string): void {
-    this.screens.push(settingsScreen(this, tab));
+  openSettings(tab?: string, single = false): void {
+    this.screens.push(settingsScreen(this, tab, single));
   }
 
   openControls(): void {
@@ -805,7 +868,8 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       }
     } else if (this.screen === 'menu') {
       this.showMainMenu();
-      this.openSettings('game');
+      this.openSettingsMenu();
+      this.openSettings('game', true);
     }
   }
 

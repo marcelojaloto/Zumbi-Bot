@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { collectErrors, createRoom, openChest } from './helpers';
+import { collectErrors, createRoom, openChest, openMenu } from './helpers';
 
 // Jogo online com duas abas do mesmo navegador: o canal local (?net=local) faz o papel do PeerJS.
 const Q = '?debug=1&quality=low&mute=1&nopointerlock=1&net=local';
@@ -76,7 +76,7 @@ test('jogo online: criar sala, entrar pelo link, jogar, resultado, jogar de novo
 
   // anfitrião cria a sala
   await open(host);
-  await host.getByRole('button', { name: /Jogar online/ }).click();
+  await openMenu(host, 'Jogar', 'Jogar online');
   await createRoom(host);
   const code = (await host.locator('.room-code').textContent())!.trim();
   expect(code).toMatch(/^[A-Z]{4}$/);
@@ -192,14 +192,14 @@ test('jogo online: código errado avisa e quem sai no meio fica fora da partida'
   const errors = [...collectErrors(host), ...collectErrors(guest)];
 
   await open(guest);
-  await guest.getByRole('button', { name: /Jogar online/ }).click();
+  await openMenu(guest, 'Jogar', 'Jogar online');
   await guest.getByRole('button', { name: /Entrar numa sala/ }).click();
   await guest.locator('.code-input').fill('zzzz');
   await guest.keyboard.press('Enter');
   await expect(guest.locator('.online-status.error')).toContainText('Não existe sala com esse código');
 
   await open(host);
-  await host.getByRole('button', { name: /Jogar online/ }).click();
+  await openMenu(host, 'Jogar', 'Jogar online');
   await createRoom(host);
   const code = (await host.locator('.room-code').textContent())!.trim();
   await guest.locator('.code-input').fill(code);
@@ -251,7 +251,7 @@ test('jogo online: o anfitrião sai no meio da fase, outro assume e a partida co
   const errors = [...collectErrors(host), ...collectErrors(p2), ...collectErrors(p3)];
 
   await open(host);
-  await host.getByRole('button', { name: /Jogar online/ }).click();
+  await openMenu(host, 'Jogar', 'Jogar online');
   await createRoom(host);
   const code = (await host.locator('.room-code').textContent())!.trim();
   for (const g of [p2, p3]) {
@@ -323,13 +323,13 @@ test('jogo online com PeerJS de verdade (WebRTC): cada um no seu navegador; aba 
   const errors = [...collectErrors(host), ...collectErrors(guest)];
 
   await open(host, peer);
-  await host.getByRole('button', { name: /Jogar online/ }).click();
+  await openMenu(host, 'Jogar', 'Jogar online');
   await createRoom(host);
   await expect(host.locator('.room-code')).toHaveText(/^[A-Z]{4}$/, { timeout: 30_000 });
   const code = (await host.locator('.room-code').textContent())!.trim();
 
   await open(guest, peer);
-  await guest.getByRole('button', { name: /Jogar online/ }).click();
+  await openMenu(guest, 'Jogar', 'Jogar online');
   await guest.getByRole('button', { name: /Entrar numa sala/ }).click();
   await guest.locator('.code-input').fill(code);
   await guest.getByRole('button', { name: 'Entrar', exact: true }).click();
@@ -377,7 +377,7 @@ test('jogo online com PeerJS de verdade: a aba do anfitrião fecha, outro assume
   const errors = [host!, p2!, p3!].flatMap((pg) => collectErrors(pg));
 
   await open(host!, peer);
-  await host!.getByRole('button', { name: /Jogar online/ }).click();
+  await openMenu(host!, 'Jogar', 'Jogar online');
   await createRoom(host!);
   await expect(host!.locator('.room-code')).toHaveText(/^[A-Z]{4}$/, { timeout: 30_000 });
   const code = (await host!.locator('.room-code').textContent())!.trim();

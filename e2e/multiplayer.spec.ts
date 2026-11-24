@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors, openChest } from './helpers';
+import { DEBUG_QUERY, collectErrors, continueGame, openChest } from './helpers';
 
 type P = { slot: number; character: string; x: number; lives: number };
 type G = {
@@ -75,7 +75,7 @@ test('multijogador local: controles e teclado dividido entram, jogam e veem o re
   await page.goto(`./${DEBUG_QUERY}`);
   await page.waitForFunction(() => (window as unknown as Win).__game?.isReady());
   await page.getByRole('button', { name: 'Jogar' }).click();
-  await page.locator('.menu .btn.primary').click();
+  await continueGame(page);
   // sozinho: a seleção como a loja; quem entra vira cartão
   await expect(page.locator('.char-select .cs-head .cs-nav-name')).toBeVisible();
 

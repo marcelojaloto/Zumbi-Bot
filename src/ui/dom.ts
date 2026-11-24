@@ -24,6 +24,23 @@ export function el<K extends keyof HTMLElementTagNameMap>(
   return e;
 }
 
+/** Ícone decorativo de botão (fora do nome lido pelos leitores de tela). */
+export function ico(icon: string): HTMLElement {
+  const s = el('span', { class: 'ico' }, icon);
+  s.setAttribute('aria-hidden', 'true');
+  return s;
+}
+
+/** Botão com ícone à esquerda do texto. */
+export function iconBtn(icon: string, label: string, onclick: () => void, cls = 'btn'): HTMLButtonElement {
+  return el(
+    'button',
+    { class: `${cls} has-ico`, onclick, data: { nav: '' } },
+    ico(icon),
+    el('span', {}, label),
+  );
+}
+
 export function clear(e: HTMLElement): void {
   while (e.firstChild) e.removeChild(e.firstChild);
 }

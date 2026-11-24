@@ -22,6 +22,17 @@ export function collectErrors(page: Page): string[] {
 
 export const DEBUG_QUERY = '?debug=1&quality=low&mute=1&seed=1&nopointerlock=1';
 
+/** Menu em grupos: toca em cada botão, em ordem (ex.: `openMenu(page, 'Jogar', 'Mapas')`). */
+export async function openMenu(page: Page, ...path: string[]): Promise<void> {
+  for (const name of path) await page.getByRole('button', { name, exact: true }).click();
+}
+
+/** Jogar > Continuar (o botão principal do submenu Jogar). */
+export async function continueGame(page: Page): Promise<void> {
+  await openMenu(page, 'Jogar');
+  await page.locator('.menu-group .btn.primary').click();
+}
+
 /** Jogo online: "Criar sala" abre as opções da sala (dificuldade e chat de voz); o botão de lá cria. */
 export async function createRoom(
   page: Page,

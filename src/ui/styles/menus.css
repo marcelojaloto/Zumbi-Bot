@@ -96,6 +96,18 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+.btn.has-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.btn .ico {
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', system-ui, sans-serif;
+  font-size: 1.05em;
+  line-height: 1;
+  letter-spacing: 0;
+}
 /* voltar padrão: seta no canto superior esquerdo, sem fundo */
 .btn-back {
   position: absolute;
@@ -664,28 +676,44 @@
     margin-top: auto;
   }
 }
-.screen.menu-screen {
+.screen.menu-screen,
+.screen.menu-group {
   align-items: flex-end;
   padding-right: max(24px, 7vw);
-  background: linear-gradient(90deg, transparent 30%, rgba(4, 5, 10, 0.72) 62%);
+  background: linear-gradient(90deg, transparent 35%, rgba(4, 5, 10, 0.5) 70%);
 }
 .menu-screen h1,
-.menu-screen .subtitle {
+.menu-screen .subtitle,
+.menu-group h2 {
   text-align: right;
 }
 .menu-screen .menu-footer {
   text-align: center;
 }
-/* telas de altura comum: botões do menu em duas colunas ("Jogar" e "Jogar online" inteiros) */
-@media (max-height: 900px) {
-  .menu-screen .menu {
+/* botões translúcidos: o cenário 3D aparece por trás */
+.menu-screen .menu .btn,
+.menu-group .menu .btn {
+  justify-content: flex-start;
+  background: linear-gradient(180deg, rgba(42, 49, 66, 0.5), rgba(22, 26, 36, 0.5));
+  backdrop-filter: blur(3px);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+}
+.menu-screen .menu .btn.primary,
+.menu-group .menu .btn.primary {
+  background: linear-gradient(180deg, rgba(255, 154, 42, 0.78), rgba(192, 90, 8, 0.78));
+  text-shadow: none;
+}
+/* telas mais baixas: duas colunas, o botão principal inteiro (o rodapé fica livre) */
+@media (max-height: 700px) {
+  .menu-screen .menu,
+  .menu-group .menu {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     min-width: min(460px, 70vw);
   }
-  .menu-screen .menu > :first-child,
-  .menu-screen .menu > :nth-child(2) {
+  .menu-screen .menu > .primary,
+  .menu-group .menu > .primary {
     grid-column: 1 / -1;
   }
 }
@@ -693,10 +721,14 @@
   background: radial-gradient(circle at 50% 45%, rgba(4, 5, 10, 0.2), rgba(4, 5, 10, 0.85));
 }
 @media (max-width: 800px) {
-  .screen.menu-screen {
+  .screen.menu-screen,
+  .screen.menu-group {
     align-items: center;
     padding-right: 24px;
-    background: rgba(4, 5, 10, 0.6);
+    background: rgba(4, 5, 10, 0.45);
+  }
+  .menu-group h2 {
+    text-align: center;
   }
 }
 .ng-row {
@@ -1063,17 +1095,14 @@ a.btn {
   .btn.small {
     min-height: 40px;
   }
-  .screen.menu-screen {
+  .screen.menu-screen,
+  .screen.menu-group {
     justify-content: center;
     padding-top: 10px;
     padding-bottom: 10px;
     gap: 8px;
   }
-  /* celular deitado: "Jogar" e "Jogar online" lado a lado e sem o subtítulo, para caber numa tela */
-  .menu-screen .menu > :first-child,
-  .menu-screen .menu > :nth-child(2) {
-    grid-column: auto;
-  }
+  /* celular deitado: sem o subtítulo, para caber numa tela */
   .menu-screen .subtitle {
     display: none;
   }

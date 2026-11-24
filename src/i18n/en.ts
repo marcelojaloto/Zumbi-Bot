@@ -728,8 +728,8 @@ export const EN: Record<string, string> = {
   'VOCÊ ESTÁ NA SALA': 'YOU ARE IN ROOM',
   'Você entrou na sala!': 'You joined the room!',
   'Passe o código (ou o link) para os amigos.': 'Give the code (or the link) to your friends.',
-  'Cada um abre o Zumbi Bot, toca em "Jogar online" > "Entrar numa sala" e digita o código.':
-    'Each one opens Zumbi Bot, taps "Play online" > "Join a room" and types the code.',
+  'Cada um abre o Zumbi Bot, toca em "Jogar" > "Jogar online" > "Entrar numa sala" e digita o código.':
+    'Each one opens Zumbi Bot, taps "Play" > "Play online" > "Join a room" and types the code.',
   'Todos escolhem o personagem e tocam em "Pronto". Aí é só tocar em "Começar"!':
     'Everyone picks a character and taps "Ready". Then just tap "Start"!',
   'Escolha seu personagem (◀ ▶).': 'Pick your character (◀ ▶).',
@@ -967,6 +967,12 @@ export const EN: Record<string, string> = {
   'Ranking Global': 'Global Leaderboard',
   'Ranking Pessoal': 'Personal Leaderboard',
   Todos: 'All',
+  JOGAR: 'PLAY',
+  Customização: 'Customize',
+  CUSTOMIZAÇÃO: 'CUSTOMIZE',
+  'Começar: {map}': 'Start: {map}',
+  Ajuda: 'Help',
+  'Ajuda dos controles': 'Controls help',
   'Jornada: {pts} pontos | 1 mapa vencido': 'Run: {pts} points | 1 map won',
   'Jornada: {pts} pontos | {n} mapas vencidos': 'Run: {pts} points | {n} maps won',
   'Tocar para mudar o nome': 'Tap to change the name',

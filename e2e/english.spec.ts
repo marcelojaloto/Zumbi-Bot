@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors, openChest } from './helpers';
+import { DEBUG_QUERY, collectErrors, openChest, openMenu } from './helpers';
 
 type G = {
   isReady(): boolean;
@@ -21,7 +21,10 @@ test('navegador em inglês: menus, partida e vitória em inglês', async ({ page
   await page.waitForFunction(() => (window as unknown as { __game?: G }).__game?.isReady());
   expect(await page.evaluate(() => document.documentElement.lang)).toBe('en');
   await page.getByRole('button', { name: 'Play' }).click();
+  await openMenu(page, 'Play');
   await expect(page.getByRole('button', { name: 'Maps' })).toBeVisible();
+  await page.getByRole('button', { name: 'Back' }).click();
+  await openMenu(page, 'Customize');
   await expect(page.getByRole('button', { name: 'Wardrobe' })).toBeVisible();
   await page.evaluate(() => (window as unknown as { __game: G }).__game.startLevel('vila', 0));
   await page.waitForFunction(() => (window as unknown as { __game: G }).__game.state().screen === 'playing');

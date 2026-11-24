@@ -18,7 +18,8 @@ export interface UiHost {
   applySettings(): void;
   /** Refaz as telas abertas depois de trocar o idioma. */
   relocalize(): void;
-  openSettings(tab?: string): void;
+  /** `single`: só a seção `tab`, sem as abas (submenu Configurações). */
+  openSettings(tab?: string, single?: boolean): void;
   openControls(): void;
   playUi(id: string): void;
   readonly inGame: boolean;

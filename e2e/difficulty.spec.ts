@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors } from './helpers';
+import { DEBUG_QUERY, collectErrors, openMenu } from './helpers';
 
 type Ent = {
   id: number;
@@ -30,7 +30,7 @@ test('dificuldade: escolha no mapa e "tentar mais fácil" após a derrota', asyn
     page.evaluate(() => (window as unknown as { __game: G }).__game.app.profile.settings.gameplay.difficulty);
 
   await page.getByRole('button', { name: 'Jogar' }).click();
-  await page.getByRole('button', { name: 'Mapas' }).click();
+  await openMenu(page, 'Jogar', 'Mapas');
   const row = page.locator('.diff-row');
   await expect(row.locator('button')).toHaveCount(4);
   await expect(row.getByRole('button', { name: 'Normal' })).toHaveClass(/\bon\b/);

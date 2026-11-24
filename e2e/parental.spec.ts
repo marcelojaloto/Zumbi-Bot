@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors, solveParentGate } from './helpers';
+import { DEBUG_QUERY, collectErrors, openMenu, solveParentGate } from './helpers';
 
 type G = { isReady(): boolean };
 
@@ -21,11 +21,13 @@ test('pais: o jogo online se bloqueia nas Configurações e só volta com a trav
   await page.getByRole('button', { name: /Bloquear o jogo online/ }).click();
   await expect(page.getByRole('button', { name: /Liberar o jogo online/ })).toBeVisible();
   await page.getByRole('button', { name: 'Voltar' }).click();
+  await page.getByRole('button', { name: 'Voltar' }).click();
 
   // bloqueado: "Jogar online" só explica onde liberar
-  await page.getByRole('button', { name: /Jogar online/ }).click();
+  await openMenu(page, 'Jogar', 'Jogar online');
   await expect(page.locator('.online-status')).toContainText('bloqueado neste aparelho');
   await expect(page.getByRole('button', { name: /Criar sala/ })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Voltar' }).click();
   await page.getByRole('button', { name: 'Voltar' }).click();
 
   // liberar pede a conta; errar não libera
@@ -37,8 +39,9 @@ test('pais: o jogo online se bloqueia nas Configurações e só volta com a trav
   await solveParentGate(page);
   await expect(page.getByRole('button', { name: /Bloquear o jogo online/ })).toBeVisible();
   await page.getByRole('button', { name: 'Voltar' }).click();
+  await page.getByRole('button', { name: 'Voltar' }).click();
 
-  await page.getByRole('button', { name: /Jogar online/ }).click();
+  await openMenu(page, 'Jogar', 'Jogar online');
   await expect(page.getByRole('button', { name: /Criar sala/ })).toBeVisible();
   expect(errors).toEqual([]);
 });

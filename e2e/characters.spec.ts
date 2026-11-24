@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors } from './helpers';
+import { DEBUG_QUERY, collectErrors, continueGame } from './helpers';
 
 type Ent = { t: { x: number; z: number }; health?: { hp: number } };
 type G = {
@@ -22,7 +22,7 @@ test('seleção de personagem antes da partida e o especial de cada um', async (
 
   // menu → Jogar abre a seleção, como a loja: o boneco em 3D, a lista e os detalhes à direita
   await page.getByRole('button', { name: 'Jogar' }).click();
-  await page.locator('.menu .btn.primary').click();
+  await continueGame(page);
   await expect(page.getByText('ESCOLHA SEU PERSONAGEM')).toBeVisible();
   const name = page.locator('.cs-head .cs-nav-name');
   await expect(name).toHaveText('Zumbi Bot');

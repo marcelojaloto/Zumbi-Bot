@@ -885,7 +885,9 @@ export function roomScreen(host: OnlineHost): Screen {
         el(
           'li',
           {},
-          t('Cada um abre o Zumbi Bot, toca em "Jogar online" > "Entrar numa sala" e digita o código.'),
+          t(
+            'Cada um abre o Zumbi Bot, toca em "Jogar" > "Jogar online" > "Entrar numa sala" e digita o código.',
+          ),
         ),
         el('li', {}, t('Todos escolhem o personagem e tocam em "Pronto". Aí é só tocar em "Começar"!')),
       )

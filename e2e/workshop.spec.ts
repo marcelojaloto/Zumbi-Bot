@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors } from './helpers';
+import { DEBUG_QUERY, collectErrors, openMenu } from './helpers';
 
 type G = {
   isReady(): boolean;
@@ -32,7 +32,7 @@ test('Oficina e loja: melhoria com XP e sucata, especial em uso, arma e item de 
     s.profile.level = 1;
   });
   await page.getByRole('button', { name: 'Jogar', exact: true }).first().click();
-  await page.getByRole('button', { name: /Oficina/ }).click();
+  await openMenu(page, 'Customização', 'Oficina');
   await expect(page.getByRole('heading', { name: 'OFICINA' })).toBeVisible();
 
   // Vigor I precisa de XP: nível 1 ainda não libera

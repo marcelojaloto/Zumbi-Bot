@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors, openChest } from './helpers';
+import { DEBUG_QUERY, collectErrors, openChest, openMenu } from './helpers';
 
 type G = {
   isReady(): boolean;
@@ -30,6 +30,7 @@ test('mapa 1: anda, luta, renderiza e conclui com piloto automático', async ({ 
   await page.goto(`./${DEBUG_QUERY}`);
   await game(page);
   await page.getByRole('button', { name: /Jogar/i }).first().click();
+  await openMenu(page, 'Jogar');
   await expect(page.getByRole('button', { name: /Mapas/i })).toBeVisible();
   await page.evaluate(() => (window as unknown as { __game: G }).__game.startLevel('vila', 0));
   await page.waitForFunction(() => (window as unknown as { __game: G }).__game.state().screen === 'playing');

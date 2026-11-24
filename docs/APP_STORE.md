@@ -155,10 +155,10 @@ Em **App Store Connect > o app > versão iOS**:
   O endereço, o telefone e o e-mail passam a aparecer para quem baixa lá; sem essa declaração, o app não é publicado
   na União Europeia.
 - **Notas para a revisão:** "O jogo funciona offline (um jogador). O jogo online precisa de dois aparelhos: em um,
-  Jogar online > Criar sala; no outro, Entrar numa sala com o código de 4 letras. O chat de voz é opcional. Quando a
-  App Store informa que quem joga é adulto, ele funciona direto; quando não informa a idade, começa desligado e um
-  adulto libera em Liberar a voz (adulto), na sala, respondendo a uma multiplicação. Depois, o microfone só é pedido
-  ao tocar em Ligar microfone."
+  Jogar > Jogar online > Criar sala; no outro, Entrar numa sala com o código de 4 letras. O chat de voz é opcional.
+  Quando a App Store informa que quem joga é adulto, ele funciona direto; quando não informa a idade, começa
+  desligado e um adulto libera em Liberar a voz (adulto), na sala, respondendo a uma multiplicação. Depois, o
+  microfone só é pedido ao tocar em Ligar microfone."
 
 Envie para a revisão. A primeira costuma levar de um a três dias.
 

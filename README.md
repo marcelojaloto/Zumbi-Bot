@@ -66,9 +66,9 @@ Web Audio.
   para quando jogar com a Maga, o Zumbi Bot ou o Prodígio e, no lugar do cajado, tem **caixas de cura guardadas**:
   começa cada mapa com 4, usa uma no botão do cajado (tecla 2, D-pad ↑ ou o botão ✚ no toque) e, pegando uma caixa
   de cura com a vida cheia, ela fica guardada (até 4). Cada um tem nome e sobrenome, uma história e o seu
-  próprio final feliz: veja tudo no menu **Personagens** (rostos e ficha completa; no celular é um carrossel com
-  ◀ ▶) e, depois de vencer o OMEGA-Z, no **final lendário**, com um capítulo por personagem, cada um num mini cenário
-  animado (dá para rever pelos Créditos).
+  próprio final feliz: veja tudo em **Jogar > Personagens** (rostos e ficha completa; no celular é um carrossel
+  com ◀ ▶) e, depois de vencer o OMEGA-Z, no **final lendário**, com um capítulo por personagem, cada um num mini
+  cenário animado (dá para rever pelos Créditos).
 
   **Item de reviver:** cada personagem tem o seu, ligado à história dele (a Bateria de Reserva do Zumbi Bot, a Pena
   de Fênix da Maga, a Plaqueta do Batalhão do Militar, o Chip de Backup do Ciborgue, o Soro do Lago do Mutante e a
@@ -139,10 +139,10 @@ Web Audio.
 | Microfone (chat de voz online)      | V                                      | -                  |
 | Pausa                               | Esc ou P                               | Start              |
 
-**Teclas do seu jeito:** em **Controles > Trocar teclas** (ou Configurações > Controles) cada ação pode ter duas
-teclas; clique numa tecla e aperte a nova (Esc cancela, Delete apaga, "Restaurar padrão" volta tudo). As dicas do
-jogo passam a mostrar as suas teclas. No mouse, girar a rodinha liga a corrida até você parar de andar (apertar a
-rodinha também corre).
+**Teclas do seu jeito:** em **Configurações > Controles > Trocar teclas** (ou pela Ajuda, na mesma tela) cada
+ação pode ter duas teclas; clique numa tecla e aperte a nova (Esc cancela, Delete apaga, "Restaurar padrão" volta
+tudo). As dicas do jogo passam a mostrar as suas teclas. No mouse, girar a rodinha liga a corrida até você parar
+de andar (apertar a rodinha também corre).
 
 Andar para cima e para baixo (mudar de plano) tem na tela a mesma velocidade de andar para os lados.
 
@@ -185,7 +185,7 @@ todos prontos, a partida começa. Os inimigos e chefes ficam
 mais fortes conforme o número de jogadores, cada um tem suas vidas e quem ficar sem vidas aperta **Pular** para
 pegar uma emprestada de um colega. No fim, o resultado mostra a equipe e cada jogador.
 
-**Multijogador online (até 5 jogadores, cada um no seu aparelho):** no menu, **Jogar online**.
+**Multijogador online (até 5 jogadores, cada um no seu aparelho):** no menu, **Jogar > Jogar online**.
 
 1. Uma pessoa toca em **Criar sala**, escolhe a **dificuldade** da partida e se o **chat de voz** é permitido, e
    recebe um **código de 4 letras** (e um link/QR para mandar aos amigos).
@@ -258,6 +258,10 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
 - **App para iPhone:** o projeto está pronto e é compilado no GitHub (workflow iOS). Para instalar pelo TestFlight e
   publicar na App Store é preciso uma conta de desenvolvedor Apple (passo a passo em
   [docs/APP_STORE.md](docs/APP_STORE.md)). Até lá, jogue no Safari (acima).
+- **Menu:** cinco grupos, cada botão com ícone: **Jogar** (Continuar, Jogar online, Mapas e Personagens),
+  **Customização** (Oficina, Loja e Guarda-roupa), **Ranking**, **Configurações** (Áudio,
+  Controles, com a Ajuda das teclas, Gráficos, Jogo, Manual e Instalar o jogo) e **Créditos**. A seta no canto
+  superior esquerdo volta, como o Esc, o B do controle e o Voltar do Android.
 - **Idiomas:** português e inglês, escolhidos pelo idioma do navegador e trocáveis em Configurações > Jogo.
 - **Dificuldade:** Fácil, Normal (padrão), Difícil e Insano; escolha na tela de mapas ou em Configurações >
   Jogo. Nas mais fáceis os chefes têm menos vida e atacam com mais pausa; ao perder, o jogo oferece tentar de

@@ -50,6 +50,7 @@ test('celular deitado: controles de toque andam, socam e pausam; retrato pede pa
   expect(info).toEqual({ device: 'phone', touch: true });
 
   await page.getByRole('button', { name: /Jogar/i }).tap();
+  await page.getByRole('button', { name: 'Jogar', exact: true }).tap();
   await expect(page.getByRole('button', { name: 'Mapas' })).toBeVisible();
   await page.evaluate(() => (window as unknown as { __game: G }).__game.startLevel('vila', 0));
   await page.waitForFunction(() => (window as unknown as { __game: G }).__game.state().screen === 'playing');

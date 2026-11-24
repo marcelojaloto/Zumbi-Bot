@@ -70,7 +70,8 @@ test('iPhone: dica da Tela de Início, sala online com voz e controles de toque 
 
   // o iPhone cria a sala; o computador entra
   await phone.getByRole('button', { name: 'Jogar', exact: true }).first().tap();
-  await phone.getByRole('button', { name: /Jogar online/ }).tap();
+  await phone.getByRole('button', { name: 'Jogar', exact: true }).tap();
+  await phone.getByRole('button', { name: 'Jogar online', exact: true }).tap();
   await createRoom(phone);
   await expect(phone.locator('.room-code')).toHaveText(/^[A-Z]{4}$/, { timeout: 30_000 });
   const code = (await phone.locator('.room-code').textContent())!.trim();

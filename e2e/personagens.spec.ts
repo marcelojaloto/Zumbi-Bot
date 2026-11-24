@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors } from './helpers';
+import { DEBUG_QUERY, collectErrors, openMenu } from './helpers';
 
 type G = {
   isReady(): boolean;
@@ -25,7 +25,7 @@ test('menu Personagens: rostos, apelido, nome e título; a ficha abre com Voltar
 }) => {
   const errors = collectErrors(page);
   await menu(page);
-  await page.getByRole('button', { name: 'Personagens', exact: true }).click();
+  await openMenu(page, 'Jogar', 'Personagens');
   await expect(page.getByRole('heading', { name: 'PERSONAGENS' })).toBeVisible();
   const cards = page.locator('.char-card');
   await expect(cards).toHaveCount(9);
@@ -87,7 +87,7 @@ test('Manual dentro das Configurações (sem sair do jogo) e o boneco gira na lo
   await page.getByRole('button', { name: 'Voltar' }).click();
 
   // loja: Q/E (ou arrastar) giram o boneco; as setas continuam andando pela lista
-  await page.getByRole('button', { name: 'Loja', exact: true }).click();
+  await openMenu(page, 'Customização', 'Loja');
   await expect(page.locator('.shop-tip')).toContainText('Q/E');
   await page.keyboard.down('KeyE');
   await page.waitForTimeout(500);
@@ -110,7 +110,7 @@ test('menu Personagens no celular: carrossel com setas e o Prodígio liberado de
   await page.goto(`./${DEBUG_QUERY}&char=prodigy`);
   await page.waitForFunction(() => (window as unknown as { __game?: G }).__game?.isReady());
   await page.getByRole('button', { name: 'Jogar', exact: true }).click();
-  await page.getByRole('button', { name: 'Personagens', exact: true }).click();
+  await openMenu(page, 'Jogar', 'Personagens');
   const grid = page.locator('.chars-grid');
   const left = page.locator('.chars-arrow.left');
   const right = page.locator('.chars-arrow.right');

@@ -1,5 +1,5 @@
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
-import { collectErrors, createRoom, releaseVoice } from './helpers';
+import { collectErrors, createRoom, openMenu, releaseVoice } from './helpers';
 
 // Chat de voz com o PeerJS de verdade (servidor local) e o microfone falso do Chromium (um bipe).
 test.use({
@@ -50,7 +50,7 @@ async function open(page: Page): Promise<void> {
   await page.goto(Q);
   await page.waitForFunction(() => (window as unknown as { __game?: G }).__game?.isReady());
   await page.getByRole('button', { name: 'Jogar', exact: true }).first().click();
-  await page.getByRole('button', { name: /Jogar online/ }).click();
+  await openMenu(page, 'Jogar', 'Jogar online');
 }
 
 async function join(page: Page, code: string): Promise<void> {

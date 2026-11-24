@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors } from './helpers';
+import { DEBUG_QUERY, collectErrors, openMenu } from './helpers';
 
 type P = { t: { x: number; y: number }; player: { mana: number; manaMax: number; running: boolean } };
 type G = {
@@ -32,7 +32,7 @@ test('teclas configuráveis: troca o pulo, joga com a tecla nova, guarda e resta
   const errors = collectErrors(page);
   await boot(page);
   await page.getByRole('button', { name: 'Jogar', exact: true }).first().click();
-  await page.getByRole('button', { name: 'Controles' }).click();
+  await openMenu(page, 'Configurações', 'Controles', 'Ajuda');
   await page.getByRole('button', { name: /Trocar teclas/ }).click();
   await page.locator('.kb-key[data-action="jump"][data-slot="0"]').click();
   await expect(page.locator('.kb-key.listening')).toHaveText('Aperte uma tecla...');
@@ -61,7 +61,7 @@ test('teclas configuráveis: troca o pulo, joga com a tecla nova, guarda e resta
 
   // restaurar padrão
   await page.getByRole('button', { name: 'Jogar', exact: true }).first().click();
-  await page.getByRole('button', { name: 'Controles' }).click();
+  await openMenu(page, 'Configurações', 'Controles', 'Ajuda');
   await page.getByRole('button', { name: /Trocar teclas/ }).click();
   await page.getByRole('button', { name: 'Restaurar padrão' }).click();
   await expect(page.locator('.kb-key[data-action="jump"][data-slot="0"]')).toHaveText('Espaço');

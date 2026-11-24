@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors } from './helpers';
+import { DEBUG_QUERY, collectErrors, openMenu } from './helpers';
 
 type G = {
   isReady(): boolean;
@@ -23,7 +23,7 @@ test('loja: escolher um item veste o boneco (prévia) e só compra depois de con
     () => ((window as unknown as { __game: G }).__game.app.profile.save.profile.scrap = 5000),
   );
   await page.getByRole('button', { name: 'Jogar', exact: true }).first().click();
-  await page.getByRole('button', { name: 'Loja', exact: true }).click();
+  await openMenu(page, 'Customização', 'Loja');
 
   // escolher: prévia, nada comprado; cancelar desfaz
   const first = page.locator('.cos-card.unowned').first();

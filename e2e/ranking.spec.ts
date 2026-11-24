@@ -1,5 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors, openChest } from './helpers';
+import { DEBUG_QUERY, collectErrors, continueGame, openChest } from './helpers';
 
 type G = {
   isReady(): boolean;
@@ -77,7 +77,7 @@ test('ranking: nome só no fim da jornada, salvo sozinho, e o ranking global', a
   await expect(page.getByRole('heading', { name: 'CONFIGURAÇÕES' })).toHaveCount(0);
 
   // joga de Maga: vencer um mapa não pede nome; a jornada soma
-  await page.locator('.menu .btn.primary').click();
+  await continueGame(page);
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('Enter');
   await screenIs(page, 'playing');

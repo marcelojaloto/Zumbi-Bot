@@ -1,4 +1,4 @@
-import { el } from '../dom';
+import { el, ico } from '../dom';
 import { SAFETY_URL } from '../links';
 import { parentGate } from '../parentGate';
 import type { Screen } from '../ScreenManager';
@@ -49,7 +49,8 @@ function select<T extends string>(label: string, get: () => T, set: (v: T) => vo
   return [el('label', {}, label), s] as const;
 }
 
-export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
+/** `single`: só a seção `tab`, aberta pelo submenu Configurações (sem as abas). */
+export function settingsScreen(host: UiHost, tab = 'audio', single = false): Screen {
   const st = (): SettingsV2 => host.profile.settings;
   const apply = () => {
     host.applySettings();
@@ -125,6 +126,16 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
       : []),
   ]);
   sections.controls = mk([
+    [
+      el('label', {}, t('Ajuda dos controles')),
+      el(
+        'button',
+        { class: 'btn small', data: { nav: '' }, onclick: () => host.openControls() },
+        ico('❓'),
+        ' ',
+        t('Ajuda'),
+      ),
+    ] as const,
     slider(
       t('Sensibilidade do mouse'),
       () => st().controls.mouseSensitivity,
@@ -388,39 +399,42 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
   };
   for (const k of Object.keys(sections))
     tabs.appendChild(el('button', { class: 'btn', data: { nav: '', k }, onclick: () => show(k) }, names[k]!));
-  show(sections[tab] ? tab : 'audio');
+  const first = sections[tab] ? tab : 'audio';
+  show(first);
   const e = el(
     'div',
-    { class: 'screen dim' },
-    el('h2', {}, t('CONFIGURAÇÕES')),
-    tabs,
+    { class: 'screen dim settings' },
+    el('h2', {}, single ? names[first]!.toLocaleUpperCase() : t('CONFIGURAÇÕES')),
+    single ? null : tabs,
     body,
-    el(
-      'div',
-      { class: 'row-btns' },
-      // manual dentro do jogo (não sai da tela cheia)
-      el(
-        'button',
-        { class: 'btn', onclick: () => host.screens.push(manualScreen(host)), data: { nav: '' } },
-        `📖 ${t('Manual')}`,
-      ),
-      // só quando o navegador oferece instalar: instalado, abre em tela cheia, sem a barra e sem o aviso
-      host.canInstall
-        ? el(
+    single
+      ? null
+      : el(
+          'div',
+          { class: 'row-btns' },
+          // manual dentro do jogo (não sai da tela cheia)
+          el(
             'button',
-            {
-              class: 'btn install-btn',
-              title: t('Instalado, o jogo abre em tela cheia, sem a barra do navegador.'),
-              onclick: () => {
-                host.installApp();
-                host.screens.pop();
-              },
-              data: { nav: '' },
-            },
-            `📲 ${t('Instalar o jogo')}`,
-          )
-        : null,
-    ),
+            { class: 'btn', onclick: () => host.screens.push(manualScreen(host)), data: { nav: '' } },
+            `📖 ${t('Manual')}`,
+          ),
+          // só quando o navegador oferece instalar: instalado, abre em tela cheia, sem a barra e sem o aviso
+          host.canInstall
+            ? el(
+                'button',
+                {
+                  class: 'btn install-btn',
+                  title: t('Instalado, o jogo abre em tela cheia, sem a barra do navegador.'),
+                  onclick: () => {
+                    host.installApp();
+                    host.screens.pop();
+                  },
+                  data: { nav: '' },
+                },
+                `📲 ${t('Instalar o jogo')}`,
+              )
+            : null,
+        ),
   );
   return {
     el: e,
