@@ -21,12 +21,23 @@ const SEQUEL =
 const SEASON2 =
   'A cópia do OMEGA-Z apagou no fundo do mar, e desta vez não sobrou sinal nenhum. Oito heróis e um bichinho elétrico voltaram à superfície no submarino do bunker, apertados e rindo. A fábrica voltou a fazer brinquedos, a praça encheu de skates e o estádio marcou o primeiro jogo sem zumbis na arquibancada. O que vier depois, eles enfrentam juntos.';
 
+/** O gancho da 3ª temporada: um convite de longe, sem dizer ainda para onde. */
+const SEASON3 =
+  'Num fim de tarde, Ravi, Elowen e Faísca apostavam corrida na pista quando uma estrelinha desceu do céu, bem devagar, e parou na frente deles. Ela piscava em cores que nem a Academia Arcana conhecia. Faísca encostou o nariz nela, e a estrelinha abriu no ar um caminho de luz com um bilhete na ponta: "Precisamos de amigos corajosos. Venham quando estiverem prontos." Ninguém sabe quem escreveu, mas Elowen já arrumou a mochila, Ravi desenhou o caminho no caderno e Faísca não para de pular. Uma aventura nova está chamando.';
+
 /** Texto de um capítulo: título, nome e o final feliz. */
 function chapterText(c: EndingChapter): { color: string; title: string; name: string; text: string } {
   if (c === 'all')
     return { color: '#ffd23a', title: t('Juntos'), name: t('Um mundo novo'), text: t(EPILOGUE) };
   if (c === 'season2')
     return { color: '#39c8ff', title: t('Juntos de novo'), name: t('O mar em silêncio'), text: t(SEASON2) };
+  if (c === 'season3')
+    return {
+      color: '#ffb43a',
+      title: t('Ainda não acabou...'),
+      name: t('Continua na 3ª temporada'),
+      text: t(SEASON3),
+    };
   if (c === 'sequel')
     return {
       color: '#ff3a4a',

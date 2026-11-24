@@ -1,4 +1,5 @@
 import { SEASON2_EN } from './s2';
+import { final3En } from './extra/final3';
 import { cosmeticosEn } from './extra/cosmeticos';
 import { fases6En } from './extra/fases6';
 
@@ -1214,6 +1215,7 @@ export const EN: Record<string, string> = {
   'Direcional: 2× ↑ ou ↓': 'D-pad: 2× ↑ or ↓',
   'Esquiva em profundidade (com a defesa da Oficina)': 'Dodge in depth (with the Workshop defense)',
   ...SEASON2_EN,
+  ...final3En,
   ...cosmeticosEn,
   ...fases6En,
 };

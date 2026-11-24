@@ -35,7 +35,7 @@ import { BlobShadows } from './fx/BlobShadows';
  * Capítulo do final lendário: um por personagem, o epílogo com todos juntos, a revelação do personagem secreto
  * (liberado bem nessa hora) e, por último, o sinal que abre a continuação.
  */
-export type EndingChapter = CharacterId | 'all' | 'sequel' | 'season2';
+export type EndingChapter = CharacterId | 'all' | 'sequel' | 'season2' | 'season3';
 
 export const ENDING_CHAPTERS: EndingChapter[] = [
   ...HERO_ORDER,
@@ -45,11 +45,11 @@ export const ENDING_CHAPTERS: EndingChapter[] = [
   'sequel',
 ];
 
-/** Final da 2ª temporada: os três personagens dela e o epílogo. */
-export const SEASON2_CHAPTERS: EndingChapter[] = ['ninja', 'elf', 'spark', 'season2'];
+/** Final da 2ª temporada: os três personagens dela, o epílogo e o gancho da 3ª. */
+export const SEASON2_CHAPTERS: EndingChapter[] = ['ninja', 'elf', 'spark', 'season2', 'season3'];
 
 /** Onde cada final acontece (cenário de um mapa do jogo). */
-const CHAPTER_MAP: Record<EndingChapter, string> = {
+export const CHAPTER_MAP: Record<EndingChapter, string> = {
   robot: 'vila',
   mage: 'torre',
   military: 'guerra',
@@ -62,6 +62,7 @@ const CHAPTER_MAP: Record<EndingChapter, string> = {
   spark: 'torre',
   sequel: 'arena',
   season2: 'vila',
+  season3: 'pista',
 };
 
 const X0 = 20;
@@ -165,6 +166,9 @@ export class EndingScene {
         break;
       case 'season2':
         this.epilogue([...HERO_ORDER, 'ninja', 'elf', 'spark']);
+        break;
+      case 'season3':
+        this.invite();
         break;
       default:
         this.epilogue();
@@ -788,6 +792,99 @@ export class EndingScene {
     this.fireflies(X0, 30, color);
     this.lights.push({ x: X0, y: 2.4, z: 2.2, color, intensity: 12 });
     this.cam = { x: X0, y: -0.8, z: 0.2, zoom: 0.75, push: 0.05 };
+  }
+
+  /**
+   * Gancho da 3ª temporada: na pista, ao pôr do sol, os três da 2ª temporada veem uma estrelinha colorida descer do
+   * céu; ela abre um caminho de luz para o alto e eles comemoram, cada um com o seu especial.
+   */
+  private invite(): void {
+    const ids: CharacterId[] = ['ninja', 'elf', 'spark'];
+    const heroes = ids.map((id, i) => this.hero(id, X0 - 1.4 + i * 1.4, 0.4 - (i % 2) * 0.3, 0.15));
+    const rainbow = [0xff4a6a, 0xff9a3a, 0xffd23a, 0x7aff5a, 0x39c8ff, 0xb05aff];
+    // estrelinha: miolo e raios girando
+    const star = new Group();
+    const core = this.mesh(this.sphere, 0xfff4c0, 5, star);
+    core.scale.setScalar(0.14);
+    const rays: Mesh[] = [];
+    for (let i = 0; i < 4; i++) {
+      const r = this.mesh(this.box, rainbow[i]!, 4, star);
+      r.scale.set(0.05, 0.5, 0.05);
+      r.rotation.z = (i / 4) * Math.PI;
+      rays.push(r);
+    }
+    this.props.add(star);
+    const sx = X0 + 0.1;
+    const sy = 2.5;
+    const sz = -0.4;
+    this.updaters.push((t) => {
+      // desce devagar, balançando, e fica flutuando sobre eles
+      const k = Math.min(1, t / 2.6);
+      const e = 1 - (1 - k) ** 3;
+      star.position.set(
+        sx + Math.sin(t * 1.5) * 0.4 * (1 - e),
+        7 - (7 - sy) * e + Math.sin(t * 2) * 0.08,
+        sz,
+      );
+      star.rotation.z = t * 1.2;
+      const p = 1 + Math.sin(t * 5) * 0.12;
+      star.scale.setScalar(p);
+      rays.forEach((r, i) =>
+        (r.material as MeshBasicMaterial).color
+          .setHex(rainbow[(i + Math.floor(t * 3)) % 6]!)
+          .multiplyScalar(4),
+      );
+      this.lightsTick(star.position.x, star.position.y, sz + 0.6, 0xfff0c0, 10 + p * 4);
+    });
+    // caminho de luz que sobe para o céu, bolinha por bolinha
+    for (let i = 0; i < 28; i++) {
+      const dot = this.mesh(this.sphere, rainbow[i % 6]!, 4);
+      const k = i / 27;
+      dot.position.set(sx + k * 5, sy + 0.2 + k * 5 + Math.sin(k * Math.PI) * 0.6, sz - k * 2.5);
+      dot.scale.setScalar(0.001);
+      const t0 = 3 + i * 0.07;
+      this.updaters.push((t) => {
+        const g = Math.max(0, Math.min(1, (t - t0) / 0.3));
+        dot.scale.setScalar(Math.max(0.001, g * (0.09 + Math.sin(t * 4 + i) * 0.02)));
+      });
+    }
+    // estalo colorido quando o caminho abre
+    this.later(3, () => {
+      for (let i = 0; i < 36; i++) {
+        const a = (i / 36) * Math.PI * 2;
+        this.spark(sx, sy, sz, Math.cos(a) * 2.2, Math.sin(a) * 2.2 + 0.8, 0.3, rainbow[i % 6]!, {
+          size: 0.05,
+          life: 1.1,
+          g: 2,
+          glow: 5,
+        });
+      }
+      this.lights.push({ x: sx, y: sy, z: sz + 0.8, color: 0xfff0c0, intensity: 28 });
+    });
+    heroes.forEach((a, i) => {
+      a.pose = (h, t) => {
+        if (h.move) return;
+        if (t < 3) {
+          // olham para cima, curiosos
+          this.bone(h, J.neck, -0.45);
+          return;
+        }
+        // pulinhos e aceno de alegria
+        const hop = Math.max(0, Math.sin(t * 4 + i * 1.7));
+        h.v.group.position.y = hop * 0.14;
+        this.bone(h, J.upperArmR, -2.6, 0, -0.3 + Math.sin(t * 6 + i) * 0.3);
+        this.bone(h, J.neck, -0.3);
+      };
+      let next = 3.8 + i * 0.9;
+      this.updaters.push((t) => {
+        if (t < next) return;
+        next = t + 6;
+        this.play(a, getCharacter(ids[i]!).special);
+      });
+    });
+    this.fireflies(X0, 16, 0xfff08a);
+    this.lights.push({ x: X0, y: 2.5, z: 2.5, color: 0xffd8a8, intensity: 14 });
+    this.cam = { x: X0 + 0.1, y: -0.85, z: 0.25, zoom: 0.8, push: 0.05 };
   }
 
   private fireflies(cx: number, n: number, color: number): void {

@@ -22,6 +22,8 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   Purpurino, Artilheiro Flamejante). A jogabilidade não muda.
 - O Mecha Dominador, o General Criotanque e o Rei do Half-Pipe passam a dar, cada um, uma peça nova (manoplas, botas
   e joelheiras).
+- O **final da 2ª temporada** ganha um último capítulo: Ravi, Elowen e Faísca recebem um convite misterioso, que
+  chama para a 3ª temporada.
 - A classificação indicativa sugerida passa a ser **6 anos** (violência fantasiosa).
 - A **Placa de Lápide** sai do Vestiário.
 

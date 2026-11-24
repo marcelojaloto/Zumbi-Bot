@@ -1,0 +1,6 @@
+/** Gancho da 3ª temporada, no fim do final da 2ª. */
+export const final3En: Record<string, string> = {
+  'Continua na 3ª temporada': 'To be continued in season 3',
+  'Num fim de tarde, Ravi, Elowen e Faísca apostavam corrida na pista quando uma estrelinha desceu do céu, bem devagar, e parou na frente deles. Ela piscava em cores que nem a Academia Arcana conhecia. Faísca encostou o nariz nela, e a estrelinha abriu no ar um caminho de luz com um bilhete na ponta: "Precisamos de amigos corajosos. Venham quando estiverem prontos." Ninguém sabe quem escreveu, mas Elowen já arrumou a mochila, Ravi desenhou o caminho no caderno e Faísca não para de pular. Uma aventura nova está chamando.':
+    'One late afternoon, Ravi, Elowen and Spark were racing on the track when a little star came down from the sky, very slowly, and stopped right in front of them. It twinkled in colors not even the Arcane Academy knew. Spark touched it with its nose, and the little star opened a path of light in the air with a note at the end: "We need brave friends. Come when you are ready." Nobody knows who wrote it, but Elowen has already packed her backpack, Ravi has drawn the path in his notebook and Spark will not stop jumping. A new adventure is calling.',
+};

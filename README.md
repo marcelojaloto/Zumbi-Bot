@@ -106,10 +106,10 @@ Web Audio.
   Aberto, os prêmios saem voando para os lados, cada um com o objeto e o nome: o que a fase deu e um bônus de
   sucata, às vezes com uma peça nova, o item de reviver, uma arma branca ou uma arma de fogo.
 - **Progressão**: XP e níveis, pontuação com combos, estrelas por nível, recordes e **Novo Jogo+** depois de
-  derrotar o OMEGA-Z. Vencido o OMEGA-Z, o "Continuar" do menu vira **2ª temporada**, que começa na Fábrica de
-  Brinquedos com todas as armas, cajados, melhorias e itens conquistados; o último capítulo do final lendário conta o
-  que vem por aí. Quando um mundo novo é lançado, quem já venceu o anterior o encontra liberado. Vencido o último
-  mapa lançado, o botão vira **Novo jogo**: a jornada recomeça na Vila Assombrada, também com tudo o que foi
+  derrotar o OMEGA-Z (liga e desliga no menu Jogar). Vencido o OMEGA-Z, o "Continuar" do menu vira **2ª temporada**,
+  que começa na Fábrica de Brinquedos com todas as armas, cajados, melhorias e itens conquistados; o último capítulo
+  do final lendário conta o que vem por aí, e o final da 2ª temporada termina com o convite para a 3ª. Quando um
+  mundo novo é lançado, quem já venceu o anterior o encontra liberado. Vencido o último mapa lançado, o botão vira **Novo jogo**: a jornada recomeça na Vila do Entardecer, também com tudo o que foi
   conquistado. O progresso fica salvo no navegador (`localStorage`).
 - **Ranking por jornada**: os pontos de cada mapa se somam até você **perder todas as vidas** ou **terminar uma
   temporada**; só aí o jogo mostra a posição e o nome, já salvo com o último nome usado (ou o apelido do personagem).
