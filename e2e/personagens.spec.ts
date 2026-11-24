@@ -20,7 +20,7 @@ async function menu(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Jogar', exact: true }).click();
 }
 
-test('menu Personagens: rostos, apelido, nome e título; a ficha abre com Voltar, Mapas e Começar', async ({
+test('menu Personagens: rostos, apelido, nome e título; a ficha abre com o rosto, a loja e Jogar', async ({
   page,
 }) => {
   const errors = collectErrors(page);
@@ -50,20 +50,25 @@ test('menu Personagens: rostos, apelido, nome e título; a ficha abre com Voltar
   await expect(page.getByText('ESCOLHA SEU PERSONAGEM')).toHaveCount(0);
   await expect(page.locator('.cs-full')).toHaveText('Lívia Vesper');
   await expect(page.locator('.cs-story')).toContainText('Academia Arcana');
-  for (const b of ['Voltar', 'Mapas', 'Começar'])
+  for (const b of ['Voltar', 'Guarda-roupa', 'Loja', 'Oficina', 'Mapas', 'Jogar'])
     await expect(page.getByRole('button', { name: b, exact: true })).toBeVisible();
+  // o mesmo rosto do cartão
+  await expect(page.locator('.cs-avatar img')).toHaveAttribute(
+    'src',
+    (await cards.nth(1).locator('img').getAttribute('src'))!,
+  );
   // setas trocam; Mapas abre os mapas já com o personagem da ficha
-  await page.locator('.cs-head .lc-arrow').nth(1).click();
+  await page.locator('.cs-title-row .lc-arrow').nth(1).click();
   await expect(page.locator('.cs-full')).toHaveText('Bruno Trovão');
   await page.getByRole('button', { name: 'Mapas', exact: true }).click();
   await expect(page.locator('.screen.maps, .map-select, .screen').last()).toBeVisible();
   expect((await game(page)).app.profile.save.profile.character).toBe('military');
   await page.keyboard.press('Escape');
 
-  // Começar: joga com o personagem da ficha
-  await page.locator('.cs-head .lc-arrow').nth(1).click();
+  // Jogar: joga com o personagem da ficha
+  await page.locator('.cs-title-row .lc-arrow').nth(1).click();
   await expect(page.locator('.cs-full')).toHaveText('Ícaro Neon');
-  await page.getByRole('button', { name: 'Começar', exact: true }).click();
+  await page.getByRole('button', { name: 'Jogar', exact: true }).click();
   await page.waitForFunction(() => (window as unknown as { __game: G }).__game.state().screen === 'playing');
   expect(
     await page.evaluate(() => (window as unknown as { __game: G }).__game.state().player?.character),

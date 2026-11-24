@@ -67,8 +67,9 @@ Web Audio.
   começa cada mapa com 4, usa uma no botão do cajado (tecla 2, D-pad ↑ ou o botão ✚ no toque) e, pegando uma caixa
   de cura com a vida cheia, ela fica guardada (até 4). Cada um tem nome e sobrenome, uma história e o seu
   próprio final feliz: veja tudo em **Jogar > Personagens** (rostos num carrossel com ◀ ▶ quando não cabem na tela,
-  e a ficha completa) e, depois de vencer o OMEGA-Z, no **final lendário**, com um capítulo por personagem, cada um
-  num mini cenário animado (dá para rever pelos Créditos).
+  e a ficha completa, com o rosto e atalhos para o Guarda-roupa, a Loja e a Oficina) e, depois de vencer o OMEGA-Z,
+  no **final lendário**, com um capítulo por personagem, cada um num mini cenário animado (dá para rever pelos
+  Créditos).
 
   **Item de reviver:** cada personagem tem o seu, ligado à história dele (a Bateria de Reserva do Zumbi Bot, a Pena
   de Fênix da Maga, a Plaqueta do Batalhão do Militar, o Chip de Backup do Ciborgue, o Soro do Lago do Mutante e a
@@ -163,7 +164,7 @@ centro. No computador, o microfone (ícone e tecla) e o FPS ficam no canto super
 tecla M; no celular, o minimapa começa oculto e aparece no botão 🗺.
 
 **Escolha do personagem:** a tela é como a loja: o personagem aparece em 3D no espaço livre e a ficha ao lado
-(**◀ nome ▶**, nome e sobrenome, atributos, especial e história; a ficha rola quando não cabe na tela). Para **girar** o personagem, arraste-o para os lados com o dedo (ou o mouse), ou segure **←/→**
+(**◀ título ▶**, rosto, nome e sobrenome, atributos, especial e história; a ficha rola quando não cabe na tela). Para **girar** o personagem, arraste-o para os lados com o dedo (ou o mouse), ou segure **←/→**
 no teclado ou o direcional do controle para os lados; para **trocar**, use as setas ◀ ▶ ou **↑/↓**. Na loja e no
 guarda-roupa o boneco também gira (arrastar, **Q/E** ou o analógico direito). Na sala online, o botão
 **👤 Personagem** (ou tocar no nome) abre a mesma tela.

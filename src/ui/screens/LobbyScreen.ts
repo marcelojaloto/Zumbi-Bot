@@ -215,6 +215,7 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
     pick: pickSolo,
     tip: spinTip(host.lastDevice.k === 'touch'),
     roster,
+    portrait: (c, onReady) => host.portrait(c, onReady),
     extra: [soloJoin],
     buttons: [
       el('button', { class: 'btn primary', data: { nav: '', autofocus: '' }, onclick: start }, t('Começar')),

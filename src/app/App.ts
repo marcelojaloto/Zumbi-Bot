@@ -758,8 +758,8 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     ]);
   }
 
-  openWorkshop(): void {
-    this.screens.push(workshopScreen(this));
+  openWorkshop(c?: CharacterId): void {
+    this.screens.push(workshopScreen(this, c));
   }
 
   openWardrobe(): void {

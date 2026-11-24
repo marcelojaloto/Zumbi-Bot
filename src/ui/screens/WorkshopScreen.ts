@@ -48,12 +48,14 @@ function perkName(p: PerkDef): string {
 /**
  * Oficina: escolhe o personagem (◀ ▶) e vê a árvore de melhorias dele em quatro ramos (Atributos, Combos,
  * Especiais e Defesas). Cada melhoria libera com XP (a soma de tudo o que o jogador já ganhou) e se compra com
- * sucata; algumas pedem a anterior do mesmo ramo. Nos especiais, escolhe-se qual fica em uso.
+ * sucata; algumas pedem a anterior do mesmo ramo. Nos especiais, escolhe-se qual fica em uso. `start`: personagem
+ * aberto (o do jogador, se não vier).
  */
-export function workshopScreen(host: PickerHost): Screen {
+export function workshopScreen(host: PickerHost, start?: CharacterId): Screen {
   const prof = host.profile;
   const roster = prof.roster;
-  let cur: CharacterId = roster.includes(prof.save.profile.character) ? prof.save.profile.character : 'robot';
+  const want = start ?? prof.save.profile.character;
+  let cur: CharacterId = roster.includes(want) ? want : 'robot';
   let tab: PerkBranch = 'attr';
   /** Melhoria selecionada (detalhes e compra na barra de baixo); 'base' = especial original. */
   let sel: string | null = null;

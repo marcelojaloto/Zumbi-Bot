@@ -3,7 +3,7 @@ import { getMap } from '../../data/maps';
 import { REVIVE_ITEMS } from '../../data/revive';
 import type { CharacterDef, CharacterId } from '../../data/types';
 import { connectedPads, padDir } from '../../input/pads';
-import { el, hexColor } from '../dom';
+import { el, hexColor, iconBtn } from '../dom';
 import { t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
@@ -16,6 +16,8 @@ export interface PickerHost extends UiHost {
   previewLineup(chars: CharacterId[]): void;
   /** Gira o boneco em exibição (radianos). */
   turnMenuHero(delta: number): void;
+  /** Rosto do personagem (imagem); ainda não pronto: null, e `onReady` avisa quando ficar. */
+  portrait(c: CharacterId, onReady?: () => void): string | null;
 }
 
 /** Barras de atributos (rótulo já traduzido, valor 0..1; null = não usa) mostradas na seleção. */
@@ -164,8 +166,8 @@ export class HeroSpin {
 }
 
 /**
- * Ficha de personagem, no jeito da loja: o personagem em 3D no espaço livre e, à direita, a ficha com ◀ nome ▶, o
- * título, os atributos, o especial e a história. A ficha rola quando não cabe na tela (qualquer aparelho).
+ * Ficha de personagem, no jeito da loja: o personagem em 3D no espaço livre e, à direita, a ficha com ◀ título ▶, o
+ * rosto, o nome, os atributos, o especial e a história. A ficha rola quando não cabe na tela (qualquer aparelho).
  */
 export interface CharacterSheet {
   /** A tela inteira (espaço livre do boneco + ficha). */
@@ -187,9 +189,15 @@ export function characterSheet(o: {
   buttons: HTMLElement[];
   /** Personagens das setas (o secreto só depois de liberado). */
   roster: CharacterId[];
+  portrait?: (c: CharacterId, onReady?: () => void) => string | null;
 }): CharacterSheet {
   const name = el('b', { class: 'cs-nav-name' });
   const sub = el('div', { class: 'cs-sub' });
+  const face = el('div', { class: 'char-face cs-avatar' });
+  const showFace = (id: CharacterId) => {
+    const url = o.portrait?.(id, () => o.get() === id && showFace(id));
+    face.replaceChildren(...(url ? [el('img', { src: url, alt: '', draggable: false })] : []));
+  };
   const arrow = (dir: number, text: string, title: string) =>
     el(
       'button',
@@ -201,17 +209,18 @@ export function characterSheet(o: {
       },
       text,
     );
-  const head = el(
-    'div',
-    { class: 'cs-nav cs-head' },
-    el('div', { class: 'cs-nav-row' }, arrow(-1, '◀', t('Anterior')), name, arrow(1, '▶', t('Próximo'))),
-    sub,
-  );
+  const head = el('div', { class: 'cs-head cs-id' }, face, el('div', { class: 'cs-id-text' }, name, sub));
   const body = el('div', { class: 'wr-body cs-body', tabIndex: -1 });
   const panel = el(
     'div',
     { class: 'wr-panel cs-sheet' },
-    el('h2', {}, o.title),
+    el(
+      'div',
+      { class: 'cs-title-row' },
+      arrow(-1, '◀', t('Anterior')),
+      el('h2', {}, o.title),
+      arrow(1, '▶', t('Próximo')),
+    ),
     head,
     body,
     el('p', { class: 'muted shop-tip' }, o.tip),
@@ -228,6 +237,7 @@ export function characterSheet(o: {
     sub.textContent = t(c.title);
     if (shown === id) return;
     shown = id;
+    showFace(id);
     body.replaceChildren(
       el('div', { class: 'cs-full' }, c.fullName),
       el('p', { class: 'ci-desc' }, t(c.desc)),
@@ -288,6 +298,7 @@ function sheetScreen(
     title: string;
     char: CharacterId;
     buttons: (cur: () => CharacterId) => HTMLElement[];
+    extra?: (cur: () => CharacterId) => HTMLElement[];
     main: (c: CharacterId) => void;
     onChange?: (c: CharacterId) => void;
   },
@@ -312,6 +323,8 @@ function sheetScreen(
     pick: choose,
     tip: spinTip(host.touchActive),
     roster,
+    portrait: (c, onReady) => host.portrait(c, onReady),
+    extra: o.extra?.(() => cur),
     buttons: o.buttons(() => cur),
   });
   spin.bind(sheet.el, sheet.panel);
@@ -409,24 +422,31 @@ export interface CharactersHost extends PickerHost {
   playAs(c: CharacterId): void;
   /** Abre os mapas já com o personagem escolhido. */
   mapsAs(c: CharacterId): void;
-  /** Rosto do personagem (imagem) para os cartões; ainda não pronto: null, e `onReady` avisa quando ficar. */
-  portrait(c: CharacterId, onReady?: () => void): string | null;
+  openWardrobe(): void;
+  openShop(): void;
+  /** Oficina na árvore do personagem. */
+  openWorkshop(c?: CharacterId): void;
 }
 
-/** Ficha de Personagem aberta pelo menu Personagens: Mapas e Começar (com o personagem da ficha). */
+/** Ficha de Personagem aberta pelo menu Personagens: Guarda-roupa, Loja, Oficina, Mapas e Jogar. */
 export function characterSheetScreen(host: CharactersHost, char: CharacterId): Screen {
   return sheetScreen(host, {
     id: 'sheet',
     title: t('FICHA DE PERSONAGEM'),
     char,
     main: (c) => host.playAs(c),
-    buttons: (cur) => [
-      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.mapsAs(cur()) }, t('Mapas')),
+    extra: (cur) => [
       el(
-        'button',
-        { class: 'btn primary', data: { nav: '', autofocus: '' }, onclick: () => host.playAs(cur()) },
-        t('Começar'),
+        'div',
+        { class: 'row-btns cs-more' },
+        iconBtn('👕', t('Guarda-roupa'), () => host.openWardrobe(), 'btn small'),
+        iconBtn('🛒', t('Loja'), () => host.openShop(), 'btn small'),
+        iconBtn('🔧', t('Oficina'), () => host.openWorkshop(cur()), 'btn small'),
       ),
+    ],
+    buttons: (cur) => [
+      iconBtn('🗺️', t('Mapas'), () => host.mapsAs(cur())),
+      iconBtn('▶️', t('Jogar'), () => host.playAs(cur()), 'btn primary'),
     ],
   });
 }

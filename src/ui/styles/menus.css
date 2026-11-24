@@ -1471,6 +1471,40 @@ a.btn {
   padding: 4px 0 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
+.cs-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.char-select .cs-title-row h2 {
+  flex: 1;
+  align-self: center;
+}
+.cs-title-row .lc-arrow {
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+}
+.cs-id {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.char-face.cs-avatar {
+  width: 64px;
+  flex: none;
+  border: 2px solid var(--cc);
+}
+.cs-id-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.cs-id .cs-nav-name {
+  min-width: 0;
+  text-align: left;
+}
 .cs-head .cs-nav-name {
   font-size: 26px;
 }
@@ -1552,6 +1586,14 @@ a.btn {
   }
   .cs-head {
     padding: 0 0 4px;
+  }
+  .char-face.cs-avatar {
+    width: 42px;
+  }
+  .cs-title-row .lc-arrow {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
   }
   .cs-sub {
     font-size: 10px;
