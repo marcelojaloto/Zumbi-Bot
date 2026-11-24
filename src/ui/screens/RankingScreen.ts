@@ -197,7 +197,7 @@ export function rankingScreen(host: RankingHost): Screen {
             el('td', { class: 'num' }, fmtTime(r.timeMs)),
             el('td', { class: 'num' }, String(r.kills)),
             el('td', { class: 'num' }, String(r.playerLevel)),
-            el('td', { class: 'muted' }, fmtDate(r.date)),
+            el('td', { class: 'rk-date' }, fmtDate(r.date)),
           ),
         ),
       ),
@@ -246,7 +246,7 @@ export function rankingScreen(host: RankingHost): Screen {
             el('td', { class: 'num' }, String(g.maps)),
             el('td', {}, mapName(g.mapId), endTag(g.victory, true)),
             el('td', { class: 'num' }, String(g.level)),
-            el('td', { class: 'muted' }, fmtDate(g.date)),
+            el('td', { class: 'rk-date' }, fmtDate(g.date)),
           );
         }),
       ),

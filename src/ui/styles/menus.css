@@ -958,6 +958,7 @@
 .rk-table th {
   position: sticky;
   top: 0;
+  z-index: 1;
   background: rgba(24, 28, 40, 0.98);
   text-align: left;
   font-weight: 600;
@@ -968,6 +969,9 @@
   padding: 6px 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   white-space: nowrap;
+}
+.rk-table td.rk-date {
+  color: #9aa0b0;
 }
 .rk-table td.num {
   text-align: right;

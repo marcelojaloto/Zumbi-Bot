@@ -17,6 +17,7 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   virou a **Ajuda** de Configurações > Controles.
 - Todas as telas voltam pela mesma **seta no canto superior esquerdo**, no lugar do botão Voltar. O Esc e o Voltar
   do Android passam a funcionar também nas telas do jogo online.
+- **Ranking:** a data não passa mais por cima do título da coluna ao rolar.
 
 ## 1.7 (12/11/2026)
 
