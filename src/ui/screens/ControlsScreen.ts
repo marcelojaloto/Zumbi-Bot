@@ -132,11 +132,11 @@ export function controlsScreen(host: UiHost): Screen {
       { class: 'muted' },
       t('Combos: J, J, J, J (uppercut) | J, J, K (chute giratório) | correndo + K (voadora) | no ar: J/K'),
     ),
-    el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, t('Voltar')),
   );
   return {
     el: e,
     id: 'controls',
+    backArrow: true,
     // voltou da tela de teclas: mostra as teclas novas
     onShow: fillKeys,
     onBack: () => {

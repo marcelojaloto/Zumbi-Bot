@@ -194,9 +194,13 @@ export function onlineScreen(host: OnlineHost, notice?: string): Screen {
             'O jogo online está bloqueado neste aparelho. Um adulto responsável libera em Configurações > Jogo.',
           ),
         ),
-        el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
       ),
       id: 'online',
+      backArrow: true,
+      onBack: () => {
+        host.screens.pop();
+        return true;
+      },
     };
   const choice = (icon: string, title: string, desc: string, fn: () => void, cls = '') =>
     el(
@@ -242,9 +246,16 @@ export function onlineScreen(host: OnlineHost, notice?: string): Screen {
       ' ',
       safetyLink(),
     ),
-    el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
   );
-  return { el: e, id: 'online' };
+  return {
+    el: e,
+    id: 'online',
+    backArrow: true,
+    onBack: () => {
+      host.screens.pop();
+      return true;
+    },
+  };
 }
 
 /** Botões de escolha única (um aceso). */
@@ -336,14 +347,17 @@ export function createRoomScreen(host: OnlineHost): Screen {
       ),
     ),
     status,
-    el(
-      'div',
-      { class: 'row-btns' },
-      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
-      go,
-    ),
+    el('div', { class: 'row-btns' }, go),
   );
-  return { el: e, id: 'create-room' };
+  return {
+    el: e,
+    id: 'create-room',
+    backArrow: true,
+    onBack: () => {
+      host.screens.pop();
+      return true;
+    },
+  };
 }
 
 /** Digitar o código da sala (4 letras). */
@@ -410,11 +424,15 @@ export function joinScreen(host: OnlineHost, prefill?: string): Screen {
     ),
     el('div', { class: 'join-row' }, input, go),
     status,
-    el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
   );
   return {
     el: e,
     id: 'join',
+    backArrow: true,
+    onBack: () => {
+      host.screens.pop();
+      return true;
+    },
     onKey: (code) => {
       if (code === 'Enter' || code === 'NumpadEnter') {
         void join();

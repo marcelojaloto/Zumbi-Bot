@@ -144,17 +144,14 @@ export function keyBindScreen(host: UiHost): Screen {
       'div',
       { class: 'row-btns' },
       el('button', { class: 'btn', data: { nav: '' }, onclick: reset }, t('Restaurar padrão')),
-      el(
-        'button',
-        { class: 'btn primary', data: { nav: '' }, onclick: () => host.screens.pop() },
-        t('Voltar'),
-      ),
     ),
   );
   render();
   return {
     el: e,
     id: 'keybind',
+    // a seta sai direto (o Esc fecha antes o que estiver aberto)
+    backArrow: () => host.screens.pop(),
     onKey,
     onBack: () => {
       if (listening) {

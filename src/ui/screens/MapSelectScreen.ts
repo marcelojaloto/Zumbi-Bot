@@ -103,18 +103,11 @@ export function mapSelectScreen(host: UiHost): Screen {
     ),
   );
   diffRow.append(...diffBtns);
-  const e = el(
-    'div',
-    { class: 'screen dim' },
-    el('h2', {}, t('ESCOLHA O MAPA')),
-    diffRow,
-    ng,
-    ...seasons,
-    el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, t('Voltar')),
-  );
+  const e = el('div', { class: 'screen dim' }, el('h2', {}, t('ESCOLHA O MAPA')), diffRow, ng, ...seasons);
   return {
     el: e,
     id: 'maps',
+    backArrow: true,
     onBack: () => {
       host.screens.pop();
       return true;

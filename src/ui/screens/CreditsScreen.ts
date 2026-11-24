@@ -85,19 +85,18 @@ export function creditsScreen(
     'div',
     { class: 'screen credits' },
     viewport,
-    el(
-      'div',
-      { class: 'row-btns cr-skip' },
-      // quem já venceu o OMEGA-Z pode rever o final lendário
-      opts.onEnding
-        ? el(
+    // quem já venceu o OMEGA-Z pode rever o final lendário
+    opts.onEnding
+      ? el(
+          'div',
+          { class: 'row-btns cr-skip' },
+          el(
             'button',
             { class: 'btn small', data: { nav: '' }, onclick: () => opts.onEnding?.() },
             `🏆 ${t('Final lendário')}`,
-          )
-        : null,
-      el('button', { class: 'btn small', data: { nav: '', autofocus: '' }, onclick: close }, t('Fechar')),
-    ),
+          ),
+        )
+      : null,
   );
   viewport.addEventListener('wheel', (ev) => {
     boost += Math.sign(ev.deltaY) * 60;
@@ -106,6 +105,7 @@ export function creditsScreen(
   return {
     el: e,
     id: 'credits',
+    backArrow: true,
     onShow: () => {
       y = -viewport.clientHeight * 0.85;
       last = performance.now();

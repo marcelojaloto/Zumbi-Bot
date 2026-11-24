@@ -217,14 +217,12 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
     roster,
     extra: [soloJoin],
     buttons: [
-      el('button', { class: 'btn', data: { nav: '' }, onclick: close }, t('Voltar')),
       el('button', { class: 'btn primary', data: { nav: '', autofocus: '' }, onclick: start }, t('Começar')),
     ],
   });
   const partyBtns = el(
     'div',
     { class: 'row-btns lobby-btns' },
-    el('button', { class: 'btn', data: { nav: '' }, onclick: close }, t('Voltar')),
     el('button', { class: 'btn primary', data: { nav: '', autofocus: '' }, onclick: start }, t('Começar')),
   );
   const partyTop = el('div', { class: 'lobby-top' }, el('h2', {}, t('ESCOLHA SEU PERSONAGEM')), help, count);
@@ -383,6 +381,7 @@ export function lobbyScreen(host: LobbyHost, target: { mapId: string; levelIdx: 
       host.setMenuStage(false);
       host.setMenuFocus(0);
     },
+    backArrow: true,
     onBack: () => {
       close();
       return true;

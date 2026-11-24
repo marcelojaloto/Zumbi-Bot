@@ -36,17 +36,13 @@ export function manualScreen(host: UiHost): Screen {
   const e = el(
     'div',
     { class: 'screen solid manual-view' },
-    el(
-      'div',
-      { class: 'manual-top' },
-      el('h2', {}, t('MANUAL')),
-      el('button', { class: 'btn', data: { nav: '', autofocus: '' }, onclick: close }, t('Voltar')),
-    ),
+    el('div', { class: 'manual-top' }, el('h2', {}, t('MANUAL'))),
     frame,
   );
   return {
     el: e,
     id: 'manual',
+    backArrow: true,
     onBack: () => {
       close();
       return true;

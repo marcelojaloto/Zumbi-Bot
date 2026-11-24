@@ -96,6 +96,44 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+/* voltar padrão: seta no canto superior esquerdo, sem fundo */
+.btn-back {
+  position: absolute;
+  z-index: 20;
+  top: max(10px, env(safe-area-inset-top, 0px));
+  left: max(10px, env(safe-area-inset-left, 0px));
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--fg);
+  background: none;
+  border: none;
+  cursor: pointer;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85));
+  transition:
+    color 0.12s,
+    transform 0.08s;
+}
+.btn-back[hidden] {
+  display: none;
+}
+.btn-back svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.btn-back:hover,
+.btn-back:focus-visible {
+  color: var(--accent);
+  outline: none;
+  transform: translateX(-2px);
+}
 .panel {
   background: rgba(10, 12, 20, 0.86);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1730,6 +1768,7 @@ a.btn {
     max(12px, env(safe-area-inset-left));
 }
 .manual-top {
+  padding-left: 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;

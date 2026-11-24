@@ -319,6 +319,7 @@ function sheetScreen(
     el: sheet.el,
     id: o.id,
     ownsInput: true,
+    backArrow: true,
     onShow: () => {
       for (const gp of connectedPads())
         padPrev.set(
@@ -393,7 +394,6 @@ export function characterScreen(
     char: opts.char,
     main: confirm,
     buttons: (cur) => [
-      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
       el(
         'button',
         { class: 'btn primary', data: { nav: '', autofocus: '' }, onclick: () => confirm(cur()) },
@@ -413,7 +413,7 @@ export interface CharactersHost extends PickerHost {
   portrait(c: CharacterId, onReady?: () => void): string | null;
 }
 
-/** Ficha de Personagem aberta pelo menu Personagens: Voltar, Mapas e Começar (com o personagem da ficha). */
+/** Ficha de Personagem aberta pelo menu Personagens: Mapas e Começar (com o personagem da ficha). */
 export function characterSheetScreen(host: CharactersHost, char: CharacterId): Screen {
   return sheetScreen(host, {
     id: 'sheet',
@@ -421,7 +421,6 @@ export function characterSheetScreen(host: CharactersHost, char: CharacterId): S
     char,
     main: (c) => host.playAs(c),
     buttons: (cur) => [
-      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
       el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.mapsAs(cur()) }, t('Mapas')),
       el(
         'button',

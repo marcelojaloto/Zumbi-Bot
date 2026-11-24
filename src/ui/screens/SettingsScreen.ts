@@ -398,7 +398,6 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
     el(
       'div',
       { class: 'row-btns' },
-      el('button', { class: 'btn', onclick: () => host.screens.pop(), data: { nav: '' } }, t('Voltar')),
       // manual dentro do jogo (não sai da tela cheia)
       el(
         'button',
@@ -426,6 +425,7 @@ export function settingsScreen(host: UiHost, tab = 'audio'): Screen {
   return {
     el: e,
     id: 'settings',
+    backArrow: true,
     onBack: () => {
       host.screens.pop();
       return true;

@@ -331,13 +331,7 @@ export function rankingScreen(host: RankingHost): Screen {
     body,
     note,
     confirmLeave,
-    el(
-      'div',
-      { class: 'row-btns' },
-      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
-      toggle,
-      join,
-    ),
+    el('div', { class: 'row-btns' }, toggle, join),
   );
   if (globalList) toggle.hidden = false;
   render();
@@ -345,6 +339,7 @@ export function rankingScreen(host: RankingHost): Screen {
   return {
     el: e,
     id: 'ranking',
+    backArrow: true,
     onBack: () => {
       host.screens.pop();
       return true;

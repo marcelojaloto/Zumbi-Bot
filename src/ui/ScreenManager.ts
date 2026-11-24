@@ -1,3 +1,4 @@
+import { t as tr } from '../i18n';
 import { clear } from './dom';
 
 export interface Screen {
@@ -15,6 +16,8 @@ export interface Screen {
   ownsInput?: boolean;
   /** Esc / B: voltar. Retorna false para impedir. */
   onBack?(): boolean;
+  /** Seta de voltar no canto superior esquerdo: faz o mesmo que o Esc ou, se for função, ela. */
+  backArrow?: boolean | (() => void);
   /** Setas / D-pad antes da navegação padrão por foco. Retorna true se tratou. */
   onNav?(dx: number, dy: number): boolean;
   update?(dt: number): void;
@@ -29,11 +32,25 @@ export class ScreenManager {
   private gpRepeat = 0;
   /** Um controle apertou algo (para saber qual dispositivo abriu uma tela). */
   onPadActivity: ((index: number) => void) | null = null;
+  private backBtn: HTMLButtonElement;
 
   constructor(parent: HTMLElement) {
     this.root = document.createElement('div');
     this.root.className = 'screens';
     parent.appendChild(this.root);
+    this.backBtn = document.createElement('button');
+    this.backBtn.className = 'btn-back';
+    this.backBtn.hidden = true;
+    this.backBtn.innerHTML =
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H5M11 5l-7 7 7 7"/></svg>';
+    this.backBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const own = this.top?.backArrow;
+      if (typeof own !== 'function') return this.back();
+      own();
+      this.onNavSound?.('back');
+    });
+    this.root.appendChild(this.backBtn);
     addEventListener('keydown', this.onKeyDown, true);
     this.root.addEventListener('mouseover', (e) => {
       const t = (e.target as HTMLElement).closest('[data-nav]') as HTMLElement | null;
@@ -65,6 +82,7 @@ export class ScreenManager {
     this.root.appendChild(s.el);
     s.el.style.display = '';
     s.onShow?.();
+    this.syncBack();
     this.focusFirst();
   }
 
@@ -80,6 +98,7 @@ export class ScreenManager {
       cur.onShow?.();
       this.focusFirst();
     }
+    this.syncBack();
   }
 
   replace(s: Screen): void {
@@ -98,6 +117,17 @@ export class ScreenManager {
       s.el.remove();
     }
     clear(this.root);
+    this.root.appendChild(this.backBtn);
+    this.syncBack();
+  }
+
+  private syncBack(): void {
+    const show = !!this.top?.backArrow;
+    this.backBtn.hidden = !show;
+    if (show) {
+      this.backBtn.setAttribute('aria-label', tr('Voltar'));
+      this.backBtn.title = tr('Voltar');
+    }
   }
 
   focusFirst(): void {

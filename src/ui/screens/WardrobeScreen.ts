@@ -250,11 +250,6 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
     el('p', { class: 'muted shop-tip' }, spinHint(host)),
     tabs,
     body,
-    el(
-      'div',
-      { class: 'row-btns' },
-      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
-    ),
   );
   const e = el('div', { class: 'screen wardrobe spin-area' }, panel);
   const spin = spinner(host, e, panel);
@@ -262,6 +257,7 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
   return {
     el: e,
     id: 'wardrobe',
+    backArrow: true,
     onShow: () => {
       host.setMenuFocus(1);
       spin.start();
@@ -606,11 +602,6 @@ export function shopScreen(host: WardrobeHost): Screen {
     tabs,
     body,
     bar,
-    el(
-      'div',
-      { class: 'row-btns' },
-      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
-    ),
   );
   const e = el('div', { class: 'screen wardrobe spin-area' }, panel);
   const spin = spinner(host, e, panel);
@@ -618,6 +609,8 @@ export function shopScreen(host: WardrobeHost): Screen {
   return {
     el: e,
     id: 'shop',
+    // a seta sai direto (o Esc fecha antes o que estiver aberto)
+    backArrow: () => host.screens.pop(),
     onShow: () => {
       host.setMenuFocus(1);
       spin.start();

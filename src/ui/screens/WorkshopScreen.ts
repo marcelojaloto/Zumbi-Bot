@@ -313,11 +313,6 @@ export function workshopScreen(host: PickerHost): Screen {
     tabs,
     body,
     bar,
-    el(
-      'div',
-      { class: 'row-btns' },
-      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
-    ),
   );
   const root = el('div', { class: 'screen wardrobe char-select' }, panel);
   // arrastar o boneco gira (as setas andam pela árvore)
@@ -327,6 +322,8 @@ export function workshopScreen(host: PickerHost): Screen {
   return {
     el: root,
     id: 'workshop',
+    // a seta sai direto (o Esc fecha antes o que estiver aberto)
+    backArrow: () => host.screens.pop(),
     onShow: () => {
       spin.start();
       host.setMenuFocus(1);

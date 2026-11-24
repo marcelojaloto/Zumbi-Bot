@@ -145,7 +145,7 @@ test('chefe final: vitória mostra o final lendário, os créditos e libera o No
   await page.getByRole('button', { name: 'Pular' }).click();
   await page.waitForFunction(() => document.querySelector('.screen.credits') !== null);
   await expect(page.getByText('Obrigado por jogar!')).toBeAttached();
-  await page.getByRole('button', { name: 'Fechar' }).click();
+  await page.getByRole('button', { name: 'Voltar' }).click();
   await expect(page.getByText('MAPA CONCLUÍDO!')).toBeVisible();
   await expect(page.getByText('Novo Jogo+ desbloqueado!')).toBeVisible();
   await expect(page.getByText('Personagem secreto liberado!')).toBeVisible();

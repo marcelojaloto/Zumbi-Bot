@@ -11,6 +11,8 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   que os publica nas lojas. O APK baixado do GitHub vira outro app: desinstale o antigo, cujo progresso não passa
   para o novo.
 - O contato da política de privacidade e da página de segurança passa a ser **atendimento@jalotosoftware.com.br**.
+- Todas as telas voltam pela mesma **seta no canto superior esquerdo**, no lugar do botão Voltar. O Esc e o Voltar
+  do Android passam a funcionar também nas telas do jogo online.
 
 ## 1.7 (12/11/2026)
 
