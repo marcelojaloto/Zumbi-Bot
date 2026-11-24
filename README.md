@@ -267,8 +267,8 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
   Jogo, Manual e Instalar o jogo) e **Créditos**. O título ZUMBI BOT e o status do jogador ficam parados no alto
   enquanto se navega pelos grupos, e o título de cada grupo aparece sempre no mesmo lugar, logo abaixo; quando a
   lista não cabe, só ela rola. A seta branca no canto superior esquerdo volta, como o Esc, o B do controle e o Voltar
-  do Android. No canto inferior esquerdo do menu fica a classificação indicativa sugerida: **10 anos** (violência
-  fantasiosa e medo), que deve bater com a do questionário de classificação das lojas.
+  do Android. No canto inferior esquerdo do menu fica a classificação indicativa sugerida: **6 anos** (violência
+  fantasiosa), que deve bater com a do questionário de classificação das lojas.
 - **Idiomas:** português e inglês, escolhidos pelo idioma do navegador e trocáveis em Configurações > Jogo.
 - **Dificuldade:** Fácil, Normal (padrão), Difícil e Insano; escolha na tela de mapas ou em Configurações >
   Jogo. Nas mais fáceis os chefes têm menos vida e atacam com mais pausa; ao perder, o jogo oferece tentar de

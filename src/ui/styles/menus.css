@@ -768,13 +768,16 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  max-width: 230px;
   font-size: 11px;
   line-height: 1.25;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
+.age-rating span,
 .age-rating small {
   display: block;
+  white-space: nowrap;
+}
+.age-rating small {
   font-size: 10px;
   opacity: 0.75;
 }
@@ -791,8 +794,8 @@
   color: #fff;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
 }
-.age-10 {
-  background: #00a0e3;
+.age-6 {
+  background: #d6177e;
 }
 .screen.splash-screen {
   background: radial-gradient(circle at 50% 45%, rgba(4, 5, 10, 0.2), rgba(4, 5, 10, 0.85));
