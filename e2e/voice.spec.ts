@@ -80,9 +80,16 @@ test('chat de voz: opções da sala, todos ouvem todos (3 aparelhos), microfone,
   await expect(host.getByRole('button', { name: /Ligar microfone/ })).toBeHidden();
   expect((await voice(host)).available).toBe(false);
   await host.getByRole('button', { name: /Liberar a voz/ }).click();
+  await expect(host.locator('.voice-release-ask')).toContainText('permitido a partir de 12 anos');
   await host.getByRole('button', { name: 'Cancelar', exact: true }).click();
   expect((await voice(host)).available).toBe(false);
-  await releaseVoice(host);
+  // menos de 6 anos: não libera
+  await host.getByRole('button', { name: /Liberar a voz/ }).click();
+  await host.getByRole('button', { name: 'Menos de 6 anos', exact: true }).click();
+  await host.getByRole('button', { name: 'Entendi', exact: true }).click();
+  expect((await voice(host)).available).toBe(false);
+  await releaseVoice(host, '6 a 11 anos');
+  await expect(host.locator('.voice-supervised')).toBeVisible();
   await expect(host.locator('.room-voice')).toContainText('Todos da sala se ouvem');
   // a voz nasce na liberação, e a permissão do microfone é lida logo depois
   await expect.poll(async () => (await voice(host)).permission).toBe('granted');

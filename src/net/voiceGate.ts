@@ -8,7 +8,8 @@
  * - controle dos pais limitando a comunicação, ou menor sem essa aprovação: voz bloqueada, sem como liberar no jogo
  *   (quando a loja informa a idade, vale a opção mais protetiva; Decreto 12.880/2026, art. 25, § 4º);
  * - idade desconhecida (site, iOS antigo, não compartilhou): voz desligada até um adulto responsável liberar neste
- *   aparelho, passando pela trava para pais.
+ *   aparelho, passando pela trava para pais. A partir de 12 anos ele só libera; de 6 a 11, libera comprometendo-se a
+ *   acompanhar a conversa; abaixo de 6, não libera.
  */
 
 /** O que a loja disse (só os campos usados; a resposta do plugin @capawesome/capacitor-age-signals). */
@@ -100,18 +101,31 @@ export class VoiceGate {
 
   /** Um adulto responsável liberou o chat de voz neste aparelho. */
   get released(): boolean {
+    const v = this.saved();
+    return v === 'released' || v === 'supervised';
+  }
+
+  /** Liberado para uma criança de 6 a 11 anos, com o adulto acompanhando. */
+  get supervised(): boolean {
+    return this.state === 'allowed' && this.signal === 'unknown' && this.saved() === 'supervised';
+  }
+
+  /**
+   * Um adulto responsável libera o chat de voz neste aparelho (vale até bloquear de novo nas Configurações).
+   * `supervised`: quem joga tem de 6 a 11 anos e o adulto acompanha a conversa.
+   */
+  release(supervised = false): void {
+    this.save(supervised ? 'supervised' : 'released');
+  }
+
+  private saved(): string {
     try {
       const v = this.store?.getItem(STORE);
-      if (v !== null && v !== undefined) return v === 'released';
+      if (v !== null && v !== undefined) return v;
     } catch {
       /* sem armazenamento: vale a escolha da memória */
     }
-    return this.mem === 'released';
-  }
-
-  /** Um adulto responsável libera o chat de voz neste aparelho (vale até bloquear de novo nas Configurações). */
-  release(): void {
-    this.save('released');
+    return this.mem;
   }
 
   /** Bloqueia de novo (Configurações > Áudio). */

@@ -532,10 +532,69 @@ export function roomScreen(host: OnlineHost): Screen {
     { class: 'btn small hear-btn', hidden: true, data: { nav: '' }, onclick: () => host.voice?.unlock() },
     `🔈 ${t('Toque para ouvir a conversa')}`,
   );
-  // trava por idade, quando a loja não informa a idade: só um adulto responsável libera a voz neste aparelho,
-  // passando pela trava para pais (uma conta nova a cada vez)
+  // trava por idade, quando a loja não informa a idade: o adulto responsável diz a idade de quem joga e libera a voz
+  // neste aparelho passando pela trava para pais (uma conta nova a cada vez). De 6 a 11 anos, só acompanhando.
   let confirming = false;
   const releaseAsk = el('div', { class: 'voice-release-ask', hidden: true });
+  const stopAsking = () => {
+    confirming = false;
+    renderVoice();
+  };
+  const gate = (question: string, supervised: boolean) => {
+    releaseAsk.replaceChildren(
+      parentGate(
+        question,
+        () => {
+          confirming = false;
+          host.voiceGate.release(supervised);
+        },
+        stopAsking,
+      ),
+    );
+    releaseAsk.querySelector('input')?.focus();
+  };
+  const ageBtn = (label: string, pick: () => void) =>
+    el('button', { class: 'btn small', data: { nav: '' }, onclick: pick }, label);
+  const askAge = () => {
+    releaseAsk.replaceChildren(
+      el(
+        'p',
+        { class: 'voice-age-rule' },
+        t(
+          'O chat de voz é permitido a partir de 12 anos. De 6 a 11 anos, só com um adulto responsável acompanhando a conversa.',
+        ),
+      ),
+      el('span', { class: 'voice-age-q' }, t('Qual a idade de quem joga neste aparelho?')),
+      ageBtn(t('Menos de 6 anos'), () =>
+        releaseAsk.replaceChildren(
+          el(
+            'span',
+            {},
+            t('Para menores de 6 anos o chat de voz fica desligado. Dá para jogar online normalmente.'),
+          ),
+          ageBtn(t('Entendi'), stopAsking),
+        ),
+      ),
+      ageBtn(t('6 a 11 anos'), () =>
+        gate(
+          t(
+            'Você é o adulto responsável, vai acompanhar a criança enquanto ela conversa por voz e libera o chat de voz?',
+          ),
+          true,
+        ),
+      ),
+      ageBtn(t('12 anos ou mais'), () =>
+        gate(
+          t(
+            'Você é o adulto responsável por quem joga neste aparelho e libera a conversa por voz com a sala?',
+          ),
+          false,
+        ),
+      ),
+      ageBtn(t('Cancelar'), stopAsking),
+    );
+    releaseAsk.querySelector<HTMLElement>('button')?.focus();
+  };
   const releaseBtn = el(
     'button',
     {
@@ -544,28 +603,26 @@ export function roomScreen(host: OnlineHost): Screen {
       data: { nav: '' },
       onclick: () => {
         confirming = true;
-        releaseAsk.replaceChildren(
-          parentGate(
-            t(
-              'Você é o adulto responsável por quem joga neste aparelho e libera a conversa por voz com a sala?',
-            ),
-            () => {
-              confirming = false;
-              host.voiceGate.release();
-            },
-            () => {
-              confirming = false;
-              renderVoice();
-            },
-          ),
-        );
+        askAge();
         renderVoice();
-        releaseAsk.querySelector('input')?.focus();
       },
     },
     `🔓 ${t('Liberar a voz (adulto)')}`,
   );
-  const voiceBar = el('div', { class: 'room-voice' }, voiceText, hearBtn, releaseBtn, releaseAsk);
+  const supervisedNote = el(
+    'span',
+    { class: 'voice-supervised', hidden: true },
+    `👀 ${t('Chat de voz com um adulto responsável acompanhando.')}`,
+  );
+  const voiceBar = el(
+    'div',
+    { class: 'room-voice' },
+    voiceText,
+    supervisedNote,
+    hearBtn,
+    releaseBtn,
+    releaseAsk,
+  );
 
   const players = (): RoomPlayer[] => {
     const r = host.online;
@@ -669,6 +726,7 @@ export function roomScreen(host: OnlineHost): Screen {
     const ask = r.voice && !v && host.voiceSupported && host.voiceGate.state === 'ask';
     releaseBtn.hidden = !ask || confirming;
     releaseAsk.hidden = !ask || !confirming;
+    supervisedNote.hidden = !(r.voice && v && host.voiceGate.supervised);
   }
 
   function render(): void {

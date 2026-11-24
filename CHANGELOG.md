@@ -25,6 +25,9 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - O **final da 2ª temporada** ganha um último capítulo: Ravi, Elowen e Faísca recebem um convite misterioso, que
   chama para a 3ª temporada.
 - A classificação indicativa sugerida passa a ser **6 anos** (violência fantasiosa).
+- **Chat de voz e idade:** quando a loja não informa a idade, o adulto que libera a voz diz a idade de quem joga. A
+  voz é permitida a partir de 12 anos; de 6 a 11 anos, só com o adulto acompanhando, e a sala mostra esse aviso;
+  abaixo de 6, fica desligada.
 - A **Placa de Lápide** sai do Vestiário.
 
 ## 1.7, atualização de 23/11/2026

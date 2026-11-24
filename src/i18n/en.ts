@@ -908,6 +908,20 @@ export const EN: Record<string, string> = {
     'Voice chat is off on this device: a responsible adult can turn it on in the room.',
   'Chat de voz liberado por um adulto neste aparelho': 'Voice chat allowed by an adult on this device',
   'Bloquear de novo': 'Block again',
+  'Chat de voz liberado neste aparelho, com um adulto acompanhando':
+    'Voice chat allowed on this device, with an adult watching',
+  'O chat de voz é permitido a partir de 12 anos. De 6 a 11 anos, só com um adulto responsável acompanhando a conversa.':
+    'Voice chat is allowed from age 12. From 6 to 11, only with a responsible adult watching the conversation.',
+  'Qual a idade de quem joga neste aparelho?': 'How old is the player on this device?',
+  'Menos de 6 anos': 'Under 6',
+  '6 a 11 anos': '6 to 11',
+  Entendi: 'Got it',
+  '12 anos ou mais': '12 or older',
+  'Para menores de 6 anos o chat de voz fica desligado. Dá para jogar online normalmente.':
+    'Voice chat stays off for children under 6. They can still play online normally.',
+  'Você é o adulto responsável, vai acompanhar a criança enquanto ela conversa por voz e libera o chat de voz?':
+    'Are you the responsible adult, will you watch the child while they talk by voice, and do you turn voice chat on?',
+  'Chat de voz com um adulto responsável acompanhando.': 'Voice chat with a responsible adult watching.',
   'Bloqueado de novo.': 'Blocked again.',
   // iPhone
   'Tela cheia no iPhone': 'Full screen on iPhone',

@@ -117,6 +117,25 @@ describe('trava do chat de voz por idade', () => {
     expect(g.state).toBe('ask');
   });
 
+  it('de 6 a 11 anos, o adulto libera acompanhando', async () => {
+    const store = memStore();
+    const g = new VoiceGate(
+      async () => null,
+      () => {},
+      store,
+    );
+    await g.check();
+    g.release(true);
+    expect(g.allowed).toBe(true);
+    expect(g.released).toBe(true);
+    expect(g.supervised).toBe(true);
+    g.release();
+    expect(g.supervised).toBe(false);
+    g.revoke();
+    expect(g.supervised).toBe(false);
+    expect(g.state).toBe('ask');
+  });
+
   it('sem armazenamento, a liberação vale até fechar o jogo', () => {
     const broken = {
       getItem: () => {

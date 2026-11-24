@@ -98,7 +98,7 @@ No repositório: **Settings > Secrets and variables > Actions > New repository s
      desligá-lo, cada jogador liga o próprio microfone e a voz não é gravada. Ele também respeita a idade: o app
      pergunta à Play (Age Signals API) se quem joga tem 18 anos ou mais. Para menores, a voz fica desligada, a não
      ser que o responsável a aprove no Family Link (veja "mudança significativa" abaixo); com a idade desconhecida,
-     só um adulto libera na sala, passando por uma trava para pais.
+     só um adulto libera na sala, passando por uma trava para pais (a partir de 12 anos; de 6 a 11, só acompanhando).
    - **Público-alvo:** escolha faixas de **13 anos ou mais** (marcar menores de 13 exige cumprir a política de
      Famílias). No Brasil, a Play pede que apps com acesso provável de menores usem a faixa de idade que ela
      fornece: o chat de voz já usa, pela Age Signals API (só funciona no app instalado pela Play).

@@ -2255,6 +2255,22 @@ a.btn {
 .voice-release-ask[hidden] {
   display: none;
 }
+.voice-age-rule {
+  flex-basis: 100%;
+  margin: 0;
+  text-align: center;
+}
+.voice-age-q {
+  color: var(--accent);
+  font-weight: 600;
+}
+.voice-supervised {
+  color: #8fe08f;
+  font-weight: 600;
+}
+.voice-supervised[hidden] {
+  display: none;
+}
 /* trava para pais: pergunta, conta e resposta numa linha que quebra no celular */
 .parent-gate {
   display: flex;
