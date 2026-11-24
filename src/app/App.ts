@@ -652,33 +652,28 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     const e = el(
       'div',
       { class: 'screen menu-screen' },
-      el('h1', {}, 'ZUMBI BOT'),
-      el('div', { class: 'subtitle' }, t('A revolução dos robôs no apocalipse zumbi')),
+      this.menuHead(),
       el(
         'div',
-        { class: 'profile-chip' },
-        el('span', {}, s.profile.name),
-        el('span', {}, t('Nível'), ' ', el('b', {}, String(s.profile.level))),
-        el('span', {}, `XP ${fmtInt(s.profile.xp)}/${fmtInt(xpToNext(s.profile.level))}`),
-        el('span', {}, t('Sucata'), ' ', el('b', {}, fmtInt(s.profile.scrap))),
-      ),
-      el(
-        'div',
-        { class: 'menu' },
-        iconBtn('🎮', t('Jogar'), () => this.openPlayMenu(), 'btn primary'),
-        iconBtn('🎨', t('Customização'), () => this.openCustomMenu()),
-        iconBtn('🏆', t('Ranking'), () => this.openRankingMenu()),
-        iconBtn('⚙️', t('Configurações'), () => this.openSettingsMenu()),
-        iconBtn('🎬', t('Créditos'), () =>
-          this.screens.push(
-            creditsScreen(this, {
-              // quem já venceu o OMEGA-Z pode rever o final lendário
-              onEnding: s.flags.credits ? () => this.playEnding(() => this.screens.pop()) : undefined,
-            }),
+        { class: 'menu-body' },
+        el(
+          'div',
+          { class: 'menu' },
+          iconBtn('🎮', t('Jogar'), () => this.openPlayMenu(), 'btn primary'),
+          iconBtn('🎨', t('Customização'), () => this.openCustomMenu()),
+          iconBtn('🏆', t('Ranking'), () => this.openRankingMenu()),
+          iconBtn('⚙️', t('Configurações'), () => this.openSettingsMenu()),
+          iconBtn('🎬', t('Créditos'), () =>
+            this.screens.push(
+              creditsScreen(this, {
+                // quem já venceu o OMEGA-Z pode rever o final lendário
+                onEnding: s.flags.credits ? () => this.playEnding(() => this.screens.pop()) : undefined,
+              }),
+            ),
           ),
         ),
+        ...this.profile.notices.map((n) => el('p', { class: 'muted', style: 'color:#ffb02a' }, t(n))),
       ),
-      ...this.profile.notices.map((n) => el('p', { class: 'muted', style: 'color:#ffb02a' }, t(n))),
       ageRating(),
       el(
         'div',
@@ -689,13 +684,32 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     this.screens.push({ el: e, id: 'menu', onBack: () => false });
   }
 
+  /** Topo dos menus, igual em todos para ficar parado ao navegar. */
+  private menuHead(): HTMLElement {
+    const p = this.profile.save.profile;
+    return el(
+      'div',
+      { class: 'menu-head' },
+      el('h1', {}, 'ZUMBI BOT'),
+      el('div', { class: 'subtitle' }, t('A revolução dos robôs no apocalipse zumbi')),
+      el(
+        'div',
+        { class: 'profile-chip' },
+        el('span', {}, p.name),
+        el('span', {}, t('Nível'), ' ', el('b', {}, String(p.level))),
+        el('span', {}, `XP ${fmtInt(p.xp)}/${fmtInt(xpToNext(p.level))}`),
+        el('span', {}, t('Sucata'), ' ', el('b', {}, fmtInt(p.scrap))),
+      ),
+    );
+  }
+
   /** Submenu do menu principal (mesmo visual, com a seta de voltar). */
   private menuGroup(id: string, title: string, items: HTMLElement[]): void {
     const e = el(
       'div',
       { class: 'screen menu-group' },
-      el('h2', {}, title),
-      el('div', { class: 'menu' }, ...items),
+      this.menuHead(),
+      el('div', { class: 'menu-body' }, el('h2', {}, title), el('div', { class: 'menu' }, ...items)),
     );
     this.screens.push({
       el: e,
