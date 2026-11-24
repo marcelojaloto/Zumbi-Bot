@@ -1,9 +1,9 @@
 import { locale, t } from '../i18n';
 
 /** Política de privacidade publicada (a mesma das lojas). */
-export const PRIVACY_URL = 'https://marcelojaloto.github.io/Zumbi-Bot/privacy/';
+export const PRIVACY_URL = 'https://zumbibot.jalotosoftware.com.br/privacy/';
 /** Regras de convivência, guia para pais e canal de denúncias (Lei 14.852/2024, art. 16; ECA Digital, arts. 16 e 28). */
-export const SAFETY_URL = 'https://marcelojaloto.github.io/Zumbi-Bot/seguranca/';
+export const SAFETY_URL = 'https://zumbibot.jalotosoftware.com.br/seguranca/';
 /** Canal com quem joga: dúvidas, pedidos sobre dados e denúncias. */
 export const CONTACT_EMAIL = 'jaloto.software@gmail.com';
 

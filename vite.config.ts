@@ -1,11 +1,11 @@
 import { defineConfig } from 'vitest/config';
 
-// Web: base público do GitHub Pages (https://<usuario>.github.io/Zumbi-Bot/).
-// App Android (`vite build --mode app`): servido na raiz do WebView do Capacitor, em dist-app/.
+// Web: caminhos relativos, que servem tanto na raiz do domínio quanto numa subpasta.
+// Apps (`vite build --mode app`): servidos na raiz do WebView do Capacitor, em dist-app/.
 export default defineConfig(({ mode }) => {
   const app = mode === 'app';
   return {
-    base: app ? '/' : '/Zumbi-Bot/',
+    base: app ? '/' : './',
     define: { __NATIVE__: JSON.stringify(app) },
     build: {
       target: 'es2022',

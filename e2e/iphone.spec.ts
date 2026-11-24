@@ -36,7 +36,7 @@ test('iPhone: dica da Tela de Início, sala online com voz e controles de toque 
     deviceScaleFactor: iphone.deviceScaleFactor,
     isMobile: true,
     hasTouch: true,
-    baseURL: 'http://localhost:4173/Zumbi-Bot/',
+    baseURL: 'http://localhost:4173/',
     locale: 'pt-BR',
     permissions: ['microphone'],
   });
@@ -48,7 +48,7 @@ test('iPhone: dica da Tela de Início, sala online com voz e controles de toque 
     delete p.webkitRequestFullscreen;
   });
   const deskCtx = await browser.newContext({
-    baseURL: 'http://localhost:4173/Zumbi-Bot/',
+    baseURL: 'http://localhost:4173/',
     locale: 'pt-BR',
     viewport: { width: 1280, height: 720 },
     isMobile: false,

@@ -38,7 +38,7 @@ ruas, pule, soque, chute e atire para limpar 19 mapas cheios de mortos-vivos e r
 - Em português e inglês
 - Sem anúncios e sem compras. Joga offline (a internet só é usada no jogo online e no ranking global).
 
-Também dá para jogar no navegador (computador, Android e iPhone): marcelojaloto.github.io/Zumbi-Bot
+Também dá para jogar no navegador (computador, Android e iPhone): zumbibot.jalotosoftware.com.br
 ```
 
 **Categoria**: Jogos > Ação · **Tags sugeridas**: beat 'em up, zumbis, robôs, ação, arcade
@@ -77,7 +77,7 @@ streets, jump, punch, kick and shoot your way through 19 maps packed with the un
 - In English and Portuguese
 - No ads and no purchases. Plays offline (the internet is only used for online play and the global leaderboard).
 
-You can also play in the browser (computer, Android and iPhone): marcelojaloto.github.io/Zumbi-Bot
+You can also play in the browser (computer, Android and iPhone): zumbibot.jalotosoftware.com.br
 ```
 
 **Category**: Games > Action · **Suggested tags**: beat 'em up, zombies, robots, action, arcade

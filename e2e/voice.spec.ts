@@ -38,7 +38,7 @@ const voice = (p: Page) => p.evaluate(() => (window as unknown as { __game: G })
 
 async function device(browser: import('@playwright/test').Browser): Promise<[BrowserContext, Page]> {
   const ctx = await browser.newContext({
-    baseURL: 'http://localhost:4173/Zumbi-Bot/',
+    baseURL: 'http://localhost:4173/',
     locale: 'pt-BR',
     viewport: { width: 1280, height: 720 },
     permissions: ['microphone'],

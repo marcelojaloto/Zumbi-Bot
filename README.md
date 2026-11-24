@@ -213,7 +213,7 @@ Configurações > Áudio. A voz vai direto entre os aparelhos (criptografada) e 
   aparelho, e nenhum texto escrito por outro jogador aparece na tela.
 - **Bloqueio pelos pais:** Configurações > Jogo bloqueia todo o jogo online no aparelho; liberar de novo pede a
   trava para pais (`src/app/onlineLock.ts`).
-- **Regras e denúncias:** a página [Segurança e regras](https://marcelojaloto.github.io/Zumbi-Bot/seguranca/)
+- **Regras e denúncias:** a página [Segurança e regras](https://zumbibot.jalotosoftware.com.br/seguranca/)
   (`public/seguranca/`) traz as regras de convivência, aceitas ao criar ou entrar numa sala, o guia para pais, o
   canal de denúncias e o relatório de transparência. Na sala, **⚑ Denunciar** abre um e-mail já com o código da sala
   e a hora.
@@ -240,7 +240,7 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
 
 ## Jogar
 
-- **No navegador:** https://marcelojaloto.github.io/Zumbi-Bot/ (computador, celular ou tablet, Android e iPhone).
+- **No navegador:** https://zumbibot.jalotosoftware.com.br/ (computador, celular ou tablet, Android e iPhone).
 - **No celular e no tablet:** deite o aparelho; os controles de toque aparecem sozinhos (direcional com setas à
   esquerda, botões de ação à direita). O jogo entra em tela cheia ao tocar em Jogar; se sair dela (outra aba ou outro
   app), o próximo toque volta; e quando a tela encolhe sozinha (a barra do navegador aparece, gesto de sair), o
@@ -266,7 +266,7 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
 ## Instalação local
 
 Passo a passo completo, com solução de problemas:
-[manual no site](https://marcelojaloto.github.io/Zumbi-Bot/manual/) ·
+[manual no site](https://zumbibot.jalotosoftware.com.br/manual/) ·
 [docs/INSTALACAO.md](docs/INSTALACAO.md) · [docs/INSTALL.md (English)](docs/INSTALL.md).
 
 Resumo (precisa de Node.js 22 LTS e Git):
@@ -323,7 +323,17 @@ contador de FPS também são configuráveis.
 
 O workflow `.github/workflows/deploy.yml` publica o jogo a cada push na `main`.
 Para ativar: **Settings > Pages > Build and deployment > Source: GitHub Actions**.
-O jogo fica em `https://<usuario>.github.io/Zumbi-Bot/`.
+O jogo fica em https://zumbibot.jalotosoftware.com.br/, domínio da Jaloto Software apontado para o GitHub Pages; o
+endereço antigo, `marcelojaloto.github.io/Zumbi-Bot/`, leva para ele. Para configurar o domínio:
+
+1. No DNS de `jalotosoftware.com.br` (Registro.br), crie um registro **CNAME** com o nome `zumbibot` apontando para
+   `marcelojaloto.github.io`.
+2. Em **Settings > Pages > Custom domain**, informe `zumbibot.jalotosoftware.com.br` e salve. Quando a verificação do
+   DNS passar, marque **Enforce HTTPS**.
+3. Para que nenhuma outra conta do GitHub consiga usar o domínio, verifique-o nas configurações do perfil:
+   **Settings > Pages > Add a domain**, com o registro TXT que o GitHub indicar.
+
+O build do site usa caminhos relativos, então funciona tanto no endereço antigo quanto no novo.
 
 ## App Android
 

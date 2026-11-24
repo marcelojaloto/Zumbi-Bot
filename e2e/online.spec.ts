@@ -312,7 +312,7 @@ test('jogo online com PeerJS de verdade (WebRTC): cada um no seu navegador; aba 
   // aparelhos diferentes = contextos diferentes (cada um com o seu save)
   const peer = '?debug=1&quality=low&mute=1&nopointerlock=1&peer=127.0.0.1:9000/zb';
   const opts = {
-    baseURL: 'http://localhost:4173/Zumbi-Bot/',
+    baseURL: 'http://localhost:4173/',
     locale: 'pt-BR',
     viewport: { width: 1280, height: 720 },
   };
@@ -368,7 +368,7 @@ test('jogo online com PeerJS de verdade: a aba do anfitrião fecha, outro assume
 }) => {
   const peer = '?debug=1&quality=low&mute=1&nopointerlock=1&peer=127.0.0.1:9000/zb';
   const opts = {
-    baseURL: 'http://localhost:4173/Zumbi-Bot/',
+    baseURL: 'http://localhost:4173/',
     locale: 'pt-BR',
     viewport: { width: 1280, height: 720 },
   };

@@ -8,7 +8,7 @@ internet (só o jogo online usa a rede).
 Tudo é gerado no GitHub Actions (workflow **iOS**, num Mac do GitHub), então **não precisa de Mac**. Para instalar
 num iPhone de verdade e publicar, precisa de uma conta de desenvolvedor Apple.
 
-> Sem iPhone? Dá para jogar no iPhone pelo navegador (Safari): https://marcelojaloto.github.io/Zumbi-Bot/ e, pela
+> Sem iPhone? Dá para jogar no iPhone pelo navegador (Safari): https://zumbibot.jalotosoftware.com.br/ e, pela
 > opção **Compartilhar > Adicionar à Tela de Início**, ele abre em tela cheia como um app.
 
 ## 1. O que o workflow iOS gera (sem conta Apple)
@@ -118,8 +118,8 @@ Em **App Store Connect > o app > versão iOS**:
   - Subtítulo (30): `Robôs contra o apocalipse zumbi` / `Robots vs. the zombie apocalypse`
   - Palavras-chave (100): `zumbi,robô,beat em up,ação,arcade,multijogador,online,chefe,luta,magia` /
     `zombie,robot,beat em up,action,arcade,multiplayer,online,boss,fighting,magic`
-  - URL de suporte: `https://marcelojaloto.github.io/Zumbi-Bot/seguranca/` (regras, guia para pais, denúncias e
-    contato) · Política de privacidade: `https://marcelojaloto.github.io/Zumbi-Bot/privacy/`
+  - URL de suporte: `https://zumbibot.jalotosoftware.com.br/seguranca/` (regras, guia para pais, denúncias e
+    contato) · Política de privacidade: `https://zumbibot.jalotosoftware.com.br/privacy/`
 - **Privacidade do app:** o jogo não coleta dados (o progresso fica no aparelho; no jogo online, nome, comandos e voz
   vão direto para os outros jogadores da sala, criptografados, e nada é guardado). Dá para declarar **"Dados não
   coletados"**. Se preferir declarar de forma conservadora: **Áudio (voz)**: não vinculado à identidade, sem

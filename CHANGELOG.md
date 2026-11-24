@@ -5,6 +5,8 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 
 ## 1.7, atualização de 23/11/2026
 
+- O jogo no navegador muda para **https://zumbibot.jalotosoftware.com.br/**, e o endereço antigo leva para o novo. O
+  navegador guarda o progresso separado por endereço, então quem jogava no endereço antigo recomeça no novo.
 - Os apps de Android e iPhone passam a usar o identificador `br.com.jalotosoftware.zumbibot`, da Jaloto Software,
   que os publica nas lojas. O APK baixado do GitHub vira outro app: desinstale o antigo, cujo progresso não passa
   para o novo.

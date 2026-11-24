@@ -98,4 +98,4 @@ jobs:
           gh release create android out/zumbi-bot.apk \
             --target "$GITHUB_SHA" \
             --title "Zumbi Bot para Android ($VERSION_NAME)" \
-            --notes "APK do Zumbi Bot para Android. Baixe **zumbi-bot.apk** no celular e abra para instalar (permita instalar apps desta fonte quando o Android pedir). Jogo no navegador: https://marcelojaloto.github.io/Zumbi-Bot/"
+            --notes "APK do Zumbi Bot para Android. Baixe **zumbi-bot.apk** no celular e abra para instalar (permita instalar apps desta fonte quando o Android pedir). Jogo no navegador: https://zumbibot.jalotosoftware.com.br/"

@@ -75,7 +75,7 @@ import { xpToNext } from '../data/balance';
 import { detectLang, setLang, t, type Lang } from '../i18n';
 
 /** Endereço do jogo no navegador (links de sala enviados pelo app Android). */
-const SITE_URL = 'https://marcelojaloto.github.io/Zumbi-Bot/';
+const SITE_URL = 'https://zumbibot.jalotosoftware.com.br/';
 
 /** Como jogar em tela cheia no iPhone (a página sozinha não consegue). */
 function homeScreenTip(): string {

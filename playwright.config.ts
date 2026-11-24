@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// Os testes rodam contra o build de produção (vite preview) com o base path do GitHub Pages.
+// Os testes rodam contra o build de produção (vite preview).
 export default defineConfig({
   testDir: './e2e',
   timeout: 180_000,
@@ -10,7 +10,7 @@ export default defineConfig({
   reporter: process.env.CI ? [['list'], ['github'], ['html', { open: 'never' }]] : 'list',
   use: {
     ...devices['Desktop Chrome'],
-    baseURL: 'http://localhost:4173/Zumbi-Bot/',
+    baseURL: 'http://localhost:4173/',
     viewport: { width: 1280, height: 720 },
     // idioma automático segue o navegador: os testes padrão rodam em português
     locale: 'pt-BR',
@@ -27,7 +27,7 @@ export default defineConfig({
   webServer: [
     {
       command: 'npm run build && npm run preview',
-      url: 'http://localhost:4173/Zumbi-Bot/',
+      url: 'http://localhost:4173/',
       reuseExistingServer: !process.env.CI,
       timeout: 240_000,
     },

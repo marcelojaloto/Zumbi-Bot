@@ -1,9 +1,9 @@
 # Zumbi Bot - Local installation manual
 
-> Web version, with copy buttons and per-system tabs: https://marcelojaloto.github.io/Zumbi-Bot/manual/
+> Web version, with copy buttons and per-system tabs: https://zumbibot.jalotosoftware.com.br/manual/
 > Versão em português: [INSTALACAO.md](INSTALACAO.md)
 
-You don't need to install anything to **play**: the game runs at https://marcelojaloto.github.io/Zumbi-Bot/ on
+You don't need to install anything to **play**: the game runs at https://zumbibot.jalotosoftware.com.br/ on
 computers, phones and tablets. This manual is for running the game on your own machine.
 
 ## 1. What you need
