@@ -10,6 +10,7 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - Os apps de Android e iPhone passam a usar o identificador `br.com.jalotosoftware.zumbibot`, da Jaloto Software,
   que os publica nas lojas. O APK baixado do GitHub vira outro app: desinstale o antigo, cujo progresso não passa
   para o novo.
+- O contato da política de privacidade e da página de segurança passa a ser **atendimento@jalotosoftware.com.br**.
 
 ## 1.7 (12/11/2026)
 
