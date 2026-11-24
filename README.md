@@ -66,9 +66,9 @@ Web Audio.
   para quando jogar com a Maga, o Zumbi Bot ou o Prodígio e, no lugar do cajado, tem **caixas de cura guardadas**:
   começa cada mapa com 4, usa uma no botão do cajado (tecla 2, D-pad ↑ ou o botão ✚ no toque) e, pegando uma caixa
   de cura com a vida cheia, ela fica guardada (até 4). Cada um tem nome e sobrenome, uma história e o seu
-  próprio final feliz: veja tudo em **Jogar > Personagens** (rostos e ficha completa; no celular é um carrossel
-  com ◀ ▶) e, depois de vencer o OMEGA-Z, no **final lendário**, com um capítulo por personagem, cada um num mini
-  cenário animado (dá para rever pelos Créditos).
+  próprio final feliz: veja tudo em **Jogar > Personagens** (rostos num carrossel com ◀ ▶ quando não cabem na tela,
+  e a ficha completa) e, depois de vencer o OMEGA-Z, no **final lendário**, com um capítulo por personagem, cada um
+  num mini cenário animado (dá para rever pelos Créditos).
 
   **Item de reviver:** cada personagem tem o seu, ligado à história dele (a Bateria de Reserva do Zumbi Bot, a Pena
   de Fênix da Maga, a Plaqueta do Batalhão do Militar, o Chip de Backup do Ciborgue, o Soro do Lago do Mutante e a

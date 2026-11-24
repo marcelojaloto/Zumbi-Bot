@@ -114,16 +114,18 @@ test('menu Personagens no celular: carrossel com setas e o Prodígio liberado de
   const grid = page.locator('.chars-grid');
   const left = page.locator('.chars-arrow.left');
   const right = page.locator('.chars-arrow.right');
-  await expect(left).toBeVisible();
   await expect(right).toBeVisible();
+  // no começo não há nada à esquerda
   await expect(left).toBeDisabled();
-  // as setas ficam nas pontas, na altura do Voltar
-  const back = (await page.getByRole('button', { name: 'Voltar' }).boundingBox())!;
+  // as setas ficam sobre as pontas do carrossel, na metade da altura dos cartões
+  const gb = (await grid.boundingBox())!;
   const lb = (await left.boundingBox())!;
   const rb = (await right.boundingBox())!;
+  const mid = gb.y + gb.height / 2;
   expect(lb.x).toBeLessThan(40);
   expect(rb.x + rb.width).toBeGreaterThan(700);
-  expect(Math.abs(lb.y + lb.height / 2 - (back.y + back.height / 2))).toBeLessThan(4);
+  expect(Math.abs(lb.y + lb.height / 2 - mid)).toBeLessThan(4);
+  expect(Math.abs(rb.y + rb.height / 2 - mid)).toBeLessThan(4);
   await right.click();
   await expect.poll(() => grid.evaluate((g) => g.scrollLeft)).toBeGreaterThan(50);
   await expect(left).toBeEnabled();

@@ -20,6 +20,8 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - O menu mostra a **classificação indicativa** sugerida: 10 anos (violência fantasiosa e medo).
 - **Ranking:** sem os filtros por mapa e sem o botão de troca, a lista ocupa mais da tela, e a data não passa mais
   por cima do título da coluna ao rolar. Sem internet, o Ranking Global avisa que não respondeu.
+- **Personagens:** os cartões viram um carrossel, com setas translúcidas sobre as pontas quando há mais personagens
+  para os lados.
 
 ## 1.7 (12/11/2026)
 

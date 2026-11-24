@@ -433,9 +433,8 @@ export function characterSheetScreen(host: CharactersHost, char: CharacterId): S
 
 /**
  * Menu Personagens: todos os personagens, cada um num cartão com o rosto, o apelido, o nome e o título. Tocar num
- * cartão abre a Ficha de Personagem. O secreto aparece trancado até o jogo ser terminado. Em telas grandes (PC,
- * tablet) cabem quantos der, quebrando a linha (e rolando para baixo se passar da tela); no celular é um carrossel
- * que anda com o dedo ou com as setas ◀ ▶ nas pontas, na altura do Voltar.
+ * cartão abre a Ficha de Personagem. O secreto aparece trancado até o jogo ser terminado. Os cartões ficam numa
+ * linha; quando não cabem, é um carrossel que anda com o dedo ou com as setas ◀ ▶ sobre as pontas.
  */
 export function charactersScreen(host: CharactersHost): Screen {
   const unlocked = new Set(host.profile.roster);
@@ -488,12 +487,12 @@ export function charactersScreen(host: CharactersHost): Screen {
     for (const id of CHARACTER_ORDER) if (unlocked.has(id)) showFace(id);
   };
 
-  // setas do carrossel: com mais de 5 personagens e só quando não cabem todos na tela
+  // setas do carrossel: só quando não cabem todos na tela
   const arrow = (dir: -1 | 1) =>
     el(
       'button',
       {
-        class: `btn chars-arrow ${dir < 0 ? 'left' : 'right'}`,
+        class: `chars-arrow ${dir < 0 ? 'left' : 'right'}`,
         title: dir < 0 ? t('Anterior') : t('Próximo'),
         onclick: () => page(dir),
       },
@@ -501,25 +500,17 @@ export function charactersScreen(host: CharactersHost): Screen {
     );
   const prev = arrow(-1);
   const next = arrow(1);
-  const horizontal = () => grid.scrollWidth > grid.clientWidth + 2;
   const page = (dir: number) => {
     const first = grid.firstElementChild as HTMLElement | null;
     if (!first) return;
     const gap = parseFloat(getComputedStyle(grid).columnGap) || 8;
-    if (horizontal()) grid.scrollBy({ left: dir * (first.offsetWidth + gap), behavior: 'smooth' });
-    else grid.scrollBy({ top: dir * (first.offsetHeight + gap), behavior: 'smooth' });
+    grid.scrollBy({ left: dir * (first.offsetWidth + gap), behavior: 'smooth' });
   };
   const syncArrows = () => {
-    const many = CHARACTER_ORDER.length > 5;
-    const h = horizontal();
-    const v = grid.scrollHeight > grid.clientHeight + 2;
-    const show = many && (h || v);
-    prev.hidden = next.hidden = !show;
-    if (!show) return;
-    const pos = h ? grid.scrollLeft : grid.scrollTop;
-    const max = h ? grid.scrollWidth - grid.clientWidth : grid.scrollHeight - grid.clientHeight;
-    prev.disabled = pos <= 6;
-    next.disabled = pos >= max - 6;
+    const max = grid.scrollWidth - grid.clientWidth;
+    prev.hidden = next.hidden = max <= 2;
+    prev.disabled = grid.scrollLeft <= 6;
+    next.disabled = grid.scrollLeft >= max - 6;
   };
   grid.addEventListener('scroll', syncArrows, { passive: true });
 
@@ -528,18 +519,12 @@ export function charactersScreen(host: CharactersHost): Screen {
     { class: 'screen dim chars-screen' },
     el('h2', {}, t('PERSONAGENS')),
     el('p', { class: 'muted' }, t('Toque num personagem para ver a ficha completa.')),
-    grid,
-    el(
-      'div',
-      { class: 'chars-nav' },
-      prev,
-      el('button', { class: 'btn', data: { nav: '' }, onclick: () => host.screens.pop() }, t('Voltar')),
-      next,
-    ),
+    el('div', { class: 'chars-carousel' }, grid, prev, next),
   );
   return {
     el: e,
     id: 'characters',
+    backArrow: true,
     onShow: () => {
       render();
       addEventListener('resize', syncArrows);

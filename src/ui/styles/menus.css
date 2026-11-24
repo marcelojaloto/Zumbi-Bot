@@ -1569,25 +1569,31 @@ a.btn {
 }
 
 /* ---------------------------------------------------------------- menu Personagens */
-/* PC e tablet: quantos couberem, quebrando a linha (o próximo fica embaixo do primeiro, à esquerda); passou da tela,
-   rola para baixo */
-.chars-screen {
-  justify-content: flex-start;
+/* cartões numa linha; quando não cabem, carrossel com as setas sobre as pontas */
+.chars-carousel {
+  position: relative;
+  width: min(1240px, 100%);
 }
 .chars-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  justify-content: center;
+  display: flex;
+  justify-content: safe center;
   gap: 12px;
-  width: min(1240px, 100%);
-  min-height: 0;
-  flex: 0 1 auto;
-  overflow-y: auto;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
   overscroll-behavior: contain;
-  padding: 4px;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 4px;
+  scrollbar-width: none;
+  padding: 6px 4px;
+}
+.chars-grid::-webkit-scrollbar {
+  display: none;
 }
 .char-card {
   --cc: #c8c8c8;
+  flex: 0 0 max(120px, calc((100% - 8 * 12px) / 9));
+  scroll-snap-align: start;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1652,32 +1658,42 @@ a.btn {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
-/* Voltar no meio; as setas do carrossel nas pontas, na mesma altura */
-.chars-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  width: 100%;
-  min-height: 48px;
-}
+/* setas do carrossel sobre as pontas, na metade da altura dos cartões */
 .chars-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 52px;
-  padding-left: 0;
-  padding-right: 0;
-  font-size: 20px;
+  z-index: 2;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  font-size: 18px;
+  color: var(--fg);
+  background: rgba(10, 12, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  backdrop-filter: blur(3px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition:
+    opacity 0.15s,
+    border-color 0.15s;
 }
 .chars-arrow.left {
-  left: 0;
+  left: 6px;
 }
 .chars-arrow.right {
-  right: 0;
+  right: 6px;
 }
+.chars-arrow:hover {
+  border-color: var(--accent);
+}
+/* na ponta não há mais nada daquele lado */
 .chars-arrow:disabled {
-  opacity: 0.35;
+  opacity: 0;
+  pointer-events: none;
 }
 .chars-arrow[hidden] {
   display: none;
@@ -1685,22 +1701,11 @@ a.btn {
 /* celular: carrossel numa linha só, que anda com o dedo (e com as setas) */
 @media (max-width: 700px), (max-height: 500px) {
   .chars-grid {
-    display: flex;
-    justify-content: flex-start;
     gap: 8px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scroll-padding: 0 4px;
     touch-action: pan-x;
-    scrollbar-width: none;
-  }
-  .chars-grid::-webkit-scrollbar {
-    display: none;
   }
   .char-card {
     flex: 0 0 calc((100% - 3 * 8px) / 4);
-    scroll-snap-align: start;
     padding: 6px 4px 8px;
   }
   .char-nick {
