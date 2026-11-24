@@ -1,5 +1,5 @@
 import type { PartSpec, RigSpec, SocketSpec } from './RigBuilder';
-import { humanSockets, limbs } from './rigs';
+import { humanSockets, limbSockets, limbs } from './rigs';
 import { HUMAN, J, humanoidJoints, type Proportions } from './skeleton';
 
 /** Personagens da 2ª temporada: Ninja, Elfa e Faísca. */
@@ -94,7 +94,10 @@ export function ninjaRig(): RigSpec {
     key: 'char-ninja',
     joints: humanoidJoints(pr),
     parts,
-    sockets: fitSockets(humanSockets(0.28, 0.26, 0.25), 0.85, 0.9),
+    sockets: {
+      ...fitSockets(humanSockets(0.28, 0.26, 0.25), 0.85, 0.9),
+      ...limbSockets(pr, 0.11, 0.14, { armL: 0.13, armR: 0.13, leg: 0.165 }),
+    },
     height: 1.85,
     metal: 0.35,
     rough: 0.55,
@@ -191,7 +194,10 @@ export function elfRig(): RigSpec {
     key: 'char-elf',
     joints: humanoidJoints(pr),
     parts,
-    sockets: fitSockets(humanSockets(0.27, 0.24, 0.24), 0.8, 0.85),
+    sockets: {
+      ...fitSockets(humanSockets(0.27, 0.24, 0.24), 0.8, 0.85),
+      ...limbSockets(pr, 0.1, 0.13, { armL: 0.105, armR: 0.105 }),
+    },
     height: 1.85,
     metal: 0.08,
     rough: 0.75,
@@ -330,7 +336,10 @@ export function sparkRig(): RigSpec {
     key: 'char-spark',
     joints: humanoidJoints(pr),
     parts,
-    sockets: fitSockets(humanSockets(0.44, 0.4, 0.34), 1.1, 0.8),
+    sockets: {
+      ...fitSockets(humanSockets(0.44, 0.4, 0.34), 1.1, 0.8),
+      ...limbSockets(pr, 0.09, 0.11, { armL: 0.1, armR: 0.1, foot: 0.135 }),
+    },
     height: 1.25,
     metal: 0,
     rough: 0.9,

@@ -167,7 +167,7 @@ export const mecha = registerBoss({
   statusDurationMult: 0.4,
   statusImmune: ['poison', 'glitch', 'hacked'],
   contact: { damage: 10, dtype: 'blunt', knockback: 6, hitstun: 14, hitstop: 2 },
-  rewards: { xp: 1100, score: 50000, scrap: 500, unlockStaff: 'cyber', cosmetics: [] },
+  rewards: { xp: 1100, score: 50000, scrap: 500, unlockStaff: 'cyber', cosmetics: ['gauntlets_mecha'] },
   music: 'centro',
   rig: {
     kind: 'mech',

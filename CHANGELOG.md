@@ -5,7 +5,8 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 
 ## 1.7, atualização de 24/11/2026
 
-- O **Guarda-roupa** passa a se chamar **Vestiário**.
+- O **Guarda-roupa** passa a se chamar **Vestiário**, e ganha peças para **braços, pernas e pés**. As abas ficam
+  numa linha só, num carrossel.
 - **Menus:** os botões ficam um embaixo do outro, todos do mesmo tamanho. O título ZUMBI BOT e o status do jogador
   ficam parados no alto enquanto se navega, e o título de cada grupo aparece sempre no mesmo lugar, logo abaixo; quando
   a lista não cabe, só ela rola, com uma barra de rolagem mais visível.
@@ -14,6 +15,8 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - **Ficha de personagem, Vestiário, Loja e Oficina:** as setas para trocar de personagem ficam dos lados do boneco
   3D, com o nome e o tipo embaixo dele, e o boneco sobe um pouco para o texto não ficar por cima. Na ficha, o rosto e
   o nome ficam centralizados e os cinco botões (Vestiário, Loja, Oficina, Mapas e Jogar) ficam lado a lado.
+- O Mecha Dominador, o General Criotanque e o Rei do Half-Pipe passam a dar, cada um, uma peça nova (manoplas, botas
+  e joelheiras).
 
 ## 1.7, atualização de 23/11/2026
 

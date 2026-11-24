@@ -89,6 +89,23 @@ describe('save', () => {
     expect(d.profile.scrap).toBeGreaterThan(0);
   });
 
+  it('peças de braço, perna e pé: carregam no encaixe certo; save antigo segue igual', () => {
+    const d = sanitizeSave({
+      cosmetics: {
+        owned: ['cap_torn', 'bracers_apprentice', 'boots_rain', 'shinguards_soccer'],
+        equipped: {
+          head: 'cap_torn',
+          arms: 'bracers_apprentice',
+          feet: 'shinguards_soccer',
+          legs: 'boots_rain',
+        },
+      },
+    });
+    expect(d.cosmetics.equipped).toEqual({ head: 'cap_torn', arms: 'bracers_apprentice' });
+    const old = sanitizeSave({ cosmetics: { owned: ['cap_torn'], equipped: { head: 'cap_torn' } } });
+    expect(old.cosmetics.equipped).toEqual({ head: 'cap_torn' });
+  });
+
   it('configurações são limitadas', () => {
     const s = sanitizeSettings({
       controls: { mouseSensitivity: 99 },

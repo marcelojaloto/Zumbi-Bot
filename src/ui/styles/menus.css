@@ -2949,6 +2949,51 @@ a.btn {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* vestiário: abas numa linha só, em carrossel */
+.tabs-carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.tabs.tabs-row {
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  padding: 3px 2px;
+}
+.tabs.tabs-row::-webkit-scrollbar {
+  display: none;
+}
+.tabs-row .btn {
+  flex: none;
+  scroll-snap-align: start;
+  white-space: nowrap;
+}
+.tabs-arrow {
+  flex: none;
+  width: 30px;
+  height: 34px;
+  padding: 0;
+  font-size: 14px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.tabs-arrow[hidden] {
+  display: none;
+}
+.tabs-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
 @media (max-width: 800px) {
   /* painel embaixo: o espaço livre é a faixa de cima */
   .hero-stage {

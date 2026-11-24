@@ -6,6 +6,10 @@ import type { CosmeticDef, CosmeticSlot, MeshPart, Rarity } from './types';
  * Catálogo de cosméticos (mago, zumbi e chefes). Coordenadas relativas ao encaixe:
  * head_top = topo da cabeça (y para cima), face = frente dos olhos (+z para fora),
  * mouth = boca, torso = centro do peito, back = costas (-z para trás).
+ * Membros (a mesma peça nos dois lados, então simétrica em x), na medida do robô:
+ * arm = meio do antebraço (antebraço 0.12 de largura, o pulso fica 0.1 abaixo),
+ * leg = meio da canela (canela 0.15 de largura, o joelho fica 0.2 acima),
+ * foot = sola, no meio do pé (pé 0.16 x 0.08 x 0.29; a canela começa 0.05 acima, em z -0.05).
  */
 
 type P = MeshPart;
@@ -84,11 +88,43 @@ const robe = (col: number, trim: number, rune?: number): P[] => [
     : []),
 ];
 
+/** Manto até a canela: caneleiras e joelheiras atravessariam o tecido. */
+const LONG: Partial<CosmeticDef> = { hides: ['legs'] };
+
 const shirt = (col: number, detail: number): P[] => [
   { shape: 'box', size: [0.56, 0.4, 0.34], pos: [0, 0.06, 0], color: col },
   { shape: 'box', size: [0.42, 0.2, 0.28], pos: [0, -0.2, 0], color: col },
   { shape: 'box', size: [0.14, 0.12, 0.02], pos: [0.12, 0.0, 0.175], color: detail },
   { shape: 'box', size: [0.1, 0.18, 0.02], pos: [-0.1, -0.12, 0.175], color: detail },
+];
+
+// ---------------------------------------------------------------- membros
+const bracer = (col: number, trim: number): P[] => [
+  { shape: 'box', size: [0.17, 0.15, 0.17], pos: [0, 0.01, 0], color: col },
+  { shape: 'box', size: [0.18, 0.03, 0.18], pos: [0, 0.085, 0], color: trim },
+  { shape: 'box', size: [0.18, 0.03, 0.18], pos: [0, -0.065, 0], color: trim },
+];
+
+const shinGuard = (col: number): P[] => [
+  { shape: 'box', size: [0.19, 0.26, 0.19], pos: [0, -0.01, 0], color: col },
+];
+
+/** Joelheira na frente do joelho (cobre a do robô). */
+const kneePad = (col: number): P => ({
+  shape: 'box',
+  size: [0.21, 0.14, 0.1],
+  pos: [0, 0.2, 0.08],
+  color: col,
+});
+
+const boot = (col: number, shaft: number | null, sole?: number): P[] => [
+  { shape: 'box', size: [0.2, 0.125, 0.34], pos: [0, 0.058, 0.005], color: col },
+  ...(shaft !== null
+    ? [{ shape: 'box', size: [0.18, 0.12, 0.2], pos: [0, 0.15, -0.04], color: shaft } as P]
+    : []),
+  ...(sole !== undefined
+    ? [{ shape: 'box', size: [0.205, 0.03, 0.345], pos: [0, 0.012, 0.005], color: sole } as P]
+    : []),
 ];
 
 // ---------------------------------------------------------------- capas (costas)
@@ -313,10 +349,10 @@ export const COSMETIC_LIST: CosmeticDef[] = [
     { shape: 'box', size: [0.08, 0.3, 0.03], pos: [0.1, -0.2, 0.04], color: 0x8a2a5a },
   ]),
   // ======================= corpo
-  c('robe_apprentice', 'Túnica do Aprendiz', 'body', 'wizard', 'common', robe(0x3a4a7a, 0x8a7a3a)),
-  c('robe_starry', 'Manto Estrelado', 'body', 'wizard', 'rare', robe(0x1a2248, 0xffd24a, 0xfff0a0)),
-  c('robe_runic', 'Robe Rúnico', 'body', 'wizard', 'epic', robe(0x2a1a3a, 0x9ff0ff, 0x9ff0ff)),
-  c('robe_crimson', 'Veste Carmesim', 'body', 'wizard', 'uncommon', robe(0x6a1a1a, 0xc8a040)),
+  c('robe_apprentice', 'Túnica do Aprendiz', 'body', 'wizard', 'common', robe(0x3a4a7a, 0x8a7a3a), LONG),
+  c('robe_starry', 'Manto Estrelado', 'body', 'wizard', 'rare', robe(0x1a2248, 0xffd24a, 0xfff0a0), LONG),
+  c('robe_runic', 'Robe Rúnico', 'body', 'wizard', 'epic', robe(0x2a1a3a, 0x9ff0ff, 0x9ff0ff), LONG),
+  c('robe_crimson', 'Veste Carmesim', 'body', 'wizard', 'uncommon', robe(0x6a1a1a, 0xc8a040), LONG),
   c('shirt_plaid', 'Camisa Xadrez Rasgada', 'body', 'zombie', 'common', shirt(0x8a2a2a, 0x2a1a1a)),
   c('coat_lab', 'Jaleco Ensanguentado', 'body', 'zombie', 'uncommon', [
     { shape: 'box', size: [0.58, 0.44, 0.36], pos: [0, 0.05, 0], color: 0xe8e8e0 },
@@ -548,6 +584,125 @@ export const COSMETIC_LIST: CosmeticDef[] = [
     },
   ]),
   c('cape_phoenix', 'Capa de Fênix', 'back', 'wizard', 'epic', [], cape(0xd8401a, 0xffd24a, 1.15, 0.6)),
+  // ======================= braços (antebraços)
+  c('bracers_apprentice', 'Braçadeiras de Aprendiz', 'arms', 'wizard', 'common', bracer(0x3a4a8a, 0x8a7a3a)),
+  c('cuffs_starry', 'Punhos Estrelados', 'arms', 'wizard', 'rare', [
+    { shape: 'box', size: [0.17, 0.12, 0.17], pos: [0, 0.01, 0], color: 0x1a2a6a },
+    { shape: 'cyl', size: [0.1, 0.13, 0.06, 8], pos: [0, -0.07, 0], color: 0x1a2a6a },
+    { shape: 'box', size: [0.18, 0.025, 0.18], pos: [0, 0.07, 0], color: 0xffd24a },
+    ...[0.09, -0.09].map((x): P => ({
+      shape: 'oct',
+      size: [0.035, 0],
+      pos: [x, 0.01, 0],
+      color: 0xfff0a0,
+      glow: true,
+      glowIntensity: 3,
+    })),
+    { shape: 'oct', size: [0.035, 0], pos: [0, 0.01, 0.09], color: 0xfff0a0, glow: true, glowIntensity: 3 },
+  ]),
+  c('gauntlets_crystal', 'Manoplas de Cristal', 'arms', 'wizard', 'epic', [
+    { shape: 'box', size: [0.18, 0.17, 0.18], pos: [0, 0.01, 0], color: 0x5a3a8a },
+    { shape: 'box', size: [0.19, 0.03, 0.19], pos: [0, 0.1, 0], color: 0xffd24a },
+    { shape: 'oct', size: [0.05, 0], pos: [0, 0.02, 0.1], color: 0x9ff0ff, glow: true, glowIntensity: 3 },
+    ...[0.1, -0.1].map((x): P => ({
+      shape: 'oct',
+      size: [0.035, 0],
+      pos: [x, 0.03, 0],
+      color: 0x9ff0ff,
+      glow: true,
+      glowIntensity: 3,
+    })),
+  ]),
+  c('wristbands_sport', 'Munhequeiras Listradas', 'arms', 'zombie', 'common', [
+    { shape: 'box', size: [0.15, 0.1, 0.15], pos: [0, -0.03, 0], color: 0xf0f0f0 },
+    { shape: 'box', size: [0.155, 0.025, 0.155], pos: [0, -0.03, 0], color: 0x2a7aff },
+  ]),
+  c('bracers_tape', 'Braçadeiras de Fita Prateada', 'arms', 'zombie', 'uncommon', [
+    { shape: 'box', size: [0.15, 0.05, 0.15], pos: [0, 0.06, 0], rot: [0, 0, 0.08], color: 0xa8b0b8 },
+    { shape: 'box', size: [0.15, 0.05, 0.15], pos: [0, 0, 0], rot: [0, 0, -0.06], color: 0x98a0a8 },
+    { shape: 'box', size: [0.15, 0.05, 0.15], pos: [0, -0.06, 0], rot: [0, 0, 0.05], color: 0xb0b8c0 },
+  ]),
+  // ======================= pernas (canelas e joelhos)
+  c('shinguards_forest', 'Caneleiras do Bosque', 'legs', 'wizard', 'common', [
+    ...shinGuard(0x3a6a3a),
+    { shape: 'box', size: [0.2, 0.03, 0.2], pos: [0, 0.12, 0], color: 0x8a6a3a },
+    { shape: 'box', size: [0.2, 0.03, 0.2], pos: [0, -0.14, 0], color: 0x8a6a3a },
+    { shape: 'box', size: [0.06, 0.1, 0.02], pos: [0, 0, 0.1], rot: [0, 0, 0.6], color: 0x7ad84a },
+  ]),
+  c('greaves_moon', 'Grevas Lunares', 'legs', 'wizard', 'epic', [
+    ...shinGuard(0xc8c8d8),
+    kneePad(0xa8a8c0),
+    {
+      shape: 'torus',
+      size: [0.05, 0.012, 4, 10],
+      pos: [0, 0, 0.1],
+      color: 0xdfe6ff,
+      glow: true,
+      glowIntensity: 2.5,
+    },
+  ]),
+  c('kneepads_patch', 'Joelheiras Remendadas', 'legs', 'zombie', 'common', [
+    kneePad(0x8a6a4a),
+    { shape: 'box', size: [0.17, 0.04, 0.17], pos: [0, 0.12, 0], color: 0x2a2a2a },
+    { shape: 'box', size: [0.07, 0.06, 0.01], pos: [0.04, 0.21, 0.135], rot: [0, 0, 0.3], color: 0x5a8ad8 },
+  ]),
+  c('shinguards_soccer', 'Caneleiras de Futebol', 'legs', 'zombie', 'uncommon', [
+    { shape: 'box', size: [0.18, 0.26, 0.18], pos: [0, -0.01, 0], color: 0xf0f0f0 },
+    { shape: 'box', size: [0.185, 0.05, 0.185], pos: [0, 0.05, 0], color: 0x2ab84a },
+    { shape: 'box', size: [0.185, 0.05, 0.185], pos: [0, -0.07, 0], color: 0x2ab84a },
+  ]),
+  c('greaves_scrap', 'Caneleiras de Sucata', 'legs', 'zombie', 'rare', [
+    ...shinGuard(0x8a8e96),
+    kneePad(0x6a6e76),
+    ...[
+      [0.05, 0.06],
+      [-0.05, 0.06],
+      [0.05, -0.08],
+      [-0.05, -0.08],
+    ].map(([x, y]): P => ({ shape: 'sphere', size: [0.018, 5, 4], pos: [x!, y!, 0.097], color: 0xc8a040 })),
+    { shape: 'box', size: [0.08, 0.06, 0.01], pos: [0.03, -0.01, 0.1], color: 0xc87a2a },
+  ]),
+  // ======================= pés
+  c('slippers_star', 'Pantufas de Estrela', 'feet', 'wizard', 'common', [
+    ...boot(0x3a4a8a, null, 0xe8e0c8),
+    { shape: 'oct', size: [0.04, 0], pos: [0, 0.11, 0.13], color: 0xfff0a0, glow: true, glowIntensity: 3 },
+  ]),
+  c('boots_curly', 'Botinhas de Bico Enrolado', 'feet', 'wizard', 'uncommon', [
+    ...boot(0x5a2a8a, 0x5a2a8a),
+    { shape: 'cone', size: [0.06, 0.12, 6], pos: [0, 0.06, 0.21], rot: [H, 0, 0], color: 0x5a2a8a },
+    { shape: 'torus', size: [0.04, 0.015, 4, 8], pos: [0, 0.1, 0.27], rot: [0, H, 0], color: 0xffd24a },
+  ]),
+  c('boots_cloud', 'Botas de Nuvem', 'feet', 'wizard', 'epic', [
+    ...boot(0xf4f4f8, 0xe0e4ee),
+    ...[
+      [0.07, 0.1],
+      [-0.07, 0.1],
+      [0.07, -0.1],
+      [-0.07, -0.1],
+    ].map(([x, z]): P => ({ shape: 'sphere', size: [0.07, 6, 4], pos: [x!, 0.07, z!], color: 0xffffff })),
+    {
+      shape: 'box',
+      size: [0.19, 0.03, 0.21],
+      pos: [0, 0.2, -0.04],
+      color: 0x9ff0ff,
+      glow: true,
+      glowIntensity: 3,
+    },
+  ]),
+  c('boots_rain', 'Galochas Amarelas', 'feet', 'zombie', 'common', boot(0xffd23a, 0xffd23a, 0x3a3a3a)),
+  c('sneakers_neon', 'Tênis de Neon', 'feet', 'zombie', 'rare', [
+    { shape: 'box', size: [0.2, 0.125, 0.34], pos: [0, 0.058, 0.005], color: 0x2a2e3a },
+    { shape: 'box', size: [0.18, 0.07, 0.2], pos: [0, 0.14, -0.04], color: 0x2a2e3a },
+    {
+      shape: 'box',
+      size: [0.21, 0.035, 0.35],
+      pos: [0, 0.015, 0.005],
+      color: 0x39e6ff,
+      glow: true,
+      glowIntensity: 2,
+    },
+    { shape: 'box', size: [0.1, 0.02, 0.1], pos: [0, 0.125, 0.06], color: 0xf0f0f0 },
+  ]),
   // ======================= chefes (únicos)
   c('crown_coveiro', 'Coroa do Coveiro', 'head', 'boss', 'epic', [
     { shape: 'cyl', size: [0.2, 0.22, 0.12, 8], pos: [0, 0.05, 0], color: 0x3a3228 },
@@ -584,6 +739,50 @@ export const COSMETIC_LIST: CosmeticDef[] = [
       glow: true,
       glowIntensity: 3,
     },
+  ]),
+  c('gauntlets_mecha', 'Manoplas do Mecha Dominador', 'arms', 'boss', 'epic', [
+    { shape: 'box', size: [0.2, 0.18, 0.2], pos: [0, 0.01, 0], color: 0x3a3e46 },
+    { shape: 'box', size: [0.22, 0.05, 0.22], pos: [0, -0.08, 0], color: 0x22262e },
+    {
+      shape: 'box',
+      size: [0.04, 0.12, 0.03],
+      pos: [0, 0.01, 0.11],
+      color: 0xff8a2a,
+      glow: true,
+      glowIntensity: 2.5,
+    },
+    ...[0.11, -0.11].map((x): P => ({
+      shape: 'cyl',
+      size: [0.03, 0.03, 0.08, 6],
+      pos: [x, 0.05, 0],
+      rot: [0, 0, H],
+      color: 0x8a8e96,
+    })),
+  ]),
+  c('kneepads_halfpipe', 'Joelheiras do Half-Pipe', 'legs', 'boss', 'epic', [
+    { shape: 'box', size: [0.19, 0.24, 0.19], pos: [0, -0.02, 0], color: 0x2a2a3a },
+    { shape: 'box', size: [0.22, 0.16, 0.12], pos: [0, 0.2, 0.08], color: 0xffd24a },
+    { shape: 'oct', size: [0.04, 0], pos: [0, 0.2, 0.145], color: 0xff5ad8, glow: true, glowIntensity: 3 },
+    {
+      shape: 'box',
+      size: [0.03, 0.2, 0.01],
+      pos: [0, -0.02, 0.1],
+      color: 0x39e6ff,
+      glow: true,
+      glowIntensity: 2,
+    },
+  ]),
+  c('boots_frost', 'Botas Geladas do General', 'feet', 'boss', 'epic', [
+    ...boot(0x9ad8f0, 0xc8ecff),
+    { shape: 'box', size: [0.21, 0.08, 0.1], pos: [0, 0.05, 0.13], color: 0xe8f8ff },
+    ...[0.1, -0.1].map((x): P => ({
+      shape: 'oct',
+      size: [0.04, 0],
+      pos: [x, 0.17, -0.04],
+      color: 0x5ad8ff,
+      glow: true,
+      glowIntensity: 2.5,
+    })),
   ]),
 
   // ---------------------------------------------------------------- disfarce do Prodígio (vem com ele)

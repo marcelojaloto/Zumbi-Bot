@@ -4,10 +4,10 @@ import { Rng } from '../core/rng';
 import { pickCosmetic, rollRarity } from '../sim/systems/loot';
 
 describe('cosméticos', () => {
-  it('catálogo tem ~40 peças em 5 encaixes', () => {
+  it('catálogo tem ~60 peças em 8 encaixes', () => {
     const all = Object.values(COSMETICS);
-    expect(all.length).toBeGreaterThanOrEqual(38);
-    for (const s of ['head', 'eyes', 'mask', 'body', 'back'])
+    expect(all.length).toBeGreaterThanOrEqual(56);
+    for (const s of ['head', 'eyes', 'mask', 'body', 'back', 'arms', 'legs', 'feet'])
       expect(all.some((c) => c.slot === s)).toBe(true);
     for (const c of all) expect(c.mesh.parts.length > 0 || !!c.cape).toBe(true);
   });

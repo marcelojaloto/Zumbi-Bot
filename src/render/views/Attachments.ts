@@ -4,13 +4,24 @@ import type { CosmeticDef, CosmeticId, CosmeticSlot } from '../../data/types';
 import { recipeMesh } from '../meshCache';
 import type { CharacterView } from './CharacterView';
 
-const SOCKET: Record<CosmeticSlot, string> = {
-  head: 'head_top',
-  eyes: 'face',
-  mask: 'mouth',
-  body: 'torso',
-  back: 'back',
+/** Encaixes de cada slot; os pares recebem uma cópia da peça em cada lado. */
+const SOCKET: Record<CosmeticSlot, readonly string[]> = {
+  head: ['head_top'],
+  eyes: ['face'],
+  mask: ['mouth'],
+  body: ['torso'],
+  back: ['back'],
+  arms: ['armL', 'armR'],
+  legs: ['legL', 'legR'],
+  feet: ['footL', 'footR'],
 };
+
+/** Slots escondidos pelas peças equipadas (`hides`, como o manto comprido sobre as caneleiras). */
+function hiddenSlots(equipped: Partial<Record<CosmeticSlot, CosmeticId>>): Set<CosmeticSlot> {
+  const out = new Set<CosmeticSlot>();
+  for (const id of Object.values(equipped)) for (const s of (id && COSMETICS[id]?.hides) || []) out.add(s);
+  return out;
+}
 
 interface CapeState {
   root: Group;
@@ -51,10 +62,10 @@ function buildCape(def: NonNullable<CosmeticDef['cape']>): CapeState {
   return { root, joints, angle: joints.map(() => 0.05), vel: joints.map(() => 0), geo, mats: [outer, inner] };
 }
 
-/** Cosméticos equipados no rig do robô (chapéus, óculos, máscaras, roupas e capas). */
+/** Cosméticos equipados no rig (chapéus, óculos, máscaras, roupas, capas e peças dos braços, pernas e pés). */
 export class CosmeticRig {
   private current: Partial<Record<CosmeticSlot, CosmeticId>> = {};
-  private objs: Partial<Record<CosmeticSlot, Object3D>> = {};
+  private objs: Partial<Record<CosmeticSlot, Object3D[]>> = {};
   private cape: CapeState | null = null;
   private t = 0;
   /** Peça de cabeça própria do personagem (chapéu da maga), enquanto não há item de cabeça equipado. */
@@ -63,25 +74,30 @@ export class CosmeticRig {
   constructor(private view: CharacterView) {}
 
   set(equipped: Partial<Record<CosmeticSlot, CosmeticId>>): void {
+    const hidden = hiddenSlots(equipped);
     for (const slot of Object.keys(SOCKET) as CosmeticSlot[]) {
-      const want = equipped[slot];
+      const want = hidden.has(slot) ? undefined : equipped[slot];
       if (this.current[slot] === want) continue;
       this.clearSlot(slot);
       this.current[slot] = want;
       const def = want ? COSMETICS[want] : undefined;
       if (!def) continue;
-      const socket = this.view.socket(SOCKET[slot]);
-      if (!socket) continue;
-      if (def.cape) {
-        this.cape = buildCape(def.cape);
-        socket.add(this.cape.root);
-        this.objs[slot] = this.cape.root;
-        if (def.mesh.parts.length) this.cape.root.add(recipeMesh(`cos:${def.id}`, def.mesh));
-      } else {
-        const o = recipeMesh(`cos:${def.id}`, def.mesh);
-        socket.add(o);
-        this.objs[slot] = o;
+      const objs: Object3D[] = [];
+      for (const name of SOCKET[slot]) {
+        const socket = this.view.socket(name);
+        if (!socket) continue;
+        if (def.cape) {
+          this.cape = buildCape(def.cape);
+          socket.add(this.cape.root);
+          objs.push(this.cape.root);
+          if (def.mesh.parts.length) this.cape.root.add(recipeMesh(`cos:${def.id}`, def.mesh));
+        } else {
+          const o = recipeMesh(`cos:${def.id}`, def.mesh);
+          socket.add(o);
+          objs.push(o);
+        }
       }
+      if (objs.length) this.objs[slot] = objs;
     }
     this.syncOwnHead(!equipped.head);
     this.syncBrows(equipped.head ? (COSMETICS[equipped.head]?.brows ?? null) : null);
@@ -133,8 +149,7 @@ export class CosmeticRig {
   }
 
   private clearSlot(slot: CosmeticSlot): void {
-    const o = this.objs[slot];
-    if (o) o.parent?.remove(o);
+    for (const o of this.objs[slot] ?? []) o.parent?.remove(o);
     delete this.objs[slot];
     if (slot === 'back' && this.cape) {
       this.cape.geo.dispose();

@@ -91,9 +91,9 @@ Web Audio.
   golpes fortes, fogo inflama nuvens tóxicas, o cibernético hackeia robôs e o necromante controla zumbis.
 - **Itens e power-ups**: kits médicos (o pequeno cura 40% da vida máxima e o grande 80%, nunca menos que 40 e
   80), escudo, mana, munição, dano dobrado, turbo e invulnerabilidade.
-- **Loot cosmético**: cerca de 55 peças dos conjuntos mago e zumbi (chapéus, elmos, óculos, máscaras, roupas,
-  armaduras, capas com física, asas e mochila a jato), inventário no **Guarda-roupa** com prévia 3D e uma
-  **Loja** em três abas: Visual (ofertas do dia; escolher um item veste o boneco para ver antes), Armas (de fogo e
+- **Loot cosmético**: mais de 70 peças dos conjuntos mago e zumbi (chapéus, elmos, óculos, máscaras, roupas,
+  armaduras, capas com física, asas, mochila a jato, braçadeiras, caneleiras e botas), inventário no **Vestiário**
+  (com peças também para braços, pernas e pés) com prévia 3D e uma **Loja** em três abas: Visual (ofertas do dia; escolher um item veste o boneco para ver antes), Armas (de fogo e
   brancas) e Itens especiais (o item de reviver de cada personagem). A compra só acontece ao confirmar.
 - **Oficina**: escolha o personagem e veja a árvore de melhorias dele, em quatro ramos. **Atributos** (vigor,
   força, agilidade, energia, pontaria ou magia) sobem em três níveis, ponderados pelos limites de cada um: a Maga

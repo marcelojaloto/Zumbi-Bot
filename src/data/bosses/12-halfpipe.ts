@@ -105,7 +105,7 @@ export const halfpipe = registerBoss({
   statusDurationMult: 0.5,
   statusImmune: ['poison'],
   contact: { damage: 9, dtype: 'blunt', knockback: 6, hitstun: 14, hitstop: 2 },
-  rewards: { xp: 1600, score: 75000, scrap: 750, cosmetics: [] },
+  rewards: { xp: 1600, score: 75000, scrap: 750, cosmetics: ['kneepads_halfpipe'] },
   music: 'praca',
   rig: {
     kind: 'humanoid',

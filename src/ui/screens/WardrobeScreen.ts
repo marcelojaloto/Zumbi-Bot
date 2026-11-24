@@ -28,8 +28,11 @@ export const SLOT_NAMES: Record<CosmeticSlot, string> = {
   mask: 'Máscara',
   body: 'Corpo',
   back: 'Costas',
+  arms: 'Braços',
+  legs: 'Pernas',
+  feet: 'Pés',
 };
-const SLOTS: CosmeticSlot[] = ['head', 'eyes', 'mask', 'body', 'back'];
+const SLOTS: CosmeticSlot[] = ['head', 'eyes', 'mask', 'body', 'back', 'arms', 'legs', 'feet'];
 
 export interface WardrobeHost extends UiHost {
   /** Veste o boneco do menu; `back` vira o boneco de costas. */
@@ -88,6 +91,31 @@ function spinner(host: WardrobeHost, screen: HTMLElement, panel: HTMLElement) {
   };
 }
 
+/** Abas numa linha só, num carrossel com ◀ ▶ nas pontas quando não cabem. */
+function tabCarousel(tabs: HTMLElement): { el: HTMLElement; sync: () => void } {
+  tabs.classList.add('tabs-row');
+  const arrow = (dir: -1 | 1) =>
+    el(
+      'button',
+      {
+        class: `tabs-arrow ${dir < 0 ? 'left' : 'right'}`,
+        title: dir < 0 ? t('Anterior') : t('Próximo'),
+        onclick: () => tabs.scrollBy({ left: dir * tabs.clientWidth * 0.7, behavior: 'smooth' }),
+      },
+      dir < 0 ? '◀' : '▶',
+    );
+  const prev = arrow(-1);
+  const next = arrow(1);
+  const sync = () => {
+    const max = tabs.scrollWidth - tabs.clientWidth;
+    prev.hidden = next.hidden = max <= 2;
+    prev.disabled = tabs.scrollLeft <= 4;
+    next.disabled = tabs.scrollLeft >= max - 4;
+  };
+  tabs.addEventListener('scroll', sync, { passive: true });
+  return { el: el('div', { class: 'tabs-carousel' }, prev, tabs, next), sync };
+}
+
 /** Dica do giro (toque ou teclado/controle). */
 function spinHint(host: WardrobeHost): string {
   return host.touchActive
@@ -125,6 +153,7 @@ export function wardrobeScreen(host: WardrobeHost, start?: CharacterId): Screen 
   const body = el('div', { class: 'wr-body' });
   const tabs = el('div', { class: 'tabs' });
   const stage = stageFor(host, start);
+  const carousel = tabCarousel(tabs);
   const scrap = el('div', { class: 'scrap' });
   let tab: CosmeticSlot | 'arsenal' = 'head';
   const refreshScrap = () => (scrap.textContent = t('Sucata: {n}', { n: fmtInt(prof.save.profile.scrap) }));
@@ -133,7 +162,11 @@ export function wardrobeScreen(host: WardrobeHost, start?: CharacterId): Screen 
     refreshScrap();
     host.previewCosmetics(prof.save.cosmetics.equipped, tab === 'back');
     body.innerHTML = '';
-    for (const b of tabs.children) b.classList.toggle('on', (b as HTMLElement).dataset.k === tab);
+    for (const b of tabs.children) {
+      const on = (b as HTMLElement).dataset.k === tab;
+      b.classList.toggle('on', on);
+      if (on) b.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
     if (tab === 'arsenal') {
       const g = el('div', { class: 'arsenal' });
       for (const id of WEAPON_ORDER) {
@@ -276,7 +309,7 @@ export function wardrobeScreen(host: WardrobeHost, start?: CharacterId): Screen 
     el('h2', {}, t('VESTIÁRIO')),
     scrap,
     el('p', { class: 'muted shop-tip' }, spinHint(host)),
-    tabs,
+    carousel.el,
     body,
   );
   const e = el('div', { class: 'screen wardrobe spin-area' }, stage.el, panel);
@@ -291,12 +324,15 @@ export function wardrobeScreen(host: WardrobeHost, start?: CharacterId): Screen 
       stage.show();
       spin.start();
       render();
+      addEventListener('resize', carousel.sync);
+      requestAnimationFrame(carousel.sync);
     },
     onHide: () => {
       spin.end();
       host.previewCosmetics(prof.save.cosmetics.equipped);
       stage.hide();
       host.setMenuFocus(0);
+      removeEventListener('resize', carousel.sync);
     },
     onKey: (code) => spin.key(code),
     update: (dt) => spin.update(dt),

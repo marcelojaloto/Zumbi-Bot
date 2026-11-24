@@ -146,7 +146,7 @@ export const criotanque = registerBoss({
   statusDurationMult: 0.5,
   statusImmune: ['chill', 'freeze', 'poison'],
   contact: { damage: 10, dtype: 'blunt', knockback: 6, hitstun: 14, hitstop: 2 },
-  rewards: { xp: 1300, score: 60000, scrap: 600, unlockStaff: 'ice', cosmetics: [] },
+  rewards: { xp: 1300, score: 60000, scrap: 600, unlockStaff: 'ice', cosmetics: ['boots_frost'] },
   music: 'guerra',
   rig: {
     kind: 'mech',

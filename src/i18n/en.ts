@@ -1,4 +1,5 @@
 import { SEASON2_EN } from './s2';
+import { cosmeticosEn } from './extra/cosmeticos';
 
 /**
  * Dicionário português → inglês. A chave é o texto original em pt-BR (como aparece no código ou nos dados);
@@ -285,6 +286,9 @@ export const EN: Record<string, string> = {
   Máscara: 'Mask',
   Corpo: 'Body',
   Costas: 'Back gear',
+  Braços: 'Arms',
+  Pernas: 'Legs',
+  Pés: 'Feet',
 
   // ------------------------------------------------------------------ mapas, níveis e dicas
   'Área de Testes': 'Test Area',
@@ -1238,4 +1242,5 @@ export const EN: Record<string, string> = {
   'Direcional: 2× ↑ ou ↓': 'D-pad: 2× ↑ or ↓',
   'Esquiva em profundidade (com a defesa da Oficina)': 'Dodge in depth (with the Workshop defense)',
   ...SEASON2_EN,
+  ...cosmeticosEn,
 };

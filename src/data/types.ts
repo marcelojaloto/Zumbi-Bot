@@ -866,7 +866,8 @@ export interface ItemDef {
     'medkit' | 'bigMedkit' | 'battery' | 'crystal' | 'ammo' | 'power' | 'gun' | 'melee' | 'scrap' | 'bag';
 }
 
-export type CosmeticSlot = 'head' | 'eyes' | 'mask' | 'body' | 'back';
+/** arms, legs e feet são pares: a mesma peça vai nos dois lados. */
+export type CosmeticSlot = 'head' | 'eyes' | 'mask' | 'body' | 'back' | 'arms' | 'legs' | 'feet';
 
 export interface CosmeticDef {
   id: CosmeticId;

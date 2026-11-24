@@ -1,7 +1,7 @@
 import { PRODIGY_HAIR } from '../../data/prodigyHair';
 import type { CharacterId, MeshRecipe } from '../../data/types';
 import type { PartSpec, RigSpec, SocketSpec } from './RigBuilder';
-import { humanSockets, limbs, robotPlayerRig } from './rigs';
+import { humanSockets, limbSockets, limbs, robotPlayerRig } from './rigs';
 import { HUMAN, J, humanoidJoints, type Proportions } from './skeleton';
 import { elfRig, ninjaRig, sparkRig } from './season2Rigs';
 
@@ -116,7 +116,10 @@ export function mageRig(): RigSpec {
     key: 'char-mage',
     joints: humanoidJoints(pr),
     parts,
-    sockets: fitSockets(humanSockets(0.27, 0.24, 0.24), 0.8, 0.85),
+    sockets: {
+      ...fitSockets(humanSockets(0.27, 0.24, 0.24), 0.8, 0.85),
+      ...limbSockets(pr, 0.1, 0.13, { armL: 0.11, armR: 0.11 }),
+    },
     height: 1.85,
     metal: 0.05,
     rough: 0.8,
@@ -253,7 +256,7 @@ export function militaryRig(): RigSpec {
     key: 'char-military',
     joints: humanoidJoints(pr),
     parts,
-    sockets: fitSockets(humanSockets(0.31, 0.29, 0.34), 0.95, 1.18),
+    sockets: { ...fitSockets(humanSockets(0.31, 0.29, 0.34), 0.95, 1.18), ...limbSockets(pr, 0.19, 0.21) },
     height: 2.0,
     metal: 0.1,
     rough: 0.75,
@@ -358,7 +361,10 @@ export function cyborgRig(): RigSpec {
     key: 'char-cyborg',
     joints: humanoidJoints(pr),
     parts,
-    sockets: fitSockets(humanSockets(0.29, 0.28, 0.28), 0.85, 1),
+    sockets: {
+      ...fitSockets(humanSockets(0.29, 0.28, 0.28), 0.85, 1),
+      ...limbSockets(pr, 0.12, 0.15, { armL: 0.15, leg: 0.175 }),
+    },
     height: 1.9,
     metal: 0.45,
     rough: 0.45,
@@ -509,7 +515,10 @@ export function mutantRig(): RigSpec {
     key: 'char-mutant',
     joints: humanoidJoints(pr),
     parts,
-    sockets: fitSockets(humanSockets(0.27, 0.27, 0.36), 0.88, 1.15),
+    sockets: {
+      ...fitSockets(humanSockets(0.27, 0.27, 0.36), 0.88, 1.15),
+      ...limbSockets(pr, 0.17, 0.19, { armR: 0.25 }),
+    },
     height: 1.85,
     metal: 0.05,
     rough: 0.85,
@@ -652,7 +661,7 @@ export function prodigyRig(): RigSpec {
       at: [x, BROW_Y, BROW_Z + 0.002] as [number, number, number],
       size: [BROW[0] + 0.006, BROW[1] + 0.004, BROW[2]] as [number, number, number],
     })),
-    sockets: fitSockets(humanSockets(0.25, 0.22, 0.21), 0.78, 0.82),
+    sockets: { ...fitSockets(humanSockets(0.25, 0.22, 0.21), 0.78, 0.82), ...limbSockets(pr, 0.095, 0.12) },
     height: 1.62,
     metal: 0.03,
     rough: 0.85,

@@ -26,6 +26,45 @@ export function humanSockets(headH: number, headD: number, chestD: number): Reco
   };
 }
 
+/** Largura dos membros do robô, para quem os cosméticos de braço, perna e pé foram feitos. */
+const ROBOT_ARM_W = 0.13;
+const ROBOT_LEG_W = 0.16;
+
+/**
+ * Encaixes pares dos membros (armL/armR no antebraço, legL/legR na canela, footL/footR no pé). A escala ajusta as
+ * peças à largura e ao comprimento do membro; `fit` dá a largura de quem tem peças próprias mais grossas ali
+ * (braçadeira, armadura), para o cosmético ficar por fora delas.
+ */
+export function limbSockets(
+  pr: Proportions,
+  armW: number,
+  legW: number,
+  fit: { armL?: number; armR?: number; leg?: number; foot?: number } = {},
+): Record<string, SocketSpec> {
+  const out: Record<string, SocketSpec> = {};
+  const lw = (fit.leg ?? legW) / ROBOT_LEG_W;
+  for (const side of ['L', 'R'] as const) {
+    const aw = ((side === 'L' ? fit.armL : fit.armR) ?? armW) / ROBOT_ARM_W;
+    out[`arm${side}`] = {
+      j: side === 'L' ? J.foreArmL : J.foreArmR,
+      at: [0, -pr.foreArm * 0.62, 0],
+      scale: [aw, pr.foreArm / HUMAN.foreArm, aw],
+    };
+    out[`leg${side}`] = {
+      j: side === 'L' ? J.shinL : J.shinR,
+      at: [0, -pr.shin * 0.45, 0],
+      scale: [lw, pr.shin / HUMAN.shin, lw],
+    };
+    // na sola, no meio do pé (o pé de limbs() fica em z 0.05)
+    out[`foot${side}`] = {
+      j: side === 'L' ? J.footL : J.footR,
+      at: [0, -0.02, 0.05],
+      scale: (fit.foot ?? legW) / ROBOT_LEG_W,
+    };
+  }
+  return out;
+}
+
 export function limbs(p: {
   upper: number;
   fore: number;
@@ -166,7 +205,7 @@ export function robotPlayerRig(): RigSpec {
     key: 'robot-player',
     joints: humanoidJoints(pr),
     parts,
-    sockets: humanSockets(0.31, 0.3, 0.3),
+    sockets: { ...humanSockets(0.31, 0.3, 0.3), ...limbSockets(pr, 0.13, 0.16) },
     height: 1.9,
     metal: 0.55,
     rough: 0.45,
