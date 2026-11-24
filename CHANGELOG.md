@@ -23,6 +23,7 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - **Personagens:** os cartões viram um carrossel, com setas translúcidas sobre as pontas quando há mais personagens
   para os lados. A ficha mostra o rosto do personagem, troca de personagem pelas setas ao lado do título e ganha
   atalhos para o Guarda-roupa, a Loja e a Oficina; o botão Começar passa a se chamar **Jogar**.
+- **Uriel Jaloto** entra nos créditos, em Ideia e direção.
 
 ## 1.7 (12/11/2026)
 

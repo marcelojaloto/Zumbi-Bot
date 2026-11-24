@@ -47,6 +47,7 @@ export function creditsScreen(
       'Nathan Jaloto',
       'Pedro Henrique dos Passos Gomes',
       'Leo Becker',
+      'Uriel Jaloto',
     ),
     block(t('Desenvolvimento'), t('Criado por Marcelo Jaloto')),
     block(
