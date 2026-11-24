@@ -23,9 +23,20 @@ A cada PR e a cada atualização da `main`, o workflow **iOS**:
 
 ## 2. Conta de desenvolvedor Apple
 
-1. Acesse https://developer.apple.com/programs/ e entre no **Apple Developer Program** (US$ 99 por ano quando este
-   guia foi escrito), como **pessoa física** ou **organização** (organização pede um número D-U-N-S).
-2. Anote o **Team ID** (10 letras e números): https://developer.apple.com/account > **Membership details**.
+O Zumbi Bot é publicado pela Jaloto Software, como **organização**. A inscrição é feita pela web, sem aparelho
+Apple.
+
+1. Crie uma conta Apple em https://account.apple.com com o e-mail `atendimento@jalotosoftware.com.br` e a
+   verificação em duas etapas por SMS. A Apple pede um e-mail de trabalho no domínio da empresa.
+2. Em https://developer.apple.com/programs/enroll/ entre no **Apple Developer Program** como **organização** (US$ 99
+   por ano quando este guia foi escrito):
+   - Nome jurídico exatamente como no cadastro da Dun & Bradstreet: `JALOTO SOFTWARE LTDA` (a Apple não aceita nome
+     fantasia) e o número D-U-N-S. Um número recém-emitido leva até 2 dias úteis para chegar à Apple.
+   - Site: `https://zumbibot.jalotosoftware.com.br/`. A Apple exige um site público num domínio da empresa, então
+     ele precisa estar no ar antes (veja o README).
+   - Quem faz a inscrição precisa ter poderes para assinar contratos pela empresa. A Apple costuma telefonar para
+     confirmar os dados.
+3. Anote o **Team ID** (10 letras e números): https://developer.apple.com/account > **Membership details**.
 
 ## 3. Identificador do app (App ID)
 
@@ -46,8 +57,12 @@ No terminal (Linux, macOS ou o Git Bash do Windows), crie a chave e o pedido de 
 
 ```bash
 openssl genrsa -out zumbibot.key 2048
-openssl req -new -key zumbibot.key -out zumbibot.csr -subj "/emailAddress=SEU_EMAIL/CN=SEU NOME/C=BR"
+MSYS_NO_PATHCONV=1 openssl req -new -key zumbibot.key -out zumbibot.csr \
+  -subj "/emailAddress=atendimento@jalotosoftware.com.br/CN=JALOTO SOFTWARE LTDA/C=BR"
 ```
+
+O `MSYS_NO_PATHCONV=1` impede que o Git Bash troque a `/` do começo do `-subj` por uma pasta do Windows (nos outros
+sistemas ele não faz nada).
 
 Em https://developer.apple.com/account/resources/certificates > **+** > **Apple Distribution** > envie o
 `zumbibot.csr` e baixe o certificado (`distribution.cer`). Junte certificado e chave num `.p12` (escolha uma senha e
@@ -97,7 +112,7 @@ No repositório: **Settings > Secrets and variables > Actions > New repository s
 ## 8. TestFlight (instalar no iPhone)
 
 1. No GitHub: **Actions > iOS > Run workflow** (branch `main`). Com os segredos, o workflow assina o app e envia para
-   o App Store Connect (versão `1.2.<número da execução>`).
+   o App Store Connect (versão `1.7.<número da build>`, como no Android).
 2. Depois de uns 15–30 minutos o build aparece em **App Store Connect > TestFlight**. Responda à pergunta de
    criptografia se aparecer (o app já declara que só usa a criptografia padrão).
 3. **Teste interno:** adicione você (e quem mais tiver acesso à conta) como testador. Instale o app **TestFlight** no
@@ -106,7 +121,8 @@ No repositório: **Settings > Secrets and variables > Actions > New repository s
    revisão beta da Apple (costuma levar um dia).
 
 Primeiros testes recomendados: permissão do microfone (o iPhone pergunta ao tocar em "Ligar microfone"), chat de voz
-com um Android ou computador na mesma sala, som com a chave de silencioso, tela deitada e o entalhe (notch).
+com um Android ou computador na mesma sala, som com a chave de silencioso, tela deitada e o entalhe (notch). Sem
+iPhone, peça esses testes a quem tiver um, pelo link público do teste externo, antes de enviar para a revisão.
 
 ## 9. Publicar na App Store
 
@@ -135,6 +151,9 @@ Em **App Store Connect > o app > versão iOS**:
   realista); **comunicação entre usuários: sim** (chat de voz opcional numa sala com código, que respeita o controle
   dos pais, fica desligado para menores e, com a idade desconhecida, só liga com a liberação de um adulto); sem
   compras, sem navegação livre na internet. A Apple calcula a idade a partir das respostas.
+- **Status de comerciante (União Europeia):** em **Negócios**, declare a Jaloto Software como comerciante (trader).
+  O endereço, o telefone e o e-mail passam a aparecer para quem baixa lá; sem essa declaração, o app não é publicado
+  na União Europeia.
 - **Notas para a revisão:** "O jogo funciona offline (um jogador). O jogo online precisa de dois aparelhos: em um,
   Jogar online > Criar sala; no outro, Entrar numa sala com o código de 4 letras. O chat de voz é opcional. Quando a
   App Store informa que quem joga é adulto, ele funciona direto; quando não informa a idade, começa desligado e um

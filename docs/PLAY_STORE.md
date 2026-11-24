@@ -21,11 +21,23 @@ na primeira troca é preciso **desinstalar o APK de teste antes** de instalar o 
 
 ## 2. Conta de desenvolvedor no Google Play
 
-1. Acesse https://play.google.com/console e crie uma conta de desenvolvedor (**pessoal** ou **organização**).
-2. Pague a taxa única de registro (US$ 25 quando este guia foi escrito) e conclua a verificação de identidade.
-3. Contas **pessoais** criadas a partir de novembro de 2023 precisam fazer um **teste fechado com pelo menos 12
-   testadores durante 14 dias seguidos** antes de publicar em produção (passo 7). Contas de organização não têm
-   essa exigência. Confira as regras atuais no Play Console, porque o Google muda esses números de tempos em tempos.
+O Zumbi Bot é publicado pela Jaloto Software, numa conta de **organização**.
+
+1. Acesse https://play.google.com/console com a conta Google `jaloto.software@gmail.com` (a mesma do Firebase) e
+   crie uma conta de desenvolvedor de **organização**.
+2. Preencha os dados da empresa. O nome e o endereço do perfil de pagamentos do Google precisam ser **iguais aos do
+   cadastro na Dun & Bradstreet**; se não baterem, o Google pede a correção com prazo, sob pena de tirar os apps da
+   loja.
+   - Organização: `JALOTO SOFTWARE LTDA` e o número D-U-N-S.
+   - Site da organização: `https://zumbibot.jalotosoftware.com.br/` (precisa estar no ar, veja o README).
+   - E-mail de contato e e-mail de desenvolvedor: `atendimento@jalotosoftware.com.br`. O Google não aceita e-mail
+     pessoal ou genérico nesses campos. O e-mail e o telefone de desenvolvedor aparecem na página do app.
+   - Status de comerciante (trader), exigido pelas regras da União Europeia: empresas em geral se declaram
+     comerciantes, e então o endereço, o telefone e o e-mail aparecem para quem baixa o app lá.
+3. Pague a taxa única de registro (US$ 25 quando este guia foi escrito) e conclua a verificação.
+4. Contas de organização não precisam do **teste fechado com 12 testadores por 14 dias**, exigido de contas
+   pessoais criadas a partir de novembro de 2023: dá para publicar direto em produção (passo 8). Confira as regras
+   atuais no Play Console, porque o Google muda esses números de tempos em tempos.
 
 ## 3. Criar a chave de upload (uma vez só)
 
@@ -121,6 +133,8 @@ No repositório: **Settings > Secrets and variables > Actions > New repository s
 
 ## 7. Teste fechado (contas pessoais)
 
+A conta da Jaloto Software é de organização e pula este passo.
+
 1. **Testes > Teste fechado > Criar faixa** (ou use a faixa "Alpha").
 2. **Testadores:** crie uma lista com os e-mails (contas Google) de pelo menos 12 pessoas.
 3. **Criar versão:** envie o `zumbi-bot.aab` do passo 5, escreva as notas da versão e envie para revisão.
@@ -130,7 +144,7 @@ No repositório: **Settings > Secrets and variables > Actions > New repository s
 
 ## 8. Produção
 
-Com o acesso liberado: **Produção > Criar versão**, envie o AAB mais recente, escolha os países e envie para revisão.
+Numa conta de organização, ou com o acesso liberado depois do teste fechado: **Produção > Criar versão**, envie o AAB mais recente, escolha os países e envie para revisão.
 A primeira revisão costuma levar alguns dias.
 
 ## 9. Atualizações
@@ -148,3 +162,7 @@ A primeira revisão costuma levar alguns dias.
 - Android mínimo: 7.0 (API 24). Alvo: API 36.
 - Um aparelho com o APK do GitHub (assinado pela sua chave de upload) e outro com a versão da Play Store (assinada
   pelo Google) têm assinaturas diferentes: para trocar de um para o outro, desinstale antes.
+- Verificação de desenvolvedor do Android: desde 30/09/2026, no Brasil, apps instalados pela Play e por outras lojas
+  participantes precisam vir de um desenvolvedor verificado, e o app da Play já cumpre isso. O APK do GitHub entra na
+  regra quando ela valer no mundo todo (previsto para 2027); aí será preciso registrá-lo também no Play Console, como
+  app distribuído fora da Play.
