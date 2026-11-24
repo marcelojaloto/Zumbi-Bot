@@ -119,7 +119,7 @@
   display: grid;
   place-items: center;
   padding: 0;
-  color: var(--fg);
+  color: #fff;
   background: none;
   border: none;
   cursor: pointer;
@@ -140,11 +140,18 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+/* sempre branca, também com foco ou o dedo em cima */
+.btn-back:hover,
+.btn-back:focus,
+.btn-back:focus-visible,
+.btn-back:active {
+  color: #fff;
+  outline: none;
+}
 .btn-back:hover,
 .btn-back:focus-visible {
-  color: var(--accent);
-  outline: none;
   transform: translateX(-2px);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.55)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85));
 }
 .panel {
   background: rgba(10, 12, 20, 0.86);

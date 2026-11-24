@@ -94,3 +94,27 @@ html.hold-size #ui {
   outline: none;
   box-shadow: 0 0 14px rgba(255, 140, 26, 0.5);
 }
+/* rolagem vertical: barra fina e visível, na cor do jogo */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 140, 26, 0.75);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 170, 70, 0.95);
+}
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 140, 26, 0.75) rgba(255, 255, 255, 0.06);
+  }
+}

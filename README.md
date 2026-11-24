@@ -264,7 +264,7 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
   Guarda-roupa), **Ranking** (Pessoal e Global), **Configurações** (Áudio, Controles, com a Ajuda das teclas, Gráficos,
   Jogo, Manual e Instalar o jogo) e **Créditos**. O título ZUMBI BOT e o status do jogador ficam parados no alto
   enquanto se navega pelos grupos, e o título de cada grupo aparece sempre no mesmo lugar, logo abaixo; quando a
-  lista não cabe, só ela rola. A seta no canto superior esquerdo volta, como o Esc, o B do controle e o Voltar
+  lista não cabe, só ela rola. A seta branca no canto superior esquerdo volta, como o Esc, o B do controle e o Voltar
   do Android. No canto inferior esquerdo do menu fica a classificação indicativa sugerida: **10 anos** (violência
   fantasiosa e medo), que deve bater com a do questionário de classificação das lojas.
 - **Idiomas:** português e inglês, escolhidos pelo idioma do navegador e trocáveis em Configurações > Jogo.
