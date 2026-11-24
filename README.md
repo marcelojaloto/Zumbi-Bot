@@ -260,7 +260,7 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
   publicar na App Store é preciso uma conta de desenvolvedor Apple (passo a passo em
   [docs/APP_STORE.md](docs/APP_STORE.md)). Até lá, jogue no Safari (acima).
 - **Menu:** cinco grupos, cada botão com ícone, todos do mesmo tamanho e um embaixo do outro: **Jogar** (Continuar,
-  Jogar online, Mapas e Personagens), **Customização** (Oficina, Loja e
+  Jogar online, Mapas, Personagens e, depois do OMEGA-Z, o Novo Jogo+), **Customização** (Oficina, Loja e
   Guarda-roupa), **Ranking** (Pessoal e Global), **Configurações** (Áudio, Controles, com a Ajuda das teclas, Gráficos,
   Jogo, Manual e Instalar o jogo) e **Créditos**. O título ZUMBI BOT e o status do jogador ficam parados no alto
   enquanto se navega pelos grupos, e o título de cada grupo aparece sempre no mesmo lugar, logo abaixo; quando a

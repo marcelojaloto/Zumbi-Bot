@@ -60,30 +60,6 @@ export function mapSelectScreen(host: UiHost): Screen {
       el('div', { class: 'map-grid' }, ...maps.map(card)),
     );
   }
-  let ng: HTMLElement | null = null;
-  if (prof.save.flags.ngPlus) {
-    const label = () => (prof.save.flags.ngPlusOn ? t('Novo Jogo+: LIGADO') : t('Novo Jogo+: desligado'));
-    const btn = el(
-      'button',
-      {
-        class: `btn small ng-toggle ${prof.save.flags.ngPlusOn ? 'on' : ''}`,
-        data: { nav: '' },
-        onclick: () => {
-          prof.save.flags.ngPlusOn = !prof.save.flags.ngPlusOn;
-          prof.persist();
-          btn.textContent = label();
-          btn.classList.toggle('on', prof.save.flags.ngPlusOn);
-        },
-      },
-      label(),
-    );
-    ng = el(
-      'div',
-      { class: 'ng-row' },
-      btn,
-      el('span', { class: 'muted' }, t('Inimigos +50% vida e +30% dano | pontos e sucata ×1,5')),
-    );
-  }
   // dificuldade à mão na escolha do mapa (Configurações → Jogo também muda)
   const diffRow = el('div', { class: 'diff-row' }, el('span', { class: 'muted' }, t('Dificuldade')));
   const diffBtns = DIFFICULTY_ORDER.map((d) =>
@@ -103,7 +79,7 @@ export function mapSelectScreen(host: UiHost): Screen {
     ),
   );
   diffRow.append(...diffBtns);
-  const e = el('div', { class: 'screen dim' }, el('h2', {}, t('ESCOLHA O MAPA')), diffRow, ng, ...seasons);
+  const e = el('div', { class: 'screen dim' }, el('h2', {}, t('ESCOLHA O MAPA')), diffRow, ...seasons);
   return {
     el: e,
     id: 'maps',

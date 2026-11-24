@@ -813,14 +813,6 @@
     display: none;
   }
 }
-.ng-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
 .btn.ng-toggle.on {
   border-color: #ff3a5a;
   color: #ff8a9a;

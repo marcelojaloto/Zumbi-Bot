@@ -8,6 +8,7 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - **Menus:** os botões ficam um embaixo do outro, todos do mesmo tamanho. O título ZUMBI BOT e o status do jogador
   ficam parados no alto enquanto se navega, e o título de cada grupo aparece sempre no mesmo lugar, logo abaixo; quando
   a lista não cabe, só ela rola.
+- O **Novo Jogo+** sai da tela de Mapas e vai para o menu **Jogar**.
 
 ## 1.7, atualização de 23/11/2026
 

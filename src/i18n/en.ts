@@ -160,8 +160,8 @@ export const EN: Record<string, string> = {
   'Recorde: {n}': 'Best: {n}',
   'Novo Jogo+: LIGADO': 'New Game+: ON',
   'Novo Jogo+: desligado': 'New Game+: off',
-  'Inimigos +50% vida e +30% dano | pontos e sucata ×1,5':
-    'Enemies +50% health and +30% damage | points and scrap ×1.5',
+  'Novo Jogo+: inimigos +50% vida e +30% dano | pontos e sucata ×1,5':
+    'New Game+: enemies +50% health and +30% damage | points and scrap ×1.5',
   'ESCOLHA O MAPA': 'CHOOSE A MAP',
   PAUSA: 'PAUSED',
   Continuar: 'Resume',

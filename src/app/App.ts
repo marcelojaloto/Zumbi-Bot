@@ -704,12 +704,18 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
   }
 
   /** Submenu do menu principal (mesmo visual, com a seta de voltar). */
-  private menuGroup(id: string, title: string, items: HTMLElement[]): void {
+  private menuGroup(id: string, title: string, items: HTMLElement[], note?: string): void {
     const e = el(
       'div',
       { class: 'screen menu-group' },
       this.menuHead(),
-      el('div', { class: 'menu-body' }, el('h2', {}, title), el('div', { class: 'menu' }, ...items)),
+      el(
+        'div',
+        { class: 'menu-body' },
+        el('h2', {}, title),
+        el('div', { class: 'menu' }, ...items),
+        note ? el('p', { class: 'muted menu-note' }, note) : null,
+      ),
     );
     this.screens.push({
       el: e,
@@ -724,12 +730,34 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
 
   private openPlayMenu(): void {
     const cont = this.continueTarget();
-    this.menuGroup('menu-play', t('JOGAR'), [
+    const items = [
       iconBtn('▶️', this.continueLabel(cont), () => this.openLobby(cont.mapId, cont.levelIdx), 'btn primary'),
       iconBtn('🌐', t('Jogar online'), () => this.openOnline()),
       iconBtn('🗺️', t('Mapas'), () => this.screens.push(mapSelectScreen(this))),
       iconBtn('🦸', t('Personagens'), () => this.screens.push(charactersScreen(this))),
-    ]);
+    ];
+    const f = this.profile.save.flags;
+    if (f.ngPlus) {
+      const label = () => (f.ngPlusOn ? t('Novo Jogo+: LIGADO') : t('Novo Jogo+: desligado'));
+      const ng: HTMLButtonElement = iconBtn(
+        '➕',
+        label(),
+        () => {
+          f.ngPlusOn = !f.ngPlusOn;
+          this.profile.persist();
+          ng.lastElementChild!.textContent = label();
+          ng.classList.toggle('on', f.ngPlusOn);
+        },
+        `btn ng-toggle ${f.ngPlusOn ? 'on' : ''}`,
+      );
+      items.push(ng);
+    }
+    this.menuGroup(
+      'menu-play',
+      t('JOGAR'),
+      items,
+      f.ngPlus ? t('Novo Jogo+: inimigos +50% vida e +30% dano | pontos e sucata ×1,5') : undefined,
+    );
   }
 
   private openCustomMenu(): void {
