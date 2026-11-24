@@ -3,6 +3,12 @@
 O que mudou em cada versão do Zumbi Bot, da mais nova para a mais antiga. No app Android, o último número da
 versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter várias builds.
 
+## 1.7, atualização de 23/11/2026
+
+- Os apps de Android e iPhone passam a usar o identificador `br.com.jalotosoftware.zumbibot`, da Jaloto Software,
+  que os publica nas lojas. O APK baixado do GitHub vira outro app: desinstale o antigo, cujo progresso não passa
+  para o novo.
+
 ## 1.7 (12/11/2026)
 
 ### 2ª temporada

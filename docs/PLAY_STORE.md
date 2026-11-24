@@ -141,7 +141,7 @@ A primeira revisão costuma levar alguns dias.
 
 ## Detalhes técnicos
 
-- Identificador do app (não pode mudar depois de publicado): `io.github.marcelojaloto.zumbibot`.
+- Identificador do app (não pode mudar depois de publicado): `br.com.jalotosoftware.zumbibot`.
 - Build do jogo para o app: `npm run build:app` (gera `dist-app/`, servido na raiz do WebView). Copiar para o projeto
   Android: `npm run android:sync`. Com o Android Studio instalado, `npx cap open android` abre o projeto.
 - O código exclusivo do app fica atrás da constante `__NATIVE__`, que é `false` no build do site e some dele.

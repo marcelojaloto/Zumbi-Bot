@@ -1,4 +1,4 @@
-package io.github.marcelojaloto.zumbibot;
+package br.com.jalotosoftware.zumbibot;
 
 import android.os.Bundle;
 import android.view.WindowManager;

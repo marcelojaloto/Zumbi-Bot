@@ -90,7 +90,7 @@ jobs:
           xcrun simctl boot "$UDID"
           xcrun simctl bootstatus "$UDID" -b
           xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/App.app
-          xcrun simctl launch "$UDID" io.github.marcelojaloto.zumbibot
+          xcrun simctl launch "$UDID" br.com.jalotosoftware.zumbibot
           sleep 45
           xcrun simctl io "$UDID" screenshot ../../out/simulador.png
           # o app continua aberto (não fechou por erro)
@@ -189,7 +189,7 @@ jobs:
             <key>teamID</key><string>$TEAM_ID</string>
             <key>signingStyle</key><string>manual</string>
             <key>provisioningProfiles</key><dict>
-              <key>io.github.marcelojaloto.zumbibot</key><string>$PROFILE_NAME</string>
+              <key>br.com.jalotosoftware.zumbibot</key><string>$PROFILE_NAME</string>
             </dict>
           </dict></plist>
           EOF

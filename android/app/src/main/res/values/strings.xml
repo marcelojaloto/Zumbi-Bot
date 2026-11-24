@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Zumbi Bot</string>
     <string name="title_activity_main">Zumbi Bot</string>
-    <string name="package_name">io.github.marcelojaloto.zumbibot</string>
-    <string name="custom_url_scheme">io.github.marcelojaloto.zumbibot</string>
+    <string name="package_name">br.com.jalotosoftware.zumbibot</string>
+    <string name="custom_url_scheme">br.com.jalotosoftware.zumbibot</string>
 </resources>

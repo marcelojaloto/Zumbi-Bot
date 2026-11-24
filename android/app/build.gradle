@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "io.github.marcelojaloto.zumbibot"
+    namespace = "br.com.jalotosoftware.zumbibot"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "io.github.marcelojaloto.zumbibot"
+        applicationId "br.com.jalotosoftware.zumbibot"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         // no CI: VERSION_CODE = número da execução + BUILD_OFFSET (sempre crescente, exigido pela Play Store)

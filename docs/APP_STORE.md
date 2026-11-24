@@ -32,7 +32,7 @@ A cada PR e a cada atualização da `main`, o workflow **iOS**:
 Em https://developer.apple.com/account/resources/identifiers > **+** > **App IDs** > **App**:
 
 - Descrição: `Zumbi Bot`
-- Bundle ID (explícito): `io.github.marcelojaloto.zumbibot` (o mesmo do app Android)
+- Bundle ID (explícito): `br.com.jalotosoftware.zumbibot` (o mesmo do app Android)
 - Em **Capabilities**, marque **Declared Age Range**: é como o chat de voz pergunta à App Store se quem joga tem 18
   anos ou mais (iOS 26 ou mais novo). Se o App ID já existir, edite, marque e salve; depois gere de novo o perfil do
   passo 5 e troque o segredo `APPLE_PROVISIONING_PROFILE_BASE64`. Só então o projeto pode ganhar o entitlement
@@ -150,7 +150,7 @@ versão, escolha o build e envie para a revisão.
 
 ## Detalhes técnicos
 
-- Identificador do app: `io.github.marcelojaloto.zumbibot` (não pode mudar depois de publicado).
+- Identificador do app: `br.com.jalotosoftware.zumbibot` (não pode mudar depois de publicado).
 - Projeto Xcode em `ios/` (Swift Package Manager, iOS 15 ou mais novo). Copiar o jogo para ele: `npm run ios:sync`.
   Num Mac: `npx cap open ios` abre o projeto no Xcode.
 - Ícone e tela de abertura: `npm run ios:assets` (desenha o robô do ícone; o ícone sai sem transparência, como a App
