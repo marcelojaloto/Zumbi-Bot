@@ -1,17 +1,17 @@
 import type { EnvCtx } from '../builder';
 import { pine, rock, silhouetteRow } from '../props';
 
-const BARK = 0x3a2a1c;
-const BARK_DARK = 0x2a1e14;
-const MOSS = 0x2e4a22;
-const FERN = [0x1e3a20, 0x24442a, 0x1a3020];
+const BARK = 0x6a4a2c;
+const BARK_DARK = 0x5a3e24;
+const MOSS = 0x4e8a3a;
+const FERN = [0x3a7a3a, 0x4a8a44, 0x34703a];
 const PINES: [number, number][] = [
-  [0x1f3c2a, 0x15291d],
-  [0x24422e, 0x1a3222],
-  [0x1a3426, 0x112419],
+  [0x3e8a4a, 0x2e6e3a],
+  [0x4a9a52, 0x3a7e44],
+  [0x34804a, 0x266238],
 ];
 const SHROOMS = [0x5affe0, 0x9aff5a, 0x7ad8ff];
-const WATER = 0x0b2a26;
+const WATER = 0x2a6a5a;
 
 /** Tufo de cogumelos luminosos (com luz ocasional). */
 function mushrooms(ctx: EnvCtx, x: number, z: number, n: number, light: boolean): void {
@@ -63,11 +63,11 @@ function fern(ctx: EnvCtx, x: number, z: number, s = 1): void {
   }
 }
 
-/** Poça de pântano escura e brilhante, com juncos e vitórias-régias. */
+/** Poça de pântano brilhante, com juncos e vitórias-régias. */
 function pool(ctx: EnvCtx, x: number, z: number, r: number, reeds = true): void {
   const { p, rng } = ctx;
   p.cyl(x, 0.012, z, r, r, 0.02, WATER, 14, { glow: 0.55 });
-  p.cyl(x + r * 0.15, 0.018, z - r * 0.1, r * 0.6, r * 0.6, 0.012, 0x123a34, 12, { glow: 0.5 });
+  p.cyl(x + r * 0.15, 0.018, z - r * 0.1, r * 0.6, r * 0.6, 0.012, 0x3a8a7a, 12, { glow: 0.5 });
   p.box(x - r * 0.2, 0.026, z + r * 0.15, r * 0.9, 0.01, 0.05, 0x5ac8b0, { glow: 0.4 });
   for (let i = 0; i < Math.round(r * 2); i++)
     p.cyl(
@@ -92,7 +92,7 @@ function pool(ctx: EnvCtx, x: number, z: number, r: number, reeds = true): void 
   }
 }
 
-/** Floresta escura: pinheiros densos, troncos caídos, rochas, cogumelos luminosos e poças de pântano. */
+/** Floresta de dia: pinheiros densos, troncos caídos, rochas, cogumelos luminosos e poças de pântano. */
 export function florestaTheme(ctx: EnvCtx): void {
   const { p, rng } = ctx;
   const [z0, z1] = ctx.zBand;
@@ -164,7 +164,7 @@ export function florestaTheme(ctx: EnvCtx): void {
     pine(p, rng, x, rng.range(-13, -9), rng.range(1.2, 1.7), c1, c2);
   }
   for (let x = ctx.x0; x < ctx.x1; x += rng.range(2.6, 4.2)) {
-    pine(p, rng, x, rng.range(-20, -14), rng.range(1.5, 2.1), 0x183022, 0x10221a);
+    pine(p, rng, x, rng.range(-20, -14), rng.range(1.5, 2.1), 0x3a7a4e, 0x2e6a42);
   }
   // troncos altos sem copa à vista (dão profundidade entre os pinheiros)
   for (let i = 0; i < ctx.dense(40); i++) {
@@ -173,16 +173,16 @@ export function florestaTheme(ctx: EnvCtx): void {
     p.cyl(tx, 6, tz, 0.18, 0.3, 12, BARK_DARK, 6);
   }
 
-  // feixes de luar entre as árvores (tênues, ao fundo)
+  // feixes de sol entre as árvores (tênues, ao fundo)
   for (let x = ctx.x0 + rng.range(4, 12); x < ctx.x1; x += rng.range(16, 28)) {
     const tilt = rng.range(0.22, 0.34);
     const z = rng.range(-15, -12.5);
     for (let k = 0; k < 3; k++)
-      p.box(x + k * rng.range(0.7, 1.3), 7, z - k * 0.3, rng.range(0.12, 0.35), 16, 0.03, 0xa0ffd8, {
+      p.box(x + k * rng.range(0.7, 1.3), 7, z - k * 0.3, rng.range(0.12, 0.35), 16, 0.03, 0xfff4c0, {
         glow: rng.range(0.07, 0.12),
         rot: [0, 0, tilt],
       });
-    ctx.light(x - 2, 1.2, z + 5, 0xa0ffd8, 3, 9, 0);
+    ctx.light(x - 2, 1.2, z + 5, 0xfff4c0, 3, 9, 0);
   }
 
   // vaga-lumes parados em volta dos arbustos
@@ -193,9 +193,9 @@ export function florestaTheme(ctx: EnvCtx): void {
   }
 
   // silhuetas distantes
-  silhouetteRow(ctx, -26, 0x0d1a13, 7, 13, 2.6, 'trees');
-  silhouetteRow(ctx, -36, 0x0b1611, 9, 16, 3.2, 'trees');
-  silhouetteRow(ctx, -52, 0x09120e, 10, 22, 18, 'hills');
+  silhouetteRow(ctx, -26, 0x3a7a4a, 7, 13, 2.6, 'trees');
+  silhouetteRow(ctx, -36, 0x4a8a5a, 9, 16, 3.2, 'trees');
+  silhouetteRow(ctx, -52, 0x7aa08a, 10, 22, 18, 'hills');
 
   // frente: samambaias, pedrinhas, troncos baixos
   for (let i = 0; i < ctx.dense(40); i++)
@@ -208,6 +208,6 @@ export function florestaTheme(ctx: EnvCtx): void {
   // primeiro plano distante: troncos que passam rente à câmera (sem sombra)
   for (let x = ctx.x0 + rng.range(8, 16); x < ctx.x1; x += rng.range(36, 50)) {
     const r = rng.range(0.1, 0.13);
-    p.cyl(x, 6, rng.range(6.4, 7), r * 0.8, r, 12, 0x140f0a, 6, { noShadow: true });
+    p.cyl(x, 6, rng.range(6.4, 7), r * 0.8, r, 12, 0x5a3e24, 6, { noShadow: true });
   }
 }

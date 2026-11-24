@@ -1,19 +1,22 @@
 import type { Rng } from '../../../core/rng';
 import type { HazardPlacement } from '../../../data/types';
 import type { EnvCtx, Pieces } from '../builder';
+import { Spots } from '../props';
 
-const STONE = 0x4a4452;
-const STONE_D = 0x2e2934;
-const STONE_L = 0x5e5868;
+const STONE = 0xd8c8a8;
+const STONE_D = 0xb4a282;
+const STONE_L = 0xeadfc4;
 const GOLD = 0xc8a04a;
-const CARPET = 0x6e0f1a;
+const CARPET = 0xc0283a;
 const CANDLE = 0xffcc88;
 const WAX = 0xe8dcc0;
-const IRON = 0x24222a;
+const IRON = 0x5a4a3a;
 const STEEL = 0x8a8e9a;
-const WOOD = 0x3a2218;
+const WOOD = 0x8a5a32;
 const GLASS = [0xff3a5a, 0x4a6aff, 0xa04aff, 0xffb03a, 0x3affa0, 0xff5ad0, 0x5ad8ff];
 const WALL_Z = -9;
+const BOOKS = [0xc0283a, 0x3a6ad0, 0x3e9a48, 0xffb02a, 0x8a4ac0];
+const FLOWERS = [0xff6b9a, 0xffd23a, 0xffffff, 0xb06aff];
 
 /** Todos os perigos do nível (segmentos + nível), para decorar os pontos de perigo. */
 function levelHazards(ctx: EnvCtx): HazardPlacement[] {
@@ -41,7 +44,7 @@ function candelabra(ctx: EnvCtx, x: number, z: number, lit = true): void {
   if (lit) ctx.light(x, 1.95, z + 0.6, CANDLE, 7, 8, 0.55);
 }
 
-/** Armadura de cavaleiro sobre pedestal (olhos apagados, alabarda). */
+/** Armadura de cavaleiro sobre pedestal, com alabarda. */
 function armor(p: Pieces, rng: Rng, x: number, z: number): void {
   const s = rng.range(0.95, 1.08);
   p.box(x, 0.16, z, 0.95, 0.32, 0.75, STONE_L);
@@ -68,7 +71,7 @@ function armor(p: Pieces, rng: Rng, x: number, z: number): void {
   p.box(x, y0 + 1.78 * s, z, 0.28, 0.32, 0.3, 0x9a9eaa);
   p.box(x, y0 + 1.8 * s, z + 0.152, 0.22, 0.04, 0.02, 0x0c0a10);
   p.box(x, y0 + 1.7 * s, z + 0.152, 0.03, 0.14, 0.02, 0x0c0a10);
-  p.cone(x, y0 + 2.02 * s, z - 0.02, 0.08, 0.2, 0x7a1422, 5);
+  p.cone(x, y0 + 2.02 * s, z - 0.02, 0.08, 0.2, 0x3a6ad0, 5);
   // alabarda
   const hx = x + 0.48;
   p.cyl(hx, 1.35, z + 0.05, 0.025, 0.025, 2.6, WOOD, 5);
@@ -76,30 +79,41 @@ function armor(p: Pieces, rng: Rng, x: number, z: number): void {
   p.cone(hx, 2.75, z + 0.05, 0.04, 0.2, 0xa8acb8, 4);
 }
 
-/** Caixão deitado ao longo de X (ou em pé, encostado na parede). */
-function coffin(p: Pieces, rng: Rng, x: number, z: number, standing: boolean): void {
-  const tone = rng.pick([WOOD, 0x2a1810, 0x3a2a24, 0x1e1418]);
+/** Baú do tesouro (deitado) ou estante de livros (em pé, encostada na parede). */
+function chestOrShelf(p: Pieces, rng: Rng, x: number, z: number, standing: boolean): void {
   if (standing) {
-    const tilt = rng.range(-0.08, 0.08);
-    p.box(x, 1.02, z, 0.66, 2.0, 0.4, tone, { rot: [0.06, 0, tilt] });
-    p.box(x, 1.02, z + 0.2, 0.7, 2.04, 0.05, 0x1a100c, { rot: [0.06, 0, tilt] });
-    p.box(x, 1.25, z + 0.24, 0.06, 0.8, 0.02, GOLD, { rot: [0.06, 0, tilt] });
-    p.box(x, 1.4, z + 0.24, 0.36, 0.06, 0.02, GOLD, { rot: [0.06, 0, tilt] });
+    p.box(x, 1.0, z, 1.1, 2.0, 0.4, WOOD);
+    for (let r = 0; r < 4; r++) {
+      const y = 0.3 + r * 0.48;
+      p.box(x, y, z + 0.12, 1.0, 0.04, 0.3, 0x6a4426);
+      for (let bx = x - 0.42; bx < x + 0.44; bx += rng.range(0.1, 0.16))
+        p.box(bx, y + 0.18, z + 0.1, 0.08, rng.range(0.26, 0.34), 0.24, rng.pick(BOOKS));
+    }
     return;
   }
   const rot = rng.range(-0.25, 0.25);
-  p.box(x, 0.2, z, 1.9, 0.38, 0.6, tone, { rot: [0, rot, 0] });
-  const open = rng.chance(0.3);
-  if (open) {
-    p.box(x, 0.2, z, 1.8, 0.34, 0.5, 0x0c080a, { rot: [0, rot, 0] });
-    p.box(x + 0.3, 0.18, z + 0.55, 1.9, 0.06, 0.62, 0x1a100c, { rot: [0.35, rot, 0] });
-  } else {
-    p.box(x, 0.42, z, 1.94, 0.06, 0.64, 0x1a100c, { rot: [0, rot, 0] });
-    p.box(x, 0.46, z, 0.8, 0.02, 0.06, GOLD, { rot: [0, rot, 0] });
-    p.box(x - 0.2 * Math.cos(rot), 0.46, z + 0.2 * Math.sin(rot), 0.06, 0.02, 0.34, GOLD, {
-      rot: [0, rot, 0],
-    });
-  }
+  p.box(x, 0.25, z, 1.1, 0.5, 0.7, rng.pick([WOOD, 0x9a6a3a, 0xa8743e]), { rot: [0, rot, 0] });
+  p.cyl(x, 0.5, z, 0.35, 0.35, 1.1, 0xb07a42, 8, { rot: [0, rot, Math.PI / 2] });
+  p.box(x, 0.35, z, 1.14, 0.08, 0.74, GOLD, { rot: [0, rot, 0] });
+  p.box(x + 0.35 * Math.sin(rot), 0.4, z + 0.36 * Math.cos(rot), 0.14, 0.16, 0.04, GOLD, {
+    rot: [0, rot, 0],
+  });
+}
+
+/** Vaso de flores sobre o chão do salão. */
+function flowerVase(p: Pieces, rng: Rng, x: number, z: number): void {
+  p.cyl(x, 0.2, z, 0.16, 0.12, 0.4, rng.pick([0x3a6ad0, 0xf4f0e8, GOLD]), 8, { noShadow: true });
+  for (let k = 0; k < 4; k++)
+    p.sphere(
+      x + rng.range(-0.12, 0.12),
+      0.48 + rng.range(0, 0.12),
+      z + rng.range(-0.1, 0.1),
+      0.08,
+      rng.pick(FLOWERS),
+      {
+        noShadow: true,
+      },
+    );
 }
 
 /** Vitral gótico com moldura de chumbo e ponta de arco. */
@@ -111,8 +125,8 @@ function stainedGlass(ctx: EnvCtx, x: number): void {
   // nicho e moldura
   p.box(x, 3.0, z, 2.3, 3.6, 0.08, STONE_D);
   p.box(x, 4.6, z, 1.7, 1.7, 0.08, STONE_D, { rot: [0, 0, Math.PI / 4] });
-  p.box(x, 2.95, z + 0.05, 1.8, 3.1, 0.04, 0x120e16);
-  p.box(x, 4.45, z + 0.05, 1.3, 1.3, 0.04, 0x120e16, { rot: [0, 0, Math.PI / 4] });
+  p.box(x, 2.95, z + 0.05, 1.8, 3.1, 0.04, 0x6a5a46);
+  p.box(x, 4.45, z + 0.05, 1.3, 1.3, 0.04, 0x6a5a46, { rot: [0, 0, Math.PI / 4] });
   // painéis coloridos
   for (let r = 0; r < 5; r++)
     for (let c = 0; c < 3; c++) {
@@ -131,16 +145,16 @@ function stainedGlass(ctx: EnvCtx, x: number): void {
   p.box(x, 1.32, z + 0.18, 2.1, 0.14, 0.36, STONE_L);
 }
 
-/** Estandarte vermelho com emblema dourado. */
+/** Estandarte azul com emblema dourado. */
 function banner(p: Pieces, x: number): void {
   const z = WALL_Z + 0.12;
   p.box(x, 4.6, z, 1.2, 0.08, 0.08, IRON);
-  p.box(x, 3.3, z, 0.95, 2.6, 0.04, 0x5a0c16);
-  p.box(x, 3.3, z + 0.03, 0.8, 2.4, 0.02, 0x7a1422);
+  p.box(x, 3.3, z, 0.95, 2.6, 0.04, 0x24489a);
+  p.box(x, 3.3, z + 0.03, 0.8, 2.4, 0.02, 0x3a6ad0);
   p.box(x, 3.6, z + 0.05, 0.36, 0.36, 0.02, GOLD, { rot: [0, 0, Math.PI / 4] });
-  p.box(x, 3.6, z + 0.06, 0.16, 0.16, 0.02, 0x2a0c14, { rot: [0, 0, Math.PI / 4] });
-  p.cone(x - 0.24, 1.9, z, 0.24, 0.3, 0x7a1422, 3, { rot: [Math.PI, 0, 0] });
-  p.cone(x + 0.24, 1.9, z, 0.24, 0.3, 0x7a1422, 3, { rot: [Math.PI, 0, 0] });
+  p.box(x, 3.6, z + 0.06, 0.16, 0.16, 0.02, 0xffffff, { rot: [0, 0, Math.PI / 4] });
+  p.cone(x - 0.24, 1.9, z, 0.24, 0.3, 0x3a6ad0, 3, { rot: [Math.PI, 0, 0] });
+  p.cone(x + 0.24, 1.9, z, 0.24, 0.3, 0x3a6ad0, 3, { rot: [Math.PI, 0, 0] });
 }
 
 /** Lustre pendurado (acima da ação) com velas e luz. */
@@ -179,7 +193,13 @@ export function casteloTheme(ctx: EnvCtx): void {
   const { p, rng } = ctx;
   const [z0, z1] = ctx.zBand;
   const cz = (z0 + z1) / 2;
-  ctx.wall = { kind: 'stone', c1: 0x4a4352, c2: 0x2c2632, z: WALL_Z, h: 14 };
+  ctx.wall = { kind: 'stone', c1: 0xe2d4b6, c2: 0xc8b692, z: WALL_Z, h: 14 };
+  // enfeites não se atravessam nem entram no trono ou nos mecanismos dos pêndulos
+  const spots = new Spots();
+  const b = ctx.level.boss;
+  const tx = b ? (b.lock[0] + b.lock[1]) / 2 + 2 : NaN;
+  if (b) spots.block(tx, -7, 5.3, 1.8);
+  for (const h of levelHazards(ctx)) if (h.kind === 'pendulum') spots.block(h.x, z0 - 1.1, 0.6, 0.6);
 
   // tapete vermelho no centro do caminho, com bordas douradas
   for (let x = ctx.x0; x < ctx.x1; x += 4) {
@@ -189,13 +209,13 @@ export function casteloTheme(ctx: EnvCtx): void {
   }
   // meio-fio de pedra que marca o salão (fundo e frente)
   for (let x = ctx.x0; x < ctx.x1; x += 1.6) {
-    const c = rng.pick([STONE, STONE_L, 0x524c5a]);
+    const c = rng.pick([STONE, STONE_L, 0xcebd9a]);
     p.box(x, 0.09, z0 - 1.0, 1.55, 0.18, 0.5, c, { noShadow: true, jitter: 0.08 });
     p.box(x, 0.07, z1 + 1.2, 1.55, 0.14, 0.45, c, { noShadow: true, jitter: 0.08 });
   }
   // rodapé da parede
   for (let x = ctx.x0; x < ctx.x1; x += 2.4)
-    p.box(x, 0.3, WALL_Z + 0.2, 2.35, 0.6, 0.4, rng.pick([STONE_D, 0x36303e]), { jitter: 0.1 });
+    p.box(x, 0.3, WALL_Z + 0.2, 2.35, 0.6, 0.4, rng.pick([STONE_D, 0xc0ae8c]), { jitter: 0.1 });
 
   // baias: pilastras, vitrais, estandartes
   let bay = 0;
@@ -206,33 +226,81 @@ export function casteloTheme(ctx: EnvCtx): void {
     else stainedGlass(ctx, mid);
   }
 
-  // fileira do fundo: armaduras, candelabros e caixões
+  // fileira do fundo: armaduras, candelabros, estantes e baús
   for (let x = ctx.x0 + 2; x < ctx.x1; x += 12) {
-    armor(p, rng, x + rng.range(-0.4, 0.4), -6.6);
-    candelabra(ctx, x + 4.5, -5.2);
-    if (rng.chance(0.65)) coffin(p, rng, x + 8.5, -7.9, true);
-    else coffin(p, rng, x + 8.5, -6.4, false);
+    const ax = x + rng.range(-0.4, 0.4);
+    if (spots.take(ax, -6.6, 0.6, 0.4)) armor(p, rng, ax, -6.6);
+    if (spots.take(x + 4.5, -5.2, 0.4, 0.35)) candelabra(ctx, x + 4.5, -5.2);
+    if (rng.chance(0.65)) {
+      if (spots.take(x + 8.5, -7.9, 0.6, 0.25)) chestOrShelf(p, rng, x + 8.5, -7.9, true);
+    } else if (spots.take(x + 8.5, -6.4, 0.7, 0.55)) chestOrShelf(p, rng, x + 8.5, -6.4, false);
   }
+  /** Tenta algumas posições até achar uma livre. */
+  const place = (
+    pick: () => [number, number],
+    hw: number,
+    hd: number,
+    put: (x: number, z: number) => void,
+  ) => {
+    for (let k = 0; k < 4; k++) {
+      const [x, z] = pick();
+      if (spots.take(x, z, hw, hd)) return put(x, z);
+    }
+  };
   for (let i = 0; i < ctx.dense(10); i++)
-    coffin(p, rng, rng.range(ctx.x0, ctx.x1), rng.range(-6.8, -5.6), false);
+    place(
+      () => [rng.range(ctx.x0, ctx.x1), rng.range(-6.8, -5.6)],
+      0.7,
+      0.55,
+      (x, z) => chestOrShelf(p, rng, x, z, false),
+    );
 
-  // velas no chão e crânios (fundo e primeiro plano, baixos)
-  for (let i = 0; i < ctx.dense(26); i++) {
-    const x = rng.range(ctx.x0, ctx.x1);
-    const z = rng.chance(0.55) ? rng.range(-5.4, z0 - 1.4) : rng.range(z1 + 1.7, z1 + 4);
-    const n = rng.int(2, 5);
-    for (let k = 0; k < n; k++)
-      candle(p, x + rng.range(-0.35, 0.35), 0, z + rng.range(-0.25, 0.25), rng.range(0.1, 0.35), 0.04);
+  // velas e vasos de flores no chão (fundo e primeiro plano, baixos)
+  // (as bases de colunas do primeiro plano vêm antes, para o resto desviar delas)
+  for (let x = ctx.x0 + rng.range(2, 6); x < ctx.x1; x += rng.range(9, 14)) {
+    const z = rng.range(z1 + 2.6, z1 + 3.4);
+    if (!spots.take(x + 0.15, z + 0.1, 0.85, 0.65)) continue;
+    const h = rng.range(0.35, 0.75);
+    p.box(x, 0.12, z, 1.1, 0.24, 1.1, STONE_L);
+    p.cyl(x, 0.24 + h / 2, z, 0.38, 0.42, h, STONE, 8, { rot: [0, 0, rng.range(-0.06, 0.06)] });
+    p.part('ico', [0.22, 0], x + 0.7, 0.12, z + 0.3, STONE, {
+      rot: [rng.next(), rng.next(), 0],
+      noShadow: true,
+    });
+    if (rng.chance(0.6)) candle(p, x + rng.range(-0.15, 0.15), 0.24 + h, z, rng.range(0.12, 0.22), 0.045);
   }
-  for (let i = 0; i < ctx.dense(14); i++) {
-    const x = rng.range(ctx.x0, ctx.x1);
-    const z = rng.chance(0.5) ? rng.range(-6, z0 - 1.5) : rng.range(z1 + 1.8, z1 + 4.5);
-    for (let k = 0; k < rng.int(1, 4); k++)
-      p.sphere(x + rng.range(-0.3, 0.3), 0.1, z + rng.range(-0.2, 0.2), 0.1, 0xd8d0bc, { noShadow: true });
-  }
-  // primeiro plano: caixões baixos e destroços de pedra
+  for (let i = 0; i < ctx.dense(26); i++)
+    place(
+      () => [
+        rng.range(ctx.x0, ctx.x1),
+        rng.chance(0.55) ? rng.range(-5.4, z0 - 1.4) : rng.range(z1 + 1.7, z1 + 4),
+      ],
+      0.4,
+      0.3,
+      (x, z) => {
+        const n = rng.int(2, 5);
+        for (let k = 0; k < n; k++)
+          candle(p, x + rng.range(-0.35, 0.35), 0, z + rng.range(-0.25, 0.25), rng.range(0.1, 0.35), 0.04);
+      },
+    );
+  for (let i = 0; i < ctx.dense(14); i++)
+    place(
+      () => [
+        rng.range(ctx.x0, ctx.x1),
+        rng.chance(0.5) ? rng.range(-6, z0 - 1.5) : rng.range(z1 + 1.8, z1 + 4.5),
+      ],
+      0.25,
+      0.25,
+      (x, z) => flowerVase(p, rng, x, z),
+    );
+  // primeiro plano: baús baixos e pedrinhas
   for (let i = 0; i < ctx.dense(7); i++)
-    coffin(p, rng, rng.range(ctx.x0, ctx.x1), rng.range(z1 + 2.2, z1 + 4.5), false);
+    place(
+      () => [rng.range(ctx.x0, ctx.x1), rng.range(z1 + 2.2, z1 + 4.5)],
+      0.7,
+      0.55,
+      (x, z) => chestOrShelf(p, rng, x, z, false),
+    );
   for (let i = 0; i < ctx.dense(12); i++)
     p.part(
       'ico',
@@ -246,19 +314,6 @@ export function casteloTheme(ctx: EnvCtx): void {
         noShadow: true,
       },
     );
-
-  // primeiro plano: bases de colunas quebradas e castiçais baixos (não tapam a ação)
-  for (let x = ctx.x0 + rng.range(2, 6); x < ctx.x1; x += rng.range(9, 14)) {
-    const z = rng.range(z1 + 2.6, z1 + 3.4);
-    const h = rng.range(0.35, 0.75);
-    p.box(x, 0.12, z, 1.1, 0.24, 1.1, STONE_L);
-    p.cyl(x, 0.24 + h / 2, z, 0.38, 0.42, h, STONE, 8, { rot: [0, 0, rng.range(-0.06, 0.06)] });
-    p.part('ico', [0.22, 0], x + 0.7, 0.12, z + 0.3, STONE, {
-      rot: [rng.next(), rng.next(), 0],
-      noShadow: true,
-    });
-    if (rng.chance(0.6)) candle(p, x + rng.range(-0.15, 0.15), 0.24 + h, z, rng.range(0.12, 0.22), 0.045);
-  }
 
   // lustres sobre o salão (acima da altura dos personagens)
   for (let x = 14; x < ctx.x1 - 10; x += 17) chandelier(ctx, x, -2.8, 4.55);
@@ -286,20 +341,18 @@ export function casteloTheme(ctx: EnvCtx): void {
   }
 
   // sala do trono (arena do chefe)
-  const b = ctx.level.boss;
   if (b) {
-    const tx = (b.lock[0] + b.lock[1]) / 2 + 2;
     // tapete largo e degraus
-    p.box(tx, 0.015, cz, 16, 0.02, 4.2, 0x5a0a14, { noShadow: true });
+    p.box(tx, 0.015, cz, 16, 0.02, 4.2, 0xa8203a, { noShadow: true });
     p.box(tx, 0.18, -6.6, 6, 0.36, 2.6, STONE_L);
     p.box(tx, 0.45, -7.1, 5, 0.3, 2.0, STONE);
     // trono
-    p.box(tx, 1.1, -7.3, 1.8, 1.0, 1.2, 0x3a0c18);
-    p.box(tx, 2.8, -7.9, 1.9, 3.6, 0.35, 0x2a0a14);
-    p.box(tx, 2.8, -7.72, 1.5, 3.2, 0.05, 0x6a1020);
-    p.cone(tx, 5.0, -7.9, 0.75, 1.2, 0x2a0a14, 4, { rot: [0, Math.PI / 4, 0] });
+    p.box(tx, 1.1, -7.3, 1.8, 1.0, 1.2, 0x9a2040);
+    p.box(tx, 2.8, -7.9, 1.9, 3.6, 0.35, 0x7a1a36);
+    p.box(tx, 2.8, -7.72, 1.5, 3.2, 0.05, 0xc83a5a);
+    p.cone(tx, 5.0, -7.9, 0.75, 1.2, 0x7a1a36, 4, { rot: [0, Math.PI / 4, 0] });
     for (const dx of [-1.05, 1.05]) {
-      p.box(tx + dx, 1.6, -7.3, 0.25, 1.0, 1.3, 0x2a0a14);
+      p.box(tx + dx, 1.6, -7.3, 0.25, 1.0, 1.3, 0x7a1a36);
       p.sphere(tx + dx, 2.15, -6.75, 0.14, GOLD);
       p.cone(tx + dx, 4.9, -7.9, 0.15, 0.9, GOLD, 5);
     }

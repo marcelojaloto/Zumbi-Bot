@@ -125,7 +125,7 @@ export function bunkerTheme(ctx: EnvCtx): void {
     const x = rng.range(ctx.x0, ctx.x1);
     const z = rng.chance(0.5) ? rng.range(-4.6, z0 - 0.5) : rng.range(z1 + 0.6, z1 + 2);
     const r = rng.range(0.3, 0.55);
-    p.cyl(x, 0.004, z, r, r, 0.006, rng.chance(0.5) ? 0x4a0c0c : 0x1a1c18, 8, { noShadow: true });
+    p.cyl(x, 0.004, z, r, r, 0.006, rng.chance(0.5) ? 0x5a4a32 : 0x1a1c18, 8, { noShadow: true });
   }
 
   // sacos de areia e tambores no fundo e no primeiro plano

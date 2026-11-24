@@ -231,7 +231,7 @@ export const abissal = registerBoss({
     },
     {
       untilHpFrac: 0.33,
-      name: 'Maré Vermelha',
+      name: 'Maré Alta',
       speedMult: 1.15,
       damageMult: 1.1,
       idleBetweenS: [0.7, 1.2],
@@ -376,7 +376,7 @@ export const abissal = registerBoss({
         },
         {
           id: 'devora',
-          name: 'Cardume Devorado',
+          name: 'Cardume Agitado',
           weight: 1,
           cooldownS: 30,
           steps: [

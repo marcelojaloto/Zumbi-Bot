@@ -173,8 +173,8 @@ const calor: HitSpec = {
 
 export const artilheiro = registerBoss({
   id: 'artilheiro',
-  name: 'Artilheiro Infernal',
-  title: 'O Camisa 9 do Além',
+  name: 'Artilheiro Flamejante',
+  title: 'O Camisa 9 Imparável',
   family: 'zombie',
   element: 'fire',
   hp: 11400,
@@ -303,7 +303,7 @@ export const artilheiro = registerBoss({
     },
     {
       untilHpFrac: 0,
-      name: 'Prorrogação Infernal',
+      name: 'Prorrogação Flamejante',
       speedMult: 1.2,
       damageMult: 1.15,
       idleBetweenS: [0.6, 1.1],

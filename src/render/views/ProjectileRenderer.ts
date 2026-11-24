@@ -76,7 +76,8 @@ export const PROJ_VISUALS: Record<ProjVisual, VisualCfg> = {
   },
   missile: { geo: 'box', size: [0.55, 0.14, 0.14], color: 0x5a5e66, glow: 0, lit: true, stretch: true },
   blade: { geo: 'box', size: [0.8, 0.05, 0.25], color: 0xc8d0d8, glow: 0, lit: true, spin: 20 },
-  tombstone: { geo: 'box', size: [0.6, 0.9, 0.2], color: 0x7a7a82, glow: 0, lit: true, spin: 4 },
+  // vaso de barro do Jardineiro (o id antigo ficou)
+  tombstone: { geo: 'box', size: [0.6, 0.9, 0.2], color: 0xc8643a, glow: 0, lit: true, spin: 4 },
   plasma: {
     geo: 'sphere',
     size: [0.38, 0.38, 0.38],

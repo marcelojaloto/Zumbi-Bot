@@ -45,17 +45,15 @@ export const PROP_RECIPES: Record<PropKind, MeshRecipe> = {
       { shape: 'cyl', size: [0.4, 0.4, 0.08, 8], pos: [0, 0.96, 0], color: 0x3a4a3a },
     ],
   },
+  // o id ficou, mas na vila virou um vaso alto de flores
   tombstone: {
     parts: [
-      { shape: 'box', size: [0.7, 1.0, 0.2], pos: [0, 0.5, 0], color: 0x7a7a82 },
-      {
-        shape: 'cyl',
-        size: [0.35, 0.35, 0.2, 10],
-        pos: [0, 1.0, 0],
-        rot: [Math.PI / 2, 0, 0],
-        color: 0x7a7a82,
-      },
-      { shape: 'box', size: [0.4, 0.06, 0.02], pos: [0, 0.8, 0.11], color: 0x3a3a42 },
+      { shape: 'cyl', size: [0.36, 0.28, 0.7, 10], pos: [0, 0.35, 0], color: 0xc8643a },
+      { shape: 'cyl', size: [0.4, 0.4, 0.1, 10], pos: [0, 0.72, 0], color: 0xb0522e },
+      { shape: 'sphere', size: [0.3, 7, 5], pos: [0, 0.85, 0], color: 0x4e9a44 },
+      { shape: 'sphere', size: [0.1, 7, 5], pos: [-0.15, 1.05, 0.12], color: 0xff6b9a },
+      { shape: 'sphere', size: [0.1, 7, 5], pos: [0.14, 1.08, 0.08], color: 0xffd23a },
+      { shape: 'sphere', size: [0.1, 7, 5], pos: [0, 1.12, -0.1], color: 0xffffff },
     ],
   },
   atm: {

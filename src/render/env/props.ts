@@ -39,28 +39,80 @@ export function rock(p: Pieces, rng: Rng, x: number, z: number, s = 1, color = 0
   });
 }
 
-export function deadTree(p: Pieces, rng: Rng, x: number, z: number, s = 1, color = 0x2a221c): void {
-  const h = rng.range(3.5, 6) * s;
-  p.cyl(x, h / 2, z, 0.12 * s, 0.28 * s, h, color, 6);
-  const branches = rng.int(3, 6);
-  for (let i = 0; i < branches; i++) {
-    const by = h * rng.range(0.45, 0.95);
-    const len = rng.range(0.8, 2.2) * s;
-    const a = rng.range(0, Math.PI * 2);
-    const tilt = rng.range(0.5, 1.2);
-    p.cyl(
-      x + Math.cos(a) * len * 0.35,
-      by + len * 0.2,
-      z + Math.sin(a) * len * 0.35,
-      0.03 * s,
-      0.08 * s,
-      len,
-      color,
-      4,
-      {
-        rot: [Math.sin(a) * tilt, 0, -Math.cos(a) * tilt],
-      },
-    );
+const LEAVES = [0x4caf50, 0x66bb4a, 0x3e9a48, 0x8bc34a];
+const PETALS = [0xff6b9a, 0xffd23a, 0xff8a3a, 0xb06aff, 0xffffff, 0x5ab0ff];
+
+/** Árvore frondosa de copa redonda, às vezes com frutinhas. */
+export function leafyTree(p: Pieces, rng: Rng, x: number, z: number, s = 1): void {
+  const h = rng.range(2.2, 3.2) * s;
+  p.cyl(x, h / 2, z, 0.14 * s, 0.24 * s, h, 0x7a5232, 6);
+  const c = rng.pick(LEAVES);
+  p.sphere(x, h + 0.6 * s, z, 1.25 * s, c, { jitter: 0.1 });
+  p.sphere(x - 0.7 * s, h + 0.2 * s, z + 0.2, 0.85 * s, rng.pick(LEAVES), { jitter: 0.1 });
+  p.sphere(x + 0.75 * s, h + 0.3 * s, z - 0.1, 0.9 * s, rng.pick(LEAVES), { jitter: 0.1 });
+  if (rng.chance(0.4)) {
+    const fruit = rng.pick([0xff4a3a, 0xffb02a, 0xffe04a]);
+    for (let i = 0; i < 5; i++) {
+      const a = rng.range(0, Math.PI * 2);
+      p.sphere(
+        x + Math.cos(a) * 1.1 * s,
+        h + rng.range(0.1, 1) * s,
+        z + 0.5 + Math.sin(a) * 0.4,
+        0.1 * s,
+        fruit,
+      );
+    }
+  }
+}
+
+/** Canteiro de flores coloridas (baixo: pode ficar perto da pista). */
+export function flowerBed(p: Pieces, rng: Rng, x: number, z: number, w = 1.6, d = 0.7): void {
+  p.box(x, 0.06, z, w, 0.12, d, 0x6a4a2e, { noShadow: true });
+  const n = Math.max(3, Math.round(w * d * 8));
+  for (let i = 0; i < n; i++) {
+    const fx = x + rng.range(-w / 2 + 0.1, w / 2 - 0.1);
+    const fz = z + rng.range(-d / 2 + 0.08, d / 2 - 0.08);
+    const h = rng.range(0.18, 0.4);
+    p.box(fx, 0.12 + h / 2, fz, 0.03, h, 0.03, 0x3e8a3a, { noShadow: true });
+    p.sphere(fx, 0.14 + h, fz, rng.range(0.06, 0.1), rng.pick(PETALS), { noShadow: true });
+  }
+}
+
+/** Varal de bandeirinhas entre dois pontos na mesma profundidade. */
+export function bunting(p: Pieces, rng: Rng, x0: number, x1: number, y: number, z: number): void {
+  const at = (x: number) => y - Math.sin(((x - x0) / (x1 - x0)) * Math.PI) * 0.35;
+  const n = Math.max(2, Math.round((x1 - x0) / 0.45));
+  for (let i = 0; i < n; i++) {
+    const a = x0 + ((x1 - x0) * i) / n;
+    const b = x0 + ((x1 - x0) * (i + 1)) / n;
+    const dy = at(b) - at(a);
+    p.box((a + b) / 2, (at(a) + at(b)) / 2, z, Math.hypot(b - a, dy) + 0.01, 0.02, 0.02, 0xf0e8d8, {
+      rot: [0, 0, Math.atan2(dy, b - a)],
+      noShadow: true,
+    });
+    if (i > 0)
+      p.cone(a, at(a) - 0.14, z, 0.13, 0.28, rng.pick(PETALS), 3, { rot: [Math.PI, 0, 0], noShadow: true });
+  }
+}
+
+/** Retângulos já ocupados no chão (x, z), para os enfeites não se atravessarem. */
+export class Spots {
+  private taken: [number, number, number, number][] = [];
+
+  free(x: number, z: number, hw: number, hd: number): boolean {
+    return !this.taken.some(([a, b, c, d]) => x + hw > a && x - hw < b && z + hd > c && z - hd < d);
+  }
+
+  /** Ocupa a área se estiver livre; diz se ocupou. */
+  take(x: number, z: number, hw: number, hd: number): boolean {
+    if (!this.free(x, z, hw, hd)) return false;
+    this.block(x, z, hw, hd);
+    return true;
+  }
+
+  /** Ocupa a área de qualquer jeito (casas, cercas, o trono). */
+  block(x: number, z: number, hw: number, hd: number): void {
+    this.taken.push([x - hw, x + hw, z - hd, z + hd]);
   }
 }
 
@@ -83,21 +135,6 @@ export function fence(p: Pieces, x0: number, x1: number, z: number, color = 0x3a
   }
   p.box((x0 + x1) / 2, 0.8, z, x1 - x0, 0.08, 0.05, color);
   p.box((x0 + x1) / 2, 0.4, z, x1 - x0, 0.08, 0.05, color);
-}
-
-export function grave(p: Pieces, rng: Rng, x: number, z: number, color = 0x6a6a72): void {
-  const kind = rng.int(0, 2);
-  const tilt = rng.range(-0.2, 0.2);
-  if (kind === 0) {
-    p.box(x, 0.45, z, 0.55, 0.9, 0.14, color, { rot: [0, 0, tilt] });
-    p.cyl(x, 0.9, z, 0.275, 0.275, 0.14, color, 8, { rot: [Math.PI / 2, 0, tilt] });
-  } else if (kind === 1) {
-    p.box(x, 0.6, z, 0.12, 1.2, 0.12, color, { rot: [0, 0, tilt] });
-    p.box(x, 0.85, z, 0.6, 0.12, 0.12, color, { rot: [0, 0, tilt] });
-  } else {
-    p.box(x, 0.3, z, 0.7, 0.6, 0.2, color, { rot: [0, 0, tilt] });
-  }
-  p.box(x, 0.03, z + 0.5, 0.7, 0.06, 1.1, 0x2a2420, { noShadow: true });
 }
 
 /** Casa simples com telhado de duas águas e janelas iluminadas. */

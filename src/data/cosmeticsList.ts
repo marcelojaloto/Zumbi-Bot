@@ -209,15 +209,15 @@ export const COSMETIC_LIST: CosmeticDef[] = [
     { shape: 'cyl', size: [0.2, 0.23, 0.36, 10], pos: [0, 0.02, 0], color: 0x8a8e96 },
     { shape: 'torus', size: [0.12, 0.012, 4, 10], pos: [0, 0.22, 0], rot: [0, 0, H], color: 0x5a5e66 },
   ]),
-  c('brain_exposed', 'Cérebro à Mostra', 'head', 'zombie', 'epic', [
-    { shape: 'sphere', size: [0.17, 8, 6], pos: [0, 0.04, 0], color: 0xd87a8a },
-    { shape: 'torus', size: [0.08, 0.03, 4, 8], pos: [0.05, 0.1, 0.02], rot: [0.3, 0.5, 0], color: 0xc86a7a },
+  c('brain_exposed', 'Cérebro de Gelatina', 'head', 'zombie', 'epic', [
+    { shape: 'sphere', size: [0.17, 8, 6], pos: [0, 0.04, 0], color: 0x7ad88a },
+    { shape: 'torus', size: [0.08, 0.03, 4, 8], pos: [0.05, 0.1, 0.02], rot: [0.3, 0.5, 0], color: 0x5ac86a },
     {
       shape: 'torus',
       size: [0.08, 0.03, 4, 8],
       pos: [-0.05, 0.1, -0.02],
       rot: [0.3, -0.5, 0],
-      color: 0xc86a7a,
+      color: 0x5ac86a,
     },
   ]),
   // ======================= óculos (olhos)
@@ -354,11 +354,11 @@ export const COSMETIC_LIST: CosmeticDef[] = [
   c('robe_runic', 'Robe Rúnico', 'body', 'wizard', 'epic', robe(0x2a1a3a, 0x9ff0ff, 0x9ff0ff), LONG),
   c('robe_crimson', 'Veste Carmesim', 'body', 'wizard', 'uncommon', robe(0x6a1a1a, 0xc8a040), LONG),
   c('shirt_plaid', 'Camisa Xadrez Rasgada', 'body', 'zombie', 'common', shirt(0x8a2a2a, 0x2a1a1a)),
-  c('coat_lab', 'Jaleco Ensanguentado', 'body', 'zombie', 'uncommon', [
+  c('coat_lab', 'Jaleco de Laboratório', 'body', 'zombie', 'uncommon', [
     { shape: 'box', size: [0.58, 0.44, 0.36], pos: [0, 0.05, 0], color: 0xe8e8e0 },
     { shape: 'box', size: [0.52, 0.7, 0.34], pos: [0, -0.45, 0], color: 0xe0e0d8 },
-    { shape: 'box', size: [0.16, 0.2, 0.02], pos: [0.1, -0.1, 0.19], color: 0x8a1010 },
-    { shape: 'box', size: [0.1, 0.12, 0.02], pos: [-0.14, -0.4, 0.18], color: 0x7a0a0a },
+    { shape: 'box', size: [0.16, 0.2, 0.02], pos: [0.1, -0.1, 0.19], color: 0x3a9a6a },
+    { shape: 'box', size: [0.1, 0.12, 0.02], pos: [-0.14, -0.4, 0.18], color: 0x5a7ad8 },
   ]),
   c('suit_banker', 'Terno do Bancário', 'body', 'zombie', 'rare', [
     ...shirt(0x1a1c24, 0x1a1c24),
@@ -393,17 +393,6 @@ export const COSMETIC_LIST: CosmeticDef[] = [
     { shape: 'box', size: [0.4, 0.46, 0.2], pos: [0, -0.1, -0.08], color: 0x4a5a3a },
     { shape: 'box', size: [0.3, 0.14, 0.06], pos: [0, -0.2, -0.2], color: 0x3a4a2a },
     { shape: 'cyl', size: [0.08, 0.08, 0.36, 8], pos: [0, 0.18, -0.08], rot: [0, 0, H], color: 0x6a4a2a },
-  ]),
-  c('grave_sign', 'Placa de Lápide', 'back', 'zombie', 'rare', [
-    { shape: 'box', size: [0.45, 0.6, 0.08], pos: [0, 0.05, -0.08], rot: [0, 0, 0.12], color: 0x7a7a82 },
-    {
-      shape: 'cyl',
-      size: [0.225, 0.225, 0.08, 10],
-      pos: [0.04, 0.35, -0.08],
-      rot: [H, 0, 0.12],
-      color: 0x7a7a82,
-    },
-    { shape: 'box', size: [0.25, 0.04, 0.01], pos: [0.02, 0.1, -0.03], rot: [0, 0, 0.12], color: 0x3a3a42 },
   ]),
   c('wings_bat', 'Asas de Morcego', 'back', 'zombie', 'epic', [
     { shape: 'box', size: [0.7, 0.4, 0.02], pos: [0.42, 0.15, -0.1], rot: [0, 0.4, 0.3], color: 0x2a1a2a },
@@ -704,7 +693,7 @@ export const COSMETIC_LIST: CosmeticDef[] = [
     { shape: 'box', size: [0.1, 0.02, 0.1], pos: [0, 0.125, 0.06], color: 0xf0f0f0 },
   ]),
   // ======================= chefes (únicos)
-  c('crown_coveiro', 'Coroa do Coveiro', 'head', 'boss', 'epic', [
+  c('crown_coveiro', 'Coroa do Jardineiro', 'head', 'boss', 'epic', [
     { shape: 'cyl', size: [0.2, 0.22, 0.12, 8], pos: [0, 0.05, 0], color: 0x3a3228 },
     { shape: 'cone', size: [0.04, 0.14, 4], pos: [0.14, 0.17, 0], color: 0x6a6e76 },
     { shape: 'cone', size: [0.04, 0.14, 4], pos: [-0.14, 0.17, 0], color: 0x6a6e76 },

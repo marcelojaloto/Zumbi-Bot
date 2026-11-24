@@ -93,7 +93,7 @@ export const campo: MapDef = {
     theme: 'campo',
     fog: { color: 0x0e1a14, density: 0.014 },
     sky: { top: 0x04060c, bottom: 0x10202a, moon: true, stars: 250, moonColor: 0xf0f4ff },
-    hemi: { sky: 0xcfe4ff, ground: 0x1c3a1e, intensity: 1 },
+    hemi: { sky: 0xcfe4ff, ground: 0x1c3a1e, intensity: 1.15 },
     sun: { color: 0xf4f8ff, intensity: 1.9, dir: [-0.35, 1, 0.6] },
     accent: { color: 0xff5a2a, flicker: 0.4 },
     grade: {
@@ -104,7 +104,7 @@ export const campo: MapDef = {
       contrast: 1.08,
     },
     bloom: { intensity: 1.25, threshold: 0.7 },
-    vignette: 0.55,
+    vignette: 0.4,
     grain: 0.06,
     particles: 'embers',
     particleDensity: 0.25,
@@ -114,7 +114,7 @@ export const campo: MapDef = {
   levels: [
     {
       id: 'campo-1',
-      name: 'Estádio dos Mortos',
+      name: 'Estádio da Virada',
       length: 196,
       zBand: [-3.2, 1.6],
       parTimeS: 500,
@@ -132,7 +132,7 @@ export const campo: MapDef = {
         { x: 68, text: 'Cones de treino no caminho: pule por cima ou leva um tombo' },
         {
           x: 156,
-          text: 'O Artilheiro Infernal entrou em campo! Saia do círculo quando a bola em chamas subir',
+          text: 'O Artilheiro Flamejante entrou em campo! Saia do círculo quando a bola em chamas subir',
         },
       ],
       segments: [

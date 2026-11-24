@@ -27,6 +27,7 @@ const swing: MeleeMoveDef = {
 };
 MOVES[swing.id] = swing;
 
+/** Vaso de barro arremessado (o visual ainda se chama tombstone). */
 const tombstone: ProjectileSpec = {
   visual: 'tombstone',
   speed: 12,
@@ -85,8 +86,8 @@ const spikes = {
 
 export const coveiro = registerBoss({
   id: 'coveiro',
-  name: 'Coveiro Colossal',
-  title: 'O Senhor das Covas',
+  name: 'Jardineiro Colossal',
+  title: 'O Senhor dos Canteiros',
   family: 'zombie',
   element: 'earth',
   hp: 3000,
@@ -145,7 +146,7 @@ export const coveiro = registerBoss({
         },
         {
           id: 'chuva_lapides',
-          name: 'Chuva de Lápides',
+          name: 'Chuva de Vasos',
           weight: 2,
           cooldownS: 8,
           steps: [
@@ -156,7 +157,7 @@ export const coveiro = registerBoss({
         },
         {
           id: 'cova_aberta',
-          name: 'Cova Aberta',
+          name: 'Buraco no Canteiro',
           weight: 2,
           cooldownS: 14,
           steps: [
@@ -217,7 +218,7 @@ export const coveiro = registerBoss({
         },
         {
           id: 'salto',
-          name: 'Salto do Coveiro',
+          name: 'Salto do Jardineiro',
           weight: 2,
           cooldownS: 8,
           minRange: 4,

@@ -24,7 +24,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       'Zeca Engrenagem era só mais um robô de fábrica quando o OMEGA-Z, o Ciborgue Primordial, tomou o controle das máquinas e espalhou o vírus que levantou os mortos. Um curto-circuito queimou o chip de obediência dele e, no lugar, nasceu algo que nenhum robô tinha: vontade própria. Desde então ele sai toda noite do laboratório improvisado na vila para proteger os humanos que restaram. Não é o mais forte nem o mais esperto, mas nunca desliga antes de terminar o serviço.',
     ending: {
       title: 'O primeiro jardim',
-      text: 'Com o OMEGA-Z desligado, Zeca Engrenagem trocou a pistola por um regador. Na praça da Vila Assombrada ele plantou o primeiro jardim depois do apocalipse, e os robôs libertados aprenderam com ele a consertar casas em vez de derrubá-las. Hoje as crianças da vila dormem ouvindo o zumbido tranquilo do velho amigo de lata.',
+      text: 'Com o OMEGA-Z desligado, Zeca Engrenagem trocou a pistola por um regador. Na praça da Vila do Entardecer ele plantou o primeiro jardim depois do apocalipse, e os robôs libertados aprenderam com ele a consertar casas em vez de derrubá-las. Hoje as crianças da vila dormem ouvindo o zumbido tranquilo do velho amigo de lata.',
     },
     specialName: 'Giro Turbo',
     specialDesc: 'Gira com os braços abertos acertando todos em volta, sem levar dano.',

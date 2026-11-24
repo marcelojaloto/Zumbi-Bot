@@ -113,7 +113,7 @@ export const pista: MapDef = {
       contrast: 1.08,
     },
     bloom: { intensity: 1.15, threshold: 0.72 },
-    vignette: 0.5,
+    vignette: 0.4,
     grain: 0.06,
     particles: 'dust',
     particleDensity: 0.25,

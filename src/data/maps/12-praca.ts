@@ -86,7 +86,7 @@ export const praca: MapDef = {
     theme: 'praca',
     fog: { color: 0x141a2a, density: 0.02 },
     sky: { top: 0x050814, bottom: 0x1c2440, moon: true, stars: 300, moonColor: 0xdfe6ff },
-    hemi: { sky: 0x8fa6ff, ground: 0x221c18, intensity: 0.95 },
+    hemi: { sky: 0x8fa6ff, ground: 0x221c18, intensity: 1.15 },
     sun: { color: 0xa8bcff, intensity: 1.7, dir: [-0.45, 1, 0.55] },
     accent: { color: 0x3affc8, flicker: 0.3 },
     grade: {
@@ -97,7 +97,7 @@ export const praca: MapDef = {
       contrast: 1.08,
     },
     bloom: { intensity: 1.25, threshold: 0.7 },
-    vignette: 0.55,
+    vignette: 0.4,
     grain: 0.07,
     particles: 'fireflies',
     particleDensity: 0.35,

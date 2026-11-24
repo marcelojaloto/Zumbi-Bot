@@ -33,8 +33,9 @@ interface Flash {
   priority: number;
 }
 
-const ZOMBIE_BLOOD = 0x6a8a1a;
-const ZOMBIE_GORE = 0x4a2a1a;
+// gosma verde de desenho no lugar de sangue
+const ZOMBIE_GOO = 0x8ad83a;
+const ZOMBIE_GOO_BLOB = 0x5ab02a;
 
 /** Traduz eventos do sim em efeitos visuais: partículas, detritos, traços, luzes, tremor e flashes. */
 export class FxDirector {
@@ -168,7 +169,7 @@ export class FxDirector {
               ev.y,
               ev.z,
               ev.heavy ? 14 : 7,
-              ZOMBIE_BLOOD,
+              ZOMBIE_GOO,
               ev.heavy ? 5 : 3,
               0.16,
               0.5,
@@ -176,7 +177,7 @@ export class FxDirector {
               12,
             );
             if (ev.heavy || ev.dtype === 'blade')
-              this.debris.emit(ev.x, ev.y, ev.z, ev.heavy ? 4 : 2, ZOMBIE_GORE, 3, 0.09, this.rnd);
+              this.debris.emit(ev.x, ev.y, ev.z, ev.heavy ? 4 : 2, ZOMBIE_GOO_BLOB, 3, 0.09, this.rnd);
           } else if (fam === 'robot' || fam === 'player') {
             this.burst(
               ev.x,
@@ -247,13 +248,13 @@ export class FxDirector {
               ev.y + 1,
               ev.z,
               big ? 14 : 7,
-              ZOMBIE_GORE,
+              ZOMBIE_GOO_BLOB,
               3.5,
               big ? 0.16 : 0.11,
               this.rnd,
             );
-            this.debris.emit(ev.x, ev.y + 1, ev.z, big ? 6 : 3, def?.rig.skin ?? 0x6f7f5a, 3, 0.12, this.rnd);
-            this.burst(ev.x, ev.y + 1, ev.z, 12, ZOMBIE_BLOOD, 4, 0.2, 0.6, false, 10);
+            this.smoke(ev.x, ev.y + 1, ev.z, big ? 4 : 2, 0.8, 0xd8e8c8, 0.8);
+            this.burst(ev.x, ev.y + 1, ev.z, 12, ZOMBIE_GOO, 4, 0.2, 0.6, false, 10);
           } else if (ev.family === 'robot') {
             this.debris.emit(ev.x, ev.y + 1, ev.z, big ? 16 : 8, 0x5a6270, 4, big ? 0.16 : 0.1, this.rnd);
             this.burst(ev.x, ev.y + 1, ev.z, 20, 0xffb04a, 6, 0.12, 0.5, true, 12, 4);

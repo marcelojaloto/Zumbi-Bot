@@ -1,5 +1,6 @@
 import { SEASON2_EN } from './s2';
 import { cosmeticosEn } from './extra/cosmeticos';
+import { fases6En } from './extra/fases6';
 
 /**
  * Dicionário português → inglês. A chave é o texto original em pt-BR (como aparece no código ou nos dados);
@@ -294,9 +295,6 @@ export const EN: Record<string, string> = {
   'Área de Testes': 'Test Area',
   'Laboratório do Zumbi Bot': "Zumbi Bot's lab",
   Laboratório: 'Lab',
-  'Vila Assombrada': 'Haunted Village',
-  'Casas abandonadas sob a lua cheia': 'Abandoned houses under the full moon',
-  'Rua das Lápides': 'Tombstone Street',
   'A/D andam | W/S mudam de plano (profundidade)': 'A/D walk | W/S change lanes (depth)',
   'J = soco | K = chute | J, J, J, J = combo com uppercut':
     'J = punch | K = kick | J, J, J, J = uppercut combo',
@@ -382,8 +380,6 @@ export const EN: Record<string, string> = {
   'Zeca Engrenagem era só mais um robô de fábrica quando o OMEGA-Z, o Ciborgue Primordial, tomou o controle das máquinas e espalhou o vírus que levantou os mortos. Um curto-circuito queimou o chip de obediência dele e, no lugar, nasceu algo que nenhum robô tinha: vontade própria. Desde então ele sai toda noite do laboratório improvisado na vila para proteger os humanos que restaram. Não é o mais forte nem o mais esperto, mas nunca desliga antes de terminar o serviço.':
     'Zeca Engrenagem was just another factory robot when OMEGA-Z, the Primordial Cyborg, took control of the machines and spread the virus that raised the dead. A short circuit burned out his obedience chip, and in its place came something no robot had ever had: a will of his own. Ever since, he leaves his makeshift lab in the village every night to protect the humans who are left. He is not the strongest or the smartest, but he never powers down before the job is done.',
   'O primeiro jardim': 'The first garden',
-  'Com o OMEGA-Z desligado, Zeca Engrenagem trocou a pistola por um regador. Na praça da Vila Assombrada ele plantou o primeiro jardim depois do apocalipse, e os robôs libertados aprenderam com ele a consertar casas em vez de derrubá-las. Hoje as crianças da vila dormem ouvindo o zumbido tranquilo do velho amigo de lata.':
-    'With OMEGA-Z shut down, Zeca Engrenagem traded his pistol for a watering can. In the square of the Haunted Village he planted the first garden since the apocalypse, and the freed robots learned from him to fix houses instead of tearing them down. Today the village children fall asleep to the calm hum of their old tin friend.',
   'Lívia Vesper era a aprendiz mais curiosa da Academia Arcana, tão curiosa que leu escondida o grimório proibido que previa o fim do mundo. Quando os mortos se levantaram, os mestres fugiram; ela ficou, com o chapéu de aprendiz meio torto e um cajado maior que ela. Hoje domina dez elementos e lança fogo roxo, mas ainda se distrai lendo livros velhos no meio da batalha.':
     'Lívia Vesper was the most curious apprentice at the Arcane Academy, so curious that she secretly read the forbidden grimoire that foretold the end of the world. When the dead rose, the masters fled; she stayed, with her apprentice hat a little crooked and a staff taller than she is. Today she masters ten elements and hurls purple fire, but she still gets distracted reading old books in the middle of a battle.',
   'A mestra da Academia': 'Master of the Academy',
@@ -458,8 +454,6 @@ export const EN: Record<string, string> = {
   'Rugido que derruba e envenena; por 6 s bate mais forte, corre mais e rouba vida.':
     'A roar that knocks down and poisons; for 6 s hits harder, runs faster and steals life.',
   'Interior da Torre': 'Tower Interior',
-  'Engrenagens rangem e o vento uiva pelos vitrais':
-    'Gears creak and the wind howls through the stained glass',
   'Escadaria dos Sinos': 'Bell Stairway',
   'Cuidado: destroços despencam do teto. Saia do círculo!':
     'Watch out: debris falls from the ceiling. Leave the circle!',
@@ -476,29 +470,18 @@ export const EN: Record<string, string> = {
     'Electrified floors blink before the shock: wait or jump',
   'O Guardião do Cofre desperta! Fuja das casas eletrificadas':
     'The Vault Guardian awakens! Stay off the electrified tiles',
-  'Castelo Assustador': 'Spooky Castle',
-  'Velas tremulam no salão do Conde': "Candles flicker in the Count's hall",
   'Salão do Conde': "The Count's Hall",
-  'O castelo desperta... cuidado com as lâminas pendulares e as velas caídas':
-    'The castle awakens... watch out for the pendulum blades and fallen candles',
-  'O Conde aguarda! Corra dos crânios uivantes e fuja da foice':
-    'The Count awaits! Run from the howling skulls and dodge the scythe',
   'Zona Tóxica': 'Toxic Zone',
   'O ar arde, o chão borbulha': 'The air burns, the ground bubbles',
   'Usina Contaminada': 'Contaminated Plant',
   'Ar contaminado: evite as poças verdes e as saídas de gás':
     'Contaminated air: avoid the green pools and gas vents',
-  'Algo enorme borbulha à frente... mude de plano quando o vômito vier!':
-    'Something huge is bubbling ahead... change lanes when the vomit comes!',
   Floresta: 'Forest',
-  'Pinheiros sussurram e a lama respira sob a lua verde':
-    'Pines whisper and the mud breathes under the green moon',
   'Trilha do Pântano': 'Swamp Trail',
   'Poças de lama deixam tudo lento, inclusive os zumbis': 'Mud pools slow everything down, zombies included',
   'O chão borbulha... Pule as ondas de lama do colosso!':
     "The ground bubbles... Jump the colossus's mud waves!",
   'Centro da Cidade': 'Downtown',
-  'Neon, chuva e máquinas nas avenidas mortas': 'Neon, rain and machines on the dead avenues',
   'Avenida Neon': 'Neon Avenue',
   'Carros abandonados explodem quando destruídos. Atraia os robôs para perto!':
     'Abandoned cars explode when destroyed. Lure the robots close!',
@@ -513,14 +496,11 @@ export const EN: Record<string, string> = {
   'Vigas em chamas caem do teto. Saia do círculo vermelho!':
     'Burning beams fall from the ceiling. Leave the red circle!',
   'Campo de Guerra': 'Battlefield',
-  'A guerra acabou. Ninguém avisou os mortos, nem as máquinas':
-    'The war is over. Nobody told the dead, or the machines',
   'Terra de Ninguém': "No Man's Land",
   'Minas no chão (luz vermelha): desvie mudando de faixa':
     'Mines on the ground (red light): change lanes to avoid them',
   'Artilharia! Saia do círculo vermelho antes do impacto': 'Artillery! Leave the red circle before impact',
   'Arena Final': 'Final Arena',
-  'O ninho do OMEGA-Z, onde todos os pesadelos se encontram': "OMEGA-Z's nest, where every nightmare meets",
   'O Ninho do Ômega': "Omega's Nest",
   'Tudo o que você enfrentou está aqui. Use todos os cajados!':
     'Everything you have faced is here. Use every staff!',
@@ -528,22 +508,16 @@ export const EN: Record<string, string> = {
     'OMEGA-Z: the armor resists bullets, but electricity and heavy blows break it',
 
   // ------------------------------------------------------------------ chefes
-  'Coveiro Colossal': 'Colossal Gravedigger',
-  'O Senhor das Covas': 'Lord of the Graves',
   'Sentinela dos Ventos': 'Wind Sentinel',
   'Guardião do Campanário': 'Belfry Guardian',
   Tempestade: 'Storm',
   'Guardião do Cofre': 'Vault Guardian',
   'Sistema de Segurança Máxima': 'Maximum Security System',
   'Alerta Máximo': 'Maximum Alert',
-  'Conde Necrótico': 'Necrotic Count',
-  'Senhor da Cripta': 'Lord of the Crypt',
   'O Anfitrião': 'The Host',
-  'Fome Eterna': 'Eternal Hunger',
   'Abominação Tóxica': 'Toxic Abomination',
   'O Aterro Vivo': 'The Living Landfill',
   Borbulhando: 'Bubbling',
-  'Pústulas Rompidas': 'Burst Pustules',
   'Colosso do Pântano': 'Swamp Colossus',
   'Coração da Lama': 'Heart of the Mud',
   Dilúvio: 'Deluge',
@@ -561,7 +535,6 @@ export const EN: Record<string, string> = {
   'OMEGA-Z': 'OMEGA-Z',
   'O Ciborgue Primordial': 'The Primordial Cyborg',
   Blindagem: 'Armor',
-  'Carne Exposta': 'Exposed Flesh',
   Colosso: 'Colossus',
   Núcleo: 'Core',
 
@@ -617,8 +590,8 @@ export const EN: Record<string, string> = {
   'Onda de espinhos pelo chão que derruba e enraíza.':
     'Wave of spikes along the ground that knocks down and roots.',
   'Cajado Necromante': 'Necromancer Staff',
-  'Caveira teleguiada que põe um zumbi sob seu controle por 12 s (máx. 3).':
-    'Homing skull that puts a zombie under your control for 12 s (max. 3).',
+  'Esfera teleguiada que põe um zumbi sob seu controle por 12 s (máx. 3).':
+    'Homing orb that puts a zombie under your control for 12 s (max. 3).',
 
   // ------------------------------------------------------------------ status, armas brancas e poderes
   Queimando: 'Burning',
@@ -655,7 +628,7 @@ export const EN: Record<string, string> = {
   'Cartola Podre': 'Rotten Top Hat',
   'Capacete Amassado': 'Dented Helmet',
   'Balde na Cabeça': 'Bucket Helmet',
-  'Cérebro à Mostra': 'Exposed Brain',
+  'Cérebro de Gelatina': 'Jelly Brain',
   'Óculos Redondos': 'Round Glasses',
   'Monóculo Arcano': 'Arcane Monocle',
   'Óculos de Alquimista': "Alchemist's Goggles",
@@ -673,7 +646,6 @@ export const EN: Record<string, string> = {
   'Robe Rúnico': 'Runic Robe',
   'Veste Carmesim': 'Crimson Vestment',
   'Camisa Xadrez Rasgada': 'Torn Plaid Shirt',
-  'Jaleco Ensanguentado': 'Bloody Lab Coat',
   'Terno do Bancário': "Banker's Suit",
   'Colete Refletivo': 'Safety Vest',
   'Capa Arcana': 'Arcane Cape',
@@ -681,9 +653,8 @@ export const EN: Record<string, string> = {
   'Capa de Novato': "Rookie's Cape",
   'Capa de Cortina': 'Curtain Cape',
   'Mochila de Sobrevivência': 'Survival Backpack',
-  'Placa de Lápide': 'Tombstone Slab',
   'Asas de Morcego': 'Bat Wings',
-  'Coroa do Coveiro': "Gravedigger's Crown",
+  'Coroa do Jardineiro': "Gardener's Crown",
   'Coroa do Ômega': 'Omega Crown',
   Comum: 'Common',
   Incomum: 'Uncommon',
@@ -1243,4 +1214,5 @@ export const EN: Record<string, string> = {
   'Esquiva em profundidade (com a defesa da Oficina)': 'Dodge in depth (with the Workshop defense)',
   ...SEASON2_EN,
   ...cosmeticosEn,
+  ...fases6En,
 };

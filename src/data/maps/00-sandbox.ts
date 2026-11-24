@@ -13,7 +13,7 @@ export const sandbox: MapDef = {
   scaling: { hp: 1, dmg: 1 },
   env: env({
     theme: 'sandbox',
-    fog: { color: 0x151a26, density: 0.025 },
+    fog: { color: 0x8a9ab0, density: 0.015 },
     ground: { color: 0x2a2f38, color2: 0x363c48, pattern: 'metal' },
     particles: 'dust',
   }),

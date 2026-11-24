@@ -28,7 +28,7 @@ test('navegador em inglês: menus, partida e vitória em inglês', async ({ page
   await expect(page.getByRole('button', { name: 'Wardrobe' })).toBeVisible();
   await page.evaluate(() => (window as unknown as { __game: G }).__game.startLevel('vila', 0));
   await page.waitForFunction(() => (window as unknown as { __game: G }).__game.state().screen === 'playing');
-  await expect(page.getByText('1. Haunted Village')).toBeVisible();
+  await expect(page.getByText('1. Sunset Village')).toBeVisible();
   await page.evaluate(() => {
     const g = (window as unknown as { __game: G }).__game;
     g.god(true);

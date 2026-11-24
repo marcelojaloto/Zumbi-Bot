@@ -4,9 +4,9 @@ import {
   carWreck,
   column,
   crate,
-  deadTree,
-  grave,
+  flowerBed,
   lamppost,
+  leafyTree,
   pine,
   rock,
   sandbags,
@@ -18,7 +18,7 @@ const CYAN = 0x40e0ff;
 const RED = 0xff2a3a;
 
 /**
- * Arena Final: o ninho do OMEGA-Z. Um coliseu biomecânico erguido sobre a cidade em chamas, com
+ * Arena Final: o ninho do OMEGA-Z. Um coliseu biomecânico erguido sobre a cidade ao pôr do sol, com
  * trechos que misturam restos de todos os mapas (vila, torre/banco, castelo/tóxica, floresta/centro,
  * chamas/guerra) até a arena circular do chefe, cercada de pilares com cabos pulsantes.
  */
@@ -58,9 +58,9 @@ export function arenaTheme(ctx: EnvCtx): void {
     p.box(x, 10.6, -17, 10, 1.4, 3, 0x241e22, { noShadow: true });
   }
 
-  // cidade em chamas e morros ao longe
-  silhouetteRow(ctx, -34, 0x1a0e14, 10, 24, 9, 'city');
-  silhouetteRow(ctx, -50, 0x120a10, 14, 26, 18, 'hills');
+  // cidade e morros ao longe, no pôr do sol
+  silhouetteRow(ctx, -34, 0x5a4a6a, 10, 24, 9, 'city');
+  silhouetteRow(ctx, -50, 0x7a6a8a, 14, 26, 18, 'hills');
 
   // ---------------------------------------------------------------- trechos temáticos
   const zone = (a: number, b: number, fn: (x: number) => void, step = 4) => {
@@ -69,13 +69,13 @@ export function arenaTheme(ctx: EnvCtx): void {
   const back = () => rng.range(-9.5, z0 - 1.6);
   const front = () => rng.range(z1 + 1.6, z1 + 4.5);
 
-  // Vila: túmulos, árvores mortas e postes
+  // Vila: canteiros, árvores e postes
   zone(
     ctx.x0,
     32,
     (x) => {
-      grave(p, rng, x, rng.chance(0.7) ? back() : front());
-      if (rng.chance(0.35)) deadTree(p, rng, x + 1, rng.range(-10, -6.5), rng.range(0.8, 1.3));
+      flowerBed(p, rng, x, rng.chance(0.7) ? back() : front(), rng.range(0.8, 1.4), 0.5);
+      if (rng.chance(0.35)) leafyTree(p, rng, x + 1, rng.range(-10, -6.5), rng.range(0.8, 1.1));
     },
     2.5,
   );
@@ -170,13 +170,13 @@ export function arenaTheme(ctx: EnvCtx): void {
     ctx.light(bx, 1.4, -5, 0xff7a2a, 9, 8, 0.9);
   }
 
-  // Corredor da morte: pilhas de crânios, espigões e cabos
+  // Corredor final: pilhas de parafusos, espigões e cabos
   zone(
     152,
     bossX - 2,
     (x) => {
       for (let i = 0; i < 4; i++)
-        p.sphere(x + rng.range(-0.4, 0.4), 0.12 + i * 0.08, back() * 0.6 - 2.5, 0.13, 0xd8d0b8);
+        p.ico(x + rng.range(-0.4, 0.4), 0.12 + i * 0.08, back() * 0.6 - 2.5, 0.13, 0x8a9098);
       p.cone(x + 1.2, 0.9, rng.range(-7.5, -5.5), 0.14, 1.8, 0x5a5e66, 4);
     },
     3.5,

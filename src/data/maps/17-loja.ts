@@ -109,7 +109,7 @@ export const loja: MapDef = {
       contrast: 1.1,
     },
     bloom: { intensity: 1.2, threshold: 0.7 },
-    vignette: 0.55,
+    vignette: 0.4,
     grain: 0.06,
     particles: 'sparks',
     particleDensity: 0.25,

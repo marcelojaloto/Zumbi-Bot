@@ -13,9 +13,9 @@ export const banco: MapDef = {
   scaling: mapScaling(2),
   env: env({
     theme: 'banco',
-    fog: { color: 0x10161a, density: 0.018 },
+    fog: { color: 0x10161a, density: 0.014 },
     sky: { top: 0x05080a, bottom: 0x10161a, moon: false, stars: 0 },
-    hemi: { sky: 0xd8f0ff, ground: 0x2a2e2a, intensity: 0.9 },
+    hemi: { sky: 0xd8f0ff, ground: 0x2a2e2a, intensity: 1.15 },
     sun: { color: 0xd8f0ff, intensity: 1.35, dir: [-0.3, 1, 0.55] },
     accent: { color: 0xd8f0ff, flicker: 0.3 },
     grade: {
@@ -26,8 +26,8 @@ export const banco: MapDef = {
       contrast: 1.1,
     },
     bloom: { intensity: 1.1, threshold: 0.72 },
-    vignette: 0.55,
-    grain: 0.06,
+    vignette: 0.4,
+    grain: 0.04,
     particles: 'sparks',
     particleDensity: 0.2,
     ground: { color: 0x6e7470, color2: 0x4e5652, pattern: 'marble' },

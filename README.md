@@ -16,10 +16,10 @@ Web Audio.
 
   | #   | Mapa               | Chefe                                  | Recompensa                            |
   | --- | ------------------ | -------------------------------------- | ------------------------------------- |
-  | 1   | Vila Assombrada    | Coveiro Colossal                       | Cajado da Terra                       |
+  | 1   | Vila do Entardecer | Jardineiro Colossal                    | Cajado da Terra                       |
   | 2   | Interior da Torre  | Sentinela dos Ventos                   | Cajado do Vento                       |
   | 3   | Banco              | Guardião do Cofre                      | Cajado Elétrico                       |
-  | 4   | Castelo Assustador | Conde Necrótico                        | Cajado Necromante                     |
+  | 4   | Castelo Encantado  | Conde Purpurino                        | Cajado Necromante                     |
   | 5   | Zona Tóxica        | Abominação Tóxica                      | Cajado Tóxico                         |
   | 6   | Floresta           | Colosso do Pântano                     | Cajado da Água                        |
   | 7   | Centro da Cidade   | Mecha Dominador                        | Cajado Cibernético                    |
@@ -30,17 +30,17 @@ Web Audio.
   A **2ª temporada** abre para quem vence o OMEGA-Z e segue o sinal que ele deixou no fundo do mar: são mais **9
   mundos**, e a tela de mapas mostra uma grade por temporada.
 
-  | #   | Mapa                  | Chefe               | O que tem de novo                                           |
-  | --- | --------------------- | ------------------- | ----------------------------------------------------------- |
-  | 11  | Fábrica de Brinquedos | Ursão de Corda      | esteiras que carregam, prensas e brinquedos de corda        |
-  | 12  | Praça do Skate        | Rei do Half-Pipe    | cones e corrimãos para pular; a luta do chefe é numa ponte  |
-  | 13  | Estúdio de Gravação   | DJ Decibel          | caixas de som que empurram e ondas de som no ritmo          |
-  | 14  | Pista de Corrida      | O Recordista        | fileiras de barreiras, vento de través e um chefe velocista |
-  | 15  | Shopping              | Manequim-Rei        | esteiras rolantes, alarmes e manequins que ganham vida      |
-  | 16  | Bunker                | Comandante Casamata | portas blindadas, minas, gás e mísseis que dá para abater   |
-  | 17  | Loja de Automóveis    | Monstro V8          | poças de óleo, elevadores hidráulicos e carros que explodem |
-  | 18  | Campo de Futebol      | Artilheiro Infernal | o chefe chuta bolas em chamas; pênalti, carrinho e cabeçada |
-  | 19  | Fundo do Mar          | **OMEGA-Z Abissal** | pulo alto e queda lenta, correntes, minas e piranhas zumbis |
+  | #   | Mapa                  | Chefe                 | O que tem de novo                                           |
+  | --- | --------------------- | --------------------- | ----------------------------------------------------------- |
+  | 11  | Fábrica de Brinquedos | Ursão de Corda        | esteiras que carregam, prensas e brinquedos de corda        |
+  | 12  | Praça do Skate        | Rei do Half-Pipe      | cones e corrimãos para pular; a luta do chefe é numa ponte  |
+  | 13  | Estúdio de Gravação   | DJ Decibel            | caixas de som que empurram e ondas de som no ritmo          |
+  | 14  | Pista de Corrida      | O Recordista          | fileiras de barreiras, vento de través e um chefe velocista |
+  | 15  | Shopping              | Manequim-Rei          | esteiras rolantes, alarmes e manequins que ganham vida      |
+  | 16  | Bunker                | Comandante Casamata   | portas blindadas, minas, gás e mísseis que dá para abater   |
+  | 17  | Loja de Automóveis    | Monstro V8            | poças de óleo, elevadores hidráulicos e carros que explodem |
+  | 18  | Campo de Futebol      | Artilheiro Flamejante | o chefe chuta bolas em chamas; pênalti, carrinho e cabeçada |
+  | 19  | Fundo do Mar          | **OMEGA-Z Abissal**   | pulo alto e queda lenta, correntes, minas e piranhas zumbis |
 
   As **esteiras** levam quem pisa nelas (jogadores e inimigos; pulando, sai), as **prensas** descem em ciclos e
   esmagam quem estiver embaixo, zumbi ou não, e as **barreiras** derrubam quem passa sem pular. No Fundo do Mar o

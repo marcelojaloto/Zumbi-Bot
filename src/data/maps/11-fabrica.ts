@@ -16,7 +16,7 @@ export const fabrica: MapDef = {
     theme: 'fabrica',
     fog: { color: 0x1a1422, density: 0.016 },
     sky: { top: 0x08060c, bottom: 0x1a1422, moon: false, stars: 0 },
-    hemi: { sky: 0xffe8d8, ground: 0x2a2234, intensity: 0.95 },
+    hemi: { sky: 0xffe8d8, ground: 0x2a2234, intensity: 1.1 },
     sun: { color: 0xffe2c8, intensity: 1.4, dir: [-0.3, 1, 0.55] },
     accent: { color: 0xff5ac8, flicker: 0.35 },
     grade: {
@@ -27,7 +27,7 @@ export const fabrica: MapDef = {
       contrast: 1.08,
     },
     bloom: { intensity: 1.2, threshold: 0.7 },
-    vignette: 0.55,
+    vignette: 0.4,
     grain: 0.06,
     particles: 'dust',
     particleDensity: 0.3,

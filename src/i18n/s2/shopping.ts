@@ -1,7 +1,7 @@
 export const shoppingEn: Record<string, string> = {
   Shopping: 'Shopping Mall',
-  'As lojas fecharam, mas as vitrines continuam olhando':
-    'The stores closed, but the shop windows keep watching',
+  'As lojas fecharam, mas os manequins continuam desfilando':
+    'The stores closed, but the mannequins keep strutting',
   'Corredor das Vitrines': 'Window Row',
   'A esteira rolante leva quem pisa nela: pule para sair ou ande contra ela':
     'The moving walkway carries whoever steps on it: jump to get off or walk against it',

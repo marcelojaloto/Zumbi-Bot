@@ -258,10 +258,10 @@ export function zombieRig(key: string, rp: RigParams, variant: number): RigSpec 
   const shirt = vary(rp.cloth, variant + 3, 0.5);
   const pants = vary(rp.cloth2, variant + 5, 0.4);
   const dark = shade(skin, 0.6);
-  const blood = 0x4a0a0a;
+  const goo = 0x3a6a2a;
   // brinquedos: remendo claro no lugar do sangue
   const toy = rp.accessory === 'windup' || rp.accessory === 'jackbox' || rp.accessory === 'bear';
-  const stain = toy ? shade(shirt, 1.4) : blood;
+  const stain = toy ? shade(shirt, 1.4) : goo;
   const hair =
     rp.accessory === 'bear' ? skin : rp.accessory === 'jackbox' ? 0xff6a1a : vary(0x2a2018, variant, 0.6);
   const tornArm = variant % 4 === 3;
@@ -321,7 +321,7 @@ export function zombieRig(key: string, rp: RigParams, variant: number): RigSpec 
     }),
   ];
   if (tornArm)
-    parts.push({ j: J.foreArmL, shape: 'box', size: [0.09, 0.06, 0.09], at: [0, -0.02, 0], color: blood });
+    parts.push({ j: J.foreArmL, shape: 'box', size: [0.09, 0.06, 0.09], at: [0, -0.02, 0], color: goo });
   if (variant % 5 === 1) {
     // costelas expostas
     parts.push({

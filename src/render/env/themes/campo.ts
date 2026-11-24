@@ -224,7 +224,7 @@ function floodlight(ctx: EnvCtx, x: number): void {
   ctx.light(x, 5, -3.6, LAMP, 13, 18, 0.05);
 }
 
-/** Placar de LED: mortos de vermelho, vivos de verde. */
+/** Placar de LED: visitante de vermelho, casa de verde. */
 function scoreboard(p: Pieces, x: number): void {
   const z = -20.6;
   p.box(x, 10, z, 9, 3.6, 0.4, DARK, { noShadow: true });

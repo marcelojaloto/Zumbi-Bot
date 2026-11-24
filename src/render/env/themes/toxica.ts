@@ -34,9 +34,9 @@ function hazardSign(p: Pieces, x: number, z: number, h = 1.6): void {
   p.box(x, h + 0.1, z + 0.04, 0.62, 0.62, 0.03, YELLOW, { rot: [0, 0, Math.PI / 4] });
   p.box(x, h + 0.1, z + 0.06, 0.5, 0.5, 0.02, BLACK, { rot: [0, 0, Math.PI / 4] });
   p.box(x, h + 0.1, z + 0.07, 0.42, 0.42, 0.02, YELLOW, { rot: [0, 0, Math.PI / 4] });
-  // caveira estilizada
-  p.box(x, h + 0.14, z + 0.085, 0.14, 0.12, 0.02, BLACK);
-  p.box(x, h + 0.05, z + 0.085, 0.08, 0.05, 0.02, BLACK);
+  // ponto de exclamação
+  p.box(x, h + 0.15, z + 0.085, 0.06, 0.18, 0.02, BLACK);
+  p.box(x, h + 0.01, z + 0.085, 0.06, 0.05, 0.02, BLACK);
 }
 
 /** Painel de listras amarelo/preto (faixa de segurança). */

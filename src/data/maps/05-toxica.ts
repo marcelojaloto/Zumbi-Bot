@@ -13,10 +13,10 @@ export const toxica: MapDef = {
   scaling: mapScaling(4),
   env: env({
     theme: 'toxica',
-    fog: { color: 0x1d2a0c, density: 0.05 },
-    sky: { top: 0x070c04, bottom: 0x24340e, moon: true, stars: 60, moonColor: 0xd8ff9a },
-    hemi: { sky: 0xa8c878, ground: 0x2a2a14, intensity: 0.85 },
-    sun: { color: 0xd8f0a0, intensity: 1.45, dir: [-0.5, 1, 0.45] },
+    fog: { color: 0x8aa058, density: 0.022 },
+    sky: { top: 0x6a9ad0, bottom: 0xd8e8a0, moon: false, stars: 0 },
+    hemi: { sky: 0xe0f0c0, ground: 0x5a5a34, intensity: 1.15 },
+    sun: { color: 0xd8f0a0, intensity: 1.9, dir: [-0.5, 1, 0.45] },
     accent: { color: 0xb5ff5a, flicker: 0.2 },
     grade: {
       lift: [0.01, 0.02, 0],
@@ -26,8 +26,8 @@ export const toxica: MapDef = {
       contrast: 1.08,
     },
     bloom: { intensity: 1.2, threshold: 0.72 },
-    vignette: 0.6,
-    grain: 0.08,
+    vignette: 0.4,
+    grain: 0.04,
     particles: 'spores',
     particleDensity: 0.7,
     ground: { color: 0x2c2e26, color2: 0x363a2e, pattern: 'asphalt' },
@@ -43,7 +43,7 @@ export const toxica: MapDef = {
       playerStart: { x: 3, z: 0 },
       hints: [
         { x: 4, text: 'Ar contaminado: evite as poças verdes e as saídas de gás' },
-        { x: 158, text: 'Algo enorme borbulha à frente... mude de plano quando o vômito vier!' },
+        { x: 158, text: 'Algo enorme borbulha à frente! Mude de plano quando o jato de gosma vier' },
       ],
       segments: [
         {

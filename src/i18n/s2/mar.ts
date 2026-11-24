@@ -1,7 +1,7 @@
 export const marEn: Record<string, string> = {
   'Fundo do Mar': 'Bottom of the Sea',
-  'Lá embaixo, onde a luz não chega, um pulso vermelho ainda bate':
-    'Down there, where no light reaches, a red pulse still beats',
+  'Entre corais e cardumes, o pulso vermelho do OMEGA-Z ainda bate':
+    'Among corals and shoals, the red pulse of OMEGA-Z still beats',
   'Laboratório Abissal': 'Abyssal Lab',
   "Debaixo d'água o pulo vai mais alto e a queda é lenta: use isso para passar por cima":
     'Underwater you jump higher and fall slowly: use that to get over things',
@@ -12,7 +12,7 @@ export const marEn: Record<string, string> = {
   'OMEGA-Z Abissal': 'Abyssal OMEGA-Z',
   'A Cópia do Fundo do Mar': 'The Copy from the Deep',
   Pressão: 'Pressure',
-  'Maré Vermelha': 'Red Tide',
+  'Maré Alta': 'High Tide',
   'Núcleo Exposto': 'Exposed Core',
   // final da 2ª temporada
   'FINAL DA 2ª TEMPORADA': 'SEASON 2 FINALE',

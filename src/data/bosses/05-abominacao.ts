@@ -11,7 +11,7 @@ import type {
 import { registerBoss } from './index';
 
 /**
- * Vômito Ácido: jato em cone à frente, vários acertos com veneno.
+ * Jato de Gosma: jato em cone à frente, vários acertos com veneno.
  * Mundo (escala 2,35): x 0,7…5,3 m à frente, z ±1,16 m. O cone de aviso (120°, 6 m) contém a área;
  * foge-se mudando de plano ou saindo da frente do chefe.
  */
@@ -74,7 +74,7 @@ const poca: ZoneSpec = {
   slow: 0.3,
 };
 
-/** Rastro deixado pelo Rolo Pútrido. */
+/** Rastro deixado pelo Rolo Gosmento. */
 const rastro: ZoneSpec = { ...poca, radius: 1.0, durationS: 3.5 };
 
 /** Chuva de gosma: cai do céu com aviso circular e deixa uma pocinha. */
@@ -95,7 +95,7 @@ const gosma: ProjectileSpec = {
   onImpact: { zone: { ...poca, radius: 0.9, durationS: 3.5 } },
 };
 
-/** Pústulas que estouram ao redor (anel com vãos de ~2 m a 4 m do chefe). */
+/** Bolhas que estouram ao redor (anel com vãos de ~2 m a 4 m do chefe). */
 const pustula: ProjectileSpec = {
   visual: 'acid',
   speed: 6,
@@ -142,7 +142,7 @@ const TELE_VOMITO: BossStep = {
   at: 'self',
   sfx: 'telegraph',
 };
-/** Faixa do Rolo Pútrido: acerta até |dz| < 1,48 m do chefe. */
+/** Faixa do Rolo Gosmento: acerta até |dz| < 1,48 m do chefe. */
 const TELE_ROLO: BossStep = {
   t: 'telegraph',
   s: 0.9,
@@ -197,7 +197,7 @@ export const abominacao = registerBoss({
       patterns: [
         {
           id: 'vomito_acido',
-          name: 'Vômito Ácido',
+          name: 'Jato de Gosma',
           weight: 3,
           cooldownS: 5,
           maxRange: 7,
@@ -222,7 +222,7 @@ export const abominacao = registerBoss({
         },
         {
           id: 'rolo_putrido',
-          name: 'Rolo Pútrido',
+          name: 'Rolo Gosmento',
           weight: 2,
           cooldownS: 8,
           minRange: 3,
@@ -246,7 +246,7 @@ export const abominacao = registerBoss({
     },
     {
       untilHpFrac: 0,
-      name: 'Pústulas Rompidas',
+      name: 'Bolhas Estouradas',
       speedMult: 1.2,
       damageMult: 1.15,
       idleBetweenS: [0.6, 1.1],
@@ -272,7 +272,7 @@ export const abominacao = registerBoss({
       patterns: [
         {
           id: 'vomito_duplo',
-          name: 'Vômito Ácido Duplo',
+          name: 'Jato de Gosma Duplo',
           weight: 3,
           cooldownS: 5,
           maxRange: 7,
@@ -301,7 +301,7 @@ export const abominacao = registerBoss({
         },
         {
           id: 'rolo_putrido2',
-          name: 'Rolo Pútrido Duplo',
+          name: 'Rolo Gosmento Duplo',
           weight: 2,
           cooldownS: 8,
           minRange: 3,
@@ -319,7 +319,7 @@ export const abominacao = registerBoss({
         },
         {
           id: 'salto_pestilento',
-          name: 'Salto Pestilento',
+          name: 'Salto Gosmento',
           weight: 2,
           cooldownS: 9,
           minRange: 3.5,
@@ -331,7 +331,7 @@ export const abominacao = registerBoss({
         },
         {
           id: 'pustulas',
-          name: 'Explosão de Pústulas',
+          name: 'Explosão de Bolhas',
           weight: 1,
           cooldownS: 14,
           steps: [

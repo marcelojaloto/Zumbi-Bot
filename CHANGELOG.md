@@ -15,8 +15,14 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - **Ficha de personagem, Vestiário, Loja e Oficina:** as setas para trocar de personagem ficam dos lados do boneco
   3D, com o nome e o tipo embaixo dele, e o boneco sobe um pouco para o texto não ficar por cima. Na ficha, o rosto e
   o nome ficam centralizados e os cinco botões (Vestiário, Loja, Oficina, Mapas e Jogar) ficam lado a lado.
+- **Fases para 6 anos:** a Vila e o Castelo passam a ser de dia, com flores, bandeirinhas e cores vivas no lugar
+  do cemitério, das árvores mortas e dos caixões, e viram **Vila do Entardecer** e **Castelo Encantado**. As outras
+  fases ficaram mais claras, as músicas menos tensas, as manchas de sangue viraram café, água ou gosma verde, e o
+  zumbi derrotado some numa nuvenzinha. Chefes com nome de susto ganharam nomes leves (Jardineiro Colossal, Conde
+  Purpurino, Artilheiro Flamejante). A jogabilidade não muda.
 - O Mecha Dominador, o General Criotanque e o Rei do Half-Pipe passam a dar, cada um, uma peça nova (manoplas, botas
   e joelheiras).
+- A **Placa de Lápide** sai do Vestiário.
 
 ## 1.7, atualização de 23/11/2026
 

@@ -37,7 +37,7 @@ const _c1 = new Color();
 
 /**
  * Pool de partículas em billboards instanciados, simuladas na CPU sem alocação.
- * Um pool aditivo (faíscas, fogo, magia) e um normal (fumaça, sangue, poeira).
+ * Um pool aditivo (faíscas, fogo, magia) e um normal (fumaça, gosma, poeira).
  */
 export class ParticlePool {
   readonly mesh: Mesh;

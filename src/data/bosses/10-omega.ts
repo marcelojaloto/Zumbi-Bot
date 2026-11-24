@@ -5,7 +5,7 @@ import { registerBoss } from './index';
 /**
  * OMEGA-Z, o ciborgue zumbi colossal do mapa 10. Quatro fases de 3000 de vida:
  * 1. Blindagem: couraça que resiste a balas e lâminas (mas conduz eletricidade), mísseis e laser.
- * 2. Carne Exposta: a couraça cai; o elemento gira a cada poucos segundos e muda todos os ataques.
+ * 2. Sem Blindagem: a couraça cai; o elemento gira a cada poucos segundos e muda todos os ataques.
  * 3. Colosso: cresce 30% e a arena encolhe em profundidade; pisões e varreduras.
  * 4. Núcleo: o núcleo pulsa, invoca zumbis e os absorve para se curar. Mate-os antes!
  */
@@ -313,10 +313,10 @@ export const omega = registerBoss({
         },
       ],
     },
-    // ---------------------------------------------------------------- 2. Carne Exposta
+    // ---------------------------------------------------------------- 2. Sem Blindagem
     {
       untilHpFrac: 0.5,
-      name: 'Carne Exposta',
+      name: 'Sem Blindagem',
       speedMult: 1.1,
       damageMult: 1.1,
       idleBetweenS: [0.6, 1.2],
@@ -333,7 +333,7 @@ export const omega = registerBoss({
       patterns: [
         {
           id: 'garra',
-          name: 'Garras de Carne',
+          name: 'Garras Mutantes',
           weight: 3,
           cooldownS: 2,
           steps: [
@@ -547,7 +547,7 @@ export const omega = registerBoss({
         },
         {
           id: 'enxame_almas',
-          name: 'Enxame de Almas',
+          name: 'Enxame de Faíscas',
           weight: 2,
           cooldownS: 9,
           steps: [
@@ -558,7 +558,7 @@ export const omega = registerBoss({
         },
         {
           id: 'passo_sombrio',
-          name: 'Passo Sombrio',
+          name: 'Passo Relâmpago',
           weight: 2,
           cooldownS: 7,
           steps: [

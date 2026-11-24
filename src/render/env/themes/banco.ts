@@ -117,7 +117,7 @@ export function bancoTheme(ctx: EnvCtx): void {
   }
   for (let x = ctx.x0 + 8; x < ctx.x1; x += rng.range(26, 40)) ropes(p, x, x + rng.range(3, 5), z1 + 2.5);
 
-  // sinais do apocalipse: manchas de sangue, cadeiras tombadas e vidro quebrado
+  // bagunça da fuga: café derramado, cadeiras tombadas e vidro quebrado
   for (let i = 0; i < ctx.dense(18); i++) {
     const x = rng.range(ctx.x0, ctx.x1);
     const z = rng.chance(0.5) ? rng.range(z0 - 1.2, z0 + 0.6) : rng.range(z1 - 0.6, z1 + 1.8);
@@ -130,7 +130,7 @@ export function bancoTheme(ctx: EnvCtx): void {
         r,
         r,
         0.006,
-        0x5a0c0c,
+        0x9a7448,
         7,
         {
           noShadow: true,

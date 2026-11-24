@@ -8,6 +8,8 @@ export const SCALES = {
   dorian: [0, 2, 3, 5, 7, 9, 10],
   locrian: [0, 1, 3, 5, 6, 8, 10],
   hungarian: [0, 2, 3, 6, 7, 8, 11],
+  major: [0, 2, 4, 5, 7, 9, 11],
+  mixolydian: [0, 2, 4, 5, 7, 9, 10],
 } as const;
 
 // Padrões de 16 passos (semicolcheias). Bateria: 0 = nada, 1 = normal, 2 = acento.
@@ -32,13 +34,13 @@ export const MUSIC: Record<MusicId, MusicDef> = {
   },
   vila: {
     id: 'vila',
-    bpm: 96,
+    bpm: 104,
     root: 50, // Ré
-    scale: [...SCALES.harmonic],
-    progression: [0, 5, 3, 4],
+    scale: [...SCALES.major],
+    progression: [0, 3, 4, 0],
     bass: [0, R, R, 0, R, R, 1, R, 0, R, R, 0, R, 2, 1, R],
     lead: { wave: 'triangle', density: 0.3, octave: 2, seed: 11 },
-    pad: { wave: 'sawtooth', detune: 8 },
+    pad: { wave: 'triangle', detune: 5 },
     drums: {
       kick: [2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
       snare: [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1],
@@ -50,7 +52,7 @@ export const MUSIC: Record<MusicId, MusicDef> = {
     id: 'torre',
     bpm: 102,
     root: 48, // Dó
-    scale: [...SCALES.phrygian],
+    scale: [...SCALES.dorian],
     progression: [0, 1, 0, 6],
     bass: [0, R, 0, R, R, 0, R, R, 0, R, 0, R, 1, R, 2, R],
     lead: { wave: 'square', density: 0.28, octave: 2, seed: 23 },
@@ -80,17 +82,17 @@ export const MUSIC: Record<MusicId, MusicDef> = {
   },
   castelo: {
     id: 'castelo',
-    bpm: 88,
+    bpm: 100,
     root: 47, // Si
-    scale: [...SCALES.harmonic],
+    scale: [...SCALES.mixolydian],
     progression: [0, 3, 5, 4],
     bass: [0, R, R, R, 1, R, R, R, 0, R, R, R, 2, R, 1, R],
-    lead: { wave: 'sawtooth', density: 0.26, octave: 2, seed: 41 },
-    pad: { wave: 'sawtooth', detune: 14 },
+    lead: { wave: 'triangle', density: 0.26, octave: 2, seed: 41 },
+    pad: { wave: 'triangle', detune: 6 },
     drums: {
       kick: [2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
       snare: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0],
-      hat: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+      hat: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
     },
     bossBpm: 110,
   },
@@ -98,11 +100,11 @@ export const MUSIC: Record<MusicId, MusicDef> = {
     id: 'toxica',
     bpm: 100,
     root: 46, // Si bemol
-    scale: [...SCALES.locrian],
+    scale: [...SCALES.dorian],
     progression: [0, 1, 4, 1],
     bass: [0, R, 0, 0, R, 0, R, 1, 0, R, 0, 0, R, 2, R, 1],
     lead: { wave: 'square', density: 0.22, octave: 1, seed: 53 },
-    pad: { wave: 'sawtooth', detune: 20 },
+    pad: { wave: 'sawtooth', detune: 10 },
     drums: {
       kick: [2, 0, 0, 1, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0],
       snare: [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 0],
@@ -178,7 +180,7 @@ export const MUSIC: Record<MusicId, MusicDef> = {
     id: 'arena',
     bpm: 126,
     root: 45, // Lá
-    scale: [...SCALES.hungarian],
+    scale: [...SCALES.minor],
     progression: [0, 1, 5, 4],
     bass: [0, 0, 2, 0, R, 0, 1, 0, 0, 0, 2, 0, 3, 1, 0, 1],
     lead: { wave: 'sawtooth', density: 0.4, octave: 2, seed: 101 },

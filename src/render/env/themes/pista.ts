@@ -96,10 +96,10 @@ export function pistaTheme(ctx: EnvCtx): void {
       rot: [0, rng.range(0, Math.PI), 0],
     });
   }
-  // manchas de sangue na pista
+  // poças de água das garrafas derramadas
   for (let i = 0; i < ctx.dense(14); i++) {
     const r = rng.range(0.25, 0.5);
-    p.cyl(rng.range(ctx.x0, ctx.x1), 0.009, rng.range(z0, z1), r, r, 0.006, 0x5a0c0c, 8, { noShadow: true });
+    p.cyl(rng.range(ctx.x0, ctx.x1), 0.009, rng.range(z0, z1), r, r, 0.006, 0x7ab4d8, 8, { noShadow: true });
   }
 
   silhouetteRow(ctx, -34, 0x2a1e34, 8, 18, 9, 'city');
@@ -140,7 +140,7 @@ function flag(p: Pieces, x: number, z: number, color: number): void {
   p.box(x + 0.45, 2.85, z, 0.9, 0.55, 0.03, color, { noShadow: true });
 }
 
-/** Arquibancada: degraus de concreto com assentos coloridos e alguns torcedores caídos. */
+/** Arquibancada: degraus de concreto com assentos coloridos e alguns torcedores zumbis. */
 function stands(ctx: EnvCtx, x: number, w: number): void {
   const { p, rng } = ctx;
   p.box(x, 0.8, -8.6, w + 0.4, 1.6, 0.25, CONCRETE_D);

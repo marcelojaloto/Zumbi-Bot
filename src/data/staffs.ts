@@ -223,7 +223,7 @@ export const STAFFS: Record<StaffId, StaffDef> = {
     special: 'charmZombie',
     sfx: 'cast_necro',
     unlock: { kind: 'boss', bossId: 'conde' },
-    desc: 'Caveira teleguiada que põe um zumbi sob seu controle por 12 s (máx. 3).',
+    desc: 'Esfera teleguiada que põe um zumbi sob seu controle por 12 s (máx. 3).',
   },
 };
 

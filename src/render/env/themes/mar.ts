@@ -3,7 +3,7 @@ import { rock, silhouetteRow } from '../props';
 
 const H = Math.PI / 2;
 const CORAL = [0xff5a7a, 0xff9a3a, 0xc85aff, 0x3ad8c8, 0xffd23a];
-const KELP = [0x1e5a3a, 0x2a6a44, 0x184a32];
+const KELP = [0x3aa05a, 0x4ab86a, 0x2e8a4e];
 const STEEL = 0x4a5a66;
 const STEEL_D = 0x24303a;
 const GLASS = 0x8ae8ff;
@@ -148,7 +148,7 @@ export function marTheme(ctx: EnvCtx): void {
     if (inArena(x)) continue;
     const z = rng.range(-6.5, z0 - 0.9);
     if (rng.chance(0.55)) coral(ctx, x, z, rng.range(0.8, 1.6));
-    else rock(p, rng, x, z, rng.range(1, 2.2), rng.pick([0x2a4a4a, 0x34565a, 0x243e42]));
+    else rock(p, rng, x, z, rng.range(1, 2.2), rng.pick([0x5a8a8a, 0x6a9a9a, 0x4e7e80]));
     if (rng.chance(0.6)) kelp(ctx, x + rng.range(-1, 1), z - 0.6, rng.range(2, 4.5));
     if (rng.chance(0.35)) bubbles(ctx, x, z + 0.4, rng.int(4, 8));
   }
@@ -199,8 +199,8 @@ export function marTheme(ctx: EnvCtx): void {
 
   if (arena) coreChamber(ctx, arenaMid);
 
-  silhouetteRow(ctx, -24, 0x06202a, 6, 12, 5, 'hills');
-  silhouetteRow(ctx, -38, 0x041820, 9, 18, 9, 'hills');
+  silhouetteRow(ctx, -24, 0x2a8a9a, 6, 12, 5, 'hills');
+  silhouetteRow(ctx, -38, 0x3a9ab0, 9, 18, 9, 'hills');
 
   // frente: corais baixos e algas
   for (let x = ctx.x0 + 3; x < ctx.x1; x += rng.range(6, 11)) {

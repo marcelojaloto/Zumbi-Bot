@@ -3,7 +3,7 @@ import type { BossDef, BossStep, HitSpec, MeleeMoveDef, ProjectileSpec, ZoneSpec
 import { registerBoss } from './index';
 
 /**
- * Foice Sombria: giro rasteiro da foice que cobre os dois lados e boa parte da profundidade.
+ * Foice Giratória: giro rasteiro da foice que cobre os dois lados e boa parte da profundidade.
  * Mundo (escala 2,25): x −3,4…3,6 m, z ±2,0 m, até 1,35 m de altura. O aviso retangular centrado
  * no chefe (8,8 × 4,6 m) contém a área inteira; escapa-se mudando de plano, recuando ou com pulo duplo.
  */
@@ -28,7 +28,7 @@ const foice: MeleeMoveDef = {
 };
 MOVES[foice.id] = foice;
 
-/** Golpe rápido depois do Passo Sombrio (mundo: x −1,25…3,3 m, z ±1,2 m). */
+/** Golpe rápido depois do Passo Ligeiro (mundo: x −1,25…3,3 m, z ±1,2 m). */
 const ceifa: MeleeMoveDef = {
   id: 'conde_ceifa',
   pose: 'slash1',
@@ -51,7 +51,7 @@ const ceifa: MeleeMoveDef = {
 };
 MOVES[ceifa.id] = ceifa;
 
-/** Crânio uivante: lento e teleguiado. Dá para correr dele ou desviar mudando de plano cedo. */
+/** Esfera roxa: lenta e teleguiada. Dá para correr dela ou desviar mudando de plano cedo. */
 const cranio: ProjectileSpec = {
   visual: 'skull_necro',
   speed: 6.5,
@@ -72,7 +72,7 @@ const cranio: ProjectileSpec = {
 
 const cranioRapido: ProjectileSpec = { ...cranio, speed: 7.2, homing: 1.45 };
 
-/** Túmulos profanos: mãos esqueléticas que brotam do chão (aviso de 1,1 s). */
+/** Chão encantado: magia roxa que estoura do chão (aviso de 1,1 s). */
 const tumulo: ZoneSpec = {
   radius: 1.25,
   durationS: 0.6,
@@ -108,8 +108,8 @@ const contact: HitSpec = { damage: 8, dtype: 'necro', knockback: 6, hitstun: 14,
 
 export const conde = registerBoss({
   id: 'conde',
-  name: 'Conde Necrótico',
-  title: 'Senhor da Cripta',
+  name: 'Conde Purpurino',
+  title: 'Senhor do Castelo',
   family: 'zombie',
   element: 'necro',
   hp: 4800,
@@ -145,7 +145,7 @@ export const conde = registerBoss({
       patterns: [
         {
           id: 'foice_sombria',
-          name: 'Foice Sombria',
+          name: 'Foice Giratória',
           weight: 3,
           cooldownS: 4,
           steps: [
@@ -157,7 +157,7 @@ export const conde = registerBoss({
         },
         {
           id: 'cranios_uivantes',
-          name: 'Crânios Uivantes',
+          name: 'Esferas Roxas',
           weight: 2,
           cooldownS: 7,
           minRange: 2.5,
@@ -171,7 +171,7 @@ export const conde = registerBoss({
         },
         {
           id: 'passo_sombrio',
-          name: 'Passo Sombrio',
+          name: 'Passo Ligeiro',
           weight: 2,
           cooldownS: 8,
           steps: [
@@ -184,7 +184,7 @@ export const conde = registerBoss({
         },
         {
           id: 'ressurreicao',
-          name: 'Ressurreição',
+          name: 'Convidados do Baile',
           weight: 1,
           cooldownS: 16,
           steps: [
@@ -199,7 +199,7 @@ export const conde = registerBoss({
     },
     {
       untilHpFrac: 0,
-      name: 'Fome Eterna',
+      name: 'Grande Baile',
       speedMult: 1.2,
       damageMult: 1.15,
       idleBetweenS: [0.5, 1.0],
@@ -212,7 +212,7 @@ export const conde = registerBoss({
       patterns: [
         {
           id: 'foice_dupla',
-          name: 'Foice Sombria Dupla',
+          name: 'Foice Giratória Dupla',
           weight: 3,
           cooldownS: 5,
           steps: [
@@ -227,7 +227,7 @@ export const conde = registerBoss({
         },
         {
           id: 'cranios_uivantes2',
-          name: 'Coro de Crânios',
+          name: 'Coro de Esferas',
           weight: 2,
           cooldownS: 7,
           minRange: 2.5,
@@ -241,7 +241,7 @@ export const conde = registerBoss({
         },
         {
           id: 'passo_sombrio2',
-          name: 'Dança das Sombras',
+          name: 'Dança do Conde',
           weight: 2,
           cooldownS: 8,
           steps: [
@@ -258,7 +258,7 @@ export const conde = registerBoss({
         },
         {
           id: 'cemiterio_profano',
-          name: 'Cemitério Profano',
+          name: 'Chão Encantado',
           weight: 2,
           cooldownS: 9,
           steps: [
@@ -271,7 +271,7 @@ export const conde = registerBoss({
         },
         {
           id: 'ressurreicao2',
-          name: 'Ressurreição',
+          name: 'Convidados do Baile',
           weight: 1,
           cooldownS: 20,
           steps: [
