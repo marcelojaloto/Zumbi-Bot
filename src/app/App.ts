@@ -62,6 +62,7 @@ import { resultScreen } from '../ui/screens/ResultScreen';
 import { mapSelectScreen } from '../ui/screens/MapSelectScreen';
 import { creditsScreen } from '../ui/screens/CreditsScreen';
 import { rankingScreen, type RankingMode } from '../ui/screens/RankingScreen';
+import { ageRating } from '../ui/ageRating';
 import { workshopScreen } from '../ui/screens/WorkshopScreen';
 import { chestScreen } from '../ui/screens/ChestScreen';
 import { openChest, type ChestPrize } from './chest';
@@ -678,6 +679,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
         ),
       ),
       ...this.profile.notices.map((n) => el('p', { class: 'muted', style: 'color:#ffb02a' }, t(n))),
+      ageRating(),
       el(
         'div',
         { class: 'menu-footer muted' },

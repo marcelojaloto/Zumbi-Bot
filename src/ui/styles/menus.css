@@ -688,6 +688,8 @@
   text-align: right;
 }
 .menu-screen .menu-footer {
+  left: 260px;
+  right: 260px;
   text-align: center;
 }
 /* botões translúcidos: o cenário 3D aparece por trás */
@@ -717,6 +719,40 @@
     grid-column: 1 / -1;
   }
 }
+/* classificação indicativa, no canto inferior esquerdo */
+.age-rating {
+  position: absolute;
+  left: max(14px, env(safe-area-inset-left, 0px));
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 230px;
+  font-size: 11px;
+  line-height: 1.25;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+.age-rating small {
+  display: block;
+  font-size: 10px;
+  opacity: 0.75;
+}
+.age-badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  font-family: var(--title-font);
+  font-size: 18px;
+  font-weight: normal;
+  color: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
+}
+.age-10 {
+  background: #00a0e3;
+}
 .screen.splash-screen {
   background: radial-gradient(circle at 50% 45%, rgba(4, 5, 10, 0.2), rgba(4, 5, 10, 0.85));
 }
@@ -729,6 +765,9 @@
   }
   .menu-group h2 {
     text-align: center;
+  }
+  .menu-screen .menu-footer {
+    display: none;
   }
 }
 .ng-row {

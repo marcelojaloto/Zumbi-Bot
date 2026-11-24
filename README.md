@@ -261,7 +261,9 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
 - **Menu:** cinco grupos, cada botão com ícone: **Jogar** (Continuar, Jogar online, Mapas e Personagens),
   **Customização** (Oficina, Loja e Guarda-roupa), **Ranking** (Pessoal e Global), **Configurações** (Áudio,
   Controles, com a Ajuda das teclas, Gráficos, Jogo, Manual e Instalar o jogo) e **Créditos**. A seta no canto
-  superior esquerdo volta, como o Esc, o B do controle e o Voltar do Android.
+  superior esquerdo volta, como o Esc, o B do controle e o Voltar do Android. No canto inferior esquerdo do menu fica
+  a classificação indicativa sugerida: **10 anos** (violência fantasiosa e medo), que deve bater com a do
+  questionário de classificação das lojas.
 - **Idiomas:** português e inglês, escolhidos pelo idioma do navegador e trocáveis em Configurações > Jogo.
 - **Dificuldade:** Fácil, Normal (padrão), Difícil e Insano; escolha na tela de mapas ou em Configurações >
   Jogo. Nas mais fáceis os chefes têm menos vida e atacam com mais pausa; ao perder, o jogo oferece tentar de
