@@ -1125,7 +1125,7 @@ a.btn {
 
 /* ---------------------------------------------------------------- telas baixas (celular deitado) */
 @media (max-height: 500px) {
-  /* guarda-roupa e loja: título, barra de compra e botões compactos para sobrar espaço para a lista */
+  /* vestiário e loja: título, barra de compra e botões compactos para sobrar espaço para a lista */
   .wr-panel {
     gap: 6px;
     padding: 10px 12px;

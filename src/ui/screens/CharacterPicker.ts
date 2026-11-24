@@ -67,7 +67,7 @@ export function nextCharacter(
 /** Giro por pixel arrastado e por segundo com a tecla (ou o direcional) segurada. */
 const TURN_PER_PX = 0.012;
 const TURN_SPEED = 2.8;
-/** Teclas de giro: na escolha de personagem ←/→ (e A/D); na loja e no guarda-roupa, onde as setas andam pela lista, Q/E. */
+/** Teclas de giro: na escolha de personagem ←/→ (e A/D); na loja e no vestiário, onde as setas andam pela lista, Q/E. */
 export const SPIN_ARROWS = { left: ['ArrowLeft', 'KeyA'], right: ['ArrowRight', 'KeyD'] };
 export const SPIN_QE = { left: ['KeyQ'], right: ['KeyE'] };
 
@@ -428,7 +428,7 @@ export interface CharactersHost extends PickerHost {
   openWorkshop(c?: CharacterId): void;
 }
 
-/** Ficha de Personagem aberta pelo menu Personagens: Guarda-roupa, Loja, Oficina, Mapas e Jogar. */
+/** Ficha de Personagem aberta pelo menu Personagens: Vestiário, Loja, Oficina, Mapas e Jogar. */
 export function characterSheetScreen(host: CharactersHost, char: CharacterId): Screen {
   return sheetScreen(host, {
     id: 'sheet',
@@ -439,7 +439,7 @@ export function characterSheetScreen(host: CharactersHost, char: CharacterId): S
       el(
         'div',
         { class: 'row-btns cs-more' },
-        iconBtn('👕', t('Guarda-roupa'), () => host.openWardrobe(), 'btn small'),
+        iconBtn('👕', t('Vestiário'), () => host.openWardrobe(), 'btn small'),
         iconBtn('🛒', t('Loja'), () => host.openShop(), 'btn small'),
         iconBtn('🔧', t('Oficina'), () => host.openWorkshop(cur()), 'btn small'),
       ),

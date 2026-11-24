@@ -78,7 +78,7 @@ Web Audio.
   está na ficha do personagem.
 
   **Personagem secreto:** terminando o jogo pela primeira vez, o último capítulo do final lendário revela o
-  **Prodígio** (Jacobb Amici), um adolescente loiro de olhos azuis que luta caratê com magia arcana. O disfarce dele vai para o guarda-roupa e veste quem quiser:
+  **Prodígio** (Jacobb Amici), um adolescente loiro de olhos azuis que luta caratê com magia arcana. O disfarce dele vai para o Vestiário e veste quem quiser:
   **peruca castanho-escura** (o mesmo penteado dele, com sobrancelhas pretas para os fios loiros não entregarem o
   disfarce) e **lentes verdes ou castanhas**.
 
@@ -166,7 +166,7 @@ tecla M; no celular, o minimapa começa oculto e aparece no botão 🗺.
 **Escolha do personagem:** a tela é como a loja: o personagem aparece em 3D no espaço livre e a ficha ao lado
 (**◀ título ▶**, rosto, nome e sobrenome, atributos, especial e história; a ficha rola quando não cabe na tela). Para **girar** o personagem, arraste-o para os lados com o dedo (ou o mouse), ou segure **←/→**
 no teclado ou o direcional do controle para os lados; para **trocar**, use as setas ◀ ▶ ou **↑/↓**. Na loja e no
-guarda-roupa o boneco também gira (arrastar, **Q/E** ou o analógico direito). Na sala online, o botão
+Vestiário o boneco também gira (arrastar, **Q/E** ou o analógico direito). Na sala online, o botão
 **👤 Personagem** (ou tocar no nome) abre a mesma tela.
 
 **Especiais à distância com o mouse:** o Raio Laser do Ciborgue e a bola de fogo da Maga saem para o lado da mira, e
@@ -261,7 +261,7 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
   [docs/APP_STORE.md](docs/APP_STORE.md)). Até lá, jogue no Safari (acima).
 - **Menu:** cinco grupos, cada botão com ícone, todos do mesmo tamanho e um embaixo do outro: **Jogar** (Continuar,
   Jogar online, Mapas, Personagens e, depois do OMEGA-Z, o Novo Jogo+), **Customização** (Oficina, Loja e
-  Guarda-roupa), **Ranking** (Pessoal e Global), **Configurações** (Áudio, Controles, com a Ajuda das teclas, Gráficos,
+  Vestiário), **Ranking** (Pessoal e Global), **Configurações** (Áudio, Controles, com a Ajuda das teclas, Gráficos,
   Jogo, Manual e Instalar o jogo) e **Créditos**. O título ZUMBI BOT e o status do jogador ficam parados no alto
   enquanto se navega pelos grupos, e o título de cada grupo aparece sempre no mesmo lugar, logo abaixo; quando a
   lista não cabe, só ela rola. A seta branca no canto superior esquerdo volta, como o Esc, o B do controle e o Voltar

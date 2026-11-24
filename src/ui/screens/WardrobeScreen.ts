@@ -40,7 +40,7 @@ export interface WardrobeHost extends UiHost {
 }
 
 /**
- * Girar o boneco na loja e no guarda-roupa, para ver o visual todo: arrastar para os lados no espaço livre, Q/E no
+ * Girar o boneco na loja e no vestiário, para ver o visual todo: arrastar para os lados no espaço livre, Q/E no
  * teclado ou o analógico direito do controle (as setas continuam andando pela lista).
  */
 function spinner(host: WardrobeHost, screen: HTMLElement, panel: HTMLElement) {
@@ -92,7 +92,7 @@ function card(
   );
 }
 
-/** Guarda-roupa: equipar cosméticos com prévia 3D, vender repetidos e ver o arsenal. */
+/** Vestiário: equipar cosméticos com prévia 3D, vender repetidos e ver o arsenal. */
 export function wardrobeScreen(host: WardrobeHost): Screen {
   const prof = host.profile;
   const body = el('div', { class: 'wr-body' });
@@ -245,7 +245,7 @@ export function wardrobeScreen(host: WardrobeHost): Screen {
   const panel = el(
     'div',
     { class: 'wr-panel' },
-    el('h2', {}, t('GUARDA-ROUPA')),
+    el('h2', {}, t('VESTIÁRIO')),
     scrap,
     el('p', { class: 'muted shop-tip' }, spinHint(host)),
     tabs,

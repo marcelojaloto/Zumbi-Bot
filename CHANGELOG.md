@@ -5,6 +5,7 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 
 ## 1.7, atualização de 24/11/2026
 
+- O **Guarda-roupa** passa a se chamar **Vestiário**.
 - **Menus:** os botões ficam um embaixo do outro, todos do mesmo tamanho. O título ZUMBI BOT e o status do jogador
   ficam parados no alto enquanto se navega, e o título de cada grupo aparece sempre no mesmo lugar, logo abaixo; quando
   a lista não cabe, só ela rola, com uma barra de rolagem mais visível.

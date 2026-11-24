@@ -31,7 +31,7 @@ interface Walker {
 }
 
 /**
- * Cenário 3D atrás dos menus: o personagem do jogador no mapa atual, zumbis vagando, prévia do guarda-roupa e da
+ * Cenário 3D atrás dos menus: o personagem do jogador no mapa atual, zumbis vagando, prévia do vestiário e da
  * tela de seleção.
  */
 export class MenuScene {
@@ -50,7 +50,7 @@ export class MenuScene {
   private blobs: BlobShadows;
   private t = 0;
   private spin = 0;
-  /** 0 = menu (plano geral), 1 = guarda-roupa (close no robô). */
+  /** 0 = menu (plano geral), 1 = vestiário (close no robô). */
   focus = 0;
   /** Prévia de um item das costas (capa, asas): o boneco se vira de costas. */
   back = false;
@@ -199,7 +199,7 @@ export class MenuScene {
   }
 
   /**
-   * Close do guarda-roupa e da loja: o painel ocupa a direita da tela, então a câmera anda para o boneco ficar no
+   * Close do vestiário e da loja: o painel ocupa a direita da tela, então a câmera anda para o boneco ficar no
    * meio do espaço livre à esquerda. Em telas estreitas o painel fica embaixo, na largura toda: sem deslocar.
    */
   private panelShift(e: Entity): number {
@@ -216,7 +216,7 @@ export class MenuScene {
   frame(dt: number): void {
     this.t += dt;
     this.focusV = damp(this.focusV, this.focus, 0.15, dt);
-    // robô: parado, levemente virado para a câmera; no guarda-roupa gira devagar
+    // robô: parado, levemente virado para a câmera; no vestiário gira devagar
     const e = this.robotE;
     // com vários jogadores, todos lado a lado (P1 à esquerda), centrados no enquadramento
     const n = 1 + this.extras.length;
@@ -265,12 +265,12 @@ export class MenuScene {
       this.blobs.add(t.x, t.z, 0.4, 0);
     }
     this.blobs.end();
-    // câmera: plano geral (robô à esquerda) ↔ close do guarda-roupa
+    // câmera: plano geral (robô à esquerda) ↔ close do vestiário
     const f = this.focusV;
     const cam = this.r.cam;
     const sv = this.stageV;
     cam.zoom = (1 - f * 0.45) * (1 - sv) + 0.8 * sv;
-    // seleção: fila centralizada e mais alta na tela; senão robô à esquerda (menu) ou em close (guarda-roupa)
+    // seleção: fila centralizada e mais alta na tela; senão robô à esquerda (menu) ou em close (vestiário)
     const menuX = n > 1 ? 21 : e.t.x + 2.5 - f * 2.4 + f * this.panelShift(e);
     // close: o boneco inteiro, da cabeça (itens da cabeça) aos pés
     cam.update(menuX * (1 - sv) + 21 * sv, f * 0.45 * (1 - sv) - 1.2 * sv, e.t.z * 0.3 + f * 0.2, dt);

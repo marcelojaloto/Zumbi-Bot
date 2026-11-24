@@ -50,7 +50,7 @@ test('menu Personagens: rostos, apelido, nome e título; a ficha abre com o rost
   await expect(page.getByText('ESCOLHA SEU PERSONAGEM')).toHaveCount(0);
   await expect(page.locator('.cs-full')).toHaveText('Lívia Vesper');
   await expect(page.locator('.cs-story')).toContainText('Academia Arcana');
-  for (const b of ['Voltar', 'Guarda-roupa', 'Loja', 'Oficina', 'Mapas', 'Jogar'])
+  for (const b of ['Voltar', 'Vestiário', 'Loja', 'Oficina', 'Mapas', 'Jogar'])
     await expect(page.getByRole('button', { name: b, exact: true })).toBeVisible();
   // o mesmo rosto do cartão
   await expect(page.locator('.cs-avatar img')).toHaveAttribute(

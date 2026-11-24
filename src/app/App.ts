@@ -535,7 +535,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     this.menuScene.setCosmetics(this.profile.save.cosmetics.equipped);
   }
 
-  /** Veste o boneco do menu (guarda-roupa e loja); `back` vira o boneco de costas (capas, asas). */
+  /** Veste o boneco do menu (vestiário e loja); `back` vira o boneco de costas (capas, asas). */
   previewCosmetics(eq: Partial<Record<CosmeticSlot, CosmeticId>>, back = false): void {
     this.menuScene?.setCosmetics(eq);
     if (this.menuScene) this.menuScene.back = back;
@@ -764,7 +764,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     this.menuGroup('menu-custom', t('CUSTOMIZAÇÃO'), [
       iconBtn('🔧', t('Oficina'), () => this.openWorkshop()),
       iconBtn('🛒', t('Loja'), () => this.openShop()),
-      iconBtn('👕', t('Guarda-roupa'), () => this.openWardrobe()),
+      iconBtn('👕', t('Vestiário'), () => this.openWardrobe()),
     ]);
   }
 

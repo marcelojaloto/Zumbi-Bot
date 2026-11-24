@@ -15,7 +15,7 @@ export const EN: Record<string, string> = {
   Sucata: 'Scrap',
   'Continuar: {map}': 'Continue: {map}',
   Mapas: 'Maps',
-  'Guarda-roupa': 'Wardrobe',
+  Vestiário: 'Wardrobe',
   Loja: 'Shop',
   Ranking: 'Leaderboard',
   Configurações: 'Settings',
@@ -246,7 +246,7 @@ export const EN: Record<string, string> = {
   Jogo: 'Game',
   CONFIGURAÇÕES: 'SETTINGS',
 
-  // ------------------------------------------------------------------ guarda-roupa e loja
+  // ------------------------------------------------------------------ vestiário e loja
   Mago: 'Wizard',
   Zumbi: 'Zombie',
   Chefe: 'Boss',
@@ -267,7 +267,7 @@ export const EN: Record<string, string> = {
     'No items of this type yet. Defeat zombies and bosses or visit the Shop!',
   'Vender {name} (+{n} sucata)': 'Sell {name} (+{n} scrap)',
   Arsenal: 'Arsenal',
-  'GUARDA-ROUPA': 'WARDROBE',
+  VESTIÁRIO: 'WARDROBE',
   '{name} equipado.': '{name} equipped.',
   'Você comprou {name}!': 'You bought {name}!',
   'Sucata insuficiente.': 'Not enough scrap.',
