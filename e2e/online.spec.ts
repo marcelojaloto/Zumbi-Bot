@@ -216,9 +216,9 @@ test('jogo online: código errado avisa e quem sai no meio fica fora da partida'
   await expect(guest.locator('.cs-head .cs-nav-name')).toHaveText('Maga');
   await guest.getByRole('button', { name: 'Voltar' }).click();
   await guest.locator('.room-me .lc-name-btn').click();
-  await guest.locator('.cs-title-row .lc-arrow').nth(1).click();
-  await guest.locator('.cs-title-row .lc-arrow').nth(1).click();
-  await guest.locator('.cs-title-row .lc-arrow').nth(1).click();
+  await guest.locator('.hero-stage .hs-arrow').nth(1).click();
+  await guest.locator('.hero-stage .hs-arrow').nth(1).click();
+  await guest.locator('.hero-stage .hs-arrow').nth(1).click();
   await expect(guest.locator('.cs-head .cs-nav-name')).toHaveText('Ciborgue');
   await guest.getByRole('button', { name: 'Escolher' }).click();
   await expect(guest.locator('.room-me .lc-name')).toHaveText('Ciborgue');
