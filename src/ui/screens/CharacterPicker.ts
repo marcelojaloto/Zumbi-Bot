@@ -211,6 +211,8 @@ export interface CharacterSheet {
   el: HTMLElement;
   /** O painel da ficha (arrastar nele não gira o boneco). */
   panel: HTMLElement;
+  /** As setas ◀ ▶ dos lados do boneco e o nome embaixo dele. */
+  stage: HTMLElement;
   render: () => void;
   /** Rola a ficha (teclado: Page Up/Down; controle: analógico direito). */
   scroll: (dy: number) => void;
@@ -292,6 +294,7 @@ export function characterSheet(o: {
   return {
     el: root,
     panel,
+    stage: stage.el,
     render,
     scroll: (dy) => body.scrollBy({ top: dy, behavior: 'smooth' }),
   };
