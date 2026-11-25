@@ -927,6 +927,13 @@ export const EN: Record<string, string> = {
   'Silenciar {name} só neste aparelho': 'Mute {name} on this device only',
   'Voltar a ouvir {name} neste aparelho': 'Hear {name} again on this device',
   'Política de privacidade': 'Privacy policy',
+  'O ranking global recebe o seu melhor resultado com um código anônimo do aparelho. Para menores de 18 anos, ou quando o jogo não sabe a idade, um adulto responsável precisa autorizar.':
+    'The global ranking gets your best result with an anonymous code for this device. For players under 18, or when the game does not know the age, a responsible adult must allow it.',
+  'Você é o adulto responsável por quem joga neste aparelho e autoriza enviar o melhor resultado, com um código anônimo, para o ranking global?':
+    'Are you the responsible adult for the player on this device, and do you allow sending the best result, with an anonymous code, to the global ranking?',
+  'Menos de 13 anos': 'Under 13',
+  '13 a 17 anos': '13 to 17',
+  '18 anos ou mais': '18 or older',
   '13 anos ou mais': '13 or older',
   'Para menores de 6 anos o chat de voz fica desligado. Dá para jogar online normalmente.':
     'Voice chat stays off for children under 6. They can still play online normally.',

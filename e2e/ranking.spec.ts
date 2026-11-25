@@ -1,5 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
-import { DEBUG_QUERY, collectErrors, continueGame, openChest, openMenu } from './helpers';
+import { DEBUG_QUERY, collectErrors, continueGame, openChest, openMenu, solveParentGate } from './helpers';
 
 type G = {
   isReady(): boolean;
@@ -122,7 +122,13 @@ test('ranking: nome só no fim da jornada, salvo sozinho, e o ranking global', a
   await expect(rows.nth(0)).not.toContainText('Bia');
 
   // participar: o melhor resultado vai sem o nome; só neste aparelho a linha mostra o nome escrito
+  // no site a idade é desconhecida: sem o adulto autorizar, nada vai para o banco
   await page.getByRole('button', { name: 'Participar' }).click();
+  await page.getByRole('button', { name: 'Cancelar', exact: true }).click();
+  expect(state.puts).toEqual([]);
+  await page.getByRole('button', { name: 'Participar' }).click();
+  await page.getByRole('button', { name: 'Menos de 13 anos', exact: true }).click();
+  await solveParentGate(page);
   await expect.poll(() => state.puts).toEqual(['aparelho1']);
   expect(db.aparelho1).not.toHaveProperty('name');
   await expect(rows).toHaveCount(2);

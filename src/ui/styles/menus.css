@@ -1171,6 +1171,16 @@
 .rk-confirm[hidden] {
   display: none;
 }
+.rk-consent {
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: min(720px, 94vw);
+}
+.rk-consent-rule {
+  flex-basis: 100%;
+  margin: 0;
+  text-align: center;
+}
 .rk-empty {
   text-align: center;
   padding: 24px;

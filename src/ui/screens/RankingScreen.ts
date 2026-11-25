@@ -3,6 +3,7 @@ import { getCharacter } from '../../data/characters';
 import type { CharacterId } from '../../data/types';
 import type { GlobalEntry, GlobalRanking } from '../../net/globalRanking';
 import { el, fmtInt } from '../dom';
+import { parentGate } from '../parentGate';
 import { PRIVACY_URL } from '../links';
 import { locale, t } from '../../i18n';
 import type { Screen } from '../ScreenManager';
@@ -69,6 +70,8 @@ export function rankingScreen(host: RankingHost, mode: RankingMode = 'personal')
   let alive = true;
   /** Pedindo confirmação para sair do ranking global. */
   let leaving = false;
+  /** Esperando o adulto responsável autorizar a entrada no ranking global. */
+  let consenting = false;
 
   const title = el('h2', {});
   const body = el('div', { class: 'rk-body' });
@@ -87,7 +90,7 @@ export function rankingScreen(host: RankingHost, mode: RankingMode = 'personal')
     data: { nav: '' },
     onclick: () => {
       if (global.joined) leaving = true;
-      else busy(global.join(prof.ranking.entries[0]));
+      else void askConsent();
       render();
     },
   });
@@ -121,6 +124,62 @@ export function rankingScreen(host: RankingHost, mode: RankingMode = 'personal')
       t('Cancelar'),
     ),
   );
+
+  // o código anônimo do aparelho é dado pessoal: menor de 18 ou idade desconhecida, só com um adulto autorizando
+  // (GDPR art. 8, LGPD art. 14, COPPA). A faixa e a autorização não são guardadas nem enviadas.
+  const consent = el('div', { class: 'row-btns rk-confirm rk-consent', hidden: true });
+  const stopConsent = () => {
+    consenting = false;
+    render();
+  };
+  const enter = () => {
+    consenting = false;
+    busy(global.join(prof.ranking.entries[0]));
+    render();
+  };
+  const ageBtn = (label: string) =>
+    el(
+      'button',
+      {
+        class: 'btn small',
+        data: { nav: '' },
+        onclick: () => {
+          consent.replaceChildren(
+            parentGate(
+              t(
+                'Você é o adulto responsável por quem joga neste aparelho e autoriza enviar o melhor resultado, com um código anônimo, para o ranking global?',
+              ),
+              enter,
+              stopConsent,
+            ),
+          );
+          consent.querySelector('input')?.focus();
+        },
+      },
+      label,
+    );
+  const askConsent = async () => {
+    await host.voiceGate.check();
+    if (!alive || global.joined) return;
+    if (host.voiceGate.adult) return enter();
+    consenting = true;
+    consent.replaceChildren(
+      el(
+        'p',
+        { class: 'rk-consent-rule' },
+        t(
+          'O ranking global recebe o seu melhor resultado com um código anônimo do aparelho. Para menores de 18 anos, ou quando o jogo não sabe a idade, um adulto responsável precisa autorizar.',
+        ),
+      ),
+      el('span', {}, t('Qual a idade de quem joga neste aparelho?')),
+      ageBtn(t('Menos de 13 anos')),
+      ageBtn(t('13 a 17 anos')),
+      ageBtn(t('18 anos ou mais')),
+      el('button', { class: 'btn small', data: { nav: '' }, onclick: stopConsent }, t('Cancelar')),
+    );
+    render();
+    consent.querySelector<HTMLElement>('button')?.focus();
+  };
 
   const table = (heads: string[], rows: HTMLElement[]) =>
     el(
@@ -261,7 +320,8 @@ export function rankingScreen(host: RankingHost, mode: RankingMode = 'personal')
     const personal = mode === 'personal';
     title.textContent = personal ? t('RANKING PESSOAL') : t('RANKING GLOBAL');
     career.hidden = !personal;
-    join.hidden = personal || !globalList;
+    join.hidden = personal || !globalList || consenting;
+    consent.hidden = personal || !consenting;
     join.textContent = global.joined ? t('Sair do ranking global') : t('Participar');
     join.classList.toggle('primary', !global.joined);
     confirmLeave.hidden = personal || !leaving;
@@ -306,6 +366,7 @@ export function rankingScreen(host: RankingHost, mode: RankingMode = 'personal')
     body,
     note,
     confirmLeave,
+    consent,
     el('div', { class: 'row-btns' }, join),
   );
   render();

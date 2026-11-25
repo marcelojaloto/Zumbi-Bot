@@ -32,6 +32,9 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - **Chat de voz e idade:** quando a loja não informa a idade, o adulto que libera a voz diz a idade de quem joga. A
   voz é permitida a partir de 13 anos; de 6 a 12 anos, a criança só ouve a sala, com o adulto acompanhando, e o
   microfone fica desligado; abaixo de 6, fica desligada.
+- **Ranking global:** quando a loja não confirma que quem joga tem 18 anos ou mais, como no site, o **Participar**
+  pede a autorização de um adulto responsável, que diz a idade de quem joga e responde a uma conta. Sem ela, nada é
+  enviado. Sair do ranking continua livre.
 - A **Placa de Lápide** sai do Vestiário.
 - **Jogo online:** cada jogador da sala ganha um botão **🔕 Silenciar**, que para de ouvi-lo só neste aparelho, até
   sair da sala. A sala mostra um lembrete para jogar só com quem você conhece e não contar nome, endereço ou escola,

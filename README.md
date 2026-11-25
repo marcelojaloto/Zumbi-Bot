@@ -115,8 +115,9 @@ Web Audio.
   temporada**; só aí o jogo mostra a posição e o nome, já salvo com o último nome usado (ou o apelido do personagem).
   Tocar no nome abre o teclado, com a caixa no alto da tela. O **Ranking Pessoal** fica no aparelho, com o nome; o
   **Ranking Global** mostra o melhor de cada jogador que tocou em **Participar**, pelos apelidos dos personagens (o
-  nome não sai do aparelho; Firebase, veja [docs/RANKING_GLOBAL.md](docs/RANKING_GLOBAL.md)). Os dois ficam no menu
-  **Ranking**; sem o Firebase configurado, ele abre direto o pessoal.
+  nome não sai do aparelho; Firebase, veja [docs/RANKING_GLOBAL.md](docs/RANKING_GLOBAL.md)). Quando a loja não
+  confirma que quem joga tem 18 anos ou mais, como no site, o Participar pede a autorização de um adulto responsável.
+  Os dois ficam no menu **Ranking**; sem o Firebase configurado, ele abre direto o pessoal.
 - **Música procedural** por mapa, que ganha camadas durante as lutas e acelera contra os chefes.
 
 ## Controles

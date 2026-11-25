@@ -14,6 +14,10 @@ igual. Os resultados feitos sem internet ficam guardados e são enviados depois.
 - O ranking global começa **desligado**. O jogador entra tocando em **Participar**, na tela do Ranking Global, e
   sai quando quiser em **Sair do ranking global**. É a configuração mais protetiva por padrão, como pede o ECA
   Digital (Lei 15.211/2025, art. 7º).
+- O código anônimo do aparelho é dado pessoal. Quando a loja não confirma que quem joga tem 18 anos ou mais (no site
+  a idade nunca é conhecida), o **Participar** pede um adulto responsável: ele diz a faixa de idade e responde à conta
+  da trava para pais (`src/ui/parentGate.ts`). Sem isso, nada vai para o banco (GDPR art. 8, LGPD art. 14, COPPA).
+  A faixa e a autorização não são guardadas.
 - Ao participar, o aparelho entra com uma **conta anônima** do Firebase (sem e-mail, sem dados; só um código
   aleatório). Sempre que uma jornada termina e vira o **1º lugar do Ranking Pessoal**, o jogo manda esse resultado
   para `ranking/<código do aparelho>` no banco.
