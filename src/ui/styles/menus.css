@@ -2210,6 +2210,28 @@ a.btn {
 .rp-mic.off {
   opacity: 0.45;
 }
+.rp-silence {
+  padding: 2px 8px;
+  font-size: 12px;
+  min-height: 0;
+}
+.rp-silence[hidden] {
+  display: none;
+}
+.rp.silenced .rp-name {
+  opacity: 0.6;
+}
+.online-reminder {
+  margin: 0;
+  padding: 6px 10px;
+  max-width: min(640px, 92vw);
+  font-size: 14px;
+  text-align: center;
+  color: #ffe9a8;
+  background: rgba(255, 210, 74, 0.1);
+  border: 1px solid rgba(255, 210, 74, 0.35);
+  border-radius: 8px;
+}
 .rp.talking {
   box-shadow:
     0 0 0 2px #5aff9a,

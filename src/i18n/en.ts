@@ -848,10 +848,10 @@ export const EN: Record<string, string> = {
   'Toque em "Permitir" quando o aparelho pedir o microfone.':
     'Tap "Allow" when the device asks for the microphone.',
   'Microfone ligado: todos da sala ouvem você.': 'Mic on: everyone in the room can hear you.',
-  'Todos da sala se ouvem. Para falar, ligue o microfone (o aparelho pede permissão na primeira vez).':
-    'Everyone in the room can hear each other. To talk, turn your mic on (the device asks for permission the first time).',
-  'Todos da sala se ouvem. Ligue o microfone para falar.':
-    'Everyone in the room can hear each other. Turn your mic on to talk.',
+  'Todos da sala se ouvem. Para falar, ligue o microfone (o aparelho pede permissão na primeira vez). O microfone é usado só para conversar com os jogadores desta sala, e a voz não é gravada.':
+    'Everyone in the room can hear each other. To talk, turn your mic on (the device asks for permission the first time). The mic is only used to talk with the players in this room, and voice is not recorded.',
+  'Todos da sala se ouvem. Ligue o microfone para falar: ele é usado só para conversar com os jogadores desta sala, e a voz não é gravada.':
+    'Everyone in the room can hear each other. Turn your mic on to talk: it is only used to talk with the players in this room, and voice is not recorded.',
   'CRIAR SALA': 'CREATE ROOM',
   'Escolha como vai ser a partida. Dá para mudar depois, na sala.':
     'Choose how the match will be. You can change it later, in the room.',
@@ -916,6 +916,12 @@ export const EN: Record<string, string> = {
   'Menos de 6 anos': 'Under 6',
   '6 a 11 anos': '6 to 11',
   Entendi: 'Got it',
+  'Jogue só com quem você conhece e não conte seu nome, endereço ou escola para ninguém.':
+    'Only play with people you know, and never tell anyone your name, address or school.',
+  Silenciar: 'Mute',
+  Ouvir: 'Unmute',
+  'Silenciar {name} só neste aparelho': 'Mute {name} on this device only',
+  'Voltar a ouvir {name} neste aparelho': 'Hear {name} again on this device',
   '12 anos ou mais': '12 or older',
   'Para menores de 6 anos o chat de voz fica desligado. Dá para jogar online normalmente.':
     'Voice chat stays off for children under 6. They can still play online normally.',

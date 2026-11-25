@@ -29,6 +29,9 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   voz é permitida a partir de 12 anos; de 6 a 11 anos, só com o adulto acompanhando, e a sala mostra esse aviso;
   abaixo de 6, fica desligada.
 - A **Placa de Lápide** sai do Vestiário.
+- **Jogo online:** cada jogador da sala ganha um botão **🔕 Silenciar**, que para de ouvi-lo só neste aparelho, até
+  sair da sala. A sala mostra um lembrete para jogar só com quem você conhece e não contar nome, endereço ou escola,
+  e a linha do microfone explica que ele serve só para conversar com a sala e que a voz não é gravada.
 
 ## 1.7, atualização de 23/11/2026
 

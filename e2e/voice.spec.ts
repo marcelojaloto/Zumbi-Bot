@@ -103,6 +103,13 @@ test('chat de voz: opções da sala, todos ouvem todos (3 aparelhos), microfone,
   await expect.poll(async () => (await voice(guest)).peers, { timeout: 30_000 }).toBe(1);
   expect((await voice(guest)).mic).toBe(false);
   await expect(host.locator('.rp[data-slot="1"] .rp-mic')).toHaveText('🔇');
+  // silenciar alguém vale só neste aparelho, e dá para voltar a ouvir
+  const mute = host.locator('.rp[data-slot="1"] .rp-silence');
+  await mute.click();
+  await expect(mute).toContainText('Ouvir');
+  await mute.click();
+  await expect(mute).toContainText('Silenciar');
+  await expect(host.locator('.online-reminder')).toBeVisible();
 
   // convidado liga o microfone: o anfitrião vê 🎤 e ouve a voz (o bipe do microfone falso)
   await guest.getByRole('button', { name: /Ligar microfone/ }).click();

@@ -197,6 +197,8 @@ export class VoiceChat {
   private talking = false;
   private volume = 1;
   private muted = false;
+  /** Aparelhos silenciados aqui (pelo id de voz: quem entrar depois na mesma vaga não fica mudo). */
+  private silenced = new Set<string>();
   private disposed = false;
   private box: HTMLElement;
   private lastKey = '';
@@ -298,11 +300,28 @@ export class VoiceChat {
     return this.micOn;
   }
 
-  /** Alguém está falando agora (este aparelho inclusive, com o microfone ligado). */
+  /** Alguém está falando agora (este aparelho inclusive, com o microfone ligado). Silenciado não conta. */
   speaking(slot: PlayerSlot): boolean {
     if (slot === this.mySlot) return this.micOn && this.meDet.speaking;
-    for (const r of this.remotes.values()) if (this.slots.get(r.pid) === slot && r.det.speaking) return true;
+    for (const r of this.remotes.values())
+      if (this.slots.get(r.pid) === slot && r.det.speaking && !this.silenced.has(r.pid)) return true;
     return false;
+  }
+
+  /** O jogador desta vaga está silenciado neste aparelho. */
+  isSilenced(slot: PlayerSlot): boolean {
+    return this.members.some((m) => m.slot === slot && this.silenced.has(m.pid));
+  }
+
+  /** Silencia (ou volta a ouvir) um jogador só neste aparelho, até sair da sala. */
+  silence(slot: PlayerSlot, on: boolean): void {
+    for (const m of this.members) {
+      if (m.slot !== slot) continue;
+      if (on) this.silenced.add(m.pid);
+      else this.silenced.delete(m.pid);
+    }
+    for (const r of this.remotes.values()) this.applyVolume(r);
+    this.changed();
   }
 
   /** Pessoas com o áudio chegando. */
@@ -506,7 +525,7 @@ export class VoiceChat {
     for (const r of this.remotes.values()) {
       if (!r.stream) continue;
       this.sampleRemote(r);
-      if (r.det.speaking) talking = true;
+      if (r.det.speaking && !this.silenced.has(r.pid)) talking = true;
     }
     if (talking !== this.talking) {
       this.talking = talking;
@@ -631,7 +650,7 @@ export class VoiceChat {
   private applyVolume(r: Remote): void {
     if (!r.audio) return;
     r.audio.volume = this.volume;
-    r.audio.muted = this.muted;
+    r.audio.muted = this.muted || this.silenced.has(r.pid);
   }
 
   private drop(pid: string): void {

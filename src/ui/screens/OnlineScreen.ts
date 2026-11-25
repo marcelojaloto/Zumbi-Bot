@@ -84,6 +84,15 @@ export function roomName(slot: number): string {
   return t('Jogador {n}', { n: slot + 1 });
 }
 
+/** Lembrete de segurança online, visível na entrada e na sala. */
+function safetyReminder(): HTMLElement {
+  return el(
+    'p',
+    { class: 'online-reminder' },
+    `🛡️ ${t('Jogue só com quem você conhece e não conte seu nome, endereço ou escola para ninguém.')}`,
+  );
+}
+
 /** Link para as regras de convivência, o guia para pais e as denúncias (abre fora do jogo). */
 function safetyLink(): HTMLElement {
   return el(
@@ -166,9 +175,11 @@ function voiceStatus(host: OnlineHost): string {
   if (v.permission === 'denied') return micProblemText('denied');
   if (v.permission === 'prompt')
     return t(
-      'Todos da sala se ouvem. Para falar, ligue o microfone (o aparelho pede permissão na primeira vez).',
+      'Todos da sala se ouvem. Para falar, ligue o microfone (o aparelho pede permissão na primeira vez). O microfone é usado só para conversar com os jogadores desta sala, e a voz não é gravada.',
     );
-  return t('Todos da sala se ouvem. Ligue o microfone para falar.');
+  return t(
+    'Todos da sala se ouvem. Ligue o microfone para falar: ele é usado só para conversar com os jogadores desta sala, e a voz não é gravada.',
+  );
 }
 
 function levelLabel(mapId: string, levelIdx: number): string {
@@ -238,6 +249,7 @@ export function onlineScreen(host: OnlineHost, notice?: string): Screen {
       { class: 'muted online-note' },
       t('Precisa de internet. Cada um guarda o próprio progresso (nível, armas e itens) no seu aparelho.'),
     ),
+    safetyReminder(),
     // os termos de uso do jogo online (Lei 14.852/2024, art. 16, V): aceitos ao criar ou entrar numa sala
     el(
       'p',
@@ -671,6 +683,18 @@ export function roomScreen(host: OnlineHost): Screen {
     const c = CHARACTERS[p.char];
     const you = p.slot === mySlot();
     const mic = el('span', { class: 'rp-mic' });
+    // silenciar alguém só neste aparelho (até sair da sala)
+    const silence = you
+      ? null
+      : el('button', {
+          class: 'btn small rp-silence',
+          hidden: true,
+          data: { nav: '' },
+          onclick: () => {
+            const v = host.voice;
+            if (v) v.silence(p.slot, !v.isSilenced(p.slot));
+          },
+        });
     const state =
       p.slot === hostSlot()
         ? el('span', { class: 'rp-state host' }, `👑 ${t('Anfitrião')}`)
@@ -688,6 +712,7 @@ export function roomScreen(host: OnlineHost): Screen {
         el('small', { class: 'muted' }, ` · ${t('Nv {n}', { n: p.level })}`),
       ),
       mic,
+      silence,
       el('span', { class: 'rp-char', style: `color:${hexColor(c.color)}` }, t(c.name)),
       state,
     );
@@ -707,6 +732,18 @@ export function roomScreen(host: OnlineHost): Screen {
       m.title = p.mic ? t('Microfone ligado') : t('Microfone mudo');
       m.classList.toggle('off', !p.mic);
       rowEl.classList.toggle('talking', talking);
+      const sb = rowEl.querySelector<HTMLButtonElement>('.rp-silence');
+      if (sb) {
+        const off = !!v?.isSilenced(p.slot);
+        sb.hidden = !(r.voice && v);
+        sb.textContent = off ? `🔔 ${t('Ouvir')}` : `🔕 ${t('Silenciar')}`;
+        sb.title = off
+          ? t('Voltar a ouvir {name} neste aparelho', { name: roomName(p.slot) })
+          : t('Silenciar {name} só neste aparelho', { name: roomName(p.slot) });
+        sb.classList.toggle('on', off);
+        rowEl.classList.toggle('silenced', off);
+        if (off) m.textContent = '🔕';
+      }
     }
     micBtn.hidden = !(r.voice && v);
     if (v) {
@@ -999,6 +1036,7 @@ export function roomScreen(host: OnlineHost): Screen {
           )
         : t('Seu progresso (nível, armas e itens) fica salvo neste aparelho.'),
     ),
+    safetyReminder(),
     el(
       'p',
       { class: 'muted online-note' },
