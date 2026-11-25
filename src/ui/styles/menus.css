@@ -853,10 +853,6 @@
 .ci-reco {
   font-size: 13px;
 }
-.ci-close {
-  font-size: 14px;
-  padding: 4px 16px;
-}
 .screen.splash-screen {
   background: radial-gradient(circle at 50% 45%, rgba(4, 5, 10, 0.2), rgba(4, 5, 10, 0.85));
 }

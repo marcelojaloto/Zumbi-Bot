@@ -26,9 +26,9 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   chama para a 3ª temporada.
 - A classificação indicativa no menu passa a ser o **selo conforme o país**: 6+ por padrão, como recomendação da
   Jaloto Software; Livre no Brasil, onde a tela de entrada mostra a caixa de classificação indicativa no modelo
-  oficial do ClassInd (L, violência fantasiosa e interação de usuários), que fecha com um botão e volta a cada acesso;
-  e, nos Estados Unidos, Canadá, Taiwan, Arábia Saudita e Indonésia, a classificação que o questionário IARC das
-  lojas deu lá. O país sai do fuso horário e do idioma do aparelho, sem internet.
+  oficial do ClassInd (L, violência fantasiosa e interação de usuários); e, nos Estados Unidos, Canadá, Taiwan,
+  Arábia Saudita e Indonésia, a classificação que o questionário IARC das lojas deu lá. O país sai do fuso horário
+  e do idioma do aparelho, sem internet.
 - **Chat de voz e idade:** quando a loja não informa a idade, o adulto que libera a voz diz a idade de quem joga. A
   voz é permitida a partir de 12 anos; de 6 a 11 anos, só com o adulto acompanhando, e a sala mostra esse aviso;
   abaixo de 6, fica desligada.

@@ -274,10 +274,10 @@ abaixo do outro. Tamanho, opacidade e vibração dos controles ficam em Configur
   lista não cabe, só ela rola. A seta branca no canto superior esquerdo volta, como o Esc, o B do controle e o Voltar
   do Android. No canto inferior esquerdo do menu fica a classificação indicativa, conforme o país: por padrão,
   a recomendação da Jaloto Software, **6+**; no Brasil, o **L** do ClassInd (violência fantasiosa), com o 6 só como
-  recomendação, e a tela de entrada mostra a caixa de classificação no modelo oficial, que fecha depois de lida e
-  volta no próximo acesso; nos países em que o questionário IARC das lojas deu mais de 6 anos, a classificação de
-  lá, só em texto: E10+ da ESRB nos Estados Unidos e no Canadá, 12+ em Taiwan, 7+ na Arábia Saudita e 13+ na
-  Indonésia. O país sai do fuso horário e do idioma do aparelho, sem internet e sem guardar nada.
+  recomendação, e a tela de entrada mostra a caixa de classificação no modelo oficial; nos países em que o
+  questionário IARC das lojas deu mais de 6 anos, a classificação de lá, só em texto: E10+ da ESRB nos Estados Unidos
+  e no Canadá, 12+ em Taiwan, 7+ na Arábia Saudita e 13+ na Indonésia. O país sai do fuso horário e do idioma do
+  aparelho, sem internet e sem guardar nada.
 - **Idiomas:** português e inglês, escolhidos pelo idioma do navegador e trocáveis em Configurações > Jogo.
 - **Dificuldade:** Fácil, Normal (padrão), Difícil e Insano; escolha na tela de mapas ou em Configurações >
   Jogo. Nas mais fáceis os chefes têm menos vida e atacam com mais pausa; ao perder, o jogo oferece tentar de

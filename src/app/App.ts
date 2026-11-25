@@ -511,18 +511,13 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       }
     };
     this.music.play('menu');
-    const play = el(
-      'button',
-      { class: 'btn primary', onclick: start, data: { nav: '', autofocus: '' } },
-      t('Jogar'),
-    );
     const e = el(
       'div',
       { class: 'screen dim splash-screen' },
       el('h1', {}, 'ZUMBI BOT'),
       el('div', { class: 'subtitle' }, t('A revolução dos robôs no apocalipse zumbi')),
-      classIndNotice(() => play.focus()),
-      play,
+      classIndNotice(),
+      el('button', { class: 'btn primary', onclick: start, data: { nav: '', autofocus: '' } }, t('Jogar')),
       el('p', { class: 'muted' }, t('Clique ou pressione Enter')),
       // iPhone no Safari: tela cheia só pela Tela de Início
       !__NATIVE__ && isIOS() && !isStandalone() ? el('p', { class: 'muted ios-tip' }, homeScreenTip()) : null,

@@ -186,8 +186,8 @@ export const CLASSIND_BOX = {
   recommendation: 'Recomendado a partir de 6 anos',
 } as const;
 
-/** Só no Brasil: a caixa da tela de entrada, que fecha depois de lida e volta no próximo acesso. */
-export function classIndNotice(onClose: () => void): HTMLElement | null {
+/** Só no Brasil: a caixa da tela de entrada, a cada acesso. */
+export function classIndNotice(): HTMLElement | null {
   if (deviceRegion() !== 'BR') return null;
   const b = CLASSIND_BOX;
   const box: HTMLElement = el(
@@ -206,18 +206,6 @@ export function classIndNotice(onClose: () => void): HTMLElement | null {
       el('div', { class: 'ci-interactive' }, b.interactive),
     ),
     el('div', { class: 'ci-reco' }, b.recommendation),
-    el(
-      'button',
-      {
-        class: 'btn small ci-close',
-        data: { nav: '' },
-        onclick: () => {
-          box.remove();
-          onClose();
-        },
-      },
-      t('Fechar'),
-    ),
   );
   box.setAttribute('role', 'region');
   box.setAttribute('aria-label', b.title);
