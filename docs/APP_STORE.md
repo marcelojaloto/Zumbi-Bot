@@ -112,7 +112,7 @@ No repositório: **Settings > Secrets and variables > Actions > New repository s
 ## 8. TestFlight (instalar no iPhone)
 
 1. No GitHub: **Actions > iOS > Run workflow** (branch `main`). Com os segredos, o workflow assina o app e envia para
-   o App Store Connect (versão `1.7.<número da build>`, como no Android).
+   o App Store Connect (versão `1.8.<número da build>`, como no Android).
 2. Depois de uns 15–30 minutos o build aparece em **App Store Connect > TestFlight**. Responda à pergunta de
    criptografia se aparecer (o app já declara que só usa a criptografia padrão).
 3. **Teste interno:** adicione você (e quem mais tiver acesso à conta) como testador. Instale o app **TestFlight** no

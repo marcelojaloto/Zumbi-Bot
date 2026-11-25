@@ -3,7 +3,7 @@
 O que mudou em cada versão do Zumbi Bot, da mais nova para a mais antiga. No app Android, o último número da
 versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter várias builds.
 
-## 1.7, atualização de 24/11/2026
+## 1.8 (24/11/2026)
 
 - O **Guarda-roupa** passa a se chamar **Vestiário**, e ganha peças para **braços, pernas e pés**. As abas ficam
   numa linha só, num carrossel.
@@ -12,9 +12,10 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   a lista não cabe, só ela rola, com uma barra de rolagem mais visível.
 - O **Novo Jogo+** sai da tela de Mapas e vai para o menu **Jogar**.
 - A seta de voltar fica sempre branca.
-- **Ficha de personagem, Vestiário, Loja e Oficina:** as setas para trocar de personagem ficam dos lados do boneco
-  3D, com o nome e o tipo embaixo dele, e o boneco sobe um pouco para o texto não ficar por cima. Na ficha, o rosto e
-  o nome ficam centralizados e os cinco botões (Vestiário, Loja, Oficina, Mapas e Jogar) ficam lado a lado.
+- **Ficha de personagem, Vestiário, Loja, Oficina e escolha antes da partida:** as setas para trocar de personagem
+  ficam dos lados do boneco 3D, com o nome e o tipo embaixo dele, e o boneco sobe um pouco para o texto não ficar
+  por cima. Na ficha, o rosto e o nome ficam centralizados e os cinco botões (Vestiário, Loja, Oficina, Mapas e Jogar)
+  ficam lado a lado.
 - **Fases para 6 anos:** a Vila e o Castelo passam a ser de dia, com flores, bandeirinhas e cores vivas no lugar
   do cemitério, das árvores mortas e dos caixões, e viram **Vila do Entardecer** e **Castelo Encantado**. As outras
   fases ficaram mais claras, as músicas menos tensas, as manchas de sangue viraram café, água ou gosma verde, e o
