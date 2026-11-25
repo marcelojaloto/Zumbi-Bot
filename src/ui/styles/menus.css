@@ -794,8 +794,68 @@
   color: #fff;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
 }
-.age-6 {
-  background: #d6177e;
+/* verde do ClassInd só no Brasil; nos outros países, selo neutro */
+.age-classind-L {
+  background: #00a651;
+}
+.age-plain {
+  background: rgba(20, 22, 30, 0.85);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: bold;
+}
+/* caixa do ClassInd na entrada, no Brasil (modelo do guia oficial) */
+.classind-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.ci-box {
+  min-width: 250px;
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+  font-family: Arial, Helvetica, sans-serif;
+  text-shadow: none;
+  text-align: left;
+}
+.ci-title {
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: bold;
+  border-bottom: 2px solid #000;
+}
+.ci-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+.ci-symbol {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  background: #00a651;
+  color: #fff;
+  font-size: 30px;
+  font-weight: bold;
+}
+.ci-interactive {
+  padding: 3px 10px;
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+}
+.ci-reco {
+  font-size: 13px;
+}
+.ci-close {
+  font-size: 14px;
+  padding: 4px 16px;
 }
 .screen.splash-screen {
   background: radial-gradient(circle at 50% 45%, rgba(4, 5, 10, 0.2), rgba(4, 5, 10, 0.85));

@@ -9,3 +9,14 @@ test('carrega o jogo e mostra o botão Jogar', async ({ page }) => {
   await page.screenshot({ path: 'test-results/boot.png' });
   expect(errors).toEqual([]);
 });
+
+// pt-BR: o país sai do idioma, e o Brasil mostra a caixa do ClassInd na entrada
+test('mostra a caixa do ClassInd na entrada e fecha depois de lida', async ({ page }) => {
+  await page.goto(`./${DEBUG_QUERY}`);
+  const box = page.locator('.classind-notice');
+  await expect(box).toContainText('CLASSIFICAÇÃO INDICATIVA: LIVRE');
+  await expect(box).toContainText('Interação de usuários');
+  await box.getByRole('button', { name: 'Fechar' }).click();
+  await expect(box).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Jogar', exact: true })).toBeVisible();
+});

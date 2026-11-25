@@ -62,7 +62,7 @@ import { resultScreen } from '../ui/screens/ResultScreen';
 import { mapSelectScreen } from '../ui/screens/MapSelectScreen';
 import { creditsScreen } from '../ui/screens/CreditsScreen';
 import { rankingScreen, type RankingMode } from '../ui/screens/RankingScreen';
-import { ageRating } from '../ui/ageRating';
+import { ageRating, classIndNotice } from '../ui/ageRating';
 import { workshopScreen } from '../ui/screens/WorkshopScreen';
 import { chestScreen } from '../ui/screens/ChestScreen';
 import { openChest, type ChestPrize } from './chest';
@@ -511,12 +511,18 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       }
     };
     this.music.play('menu');
+    const play = el(
+      'button',
+      { class: 'btn primary', onclick: start, data: { nav: '', autofocus: '' } },
+      t('Jogar'),
+    );
     const e = el(
       'div',
       { class: 'screen dim splash-screen' },
       el('h1', {}, 'ZUMBI BOT'),
       el('div', { class: 'subtitle' }, t('A revolução dos robôs no apocalipse zumbi')),
-      el('button', { class: 'btn primary', onclick: start, data: { nav: '', autofocus: '' } }, t('Jogar')),
+      classIndNotice(() => play.focus()),
+      play,
       el('p', { class: 'muted' }, t('Clique ou pressione Enter')),
       // iPhone no Safari: tela cheia só pela Tela de Início
       !__NATIVE__ && isIOS() && !isStandalone() ? el('p', { class: 'muted ios-tip' }, homeScreenTip()) : null,
