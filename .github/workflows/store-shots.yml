@@ -1,0 +1,40 @@
+name: Prints das lojas
+run-name: "Prints das lojas (${{ inputs.ios && 'Android e iOS' || 'Android' }})"
+
+# Manual: o jogo roda no Chromium sem placa de vídeo, como no e2e, e os prints saem como artefato (não vão para o
+# repositório).
+on:
+  workflow_dispatch:
+    inputs:
+      ios:
+        description: 'Também os prints da App Store (iPhone e iPad)'
+        type: boolean
+        default: false
+
+jobs:
+  shots:
+    # o Playwright 1.56 não tem Chromium para o Ubuntu 26
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run store:shots
+      - uses: actions/upload-artifact@v4
+        with:
+          name: store-shots-android
+          path: store/android/screenshots/
+          retention-days: 30
+      - if: inputs.ios
+        run: npm run store:shots:ios
+      - if: inputs.ios
+        uses: actions/upload-artifact@v4
+        with:
+          name: store-shots-ios
+          path: store/ios/screenshots/
+          retention-days: 30

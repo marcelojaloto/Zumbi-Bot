@@ -61,6 +61,8 @@ async function phone(locale) {
     isMobile: true,
     hasTouch: true,
     locale,
+    // as listagens valem em vários países: fuso e idioma sem país dão o selo neutro 6+ (src/ui/ageRating.ts)
+    timezoneId: 'Atlantic/Reykjavik',
     permissions: ['microphone'],
   });
   await ctx.addInitScript(() => {
@@ -206,8 +208,10 @@ async function shots(locale) {
     app.quitToMenu();
     app.profile.save.profile.name = 'Ana';
     app.profile.setCharacter('mage');
+    // no site a idade é desconhecida: a voz só liga com a liberação de um adulto (13 anos ou mais)
+    app.voiceGate.release();
+    app.openOnline();
   });
-  await pg.locator('.menu .btn', { hasText: /online/i }).click();
   await pg.locator('.online-choice').first().click();
   await pg.locator('.create-room .btn.primary').click();
   await pg.waitForFunction(() => window.__game.online()?.code, null, { timeout: 60_000 });
@@ -224,6 +228,7 @@ async function shots(locale) {
         const app = window.__game.app;
         app.profile.save.profile.name = n;
         app.profile.save.profile.level = 9;
+        app.voiceGate.release();
         await app.joinRoom(c);
         app.online.pick(ch, true);
         // o chat de voz de quem entra começa quando a sala avisa que a voz é permitida
@@ -319,8 +324,8 @@ async function shots(locale) {
 }
 
 try {
-  await shots('pt-BR');
-  await shots('en-US');
+  await shots('pt');
+  await shots('en');
 } finally {
   await browser.close();
   await server.close();
