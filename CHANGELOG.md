@@ -35,6 +35,8 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - **Ranking global:** quando a loja não confirma que quem joga tem 18 anos ou mais, como no site, o **Participar**
   pede a autorização de um adulto responsável, que diz a idade de quem joga e responde a uma conta. Sem ela, nada é
   enviado. Sair do ranking continua livre.
+- A **política de privacidade** ganha uma seção para quem está na União Europeia e no Reino Unido e outra para pais
+  nos Estados Unidos (COPPA).
 - A **Placa de Lápide** sai do Vestiário.
 - **Jogo online:** cada jogador da sala ganha um botão **🔕 Silenciar**, que para de ouvi-lo só neste aparelho, até
   sair da sala. A sala mostra um lembrete para jogar só com quem você conhece e não contar nome, endereço ou escola,
