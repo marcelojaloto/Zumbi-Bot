@@ -35,6 +35,9 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
 - **Configurações > Jogo** ganha o link da política de privacidade, ao lado de Regras e segurança.
 - A **Máscara de Caveira** vira **Máscara de Mímico**, branca, com sorriso e sem os olhos vermelhos (quem tinha a
   máscara continua com ela).
+- Os zumbis trocam o gemido rouco por um "hã?" curto e engraçado, mais baixo, e o som de quando são derrotados
+  também ficou de desenho. O rugido dos chefes virou um "ra-RÁ!" curto, sem distorção, que ainda avisa o
+  ataque.
 
 ## 1.7, atualização de 23/11/2026
 

@@ -72,16 +72,24 @@ function chime(
   return notes.length * step + 0.4;
 }
 
-function groanVoice(ctx: Ctx, out: AudioNode, t: number, f: number, dur: number, gain = 0.7): void {
-  // voz: dente de serra com vibrato passando por dois formantes
+/** Voz de desenho do zumbi: curta, aguda e boba ("hã?", "ôh"); `rise` > 1 sobe no fim, < 1 desce. */
+function cartoonVoice(
+  ctx: Ctx,
+  out: AudioNode,
+  t: number,
+  f: number,
+  dur: number,
+  rise: number,
+  gain = 0.5,
+): void {
   const f1 = ctx.createBiquadFilter();
   f1.type = 'bandpass';
-  f1.frequency.value = 520;
-  f1.Q.value = 5;
+  f1.frequency.value = 800;
+  f1.Q.value = 4;
   const f2 = ctx.createBiquadFilter();
   f2.type = 'bandpass';
-  f2.frequency.value = 950;
-  f2.Q.value = 6;
+  f2.frequency.value = 1500;
+  f2.Q.value = 5;
   const g = ctx.createGain();
   g.gain.value = gain;
   f1.connect(g);
@@ -91,22 +99,13 @@ function groanVoice(ctx: Ctx, out: AudioNode, t: number, f: number, dur: number,
   m.connect(f1);
   m.connect(f2);
   tone(ctx, m, t, {
-    wave: 'sawtooth',
+    wave: 'triangle',
     freq: f,
-    freqEnd: f * 0.75,
+    freqEnd: f * rise,
     dur,
-    env: { a: 0.08, d: dur * 0.6, s: 0.5, r: dur * 0.4 },
-    gain: 2,
-    vibrato: { rate: 5.5, depth: f * 0.06 },
-  });
-  noise(ctx, out, t, {
-    kind: 'pink',
-    dur,
-    filter: 'bandpass',
-    freq: 700,
-    q: 1.5,
-    env: { a: 0.1, d: dur },
-    gain: 0.25,
+    env: { a: 0.02, d: dur * 0.5, s: 0.6, r: dur * 0.4 },
+    gain: 2.5,
+    vibrato: { rate: 9, depth: f * 0.04 },
   });
 }
 
@@ -216,12 +215,14 @@ export const SFX: Record<string, Recipe> = {
     return 0.18;
   },
   // --- personagens ---
+  // zumbis de desenho: um "hã?" curto e agudo, sem gemido rouco
   groan: (c, o, t, v) => {
-    groanVoice(c, o, t, r(v, 70, 110), r(v, 0.9, 1.4));
-    return 1.5;
+    const d = r(v, 0.25, 0.4);
+    cartoonVoice(c, o, t, r(v, 190, 260), d, r(v, 1.25, 1.45));
+    return d + 0.1;
   },
   zombieDeath: (c, o, t, v) => {
-    groanVoice(c, o, t, r(v, 95, 120), 0.7, 0.8);
+    cartoonVoice(c, o, t, r(v, 240, 300), 0.4, 0.55, 0.6);
     noise(c, o, t + 0.1, {
       kind: 'pink',
       dur: 0.25,
@@ -232,19 +233,21 @@ export const SFX: Record<string, Recipe> = {
     });
     return 0.9;
   },
+  // chefe de desenho: um "ra-RÁ!" de aviso, sem distorção nem grave ameaçador
   roar: (c, o, t, v) => {
-    const d = distortion(c, 8);
-    d.connect(o);
-    groanVoice(c, d, t, r(v, 55, 70), 1.3, 0.8);
-    noise(c, o, t, {
-      kind: 'brown',
-      dur: 1.2,
-      filter: 'lowpass',
-      freq: 400,
-      env: { a: 0.2, d: 1 },
-      gain: 0.9,
+    const f = r(v, 130, 160);
+    cartoonVoice(c, o, t, f, 0.16, 1.15, 0.7);
+    cartoonVoice(c, o, t + 0.18, f * 1.3, 0.5, 0.7, 0.8);
+    noise(c, o, t + 0.18, {
+      kind: 'pink',
+      dur: 0.4,
+      filter: 'bandpass',
+      freq: 1200,
+      q: 1,
+      env: { a: 0.03, d: 0.35 },
+      gain: 0.2,
     });
-    return 1.5;
+    return 0.8;
   },
   robotDeath: (c, o, t, v) => {
     tone(c, o, t, {

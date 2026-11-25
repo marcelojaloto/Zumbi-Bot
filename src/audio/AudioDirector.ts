@@ -61,7 +61,7 @@ export class AudioDirector {
           else if (ev.family === 'player') a.play('playerDeath', { x: ev.x });
           break;
         case 'groan':
-          a.play('groan', { x: w.get(ev.id)?.t.x, vol: 0.35 });
+          a.play('groan', { x: w.get(ev.id)?.t.x, vol: 0.25 });
           break;
         case 'shot': {
           if (ev.weapon === 'enemy') {
@@ -180,11 +180,11 @@ export class AudioDirector {
           break;
         case 'bossPhase':
           a.play('bossPhase', { vol: 1 });
-          a.play('roar', { vol: 0.8, rate: 0.8 });
+          a.play('roar', { vol: 0.8, rate: 0.9 });
           break;
         case 'bossDefeated':
           this.music?.stop(2.5);
-          a.play('roar', { vol: 1, rate: 0.6 });
+          a.play('roar', { vol: 1, rate: 1.15 });
           a.play('explosion', {});
           break;
         case 'telegraph':
