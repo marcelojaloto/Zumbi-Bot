@@ -24,7 +24,7 @@ ruas, pule, soque, chute e atire para limpar 19 mapas cheios de mortos-vivos e r
 - 2ª temporada com 9 mundos novos: fábrica de brinquedos, praça do skate, estúdio, pista de corrida, shopping, bunker, loja de automóveis, campo de futebol e fundo do mar
 - 8 personagens para escolher (robô, maga, militar, ciborgue, mutante, ninja, elfa e um bichinho elétrico), cada um com seu golpe especial, e um personagem secreto para quem terminar a 1ª temporada
 - Jogue online com até 4 amigos: crie uma sala, mande o código de 4 letras e joguem juntos, cada um no seu celular
-- Chat de voz opcional na sala, que começa desligado: para menores, só com a liberação de um adulto responsável (a partir de 12 anos, ou de 6 a 11 com o adulto acompanhando). Cada um liga o próprio microfone e pode silenciar qualquer jogador
+- Chat de voz opcional na sala, que começa desligado: para menores, só com a liberação de um adulto responsável, e menores de 13 anos só ouvem. Cada um liga o próprio microfone e pode silenciar qualquer jogador
 - Ou até 5 jogadores no mesmo aparelho, com controles
 - Combos de socos e chutes, voadora e pulo duplo
 - 10 cajados mágicos com elementos: fogo, gelo, água, raio, veneno, vento, terra e mais
@@ -62,7 +62,7 @@ streets, jump, punch, kick and shoot your way through 19 maps packed with the un
 - Season 2 with 9 new worlds: toy factory, skate park, recording studio, running track, mall, bunker, car dealership, soccer field and the bottom of the sea
 - 8 characters to pick (robot, mage, soldier, cyborg, mutant, ninja, elf and a little electric creature), each with a special move, plus a secret character for those who finish season 1
 - Play online with up to 4 friends: create a room, share the 4-letter code and play together, each on their phone
-- Optional voice chat in the room, off by default: for minors, only when a responsible adult allows it (from age 12, or from 6 to 11 with the adult watching). Each player turns their own mic on and can mute any player
+- Optional voice chat in the room, off by default: for minors, only when a responsible adult allows it, and players under 13 can only listen. Each player turns their own mic on and can mute any player
 - Or up to 5 players on the same device with controllers
 - Punch and kick combos, flying kick and double jump
 - 10 magic staffs with elements: fire, ice, water, lightning, poison, wind, earth and more

@@ -88,48 +88,78 @@ No repositório: **Settings > Secrets and variables > Actions > New repository s
    - **Política de privacidade:** `https://zumbibot.jalotosoftware.com.br/privacy/`. As regras do jogo online, o
      guia para pais e o canal de denúncias ficam em `https://zumbibot.jalotosoftware.com.br/seguranca/`; use esse
      endereço como site do app na página da loja.
-   - **Acesso ao app:** todas as funcionalidades disponíveis sem acesso especial.
-   - **Anúncios:** o app não contém anúncios.
+   - **Detalhes do login (acesso ao app):** marque que há partes restritas, porque o ranking global e o chat de voz
+     passam por uma trava para pais e a voz precisa de um segundo aparelho. Adicione uma entrada sem usuário nem
+     senha, com as instruções em inglês (máximo de 500 caracteres):
+
+     ```
+     No login needed. Optional features use a parental gate: pick an age range and answer the math question on screen.
+     1. Global ranking: Leaderboard > Global Leaderboard > Join, choose "18 or older", answer.
+     2. Voice chat: Play online, create a room with voice on, choose "13 or older", answer. Needs a second device joined with the room code.
+     3. If online play is blocked (Settings > Game), unlock with the same question.
+     Under 13 only listen to voice; under 6 voice is off.
+     ```
+
+   - **Anúncios:** o app não contém anúncios. **ID de publicidade:** não usa (não há SDK de anúncios nem de
+     análise, e o manifesto não declara `AD_ID`).
    - **Classificação do conteúdo:** responda o questionário (categoria Jogo). O jogo tem violência de fantasia/desenho
      contra zumbis e robôs, sem sangue realista, sem conteúdo sexual, sem apostas. Há **jogo online com amigos**
-     (sala com código, sem bate-papo por texto; o único texto que os outros veem é o nome do jogador) com
+     (sala com código, sem bate-papo por texto; cada um aparece como "Jogador N", sem texto de outros jogadores) com
      **chat de voz** entre os jogadores da sala: responda que os usuários **podem interagir e se comunicar (voz)**
      e que não há compartilhamento de localização nem compras. O chat de voz é opcional: quem cria a sala pode
      desligá-lo, cada jogador liga o próprio microfone e a voz não é gravada. Ele também respeita a idade: o app
      pergunta à Play (Age Signals API) se quem joga tem 18 anos ou mais. Para menores, a voz fica desligada, a não
      ser que o responsável a aprove no Family Link (veja "mudança significativa" abaixo); com a idade desconhecida,
-     só um adulto libera na sala, passando por uma trava para pais (a partir de 12 anos; de 6 a 11, só acompanhando).
-   - **Público-alvo:** escolha faixas de **13 anos ou mais** (marcar menores de 13 exige cumprir a política de
-     Famílias). No Brasil, a Play pede que apps com acesso provável de menores usem a faixa de idade que ela
-     fornece: o chat de voz já usa, pela Age Signals API (só funciona no app instalado pela Play).
+     só um adulto libera na sala, passando por uma trava para pais (a partir de 13 anos; de 6 a 12, só
+     ouve, com o adulto acompanhando e o microfone desligado).
+     Resultado de 24/11/2026: Brasil **L** (Violência fantasiosa), ESRB **E10+**, PEGI 3, USK 6, ACB PG, DGSC 12,
+     Gmedia 7, IGRS 13+, IARC genérico 3+, todos com "Usuários interagem". O jogo mostra a classificação de cada
+     país (veja `src/ui/ageRating.ts`). No Brasil, a caixa de classificação indicativa no modelo oficial aparece na
+     tela de entrada a cada acesso. Refaça o questionário sempre que o conteúdo mudar.
+   - **Público-alvo:** **9 a 12, 13 a 15, 16 a 17 e 18 ou mais**. Abaixo de 9 o Console não deixa escolher,
+     porque o ESRB é E10+. Como inclui menores de 13, o app segue a **política Famílias** (lembrete de segurança
+     online, trava para pais, voz só para ouvir abaixo de 13, ranking com liberação de adulto). Confirme a
+     conformidade com as leis de proteção infantil (COPPA, GDPR), responda que não há anúncios, fique fora do
+     programa **Aprovado por professores** e mostre o compromisso com a política Famílias na Segurança dos dados.
+     No Brasil, a Play pede que apps com acesso provável de menores usem a faixa de idade que ela fornece: o chat
+     de voz e o ranking já usam, pela Age Signals API (só funciona no app instalado pela Play).
    - **Mudança significativa (opcional):** para que pais de contas supervisionadas possam aprovar o chat de voz no
      Family Link, declare-o no Play Console como "mudança significativa" do app, na área de sinais de idade. Quando
      o responsável aprova, o jogo libera a voz para aquele menor; sem a declaração, a voz fica desligada para
      menores. A Play só pede essa aprovação onde a lei exige.
    - **Segurança dos dados:** o progresso fica salvo só no aparelho. No jogo online (iniciado pelo usuário), o
-     nome no jogo, o personagem e os comandos vão para os outros jogadores da sala, e o serviço de conexão do
+     personagem, o nível, os equipamentos e os comandos vão para os outros jogadores da sala, e o serviço de conexão do
      PeerJS recebe o código da sala e o IP, só enquanto a sala está aberta (processamento temporário, nada é
      guardado). A **voz** (só com o microfone ligado pelo jogador) vai direto para os aparelhos da sala,
      criptografada de ponta a ponta (WebRTC/DTLS-SRTP), e não é gravada: nem o servidor de retransmissão
-     consegue ouvi-la. Marque que os dados são **criptografados em trânsito**. Se preferir declarar de forma
-     conservadora: **Áudio > Gravações de voz ou som**: coletado, processado temporariamente, opcional, para
-     funcionalidade do app, não compartilhado.
+     consegue ouvi-la. Marque que os dados são **criptografados em trânsito** e que o app **não permite criar
+     conta**. Declare **Áudio > Gravações de voz ou som**: coletado, processado temporariamente, opcional, para
+     funcionalidade do app, não compartilhado. A criptografia de ponta a ponta até dispensaria a declaração, mas o
+     app pede o microfone, e um app da política Famílias com microfone e sem áudio declarado tende a ser barrado
+     na revisão.
      Com o **ranking global** configurado ([RANKING_GLOBAL.md](RANKING_GLOBAL.md)), quem toca em **Participar**
      envia o melhor resultado do aparelho para o Firebase, **sem nome**: declare **Atividade no app > Outras
      ações** (pontuação, mapas e personagens) e **IDs do dispositivo ou outros IDs** (o código da conta anônima do
      Firebase), **coletados**, **compartilhados: não**, **opcionais: sim**, finalidade **Funcionalidade do app**.
      **Informações pessoais > Nome** não é coletado: o nome do ranking fica só no aparelho. Marque que o usuário
      **pode pedir a exclusão** dos dados: o botão **Sair do ranking global** apaga o registro e a conta anônima, e
-     quem não tem mais o jogo pede pelo e-mail da política. Se o formulário perguntar sobre exclusão de conta,
-     informe esse mesmo botão. A faixa de idade lida da Play para o chat de voz só é usada no aparelho e não sai
-     dele, então não entra como coletada.
+     quem não tem mais o jogo pede pelo e-mail da política. O link para exclusão de dados é a própria política,
+     `https://zumbibot.jalotosoftware.com.br/privacy/`. A faixa de idade lida da Play só é usada no aparelho e não
+     sai dele, então não entra como coletada. Nada de local (a detecção do país usa só o fuso horário, no
+     aparelho), nem de registros de falhas ou diagnóstico.
    - **Permissões:** o app declara **microfone** (`RECORD_AUDIO`, para o chat de voz; o Android só pergunta quando
      o jogador toca em "Ligar microfone") e vibração. O microfone não exige formulário no Play Console, mas
      precisa estar na política de privacidade (já está).
    - **Apps governamentais, recursos financeiros, saúde:** não.
+   - **Status de comerciante no nível do app:** sim, o status da conta se aplica ao app. O link de Termos de
+     Serviço é opcional e fica em branco.
+   - **Categoria e contato** (Configurações da loja): Jogo, categoria **Ação**, tags **Beat 'em up**, **Ação**,
+     **Arcade**, **Luta** e **Hack and slash**; e-mail `atendimento@jalotosoftware.com.br`, site
+     `https://zumbibot.jalotosoftware.com.br/`, telefone em branco. O marketing externo pode ficar ligado.
 3. **Presença na loja > Página principal da loja**: use os textos e imagens de [`store/android/`](../store/android/)
    ([`listing.md`](../store/android/listing.md), ícone 512×512, recurso gráfico 1024×500 e capturas de tela).
-   Adicione a tradução em inglês (en-US) com os textos em inglês do mesmo arquivo.
+   Adicione a tradução em inglês (en-US) com os textos em inglês do mesmo arquivo. Os prints de 1920×1080 servem
+   também para os campos obrigatórios de tablet de 7 e 10 polegadas.
 
 ## 7. Teste fechado (contas pessoais)
 
