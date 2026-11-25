@@ -201,7 +201,10 @@ app) e iPhone juntos. Cada um liga ou desliga o próprio microfone no botão **�
 botão do microfone na partida ou com a tecla **V**; o microfone começa desligado e o aparelho pede permissão na
 primeira vez (se estiver bloqueado, o jogo explica onde liberar). A lista da sala e os painéis da partida mostram
 🎤/🔇 de cada um e acendem em quem está falando, e a música abaixa enquanto alguém fala. O volume das vozes fica em
-Configurações > Áudio. A voz vai direto entre os aparelhos (criptografada) e não é gravada.
+Configurações > Áudio, e o **🔕 Silenciar** ao lado de cada jogador na sala para de ouvi-lo só neste aparelho, até
+sair da sala. A voz vai direto entre os aparelhos (criptografada) e não é gravada. A sala mostra um lembrete para
+jogar só com quem você conhece e não contar nome, endereço ou escola, e Configurações > Jogo tem os links das regras
+e da política de privacidade.
 
 **Segurança no jogo online** (ECA Digital, Lei 15.211/2025, art. 21, e Lei 14.852/2024, art. 16):
 

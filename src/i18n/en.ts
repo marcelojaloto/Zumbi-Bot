@@ -922,6 +922,7 @@ export const EN: Record<string, string> = {
   Ouvir: 'Unmute',
   'Silenciar {name} só neste aparelho': 'Mute {name} on this device only',
   'Voltar a ouvir {name} neste aparelho': 'Hear {name} again on this device',
+  'Política de privacidade': 'Privacy policy',
   '12 anos ou mais': '12 or older',
   'Para menores de 6 anos o chat de voz fica desligado. Dá para jogar online normalmente.':
     'Voice chat stays off for children under 6. They can still play online normally.',

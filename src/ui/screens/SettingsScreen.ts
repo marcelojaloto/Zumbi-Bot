@@ -1,5 +1,5 @@
 import { el, ico } from '../dom';
-import { SAFETY_URL } from '../links';
+import { PRIVACY_URL, SAFETY_URL } from '../links';
 import { parentGate } from '../parentGate';
 import type { Screen } from '../ScreenManager';
 import type { UiHost } from './host';
@@ -378,6 +378,12 @@ export function settingsScreen(host: UiHost, tab = 'audio', single = false): Scr
         'a',
         { href: SAFETY_URL, target: '_blank', rel: 'noopener', data: { nav: '' } },
         t('Regras e segurança'),
+      ),
+      ' · ',
+      el(
+        'a',
+        { href: PRIVACY_URL, target: '_blank', rel: 'noopener', data: { nav: '' } },
+        t('Política de privacidade'),
       ),
     ),
     el(

@@ -11,7 +11,7 @@ are in parentheses.
 **Descrição curta** (80):
 
 ```
-Um robô contra o apocalipse zumbi: socos, armas, magias e chefes gigantes.
+Um robô contra o apocalipse zumbi: socos, chutes, magias e chefes gigantes.
 ```
 
 **Descrição completa** (4000):
@@ -24,21 +24,20 @@ ruas, pule, soque, chute e atire para limpar 19 mapas cheios de mortos-vivos e r
 - 2ª temporada com 9 mundos novos: fábrica de brinquedos, praça do skate, estúdio, pista de corrida, shopping, bunker, loja de automóveis, campo de futebol e fundo do mar
 - 8 personagens para escolher (robô, maga, militar, ciborgue, mutante, ninja, elfa e um bichinho elétrico), cada um com seu golpe especial, e um personagem secreto para quem terminar a 1ª temporada
 - Jogue online com até 4 amigos: crie uma sala, mande o código de 4 letras e joguem juntos, cada um no seu celular
-- Chat de voz na sala: todos conversam com todos, e cada um liga ou desliga o próprio microfone
+- Chat de voz opcional na sala, que começa desligado: para menores, só com a liberação de um adulto responsável (a partir de 12 anos, ou de 6 a 11 com o adulto acompanhando). Cada um liga o próprio microfone e pode silenciar qualquer jogador
 - Ou até 5 jogadores no mesmo aparelho, com controles
 - Combos de socos e chutes, voadora e pulo duplo
-- 7 armas de fogo: pistola, escopeta, submetralhadora, fuzil, sniper, metralhadora e lança-granadas
 - 10 cajados mágicos com elementos: fogo, gelo, água, raio, veneno, vento, terra e mais
-- Poderes, itens e armas brancas espalhados pelas fases
+- Poderes, itens e equipamentos espalhados pelas fases
 - Vestiário com mais de 70 peças para deixar o seu robô com a sua cara
 - Oficina com uma árvore de melhorias para cada personagem: atributos, combos, especiais e defesas novas
-- Suba de nível, abra o baú de cada fase, compre armas e itens de reviver na loja e bata seu recorde no ranking pessoal e no ranking global
+- Suba de nível, abra o baú de cada fase, compre equipamentos e itens de reviver na loja e bata seu recorde no ranking pessoal e no ranking global
 - Quatro dificuldades, de Fácil a Insano, e Novo Jogo+ depois do chefe final
 - Controles de toque confortáveis: direcional à esquerda, botões à direita, tamanho e transparência ajustáveis
 - Em português e inglês
 - Sem anúncios e sem compras. Joga offline (a internet só é usada no jogo online e no ranking global).
 
-Também dá para jogar no navegador (computador, Android e iPhone): zumbibot.jalotosoftware.com.br
+Também dá para jogar no navegador: zumbibot.jalotosoftware.com.br
 ```
 
 **Categoria**: Jogos > Ação · **Tags sugeridas**: beat 'em up, zumbis, robôs, ação, arcade
@@ -50,7 +49,7 @@ Também dá para jogar no navegador (computador, Android e iPhone): zumbibot.jal
 **Short description** (80):
 
 ```
-One robot vs. the zombie apocalypse: punches, guns, magic and giant bosses.
+One robot vs. the zombie apocalypse: punches, kicks, magic and giant bosses.
 ```
 
 **Full description** (4000):
@@ -63,21 +62,20 @@ streets, jump, punch, kick and shoot your way through 19 maps packed with the un
 - Season 2 with 9 new worlds: toy factory, skate park, recording studio, running track, mall, bunker, car dealership, soccer field and the bottom of the sea
 - 8 characters to pick (robot, mage, soldier, cyborg, mutant, ninja, elf and a little electric creature), each with a special move, plus a secret character for those who finish season 1
 - Play online with up to 4 friends: create a room, share the 4-letter code and play together, each on their phone
-- Voice chat in the room: everyone talks with everyone, and each player turns their own mic on or off
+- Optional voice chat in the room, off by default: for minors, only when a responsible adult allows it (from age 12, or from 6 to 11 with the adult watching). Each player turns their own mic on and can mute any player
 - Or up to 5 players on the same device with controllers
 - Punch and kick combos, flying kick and double jump
-- 7 firearms: pistol, shotgun, SMG, assault rifle, sniper, machine gun and grenade launcher
 - 10 magic staffs with elements: fire, ice, water, lightning, poison, wind, earth and more
-- Powers, items and melee weapons scattered across the levels
+- Powers, items and gear scattered across the levels
 - A wardrobe with more than 70 pieces to make your robot your own
 - A workshop with an upgrade tree for each character: attributes, combos, specials and new defenses
-- Level up, open the chest of each level, buy weapons and revive items in the shop and beat your high score on the personal and global leaderboards
+- Level up, open the chest of each level, buy gear and revive items in the shop and beat your high score on the personal and global leaderboards
 - Four difficulties, from Easy to Insane, plus New Game+ after the final boss
 - Comfortable touch controls: D-pad on the left, buttons on the right, adjustable size and opacity
 - In English and Portuguese
 - No ads and no purchases. Plays offline (the internet is only used for online play and the global leaderboard).
 
-You can also play in the browser (computer, Android and iPhone): zumbibot.jalotosoftware.com.br
+You can also play in the browser: zumbibot.jalotosoftware.com.br
 ```
 
 **Category**: Games > Action · **Suggested tags**: beat 'em up, zombies, robots, action, arcade
