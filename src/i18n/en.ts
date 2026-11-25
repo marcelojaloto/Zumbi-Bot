@@ -639,7 +639,7 @@ export const EN: Record<string, string> = {
   'Máscara de Hóquei': 'Hockey Mask',
   'Máscara de Gás': 'Gas Mask',
   Bandagens: 'Bandages',
-  'Máscara de Caveira': 'Skull Mask',
+  'Máscara de Mímico': 'Mime Mask',
   'Barba de Mago': 'Wizard Beard',
   'Cachecol Místico': 'Mystic Scarf',
   'Túnica do Aprendiz': "Apprentice's Tunic",

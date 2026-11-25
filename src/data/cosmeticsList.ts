@@ -312,26 +312,24 @@ export const COSMETIC_LIST: CosmeticDef[] = [
     { shape: 'box', size: [0.36, 0.05, 0.33], pos: [0, 0.1, -0.13], rot: [0, 0, 0.1], color: 0xd8d0b8 },
     { shape: 'box', size: [0.36, 0.05, 0.33], pos: [0, 0.2, -0.13], rot: [0, 0, -0.08], color: 0xc8c0a8 },
   ]),
-  c('mask_skull', 'Máscara de Caveira', 'mask', 'zombie', 'rare', [
-    { shape: 'box', size: [0.3, 0.3, 0.04], pos: [0, 0.1, 0.015], color: 0xe8e8e0 },
-    { shape: 'box', size: [0.08, 0.06, 0.01], pos: [0.07, 0.15, 0.04], color: 0x0a0a0a },
-    { shape: 'box', size: [0.08, 0.06, 0.01], pos: [-0.07, 0.15, 0.04], color: 0x0a0a0a },
-    { shape: 'box', size: [0.16, 0.03, 0.01], pos: [0, 0.0, 0.04], color: 0x0a0a0a },
+  // o id ficou do tempo em que era uma caveira (saves antigos)
+  c('mask_skull', 'Máscara de Mímico', 'mask', 'zombie', 'rare', [
+    { shape: 'box', size: [0.3, 0.3, 0.04], pos: [0, 0.1, 0.015], color: 0xf4f4ee },
+    { shape: 'box', size: [0.06, 0.04, 0.01], pos: [0.07, 0.15, 0.04], color: 0x1a1a2a },
+    { shape: 'box', size: [0.06, 0.04, 0.01], pos: [-0.07, 0.15, 0.04], color: 0x1a1a2a },
+    // sobrancelhas arqueadas, bochechas rosadas e um sorriso
+    { shape: 'box', size: [0.07, 0.015, 0.01], pos: [0.07, 0.2, 0.04], rot: [0, 0, -0.3], color: 0x1a1a2a },
+    { shape: 'box', size: [0.07, 0.015, 0.01], pos: [-0.07, 0.2, 0.04], rot: [0, 0, 0.3], color: 0x1a1a2a },
+    { shape: 'box', size: [0.05, 0.03, 0.01], pos: [0.1, 0.07, 0.04], color: 0xff9ab0 },
+    { shape: 'box', size: [0.05, 0.03, 0.01], pos: [-0.1, 0.07, 0.04], color: 0xff9ab0 },
+    { shape: 'box', size: [0.08, 0.025, 0.01], pos: [0, 0.01, 0.04], color: 0xd8304a },
+    { shape: 'box', size: [0.04, 0.025, 0.01], pos: [0.05, 0.025, 0.04], rot: [0, 0, 0.5], color: 0xd8304a },
     {
       shape: 'box',
-      size: [0.04, 0.03, 0.01],
-      pos: [0.07, 0.15, 0.045],
-      color: 0xff3a3a,
-      glow: true,
-      glowIntensity: 3,
-    },
-    {
-      shape: 'box',
-      size: [0.04, 0.03, 0.01],
-      pos: [-0.07, 0.15, 0.045],
-      color: 0xff3a3a,
-      glow: true,
-      glowIntensity: 3,
+      size: [0.04, 0.025, 0.01],
+      pos: [-0.05, 0.025, 0.04],
+      rot: [0, 0, -0.5],
+      color: 0xd8304a,
     },
   ]),
   c('beard_wizard', 'Barba de Mago', 'mask', 'wizard', 'uncommon', [

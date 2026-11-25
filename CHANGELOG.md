@@ -33,6 +33,8 @@ versão é o da build (por exemplo, 1.6.39), então uma mesma versão pode ter v
   sair da sala. A sala mostra um lembrete para jogar só com quem você conhece e não contar nome, endereço ou escola,
   e a linha do microfone explica que ele serve só para conversar com a sala e que a voz não é gravada.
 - **Configurações > Jogo** ganha o link da política de privacidade, ao lado de Regras e segurança.
+- A **Máscara de Caveira** vira **Máscara de Mímico**, branca, com sorriso e sem os olhos vermelhos (quem tinha a
+  máscara continua com ela).
 
 ## 1.7, atualização de 23/11/2026
 
