@@ -806,9 +806,12 @@
 }
 /* caixa do ClassInd na entrada, no Brasil (modelo do guia oficial) */
 .classind-notice {
+  position: absolute;
+  left: max(14px, env(safe-area-inset-left, 0px));
+  bottom: 12px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
 }
 .ci-box {
@@ -852,9 +855,13 @@
 }
 .ci-reco {
   font-size: 13px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 .screen.splash-screen {
   background: radial-gradient(circle at 50% 45%, rgba(4, 5, 10, 0.2), rgba(4, 5, 10, 0.85));
+}
+.splash-screen > .btn.primary {
+  margin-top: 22px;
 }
 @media (max-width: 800px) {
   .screen.menu-screen,
