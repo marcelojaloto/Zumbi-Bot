@@ -34,8 +34,8 @@ const OUT = DEVICE.out;
 const PORT = 4174;
 const URL = `http://localhost:${PORT}/?debug=1&quality=medium&mute=1&seed=7&nopointerlock=1&peer=127.0.0.1:9001/zb`;
 const NAMES = {
-  pt: ['1-menu', '2-equipe', '3-personagens', '4-online', '5-magia', '6-chefe', '7-robos'],
-  en: ['1-menu', '2-team', '3-characters', '4-online', '5-magic', '6-boss', '7-robots'],
+  pt: ['1-menu', '2-equipe', '3-personagens', '4-online', '5-loja', '6-chefe', '7-robos', '8-ficha'],
+  en: ['1-menu', '2-team', '3-characters', '4-online', '5-shop', '6-boss', '7-robots', '8-sheet'],
 };
 const HIDE = '.fps, .hint, .t-fs, .toast { display: none !important }';
 
@@ -253,25 +253,25 @@ async function shots(locale) {
   for (const g of guests) await g.close();
   await pg.evaluate(() => window.__game.app.leaveRoom());
 
-  // 5. magia (a maga com o cajado de fogo)
-  await pg.evaluate(() => window.__game.app.profile.setCharacter('mage'));
-  await play(pg, 'vila');
+  // 5. loja: o Zumbi Bot de óculos escuros experimentando o Chapéu do Arquimago (tudo com a sucata do jogo)
   await pg.evaluate(() => {
-    const g = window.__game;
-    g.unlockAll();
-    g.setStaff('fire');
-    const x = g.app.session.world.get(1).t.x;
-    g.teleport(x + 12);
-    g.step(20);
-    const x2 = g.app.session.world.get(1).t.x;
-    g.spawn('walker', x2 + 4, 0);
-    g.spawn('walker', x2 + 5, 0.5);
-    g.spawn('runner', x2 + 6, -0.5);
-    g.step(20);
-    g.input({ buttons: 2048 }, 1);
-    g.input({ buttons: 16 }, 14);
+    const app = window.__game.app;
+    app.quitToMenu();
+    const prof = app.profile;
+    prof.setCharacter('robot');
+    prof.save.profile.scrap = 3150;
+    prof.save.cosmetics.owned.push('shades_cool');
+    prof.equip('eyes', 'shades_cool');
+    app.openShop('robot');
   });
+  await pg.waitForTimeout(1500);
+  await pg.locator('.cos-card', { hasText: /Chapéu do Arquimago|Archmage's Hat/ }).click();
+  await pg.waitForTimeout(1500);
   await shot(4);
+  await pg.evaluate(() => {
+    window.__game.app.quitToMenu();
+    window.__game.unlockAll();
+  });
 
   // 6. chefe
   await pg.evaluate(() => {
@@ -320,6 +320,17 @@ async function shots(locale) {
     g.input({ buttons: 16 }, 8);
   });
   await shot(6);
+
+  // 8. ficha do Zumbi Bot (Jogar > Personagens > Zumbi Bot)
+  await pg.evaluate(() => {
+    const app = window.__game.app;
+    app.quitToMenu();
+    app.openPlayMenu();
+  });
+  await pg.locator('.menu .btn', { hasText: /Personagens|Characters/ }).click();
+  await pg.locator('.char-card[data-char="robot"]').click();
+  await pg.waitForTimeout(2500);
+  await shot(7);
   await ctx.close();
 }
 
