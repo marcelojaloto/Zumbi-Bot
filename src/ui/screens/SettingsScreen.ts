@@ -109,8 +109,8 @@ export function settingsScreen(host: UiHost, tab = 'audio', single = false): Scr
             el(
               'label',
               {},
-              host.voiceGate.supervised
-                ? t('Chat de voz liberado neste aparelho, com um adulto acompanhando')
+              host.voiceGate.listenOnly
+                ? t('Chat de voz liberado só para ouvir neste aparelho (menos de 13 anos)')
                 : t('Chat de voz liberado por um adulto neste aparelho'),
             ),
             el(

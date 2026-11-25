@@ -213,8 +213,9 @@ e da política de privacidade.
   pela loja usa a voz normalmente. Para menores informados pela loja, a voz fica desligada, a não ser que o
   responsável a aprove no Family Link; com a comunicação limitada pelos pais, fica bloqueada. Sem como saber a
   idade, como no site, a voz começa desligada até um adulto tocar em **🔓 Liberar a voz (adulto)** na sala, dizer a
-  idade de quem joga e responder a uma conta (a trava para pais). A voz é permitida a partir de 12 anos; de 6 a 11,
-  só com o adulto acompanhando, e a sala mostra esse aviso; abaixo de 6, fica desligada. Dá para bloquear de novo em
+  idade de quem joga e responder a uma conta (a trava para pais). A voz é permitida a partir de 13 anos; de 6 a 12,
+  a criança só ouve, com o adulto acompanhando, e o microfone fica desligado (COPPA: a voz de menores de 13 anos é dado
+  pessoal); abaixo de 6, fica desligada. Dá para bloquear de novo em
   Configurações > Áudio
   (`src/net/voiceGate.ts`, `src/ui/parentGate.ts`).
 - **Nomes:** na sala, cada um aparece como **Jogador N** e pelo personagem; o nome escrito no ranking não sai do

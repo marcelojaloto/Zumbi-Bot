@@ -1056,7 +1056,10 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
     if (c.net) {
       this.hud.localSlot = c.mouseSlot ?? 0;
       this.hud.voice = {
-        mine: () => (this.voice ? { on: this.voice.micOn, busy: this.voice.starting } : null),
+        mine: () =>
+          this.voice && !this.voiceGate.listenOnly
+            ? { on: this.voice.micOn, busy: this.voice.starting }
+            : null,
         mic: (slot) => !!this.roomPlayers().find((p) => p.slot === slot)?.mic,
         speaking: (slot) => this.voice?.speaking(slot as PlayerSlot) ?? false,
         toggle: () => void this.toggleMic(),
@@ -1495,7 +1498,7 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
 
   private voiceChanged(): void {
     const v = this.voice;
-    this.touch.setMic(v ? v.micOn : null, !!v?.micOn && v.speaking(v.mySlot));
+    this.touch.setMic(v && !this.voiceGate.listenOnly ? v.micOn : null, !!v?.micOn && v.speaking(v.mySlot));
     for (const f of this.voiceListeners) f();
   }
 
@@ -1521,6 +1524,10 @@ export class App implements LobbyHost, OnlineHost, CharactersHost, EndingHost {
       return false;
     }
     const want = on ?? !(v.micOn || v.starting);
+    if (want && this.voiceGate.listenOnly) {
+      this.hud?.toast(t('Menores de 13 anos só ouvem a conversa: o microfone fica desligado.'), '#ffb02a');
+      return false;
+    }
     this.playUi(want ? 'ui_click' : 'ui_back');
     const ok = await v.setMic(want);
     if (this.voice !== v || this.online !== room) return false;

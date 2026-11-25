@@ -58,7 +58,7 @@ export async function solveParentGate(page: Page): Promise<void> {
  * Chat de voz na sala: no site a idade de quem joga é desconhecida, então a voz começa desligada e um adulto
  * responsável diz a idade e libera neste aparelho, passando pela trava para pais. A liberação fica guardada no aparelho.
  */
-export async function releaseVoice(page: Page, age = '12 anos ou mais'): Promise<void> {
+export async function releaseVoice(page: Page, age = '13 anos ou mais'): Promise<void> {
   await page.getByRole('button', { name: /Liberar a voz/ }).click();
   await page.getByRole('button', { name: age, exact: true }).click();
   await solveParentGate(page);

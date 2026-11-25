@@ -80,7 +80,7 @@ test('chat de voz: opções da sala, todos ouvem todos (3 aparelhos), microfone,
   await expect(host.getByRole('button', { name: /Ligar microfone/ })).toBeHidden();
   expect((await voice(host)).available).toBe(false);
   await host.getByRole('button', { name: /Liberar a voz/ }).click();
-  await expect(host.locator('.voice-release-ask')).toContainText('permitido a partir de 12 anos');
+  await expect(host.locator('.voice-release-ask')).toContainText('permitido a partir de 13 anos');
   await host.getByRole('button', { name: 'Cancelar', exact: true }).click();
   expect((await voice(host)).available).toBe(false);
   // menos de 6 anos: não libera
@@ -88,8 +88,7 @@ test('chat de voz: opções da sala, todos ouvem todos (3 aparelhos), microfone,
   await host.getByRole('button', { name: 'Menos de 6 anos', exact: true }).click();
   await host.getByRole('button', { name: 'Entendi', exact: true }).click();
   expect((await voice(host)).available).toBe(false);
-  await releaseVoice(host, '6 a 11 anos');
-  await expect(host.locator('.voice-supervised')).toBeVisible();
+  await releaseVoice(host);
   await expect(host.locator('.room-voice')).toContainText('Todos da sala se ouvem');
   // a voz nasce na liberação, e a permissão do microfone é lida logo depois
   await expect.poll(async () => (await voice(host)).permission).toBe('granted');
@@ -124,7 +123,12 @@ test('chat de voz: opções da sala, todos ouvem todos (3 aparelhos), microfone,
   const [thirdCtx, third] = await device(browser);
   errors.push(...collectErrors(third));
   await join(third, code);
-  await releaseVoice(third);
+  // de 6 a 12 anos: só ouve, sem microfone (COPPA)
+  await releaseVoice(third, '6 a 12 anos');
+  await expect(third.locator('.room-voice')).toContainText('Menores de 13 anos só ouvem');
+  await expect(third.getByRole('button', { name: /Ligar microfone/ })).toBeHidden();
+  await third.keyboard.press('KeyV');
+  expect((await voice(third)).mic).toBe(false);
   for (const p of [host, guest, third])
     await expect.poll(async () => (await voice(p)).peers, { timeout: 30_000 }).toBe(2);
   await expect

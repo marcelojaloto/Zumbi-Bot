@@ -8,8 +8,8 @@
  * - controle dos pais limitando a comunicação, ou menor sem essa aprovação: voz bloqueada, sem como liberar no jogo
  *   (quando a loja informa a idade, vale a opção mais protetiva; Decreto 12.880/2026, art. 25, § 4º);
  * - idade desconhecida (site, iOS antigo, não compartilhou): voz desligada até um adulto responsável liberar neste
- *   aparelho, passando pela trava para pais. A partir de 12 anos ele só libera; de 6 a 11, libera comprometendo-se a
- *   acompanhar a conversa; abaixo de 6, não libera.
+ *   aparelho, passando pela trava para pais. A partir de 13 anos ele libera; de 6 a 12, a criança só ouve, com ele
+ *   acompanhando (para a COPPA, a voz de quem tem menos de 13 anos é dado pessoal); abaixo de 6, não libera.
  */
 
 /** O que a loja disse (só os campos usados; a resposta do plugin @capawesome/capacitor-age-signals). */
@@ -28,7 +28,8 @@ export type AgeSignal = 'adult' | 'approved' | 'limited' | 'minor' | 'unknown';
 /** A voz neste aparelho: liberada, bloqueada (pelos pais ou pela idade), ou esperando um adulto liberar. */
 export type VoiceGateState = 'allowed' | 'blocked' | 'ask';
 
-const STORE = 'zumbibot.voicegate.v1';
+// v2: a faixa mudou de 12 para 13 anos, então quem liberou antes responde de novo
+const STORE = 'zumbibot.voicegate.v2';
 
 /** Resposta da loja → sinal de idade. */
 export function readAgeSignal(r: StoreAgeRange | null | undefined): AgeSignal {
@@ -102,20 +103,25 @@ export class VoiceGate {
   /** Um adulto responsável liberou o chat de voz neste aparelho. */
   get released(): boolean {
     const v = this.saved();
-    return v === 'released' || v === 'supervised';
+    return v === 'released' || v === 'listen';
   }
 
-  /** Liberado para uma criança de 6 a 11 anos, com o adulto acompanhando. */
-  get supervised(): boolean {
-    return this.state === 'allowed' && this.signal === 'unknown' && this.saved() === 'supervised';
+  /** Liberado para uma criança de 6 a 12 anos: ela só ouve a sala, com o adulto acompanhando. */
+  get listenOnly(): boolean {
+    return this.state === 'allowed' && this.signal === 'unknown' && this.saved() === 'listen';
+  }
+
+  /** A loja confirmou que quem joga tem 18 anos ou mais. */
+  get adult(): boolean {
+    return this.signal === 'adult';
   }
 
   /**
    * Um adulto responsável libera o chat de voz neste aparelho (vale até bloquear de novo nas Configurações).
-   * `supervised`: quem joga tem de 6 a 11 anos e o adulto acompanha a conversa.
+   * `listenOnly`: quem joga tem de 6 a 12 anos; só ouve, e o adulto acompanha.
    */
-  release(supervised = false): void {
-    this.save(supervised ? 'supervised' : 'released');
+  release(listenOnly = false): void {
+    this.save(listenOnly ? 'listen' : 'released');
   }
 
   private saved(): string {

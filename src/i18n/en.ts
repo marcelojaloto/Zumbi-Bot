@@ -908,13 +908,17 @@ export const EN: Record<string, string> = {
     'Voice chat is off on this device: a responsible adult can turn it on in the room.',
   'Chat de voz liberado por um adulto neste aparelho': 'Voice chat allowed by an adult on this device',
   'Bloquear de novo': 'Block again',
-  'Chat de voz liberado neste aparelho, com um adulto acompanhando':
-    'Voice chat allowed on this device, with an adult watching',
-  'O chat de voz é permitido a partir de 12 anos. De 6 a 11 anos, só com um adulto responsável acompanhando a conversa.':
-    'Voice chat is allowed from age 12. From 6 to 11, only with a responsible adult watching the conversation.',
+  'Chat de voz liberado só para ouvir neste aparelho (menos de 13 anos)':
+    'Voice chat allowed for listening only on this device (under 13)',
+  'Menores de 13 anos só ouvem a conversa da sala, com um adulto responsável acompanhando. O microfone fica desligado.':
+    'Players under 13 can only listen to the room, with a responsible adult watching. The mic stays off.',
+  'Menores de 13 anos só ouvem a conversa: o microfone fica desligado.':
+    'Players under 13 can only listen: the mic stays off.',
+  'O chat de voz é permitido a partir de 13 anos. De 6 a 12 anos, a criança só ouve a sala, com um adulto responsável acompanhando, e o microfone fica desligado.':
+    'Voice chat is allowed from age 13. From 6 to 12, the child can only listen to the room, with a responsible adult watching, and the mic stays off.',
   'Qual a idade de quem joga neste aparelho?': 'How old is the player on this device?',
   'Menos de 6 anos': 'Under 6',
-  '6 a 11 anos': '6 to 11',
+  '6 a 12 anos': '6 to 12',
   Entendi: 'Got it',
   'Jogue só com quem você conhece e não conte seu nome, endereço ou escola para ninguém.':
     'Only play with people you know, and never tell anyone your name, address or school.',
@@ -923,12 +927,11 @@ export const EN: Record<string, string> = {
   'Silenciar {name} só neste aparelho': 'Mute {name} on this device only',
   'Voltar a ouvir {name} neste aparelho': 'Hear {name} again on this device',
   'Política de privacidade': 'Privacy policy',
-  '12 anos ou mais': '12 or older',
+  '13 anos ou mais': '13 or older',
   'Para menores de 6 anos o chat de voz fica desligado. Dá para jogar online normalmente.':
     'Voice chat stays off for children under 6. They can still play online normally.',
-  'Você é o adulto responsável, vai acompanhar a criança enquanto ela conversa por voz e libera o chat de voz?':
-    'Are you the responsible adult, will you watch the child while they talk by voice, and do you turn voice chat on?',
-  'Chat de voz com um adulto responsável acompanhando.': 'Voice chat with a responsible adult watching.',
+  'Você é o adulto responsável, vai acompanhar a criança e libera que ela só ouça a conversa por voz da sala?':
+    'Are you the responsible adult, will you watch the child, and do you let them only listen to the room voice chat?',
   'Bloqueado de novo.': 'Blocked again.',
   // iPhone
   'Tela cheia no iPhone': 'Full screen on iPhone',

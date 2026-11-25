@@ -2342,13 +2342,6 @@ a.btn {
   color: var(--accent);
   font-weight: 600;
 }
-.voice-supervised {
-  color: #8fe08f;
-  font-weight: 600;
-}
-.voice-supervised[hidden] {
-  display: none;
-}
 /* trava para pais: pergunta, conta e resposta numa linha que quebra no celular */
 .parent-gate {
   display: flex;
